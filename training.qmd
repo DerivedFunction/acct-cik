@@ -31,7 +31,7 @@ def fetch_post_results():
     return post_data
 def parse_json(data):
     try:
-        return json.loads(data)
+        return json.loads(data).get('paragraphs', [])
     except (json.JSONDecodeError, TypeError):
         return []
 ```
@@ -42,19 +42,17 @@ def parse_json(data):
 ```{python}
 df = fetch_post_results()
 df['sentences'] = df['json_data'].apply(parse_json)
+df.head()
 ```
 
 # 2. "Explode" the DataFrame. Each sentence in the list gets its own row,
-# duplicating the 'cik' and 'year' for each new row.
+# duplicating the 'cik' and 'year' for each new row. Clean up the DataFrame for the next step
 ```{python}
 training_df = df.explode('sentences')
-```
-
-
-# 3. Clean up the DataFrame for the next step
-```{python}
 training_df = training_df[['cik', 'year', 'sentences']].copy()
 training_df.rename(columns={'sentences': 'sentence'}, inplace=True)
+# Drop columns where sentence is empty
+training_df.dropna(subset=['sentence'], inplace=True)
 training_df.reset_index(drop=True, inplace=True)
 
 ```

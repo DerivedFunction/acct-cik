@@ -200,7 +200,7 @@ def extract_text(text: str):
 ### Match text
 
 ```{python}
-def filter_by_keywords(content: dict) -> dict:
+def filter_by_keywords(content: dict, year: int) -> dict:
     """
     Filter extracted content to only include items containing keywords.
     """
@@ -211,10 +211,27 @@ def filter_by_keywords(content: dict) -> dict:
 
     # Paragraphs
     debug_print("Matching paragraphs")
-    para_matches = [(p, match_text(p)) for p in content.get("paragraphs", []) if match_text(p)]
+    para_matches = [p for p in content.get("paragraphs", []) if match_text(p)]
 
+    match_sentences = []
+    year_string = f"The current reporting year is {year}. "
+    # Iterate through each paragraph and extract the sentence
+    for paragraph in para_matches:
+        paragraph = paragraph.strip()
+        if not paragraph:
+            continue
+        paragraph = paragraph.replace("\n", " ")
+        paragraph = re.sub(r"\s+", " ", paragraph)
+        sentences = paragraph.split(".")
+        if not sentences:
+            continue
+        print(sentences)
+        for sentence in sentences:
+            final_sentence = year_string + sentence
+            if match_text(final_sentence) and final_sentence not in match_sentences:
+                match_sentences.append(final_sentence)
     return {
-        "paragraphs": para_matches,
+        "paragraphs": match_sentences,
     }
 ```
 
@@ -240,7 +257,7 @@ def fetch_url(url: str, timeout: int = 10) -> str | None:
         return None
 
 
-def process_url(url: str):
+def process_url(url: str, year: int):
     """
     Processes a url and its data synchronously.
     """
@@ -254,7 +271,7 @@ def process_url(url: str):
     else:
         debug_print("Processing as text")
         content = extract_text(data)
-    filtered = filter_by_keywords(content)
+    filtered = filter_by_keywords(content, year)
     if any(filtered.values()):  # skip if nothing matches
         return filtered
     return {}
@@ -370,7 +387,7 @@ report_results = fetch_all_grouped(df)
 ```{python}
 for report in report_results.itertuples(index=False):
     debug_print("Processing", report.cik, report.year)
-    result = process_url(report.link)
+    result = process_url(report.link, report.year)
     save_result(result, report)
 ```
 
