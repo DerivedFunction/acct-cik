@@ -499,6 +499,7 @@ def post_process(pre_data):
                 sentence = year_string + sentence
                 # Check for sentence, keywords, and uniqueness
                 if sentence and any(kw in sentence for kw in KEYWORDS) and sentence not in new_sentences:
+                    print("Adding", sentence)
                     new_sentences.append(sentence)
 
         # For each row in the original dataframe, add a dictionary to our list
@@ -513,6 +514,7 @@ def post_process(pre_data):
 
     # 3. Create the final DataFrame from the list of dictionaries AFTER the loop
     final_df = pd.DataFrame(all_data)
+    print("Final DataFrame: ",final_df.head())
     return final_df
 
 ```
