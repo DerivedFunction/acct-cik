@@ -324,23 +324,36 @@ def create_db():
             json_data TEXT
         )
     """)
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS fail_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cik INTEGER,
+            year INTEGER,
+            url TEXT,
+        )
+    """)
     conn.commit()
     conn.close()
 
 
-def save_result(result, df: pd.DataFrame):
+def save_result(result, df):
     """
-    Save a list of page results to SQLite.
-    results: [{"url": ..., "matches": ...}, ...]
+    Save a single page result to SQLite.
+    If insert fails (e.g., duplicate url), insert into fail_results.
     """
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-
-    c.execute(
-        "INSERT INTO webpage_results (url, cik, year, json_data) VALUES (?, ?, ?, ?)",
-        (df.link, df.cik, df.year, json.dumps(result))
-    )
-    
+    try:
+        c.execute(
+            "INSERT INTO webpage_results (url, cik, year, json_data) VALUES (?, ?, ?, ?)",
+            (df.link, df.cik, df.year, json.dumps(result))
+        )
+    except sqlite3.IntegrityError:
+        # Insert into fail_results if duplicate or other integrity error
+        c.execute(
+            "INSERT OR IGNORE INTO fail_results (url, cik, year) VALUES (?, ?, ?)",
+            (df.link, df.cik, df.year)
+        )
     conn.commit()
     conn.close()
 create_db()
