@@ -296,7 +296,7 @@ def process_url(url: str):
     """
     data = fetch_url(url)
     if not data:
-        return None
+        return {}
     content = None
     if url.endswith("htm"):
         debug_print("Processing as html")
@@ -307,7 +307,7 @@ def process_url(url: str):
     filtered = filter_by_keywords(content)
     if any(filtered.values()):  # skip if nothing matches
         return filtered
-    return None
+    return {}
 ```
 
 ## Database Functions
