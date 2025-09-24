@@ -356,24 +356,37 @@ def process_url(url: str):
 def create_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS webpage_results (
-            cik INTEGER,
-            year INTEGER,
-            url TEXT PRIMARY KEY,
-            json_data TEXT
-        )
-    """)
-    
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS fail_results (
-            cik INTEGER,
-            year INTEGER,
-            url TEXT PRIMARY KEY
-        )
-    """)
-    conn.commit()
-    conn.close()
+    try:
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS webpage_results (
+                cik INTEGER,
+                year INTEGER,
+                url TEXT PRIMARY KEY,
+                json_data TEXT
+            )
+        """)
+
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS post_results (
+                cik INTEGER,
+                year INTEGER,
+                url TEXT PRIMARY KEY,
+                json_data TEXT
+            )
+        """)
+        
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS fail_results (
+                cik INTEGER,
+                year INTEGER,
+                url TEXT PRIMARY KEY
+            )
+        """)
+    except sqlite3.IntegrityError:
+        debug_print("Something went wrong creating the database")
+    finally:
+        conn.commit()
+        conn.close()
 
 
 def save_result(result, df):
@@ -396,6 +409,21 @@ def save_result(result, df):
         )
     conn.commit()
     conn.close()
+
+def save_post_result(result, df):
+    """
+    Save a single result to SQLite.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    try:
+        c.execute(
+            "INSERT INTO post_results (url, cik, year, json_data) VALUES (?, ?, ?, ?)",
+            (df.link, df.cik, df.year, json.dumps(result))
+        )
+    except sqlite3.IntegrityError:
+        debug_print("Something went wrong saving the database", json.dumps(result), df)
+
 create_db()
 ```
 
@@ -441,10 +469,39 @@ def fetch_all_grouped(df: pd.DataFrame) -> pd.DataFrame:
 report_results = fetch_all_grouped(df)
 ```
 
-## Process each link and store in a database
+## Pre-Process each link and store in a database
 ```{python}
 for report in report_results.itertuples(index=False):
     debug_print("Processing", report.cik, report.year)
     result = process_url(report.link)
     save_result(result, report)
+```
+
+## Post-Process
+```{python}
+def post_process():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM webpage_results")
+    columns = [col[0] for col in c.description]
+    rows = c.fetchall()
+    pre_data = pd.DataFrame(rows, columns=columns)
+    conn.close()
+    return pre_data
+pre_data = post_process()
+pre_data.head()
+```
+```{python}
+for row in pre_data.itertuples(index=False):
+    result = json.loads(row.json_data)
+    # For each paragraph, extract only the sentences with the keyword, and discard the rest
+    new_sentences = []
+    for paragraph in result.get("paragraphs", []):
+        sentences = paragraph.split(".").strip()
+        for sentence in sentences:
+            if any(kw in sentence for kw in KEYWORDS):
+                new_sentences.append(sentence + "\n. The current reporting year is " + str(row.year))
+    # Create a new dataframe with cik, year, and new_sentences
+    new_df = pd.DataFrame({"cik": row.cik, "year": row.year, "sentences": new_sentences})
+    save_post_result(new_df, row)
 ```
