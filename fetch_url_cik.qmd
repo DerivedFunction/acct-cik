@@ -5,6 +5,7 @@ editor: visual
 jupyter: python3
 ---
 
+# Initialization
 ## Installing required libraries
 
 ```{python}
@@ -32,6 +33,7 @@ filename = "sample.csv"
 DB_PATH = "webpage_results.db"
 KEYWORDS = [
     # General derivative disclosures
+    "derivative",
     "derivative liability",
     "derivative liabilities",
     "embedded derivative",
@@ -118,7 +120,7 @@ def extract_filings(data: dict, cik: str, name: str, ticker: str) -> List[dict]:
         if f_type in FILING_TYPES:
             accession = accession_numbers[i].replace("-", "")
             doc = primary_docs[i]
-            if not doc:
+            if not doc or doc.endswith("txt"): # For old files
                 doc = f"{accession[:10]}-{accession[10:12]}-{accession[12:]}.txt"
             link = f"https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{doc}"
             links.append({
@@ -211,7 +213,7 @@ def extract_text(text: str) -> dict:
     """
     if not text:
         return {"paragraphs": [], "headers": [], "tables": []}
-
+    debug_print("Parsing text: ", text[:30])
     # Split by double newlines (paragraph separators)
     raw_paragraphs = text.split("\n\n")
 
@@ -292,19 +294,20 @@ def process_url(url: str):
     """
     Processes a url and its data synchronously.
     """
-    result = []
     data = fetch_url(url)
     if not data:
-        return []
+        return None
     content = None
     if url.endswith("htm"):
+        debug_print("Processing as html")
         content = extract_content(data)
     else:
+        debug_print("Processing as text")
         content = extract_text(data)
     filtered = filter_by_keywords(content)
     if any(filtered.values()):  # skip if nothing matches
-        result.append({"url": url, "matches": filtered})
-    return result
+        return filtered
+    return None
 ```
 
 ## Database Functions
@@ -326,7 +329,7 @@ def create_db():
     conn.close()
 
 
-def save_results(results):
+def save_result(result, df: pd.DataFrame):
     """
     Save a list of page results to SQLite.
     results: [{"url": ..., "matches": ...}, ...]
@@ -334,14 +337,14 @@ def save_results(results):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
 
-    for result in results:
-        c.execute(
-            "INSERT INTO webpage_results (url, cik, year, json_data) VALUES (?, ?, ?, ?)",
-            (result["url"], result["cik"], result["year"], json.dumps(result["matches"]))
-        )
+    c.execute(
+        "INSERT INTO webpage_results (url, cik, year, json_data) VALUES (?, ?, ?, ?)",
+        (df.link, df.cik, df.year, json.dumps(result))
+    )
     
     conn.commit()
     conn.close()
+create_db()
 ```
 
 ## Merge it all together
@@ -381,13 +384,15 @@ def fetch_all_grouped(df: pd.DataFrame) -> pd.DataFrame:
 
 ```
 
-## 
+# Execute Main Loop
 ```{python}
 report_results = fetch_all_grouped(df)
 ```
 
+## Process each link and store in a database
 ```{python}
 for report in report_results.itertuples(index=False):
+    debug_print("Processing", report.cik, report.year)
     result = process_url(report.link)
-    save_results(result)
+    save_result(result, report)
 ```
