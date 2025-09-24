@@ -255,7 +255,7 @@ def extract_text(text: str):
     tables = []
     for block_match in re.finditer(r"<TABLE>(.*?)</TABLE>", text, flags=re.DOTALL | re.I):
         block = block_match.group(1)
-        rows = parse_plain_text_table_fixed(block)
+        rows = parse_plain_text_table(block)
         tables.append(rows)
 
     # Remove tables from text
