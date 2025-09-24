@@ -12,6 +12,7 @@ jupyter: python3
 # %pip install pandas requests bs4
 # Download the zip
 # %wget https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip
+# %mv submissions.zip cik_data/ && cd cik_data && unzip submissions.zip
 ```
 
 ## Importing required libraries
@@ -284,6 +285,7 @@ def get_cik_filings_with_year(cik: str, fyear: int) -> list[dict]:
 def fetch_all_from_df(df: pd.DataFrame):
     """Sequential loop over dataframe, no concurrency."""
     results = []
+    df =  df.drop_duplicates(subset=df.columns[0], keep="first")
     for row in df.itertuples(index=False):
         filings = get_cik_filings_with_year(row.cik, row.fyear)
         results.append(filings)
