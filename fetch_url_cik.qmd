@@ -428,6 +428,7 @@ def save_post_result(df: pd.DataFrame):
     Saves the entire dataframe to SQLite using the efficient df.to_sql() method.
     """
     conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
     for row in df.itertuples(index=False):
         try:
             c.execute("""
@@ -532,7 +533,6 @@ pre_data.head()
 
 ### Post-Process and store in database
 ```{python}
-
 post_data = post_process(pre_data)
 save_post_result(post_data)
 ```
