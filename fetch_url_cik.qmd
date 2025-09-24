@@ -32,6 +32,33 @@ import random
 
 ```{python}
 filename = "sample.csv"
+KEYWORDS = [
+    # General derivative disclosures
+    "derivative liability",
+    "derivative liabilities",
+    "embedded derivative",
+    "warrants",
+
+    # Swaps
+    "interest rate swap",
+    "cross currency swap",
+    "cross-currency swap",
+    "total return swap",
+
+    # Options
+    "option contract",
+    "options contract",
+
+    # Forwards
+    "forward contract",
+    "foreign exchange contract",
+    "forward foreign"
+
+    # Other precise markers
+    "notional",
+    "not designated as hedging",
+    "not designated as a hedging"
+]
 FILING_TYPES = {"10-K", "20-F"}
 SEC_RATE_LIMIT = 5  # requests per second
 df = pd.read_csv(filename)
@@ -54,6 +81,7 @@ def fetch_json(url: str) -> dict | None:
     rate_limit_sleep()
     try:
         resp = requests.get(url, headers=headers, timeout=10)
+        print("Fetching", url)
         if resp.status_code == 429:
             retry_after = resp.headers.get("Retry-After")
             if retry_after:
@@ -82,6 +110,8 @@ def extract_filings(data: dict, cik: str, name: str, ticker: str) -> List[dict]:
         if f_type in FILING_TYPES:
             accession = accession_numbers[i].replace("-", "")
             doc = primary_docs[i]
+            if not doc:
+                doc = str(accession[:10] + "-"+accession[10:]+".txt")
             link = f"https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{doc}"
             links.append({
                 "name": name,
@@ -164,11 +194,11 @@ def extract_content(html: str) -> dict:
 ### Match text
 
 ```{python}
-def filter_by_keywords(content: dict, keywords: list[str]) -> dict:
+def filter_by_keywords(content: dict) -> dict:
     """
     Filter extracted content to only include items containing keywords.
     """
-    keywords_lower = [kw.lower() for kw in keywords]
+    keywords_lower = [kw.lower() for kw in KEYWORDS]
 
     def match_text(text: str) -> list[str]:
         return [kw for kw in keywords_lower if kw in text.lower()]
@@ -205,6 +235,7 @@ def fetch_url(url: str, timeout: int = 10) -> str | None:
         return None
     try:
         rate_limit_sleep()
+        print("Fetching", url)
         resp = requests.get(url, timeout=timeout, headers={"User-Agent": "sync-fetch@example.com"})
         if resp.status_code != 200:
             print(f"Error {resp.status_code} for {url}")
@@ -215,20 +246,19 @@ def fetch_url(url: str, timeout: int = 10) -> str | None:
         return None
 
 
-def process_urls(urls: list[str], keywords: list[str]):
+def process_url(url: str):
     """
-    Processes a batch of urls and their data synchronously.
+    Processes a url and its data synchronously.
     """
-    results = []
-    for url in urls:
-        html = fetch_url(url)
-        if not html:
-            continue
-        content = extract_content(html)
-        filtered = filter_by_keywords(content, keywords)
-        if any(filtered.values()):  # skip if nothing matches
-            results.append({"url": url, "matches": filtered})
-    return results
+    result = []
+    html = fetch_url(url)
+    if not html:
+        return []
+    content = extract_content(html)
+    filtered = filter_by_keywords(content)
+    if any(filtered.values()):  # skip if nothing matches
+        result.append({"url": url, "matches": filtered})
+    return result
 ```
 
 ## Database Functions
@@ -275,29 +305,42 @@ def filter_by_fyear(filings: list[dict], fyear: int) -> list[dict]:
     """Filter filings by fiscal year."""
     return [f for f in filings if f.get("report_date") and f.get("report_date").startswith(str(fyear))]
 
+def fetch_all_grouped(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Fetch filings once per CIK, filter by fiscal years, 
+    and return as a new DataFrame.
+    """
+    records = []
 
-def get_cik_filings_with_year(cik: str, fyear: int) -> list[dict]:
-    """Fetch and filter filings for a single CIK and fiscal year."""
-    filings = get_cik_filings(cik)
-    return filter_by_fyear(filings, fyear)
+    # group: {cik -> [fyears]}
+    cik_groups = df.groupby("cik")["fyear"].apply(list).reset_index()
+
+    for row in cik_groups.itertuples(index=False):
+        cik = row.cik
+        years = row.fyear
+
+        filings = get_cik_filings(cik)  # fetch once
+
+        for fyear in years:
+            year_filings = filter_by_fyear(filings, fyear)
+            for filing in year_filings:
+                records.append({
+                    "cik": cik,
+                    "year": fyear,
+                    **filing  # expands filing dict into columns
+                })
+
+    return pd.DataFrame(records)
 
 
-def fetch_all_from_df(df: pd.DataFrame):
-    """Sequential loop over dataframe, no concurrency."""
-    results = []
-    df =  df.drop_duplicates(subset=df.columns[0], keep="first")
-    for row in df.itertuples(index=False):
-        filings = get_cik_filings_with_year(row.cik, row.fyear)
-        results.append(filings)
-    return results
 ```
 
-## Testing
+## 
+```{python}
+report_results = fetch_all_grouped(df)
+```
 
 ```{python}
-results = fetch_all_from_df(df)
-for cik, filings in zip(df["cik"], results):
-    print(f"CIK {cik}: {len(filings)} filings found")
-    for f in filings:
-        print(f"  {f['type']} {f['report_date']} -> {f['link']}")
+for report in report_results.itertuples(index=False):
+    print(process_url(report.link))
 ```
