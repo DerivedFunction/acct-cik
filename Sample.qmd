@@ -1,0 +1,290 @@
+---
+title: "Sample"
+format: html
+editor: visual
+jupyter: python3
+---
+
+## Installing required libraries
+
+```{python}
+# Installing required libraries
+# %pip install pandas aiohttp asyncio bs4
+```
+
+## Importing required libraries
+
+```{python}
+import pandas as pd # Data processing
+import aiohttp # Scrape the web
+import asyncio # For async operations
+from bs4 import BeautifulSoup # Webpage extraction
+import json # JSON parsing
+import sqlite3 # To store our data
+```
+
+## Loading the Dataset
+
+```{python}
+filename = "sample.csv"
+df = pd.read_csv(filename)
+df.head()
+```
+
+## Initialize some variables
+
+```{python}
+KEYWORDS = [
+    # General derivative disclosures
+    "derivative liability",
+    "derivative liabilities",
+    "embedded derivative",
+    "warrants",
+
+    # Swaps
+    "interest rate swap",
+    "cross currency swap",
+    "cross-currency swap",
+    "total return swap",
+
+    # Options
+    "option contract",
+    "options contract",
+
+    # Forwards
+    "forward contract",
+    "foreign exchange contract",
+    "forward foreign"
+
+    # Other precise markers
+    "notional",
+    "not designated as hedging",
+    "not designated as a hedging"
+]
+FILING_TYPES = ["10-K", "20-F", "40-F"]
+```
+
+## Predefined Functions
+
+### Fetch URLs
+
+```{python}
+
+import aiohttp
+
+async def fetch_url(session, url: str, timeout: int = 10) -> str | None:
+    """
+    Fetch the content of a webpage asynchronously.
+
+    Parameters
+    ----------
+    url : str
+        The webpage URL to fetch.
+    timeout : int, optional
+        Timeout in seconds (default 10).
+
+    Returns
+    -------
+    str | None
+        HTML text of the page, or None if request fails.
+    """
+    headers = {
+        "User-Agent": "test"
+    }
+    if not url:
+      return None
+    try:
+        async with session.get(url, timeout=timeout) as response:
+            if response.status != 200:
+                print(f"Error {response.status} for {url}")
+                return None
+            return await response.text()
+    except Exception as e:
+        print(f"Error fetching {url}: {e}")
+        return None
+
+```
+
+### Extract Content from Webpage
+
+```{python}
+def extract_content(html: str) -> dict:
+    """
+    Extract paragraphs, headers, and tables from HTML.
+
+    Returns a dict with keys:
+    - 'paragraphs': list[str]
+    - 'headers': list[str]
+    - 'tables': list[list[list[str]]]  # tables -> rows -> cells
+    """
+    if not html:
+        return {"paragraphs": [], "headers": [], "tables": []}
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    # Paragraphs
+    paragraphs = [p.get_text(strip=True) for p in soup.find_all("p") if p.get_text(strip=True)]
+
+    # Headers
+    headers = [h.get_text(strip=True) for h in soup.find_all(["h1", "h2", "h3"]) if h.get_text(strip=True)]
+
+    # Tables
+    tables = []
+    for table in soup.find_all("table"):
+        rows = []
+        for row in table.find_all("tr"):
+            cells = [cell.get_text(strip=True) for cell in row.find_all(["td", "th"])]
+            if cells:
+                rows.append(cells)
+        if rows:
+            tables.append(rows)
+
+    return {
+        "paragraphs": paragraphs,
+        "headers": headers,
+        "tables": tables
+    }
+
+```
+
+### Match text
+
+```{python}
+def filter_by_keywords(content: dict, keywords: list[str]) -> dict:
+    """
+    Filter extracted content to only include items containing keywords.
+
+    Parameters
+    ----------
+    content : dict
+        Dictionary from `extract_content`, with keys: paragraphs, headers, tables.
+    keywords : list[str]
+        Keywords to search for (case-insensitive).
+
+    Returns
+    -------
+    dict
+        {
+          "paragraphs": [(text, [keywords])],
+          "headers": [(text, [keywords])],
+          "tables": [ (table_as_list, [keywords]) ]
+        }
+    """
+    keywords_lower = [kw.lower() for kw in keywords]
+
+    def match_text(text: str) -> list[str]:
+        return [kw for kw in keywords_lower if kw in text.lower()]
+
+    # Paragraphs
+    para_matches = [(p, match_text(p)) for p in content.get("paragraphs", []) if match_text(p)]
+
+    # Headers
+    header_matches = [(h, match_text(h)) for h in content.get("headers", []) if match_text(h)]
+
+    # Tables (search inside all cells of each table)
+    table_matches = []
+    for table in content.get("tables", []):
+        table_text = " ".join(cell for row in table for cell in row)
+        matched = match_text(table_text)
+        if matched:
+            table_matches.append((table, matched))
+
+    return {
+        "paragraphs": para_matches,
+        "headers": header_matches,
+        "tables": table_matches
+    }
+
+```
+
+### Process Each URL using both fetch, extract, and filter
+
+```{python}
+async def process_urls(urls: list[str], keywords: list[str]):
+    """
+    Processes a batch of urls and its data
+
+    Parameters
+    ----------
+    urls : list[str]
+        URLS to extract the data from
+    keywords : list[str]
+        Keywords to search for (case-insensitive).
+
+    Returns
+    -------
+    dict
+        {
+          "url": url,
+          "matches": [filter_by_keywords],
+        }
+    """
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_url(session, url) for url in urls]
+        html_list = await asyncio.gather(*tasks)
+
+    results = []
+    for url, html in zip(urls, html_list):
+        if not html:
+            continue
+        content = extract_content(html)
+        filtered = filter_by_keywords(content, keywords)
+        if any(filtered.values()):  # skip if nothing matches
+            results.append({"url": url, "matches": filtered})
+    return results
+```
+
+## Database Functions
+
+We want to store our scrapped result in a database.
+
+```{python}
+
+def create_db(db_path="webpage_results.db"):
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS webpage_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            url TEXT,
+            json_data TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def save_results(db_path, results):
+    """
+    Save a list of page results to SQLite.
+    results: [{"url": ..., "matches": ...}, ...]
+    """
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    for result in results:
+        c.execute(
+            "INSERT INTO webpage_results (url, json_data) VALUES (?, ?)",
+            (result["url"], json.dumps(result["matches"]))
+        )
+    
+    conn.commit()
+    conn.close()
+```
+
+Test
+
+```{python}
+db_path = "webpage_results.db"
+create_db(db_path)
+
+urls = [
+    "https://www.python.org",
+]
+keywords = ["python", "jobs", "data"]
+
+# Run async batch
+results = asyncio.run(process_urls(urls, keywords))
+save_results(db_path, results)
+```
+
+## 
