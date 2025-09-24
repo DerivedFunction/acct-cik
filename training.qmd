@@ -23,7 +23,7 @@ DB_PATH = "webpage_results.db"
 def fetch_post_results():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT * FROM post_results")
+    c.execute("SELECT * FROM webpage_results")
     columns = [col[0] for col in c.description]
     rows = c.fetchall()
     post_data = pd.DataFrame(rows, columns=columns)
