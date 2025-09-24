@@ -172,101 +172,28 @@ def extract_content(html: str) -> dict:
     - 'tables': list[list[list[str]]]  # tables -> rows -> cells
     """
     if not html:
-        return {"paragraphs": [], "headers": [], "tables": []}
+        return {"paragraphs": []}
     debug_print("Parsing Output")
     soup = BeautifulSoup(html, "html.parser")
 
     # Paragraphs
     paragraphs = [p.get_text(strip=True) for p in soup.find_all("p") if p.get_text(strip=True)]
-
-    # Headers
-    headers = [h.get_text(strip=True) for h in soup.find_all(["h1", "h2", "h3"]) if h.get_text(strip=True)]
-
-    # Tables
-    tables = []
-    for table in soup.find_all("table"):
-        rows = []
-        for row in table.find_all("tr"):
-            cells = [cell.get_text(strip=True) for cell in row.find_all(["td", "th"])]
-            if cells:
-                rows.append(cells)
-        if rows:
-            tables.append(rows)
-
     return {
         "paragraphs": paragraphs,
-        "headers": headers,
-        "tables": tables
     }
-
-def parse_plain_text_table(block: str):
-    """
-    Parse a plain-text table according to your rules:
-    - Ignore <CAPTION>.
-    - Columns separated by 2+ spaces.
-    - First column is reserved until <S>.
-    - Lines before <S> accumulate for first column.
-    - Ignore separator lines (----, ====).
-    """
-    rows = []
-    first_col_buffer = ""
-    first_col_active = True  # True until we see <S>
-    
-    for ln in block.splitlines():
-        ln = ln.rstrip()
-        if not ln:
-            continue
-        if re.fullmatch(r"[-=\s]+", ln):
-            continue  # skip separators
-
-        if ln.strip().startswith("<CAPTION>"):
-            continue  # ignore captions
-
-        if "<S>" in ln:
-            first_col_active = False
-            ln = ln.replace("<S>", "").lstrip()
-
-        if first_col_active:
-            # Accumulate multi-line first-column text
-            if first_col_buffer:
-                first_col_buffer += " " + ln.strip()
-            else:
-                first_col_buffer = ln.strip()
-            continue
-
-        # Split line by 2+ spaces
-        cols = [x.strip() for x in re.split(r"\s{2,}", ln)]
-        if first_col_buffer:
-            row = [first_col_buffer] + cols
-            first_col_buffer = ""  # reset for next row
-        else:
-            row = cols
-        rows.append(row)
-    
-    return rows
-
 
 def extract_text(text: str):
     """
     Extract tables, headers, and paragraphs using simplified fixed rules.
     """
-    tables = []
-    for block_match in re.finditer(r"<TABLE>(.*?)</TABLE>", text, flags=re.DOTALL | re.I):
-        block = block_match.group(1)
-        rows = parse_plain_text_table(block)
-        tables.append(rows)
 
     # Remove tables from text
     cleaned_text = re.sub(r"<TABLE>.*?</TABLE>", "", text, flags=re.DOTALL | re.I)
     
     # Split paragraphs by double newlines
     raw_paragraphs = [p.strip() for p in cleaned_text.split("\n\n") if p.strip()]
-    
-    # Headers = all-caps lines
-    headers = [p for p in raw_paragraphs if re.search(r"[A-Z]", p) and p.upper() == p]
-    paragraphs = [p for p in raw_paragraphs if p not in headers]
 
-    return {"tables": tables, "headers": headers, "paragraphs": paragraphs}
+    return {"paragraphs": raw_paragraphs}
 
 ```
 
@@ -286,23 +213,8 @@ def filter_by_keywords(content: dict) -> dict:
     debug_print("Matching paragraphs")
     para_matches = [(p, match_text(p)) for p in content.get("paragraphs", []) if match_text(p)]
 
-    # Headers
-    debug_print("Matching Headers")
-    header_matches = [(h, match_text(h)) for h in content.get("headers", []) if match_text(h)]
-
-    # Tables
-    debug_print("Matching Tables")
-    table_matches = []
-    for table in content.get("tables", []):
-        table_text = " ".join(cell for row in table for cell in row)
-        matched = match_text(table_text)
-        if matched:
-            table_matches.append((table, matched))
-
     return {
         "paragraphs": para_matches,
-        "headers": header_matches,
-        "tables": table_matches
     }
 ```
 
@@ -447,81 +359,6 @@ def fetch_all_grouped(df: pd.DataFrame) -> pd.DataFrame:
                 })
 
     return pd.DataFrame(records)
-
-def post_process(pre_data):
-    # 1. Initialize lists to store the results
-    all_data = []
-
-    # 2. Loop and collect data in a simple list of dictionaries
-    for row in pre_data.itertuples():
-        result = json.loads(row.json_data)
-        debug_print("Processing", row.cik, row.year)
-        new_sentences = []
-        year_string = f"The current reporting year is {row.year}. "
-        for paragraph in result.get("paragraphs", []):
-            # Using a simple split, better methods exist
-            sentences = paragraph[0].split(".")
-            for sentence in sentences:
-                sentence = sentence.strip()
-                # Skip empty sentences, very short ones
-                if not sentence or len(sentence.split()) < 5:
-                    continue
-                sentence = sentence.replace("\n", " ")
-                # Truncate the end if it is too long
-                sentence = truncate_sentence(sentence)
-                sentence = year_string + sentence
-                # Check for sentence, keywords, and uniqueness
-                if sentence and any(kw in sentence for kw in KEYWORDS) and sentence not in new_sentences:
-                    print("Adding", sentence)
-                    new_sentences.append(sentence)
-
-        # For each row in the original dataframe, add a dictionary to our list
-        # This dictionary will become a row in the new dataframe
-        if new_sentences: # Only add if we found relevant sentences
-            all_data.append({
-                "cik": row.cik,
-                "year": row.year,
-                "url": row.url,
-                "json_data": new_sentences # The list of sentences
-            })
-
-    # 3. Create the final DataFrame from the list of dictionaries AFTER the loop
-    final_df = pd.DataFrame(all_data)
-    print("Final DataFrame: ",final_df.head())
-    return final_df
-
-def truncate_sentence(sentence: str, keywords=KEYWORDS, max_clauses: int = 3, max_len: int = 250) -> str:
-    if not isinstance(sentence, str):
-        return sentence
-
-    # Normalize for matching
-    lower_sentence = sentence.lower()
-
-    # Split by comma, semicolon, or period
-    parts = re.split(r'[;,\.]', sentence)
-
-    # Start with first few chunks
-    truncated = " ".join(parts[:max_clauses]).strip()
-
-    # Ensure keywords are preserved
-    found_kw = None
-    for kw in keywords:
-        if kw.lower() in lower_sentence:
-            found_kw = kw
-            break
-
-    if found_kw and found_kw.lower() not in truncated.lower():
-        # Find clause that contains the keyword
-        for part in parts:
-            if found_kw.lower() in part.lower():
-                truncated += " " + part.strip()
-                break
-
-    # If still too long, cut at max_len safely
-    if len(truncated) > max_len:
-        truncated = truncated[:max_len].rsplit(" ", 1)[0] + "..."
-
-    return truncated
 ```
 
 # Execute Main Loop
@@ -546,6 +383,5 @@ pre_data.head()
 
 ### Post-Process and store in database
 ```{python}
-post_data = post_process(pre_data)
-post_data.to_excel("post_results.xlsx", index=False)
+pre_data.to_excel("post_results.xlsx", index=False)
 ```
