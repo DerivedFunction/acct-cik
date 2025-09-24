@@ -410,19 +410,34 @@ def save_result(result, df):
     conn.commit()
     conn.close()
 
-def save_post_result(result, df):
+def fetch_webpage_results():
     """
-    Save a single result to SQLite.
+    Fetch results from webpage_results
     """
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    try:
-        c.execute(
-            "INSERT INTO post_results (url, cik, year, json_data) VALUES (?, ?, ?, ?)",
-            (df.link, df.cik, df.year, json.dumps(result))
-        )
-    except sqlite3.IntegrityError:
-        debug_print("Something went wrong saving the database", json.dumps(result), df)
+    c.execute("SELECT * FROM webpage_results")
+    columns = [col[0] for col in c.description]
+    rows = c.fetchall()
+    pre_data = pd.DataFrame(rows, columns=columns)
+    conn.close()
+    return pre_data
+
+def save_post_result(df: pd.DataFrame):
+    """
+    Saves the entire dataframe to SQLite using the efficient df.to_sql() method.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    for row in df.itertuples(index=False):
+        try:
+            c.execute("""
+                INSERT INTO post_results (cik, year, url, json_data)
+                VALUES (?, ?, ?, ?)
+            """, (row.cik, row.year, row.url, json.dumps(row.json_data)))
+            conn.commit()
+        except sqlite3.IntegrityError:
+           print("Something went wrong. Is it a duplicate?")
+    conn.close()
 
 create_db()
 ```
@@ -461,6 +476,37 @@ def fetch_all_grouped(df: pd.DataFrame) -> pd.DataFrame:
 
     return pd.DataFrame(records)
 
+def post_process(pre_data):
+    # 1. Initialize lists to store the results
+    all_data = []
+
+    # 2. Loop and collect data in a simple list of dictionaries
+    for row in pre_data.itertuples():
+        result = json.loads(row.json_data)
+        debug_print("Processing", row.cik, row.year)
+        new_sentences = []
+        for paragraph in result.get("paragraphs", []):
+            # Using a simple split, better methods exist
+            sentences = paragraph[0].split(".")
+            for sentence in sentences:
+                sentence = sentence.strip()
+                # Check for sentence, keywords, and uniqueness
+                if sentence and any(kw in sentence for kw in KEYWORDS) and sentence not in new_sentences:
+                    new_sentences.append(sentence)
+
+        # For each row in the original dataframe, add a dictionary to our list
+        # This dictionary will become a row in the new dataframe
+        if new_sentences: # Only add if we found relevant sentences
+            all_data.append({
+                "cik": row.cik,
+                "year": row.year,
+                "url": row.url,
+                "json_data": new_sentences # The list of sentences
+            })
+
+    # 3. Create the final DataFrame from the list of dictionaries AFTER the loop
+    final_df = pd.DataFrame(all_data)
+    return final_df
 
 ```
 
@@ -478,30 +524,19 @@ for report in report_results.itertuples(index=False):
 ```
 
 ## Post-Process
+### Prefetch from database
 ```{python}
-def post_process():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT * FROM webpage_results")
-    columns = [col[0] for col in c.description]
-    rows = c.fetchall()
-    pre_data = pd.DataFrame(rows, columns=columns)
-    conn.close()
-    return pre_data
-pre_data = post_process()
+pre_data = fetch_webpage_results()
 pre_data.head()
 ```
+
+### Post-Process and store in database
 ```{python}
-for row in pre_data.itertuples(index=False):
-    result = json.loads(row.json_data)
-    # For each paragraph, extract only the sentences with the keyword, and discard the rest
-    new_sentences = []
-    for paragraph in result.get("paragraphs", []):
-        sentences = paragraph.split(".").strip()
-        for sentence in sentences:
-            if any(kw in sentence for kw in KEYWORDS):
-                new_sentences.append(sentence + "\n. The current reporting year is " + str(row.year))
-    # Create a new dataframe with cik, year, and new_sentences
-    new_df = pd.DataFrame({"cik": row.cik, "year": row.year, "sentences": new_sentences})
-    save_post_result(new_df, row)
+
+post_data = post_process(pre_data)
+save_post_result(post_data)
+```
+```{python}
+
+
 ```
