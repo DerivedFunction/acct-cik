@@ -24,6 +24,7 @@ import json          # JSON parsing
 import sqlite3       # To store our data
 from typing import List
 import random
+import re # Regex expressions
 ```
 
 ## Initialization
@@ -200,35 +201,74 @@ def extract_content(html: str) -> dict:
         "tables": tables
     }
 
-def extract_text(text: str) -> dict:
+def parse_plain_text_table(block: str):
     """
-    Extract paragraphs from plain text.
-
-    - Paragraphs are separated by double newlines.
-    - Line wrapping inside a paragraph is removed.
-    Returns a dict with:
-    - 'paragraphs': list[str]
-    - 'headers': empty (not applicable for plain text)
-    - 'tables': empty (not applicable for plain text)
+    Parse a plain-text table according to your rules:
+    - Ignore <CAPTION>.
+    - Columns separated by 2+ spaces.
+    - First column is reserved until <S>.
+    - Lines before <S> accumulate for first column.
+    - Ignore separator lines (----, ====).
     """
-    if not text:
-        return {"paragraphs": [], "headers": [], "tables": []}
-    debug_print("Parsing text: ", text[:30])
-    # Split by double newlines (paragraph separators)
-    raw_paragraphs = text.split("\n\n")
+    rows = []
+    first_col_buffer = ""
+    first_col_active = True  # True until we see <S>
+    
+    for ln in block.splitlines():
+        ln = ln.rstrip()
+        if not ln:
+            continue
+        if re.fullmatch(r"[-=\s]+", ln):
+            continue  # skip separators
 
-    # Normalize: strip leading/trailing spaces, rejoin wrapped lines
-    paragraphs = [
-        " ".join(line.strip() for line in block.splitlines() if line.strip())
-        for block in raw_paragraphs
-        if block.strip()
-    ]
+        if ln.strip().startswith("<CAPTION>"):
+            continue  # ignore captions
 
-    return {
-        "paragraphs": paragraphs,
-        "headers": [],
-        "tables": []
-    }
+        if "<S>" in ln:
+            first_col_active = False
+            ln = ln.replace("<S>", "").lstrip()
+
+        if first_col_active:
+            # Accumulate multi-line first-column text
+            if first_col_buffer:
+                first_col_buffer += " " + ln.strip()
+            else:
+                first_col_buffer = ln.strip()
+            continue
+
+        # Split line by 2+ spaces
+        cols = [x.strip() for x in re.split(r"\s{2,}", ln)]
+        if first_col_buffer:
+            row = [first_col_buffer] + cols
+            first_col_buffer = ""  # reset for next row
+        else:
+            row = cols
+        rows.append(row)
+    
+    return rows
+
+
+def extract_text(text: str):
+    """
+    Extract tables, headers, and paragraphs using simplified fixed rules.
+    """
+    tables = []
+    for block_match in re.finditer(r"<TABLE>(.*?)</TABLE>", text, flags=re.DOTALL | re.I):
+        block = block_match.group(1)
+        rows = parse_plain_text_table_fixed(block)
+        tables.append(rows)
+
+    # Remove tables from text
+    cleaned_text = re.sub(r"<TABLE>.*?</TABLE>", "", text, flags=re.DOTALL | re.I)
+    
+    # Split paragraphs by double newlines
+    raw_paragraphs = [p.strip() for p in cleaned_text.split("\n\n") if p.strip()]
+    
+    # Headers = all-caps lines
+    headers = [p for p in raw_paragraphs if re.search(r"[A-Z]", p) and p.upper() == p]
+    paragraphs = [p for p in raw_paragraphs if p not in headers]
+
+    return {"tables": tables, "headers": headers, "paragraphs": paragraphs}
 
 ```
 
