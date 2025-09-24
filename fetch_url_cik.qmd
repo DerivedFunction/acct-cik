@@ -486,11 +486,16 @@ def post_process(pre_data):
         result = json.loads(row.json_data)
         debug_print("Processing", row.cik, row.year)
         new_sentences = []
+        year_string = f"The current reporting year is {row.year}."
         for paragraph in result.get("paragraphs", []):
             # Using a simple split, better methods exist
             sentences = paragraph[0].split(".")
             for sentence in sentences:
                 sentence = sentence.strip()
+                if not sentence:
+                    continue
+                sentence = sentence.replace("\n", " ")
+                sentence += year_string
                 # Check for sentence, keywords, and uniqueness
                 if sentence and any(kw in sentence for kw in KEYWORDS) and sentence not in new_sentences:
                     new_sentences.append(sentence)
@@ -535,8 +540,4 @@ pre_data.head()
 ```{python}
 post_data = post_process(pre_data)
 save_post_result(post_data)
-```
-```{python}
-
-
 ```
