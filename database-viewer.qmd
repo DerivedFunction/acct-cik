@@ -49,10 +49,17 @@ def execute_sql(sql: str, fetch: bool = True) -> Union[pd.DataFrame, int]:
         conn.close()
 ```
 
-## Execute Statements
+## Execute SELECT Statements
 
 ```{python}
 
 df = execute_sql("SELECT * FROM webpage_results", fetch=True)
 df.head()
+```
+
+## Execute INSERT/DELETE/UPDATE Statements
+```{python}
+
+dd = execute_sql("SELECT * FROM webpage_results", fetch=False)
+print(dd)
 ```
