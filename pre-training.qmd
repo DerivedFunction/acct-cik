@@ -12,10 +12,12 @@ import sqlite3
 import pandas as pd
 import json
 import re
+import matplotlib.pyplot as plt
 ```
 
 ## Global variables
 ```{python}
+EXCEL_PATH = "post_results.xlsx"
 DB_PATH = "webpage_results.db"
 ```
 
@@ -30,6 +32,8 @@ def fetch_post_results():
     post_data = pd.DataFrame(rows, columns=columns)
     conn.close()
     return post_data
+def fetch_excel():
+    return pd.read_excel(EXCEL_PATH)
 def parse_json(data):
     try:
         return json.loads(data).get('paragraphs', [])
@@ -61,7 +65,8 @@ def post_process_sentence(sentence):
 ### 1. Parse the JSON string in 'json_data' into a Python list of sentences
 # We'll handle potential errors by returning an empty list if parsing fails
 ```{python}
-df = fetch_post_results()
+df = fetch_excel()
+# fetch_post_results()
 df['sentences'] = df['json_data'].apply(parse_json)
 df.head()
 ```
