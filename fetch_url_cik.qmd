@@ -1,0 +1,366 @@
+---
+title: "Fetch URL from CIK"
+format: html
+editor: visual
+jupyter: python3
+---
+
+## Installing required libraries
+
+```{python}
+# Installing required libraries
+# %pip install pandas aiohttp asyncio bs4
+```
+
+## Importing required libraries
+
+```{python}
+import pandas as pd # Data processing
+import aiohttp # Scrape the web
+import asyncio # For async operations
+from bs4 import BeautifulSoup # Webpage extraction
+import json # JSON parsing
+import sqlite3 # To store our data
+from typing import List
+```
+
+## Initialization
+
+```{python}
+filename = "sample.csv"
+FILING_TYPES = {"10-K", "20-F"}
+SEC_RATE_LIMIT = 10  # requests per second
+df = pd.read_csv(filename)
+df.head()
+```
+
+## Predefined Functions
+
+### Fetch URLs
+
+```{python}            
+
+class RateLimiter:
+    """Async rate limiter to respect SEC request limits."""
+    def __init__(self, rate: int):
+        self._rate = rate
+        self._lock = asyncio.Semaphore(rate)
+        self._interval = 1 / rate
+
+    async def acquire(self):
+        await self._lock.acquire()
+        # Release after interval
+        asyncio.create_task(self._release_after_delay())
+
+    async def _release_after_delay(self):
+        await asyncio.sleep(self._interval)
+        self._lock.release()
+
+
+async def fetch_json(session: aiohttp.ClientSession, url: str, rate_limiter: RateLimiter) -> dict | None:
+    """Fetch a URL and return JSON as dict, or None if failed, rate-limited."""
+    headers = {"User-Agent": "testing"}
+    await rate_limiter.acquire()
+    try:
+        async with session.get(url, timeout=10) as response:
+            if response.status != 200:
+                print(f"Error {response.status} fetching {url}")
+                return None
+            text = await response.text()
+            return json.loads(text)
+    except Exception as e:
+        print(f"Exception fetching {url}: {e}")
+        return None
+
+
+def extract_filings(data: dict, cik: str, name: str, ticker: str) -> List[dict]:
+    """Extract filings from SEC JSON data."""
+    links = []
+    forms = data.get("form", [])
+    accession_numbers = data.get("accessionNumber", [])
+    primary_docs = data.get("primaryDocument", [])
+    filing_dates = data.get("filingDate", [])
+    report_dates = data.get("reportDate", [])
+
+    for i, f_type in enumerate(forms):
+        if f_type in FILING_TYPES:
+            accession = accession_numbers[i].replace("-", "")
+            doc = primary_docs[i]
+            link = f"https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{doc}"
+            links.append({
+                "name": name,
+                "filing_date": filing_dates[i],
+                "report_date": report_dates[i],
+                "link": link,
+                "ticker": ticker,
+                "type": f_type
+            })
+    return links
+
+
+async def get_cik_filings(cik: str, rate_limiter: RateLimiter) -> List[dict]:
+    """Fetch all filings for a CIK, both recent and older, asynchronously."""
+    cik = str(cik).zfill(10)
+    url_main = f"https://data.sec.gov/submissions/CIK{cik}.json"
+    headers = {
+        "User-Agent": f"analyzer {cik}@example.com"
+    }
+    async with aiohttp.ClientSession(headers=headers) as session:
+        data = await fetch_json(session, url_main, rate_limiter)
+        if not data:
+            return []
+
+        name = data.get("name", "")
+        ticker = data.get("tickers", [])[0] if data.get("tickers", []) else cik
+
+        # Extract recent filings
+        recent = data.get("filings", {}).get("recent", {})
+        links = extract_filings(recent, cik, name, ticker)
+
+        # Prepare tasks for older filings
+        older_files = data.get("filings", {}).get("files", [])
+        tasks = [
+            fetch_json(session, f"https://data.sec.gov/submissions/{f.get('name')}", rate_limiter)
+            for f in older_files
+        ]
+        older_responses = await asyncio.gather(*tasks, return_exceptions=True)
+
+        # Extract filings from older data
+        for resp in older_responses:
+            if isinstance(resp, dict):
+                links.extend(extract_filings(resp, cik, name, ticker))
+
+        return links
+
+```
+
+### Extract Content from Webpage
+
+```{python}
+def extract_content(html: str) -> dict:
+    """
+    Extract paragraphs, headers, and tables from HTML.
+
+    Returns a dict with keys:
+    - 'paragraphs': list[str]
+    - 'headers': list[str]
+    - 'tables': list[list[list[str]]]  # tables -> rows -> cells
+    """
+    if not html:
+        return {"paragraphs": [], "headers": [], "tables": []}
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    # Paragraphs
+    paragraphs = [p.get_text(strip=True) for p in soup.find_all("p") if p.get_text(strip=True)]
+
+    # Headers
+    headers = [h.get_text(strip=True) for h in soup.find_all(["h1", "h2", "h3"]) if h.get_text(strip=True)]
+
+    # Tables
+    tables = []
+    for table in soup.find_all("table"):
+        rows = []
+        for row in table.find_all("tr"):
+            cells = [cell.get_text(strip=True) for cell in row.find_all(["td", "th"])]
+            if cells:
+                rows.append(cells)
+        if rows:
+            tables.append(rows)
+
+    return {
+        "paragraphs": paragraphs,
+        "headers": headers,
+        "tables": tables
+    }
+
+```
+
+### Match text
+
+```{python}
+def filter_by_keywords(content: dict, keywords: list[str]) -> dict:
+    """
+    Filter extracted content to only include items containing keywords.
+
+    Parameters
+    ----------
+    content : dict
+        Dictionary from `extract_content`, with keys: paragraphs, headers, tables.
+    keywords : list[str]
+        Keywords to search for (case-insensitive).
+
+    Returns
+    -------
+    dict
+        {
+          "paragraphs": [(text, [keywords])],
+          "headers": [(text, [keywords])],
+          "tables": [ (table_as_list, [keywords]) ]
+        }
+    """
+    keywords_lower = [kw.lower() for kw in keywords]
+
+    def match_text(text: str) -> list[str]:
+        return [kw for kw in keywords_lower if kw in text.lower()]
+
+    # Paragraphs
+    para_matches = [(p, match_text(p)) for p in content.get("paragraphs", []) if match_text(p)]
+
+    # Headers
+    header_matches = [(h, match_text(h)) for h in content.get("headers", []) if match_text(h)]
+
+    # Tables (search inside all cells of each table)
+    table_matches = []
+    for table in content.get("tables", []):
+        table_text = " ".join(cell for row in table for cell in row)
+        matched = match_text(table_text)
+        if matched:
+            table_matches.append((table, matched))
+
+    return {
+        "paragraphs": para_matches,
+        "headers": header_matches,
+        "tables": table_matches
+    }
+
+```
+
+### Process Each URL using both fetch, extract, and filter
+
+```{python}
+async def fetch_url(session, url: str, timeout: int = 10) -> str | None:
+    """
+    Fetch the content of a webpage asynchronously.
+
+    Parameters
+    ----------
+    url : str
+        The webpage URL to fetch.
+    timeout : int, optional
+        Timeout in seconds (default 10).
+
+    Returns
+    -------
+    str | None
+        HTML text of the page, or None if request fails.
+    """
+    if not url:
+      return None
+    try:
+        async with session.get(url, timeout=timeout) as response:
+            if response.status != 200:
+                print(f"Error {response.status} for {url}")
+                return None
+            return await response.text()
+    except Exception as e:
+        print(f"Error fetching {url}: {e}")
+        return None
+
+async def process_urls(urls: list[str], keywords: list[str]):
+    """
+    Processes a batch of urls and its data
+
+    Parameters
+    ----------
+    urls : list[str]
+        URLS to extract the data from
+    keywords : list[str]
+        Keywords to search for (case-insensitive).
+
+    Returns
+    -------
+    dict
+        {
+          "url": url,
+          "matches": [filter_by_keywords],
+        }
+    """
+    headers = {
+        "User-Agent": f"analyzer {cik}@example.com"
+    }
+    async with aiohttp.ClientSession(headers=headers) as session:
+        tasks = [fetch_url(session, url) for url in urls]
+        html_list = await asyncio.gather(*tasks)
+
+    results = []
+    for url, html in zip(urls, html_list):
+        if not html:
+            continue
+        content = extract_content(html)
+        filtered = filter_by_keywords(content, keywords)
+        if any(filtered.values()):  # skip if nothing matches
+            results.append({"url": url, "matches": filtered})
+    return results
+```
+
+## Database Functions
+
+We want to store our scrapped result in a database.
+
+```{python}
+
+def create_db(db_path="webpage_results.db"):
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS webpage_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cik INTEGER,
+            year INTEGER,
+            url TEXT,
+            json_data TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def save_results(db_path, results):
+    """
+    Save a list of page results to SQLite.
+    results: [{"url": ..., "matches": ...}, ...]
+    """
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    for result in results:
+        c.execute(
+            "INSERT INTO webpage_results (url, cik, year, json_data) VALUES (?, ?, ?, ?)",
+            (result["cik"], result["year"], result["url"], json.dumps(result["matches"]))
+        )
+    
+    conn.commit()
+    conn.close()
+```
+
+## Merge it all together
+```{python}
+async def get_cik_filings_with_year(cik: str, fyear: int, rate_limiter) -> list[dict]:
+    """Fetch and filter filings for a single CIK and fiscal year."""
+    filings = await get_cik_filings(cik, rate_limiter)
+    return filter_by_fyear(filings, fyear)
+    
+def filter_by_fyear(filings: list[dict], fyear: int) -> list[dict]:
+    """Filter filings by fiscal year."""
+    return [f for f in filings if f.get("report_date") and f.get("report_date").startswith(str(fyear))]
+
+async def fetch_all_from_df(df: pd.DataFrame):
+    rate_limiter = RateLimiter(SEC_RATE_LIMIT)
+    tasks = [
+        get_cik_filings_with_year(row.cik, row.fyear, rate_limiter)
+        for row in df.itertuples(index=False)
+    ]
+    results = await asyncio.gather(*tasks)
+    return results
+
+
+```
+
+## Testing
+```{python}
+results = await fetch_all_from_df(df)
+for cik, filings in zip(df["cik"], results):
+    print(f"CIK {cik}: {len(filings)} filings found")
+    for f in filings:
+        print(f"  {f['type']} {f['report_date']} -> {f['link']}")
+```
