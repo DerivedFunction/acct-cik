@@ -223,7 +223,7 @@ def filter_by_keywords(content: dict, year: int) -> dict:
         paragraph = paragraph.replace("\n", " ")
         paragraph = re.sub(r"\s+", " ", paragraph)
         sentences = paragraph.split(".")
-        if not sentences:
+        if not sentences or len(sentences.split()) < 6:
             continue
         print(sentences)
         for sentence in sentences:
