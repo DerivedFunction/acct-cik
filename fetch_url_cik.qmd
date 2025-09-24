@@ -34,7 +34,6 @@ filename = "sample.csv"
 DB_PATH = "webpage_results.db"
 KEYWORDS = [
     # General derivative disclosures
-    "derivative",
     "derivative liability",
     "derivative liabilities",
     "embedded derivative",
