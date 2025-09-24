@@ -10,9 +10,6 @@ jupyter: python3
 ```{python}
 # Installing required libraries
 # %pip install pandas requests bs4
-# Download the zip
-# %wget https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip
-# %mv submissions.zip cik_data/ && cd cik_data && unzip submissions.zip
 ```
 
 ## Importing required libraries
@@ -32,6 +29,7 @@ import random
 
 ```{python}
 filename = "sample.csv"
+DB_PATH = "webpage_results.db"
 KEYWORDS = [
     # General derivative disclosures
     "derivative liability",
@@ -66,6 +64,16 @@ df.head()
 ```
 
 ## Predefined Functions
+
+## Debug printing
+```{python}
+debug = True # Debug printing
+def debug_print(*args):
+    if debug:
+        print(*args)
+
+debug_print("Debug Print status:", debug)
+```
 
 ### Fetch URLs
 
@@ -111,7 +119,7 @@ def extract_filings(data: dict, cik: str, name: str, ticker: str) -> List[dict]:
             accession = accession_numbers[i].replace("-", "")
             doc = primary_docs[i]
             if not doc:
-                doc = str(accession[:10] + "-"+accession[10:]+".txt")
+                doc = f"{accession[:10]}-{accession[10:12]}-{accession[12:]}.txt"
             link = f"https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{doc}"
             links.append({
                 "name": name,
@@ -164,7 +172,7 @@ def extract_content(html: str) -> dict:
     """
     if not html:
         return {"paragraphs": [], "headers": [], "tables": []}
-
+    debug_print("Parsing Output")
     soup = BeautifulSoup(html, "html.parser")
 
     # Paragraphs
@@ -189,6 +197,37 @@ def extract_content(html: str) -> dict:
         "headers": headers,
         "tables": tables
     }
+
+def extract_text(text: str) -> dict:
+    """
+    Extract paragraphs from plain text.
+
+    - Paragraphs are separated by double newlines.
+    - Line wrapping inside a paragraph is removed.
+    Returns a dict with:
+    - 'paragraphs': list[str]
+    - 'headers': empty (not applicable for plain text)
+    - 'tables': empty (not applicable for plain text)
+    """
+    if not text:
+        return {"paragraphs": [], "headers": [], "tables": []}
+
+    # Split by double newlines (paragraph separators)
+    raw_paragraphs = text.split("\n\n")
+
+    # Normalize: strip leading/trailing spaces, rejoin wrapped lines
+    paragraphs = [
+        " ".join(line.strip() for line in block.splitlines() if line.strip())
+        for block in raw_paragraphs
+        if block.strip()
+    ]
+
+    return {
+        "paragraphs": paragraphs,
+        "headers": [],
+        "tables": []
+    }
+
 ```
 
 ### Match text
@@ -204,12 +243,15 @@ def filter_by_keywords(content: dict) -> dict:
         return [kw for kw in keywords_lower if kw in text.lower()]
 
     # Paragraphs
+    debug_print("Matching paragraphs")
     para_matches = [(p, match_text(p)) for p in content.get("paragraphs", []) if match_text(p)]
 
     # Headers
+    debug_print("Matching Headers")
     header_matches = [(h, match_text(h)) for h in content.get("headers", []) if match_text(h)]
 
     # Tables
+    debug_print("Matching Tables")
     table_matches = []
     for table in content.get("tables", []):
         table_text = " ".join(cell for row in table for cell in row)
@@ -251,10 +293,14 @@ def process_url(url: str):
     Processes a url and its data synchronously.
     """
     result = []
-    html = fetch_url(url)
-    if not html:
+    data = fetch_url(url)
+    if not data:
         return []
-    content = extract_content(html)
+    content = None
+    if url.endswith("html"):
+        content = extract_content(data)
+    else:
+        content = extract_text(data)
     filtered = filter_by_keywords(content)
     if any(filtered.values()):  # skip if nothing matches
         result.append({"url": url, "matches": filtered})
@@ -264,8 +310,8 @@ def process_url(url: str):
 ## Database Functions
 
 ```{python}
-def create_db(db_path="webpage_results.db"):
-    conn = sqlite3.connect(db_path)
+def create_db():
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS webpage_results (
@@ -280,12 +326,12 @@ def create_db(db_path="webpage_results.db"):
     conn.close()
 
 
-def save_results(db_path, results):
+def save_results(results):
     """
     Save a list of page results to SQLite.
     results: [{"url": ..., "matches": ...}, ...]
     """
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
 
     for result in results:
@@ -342,5 +388,6 @@ report_results = fetch_all_grouped(df)
 
 ```{python}
 for report in report_results.itertuples(index=False):
-    print(process_url(report.link))
+    result = process_url(report.link)
+    save_results(result)
 ```
