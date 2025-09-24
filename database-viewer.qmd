@@ -56,6 +56,11 @@ def execute_sql(sql: str, fetch: bool = True) -> Union[pd.DataFrame, int]:
 wf = execute_sql("SELECT * FROM webpage_results", fetch=True)
 wf.head()
 ```
+```{python}
+
+wp = execute_sql("SELECT * FROM post_results", fetch=True)
+wp.head()
+```
 
 ## Execute SELECT Statements on failures
 ```{python}
