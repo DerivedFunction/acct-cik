@@ -297,7 +297,7 @@ def process_url(url: str):
     if not data:
         return []
     content = None
-    if url.endswith("html"):
+    if url.endswith("htm"):
         content = extract_content(data)
     else:
         content = extract_text(data)
