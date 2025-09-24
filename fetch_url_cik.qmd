@@ -463,10 +463,12 @@ def post_process(pre_data):
             sentences = paragraph[0].split(".")
             for sentence in sentences:
                 sentence = sentence.strip()
-                # Skip empty sentences or very short ones
+                # Skip empty sentences, very short ones
                 if not sentence or len(sentence.split()) < 5:
                     continue
                 sentence = sentence.replace("\n", " ")
+                # Truncate the end if it is too long
+                sentence = truncate_sentence(sentence)
                 sentence = year_string + sentence
                 # Check for sentence, keywords, and uniqueness
                 if sentence and any(kw in sentence for kw in KEYWORDS) and sentence not in new_sentences:
@@ -488,6 +490,38 @@ def post_process(pre_data):
     print("Final DataFrame: ",final_df.head())
     return final_df
 
+def truncate_sentence(sentence: str, keywords=KEYWORDS, max_clauses: int = 3, max_len: int = 250) -> str:
+    if not isinstance(sentence, str):
+        return sentence
+
+    # Normalize for matching
+    lower_sentence = sentence.lower()
+
+    # Split by comma, semicolon, or period
+    parts = re.split(r'[;,\.]', sentence)
+
+    # Start with first few chunks
+    truncated = " ".join(parts[:max_clauses]).strip()
+
+    # Ensure keywords are preserved
+    found_kw = None
+    for kw in keywords:
+        if kw.lower() in lower_sentence:
+            found_kw = kw
+            break
+
+    if found_kw and found_kw.lower() not in truncated.lower():
+        # Find clause that contains the keyword
+        for part in parts:
+            if found_kw.lower() in part.lower():
+                truncated += " " + part.strip()
+                break
+
+    # If still too long, cut at max_len safely
+    if len(truncated) > max_len:
+        truncated = truncated[:max_len].rsplit(" ", 1)[0] + "..."
+
+    return truncated
 ```
 
 # Execute Main Loop
