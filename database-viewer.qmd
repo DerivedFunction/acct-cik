@@ -56,11 +56,7 @@ def execute_sql(sql: str, fetch: bool = True) -> Union[pd.DataFrame, int]:
 wf = execute_sql("SELECT * FROM webpage_results", fetch=True)
 wf.head()
 ```
-```{python}
 
-wp = execute_sql("SELECT * FROM post_results", fetch=True)
-wp.head()
-```
 
 ## Execute SELECT Statements on failures
 ```{python}
@@ -72,14 +68,11 @@ ff.head()
 ## Execute INSERT/DELETE/UPDATE Statements
 ```{python}
 
-dd = execute_sql("DELETE FROM post_results", fetch=False)
+dd = execute_sql("DELETE FROM webpage_results", fetch=False)
 print(dd)
 ```
 
 ## Save a dataframe as an Excel file
-```{python}
-wp.to_excel("post_results.xlsx", index=False)
-```
 ```{python}
 wf.to_excel("webpage_results.xlsx", index=False)
 ```
