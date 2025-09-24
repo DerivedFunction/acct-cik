@@ -52,9 +52,10 @@ KEYWORDS = [
     "forward contract",
     "foreign exchange contract",
     "forward foreign"
+    "foreign currency future"
 
     # Other precise markers
-    "notional",
+    "notional amount",
     "not designated as hedging",
     "not designated as a hedging"
 ]
@@ -162,29 +163,36 @@ def get_cik_filings(cik: str) -> List[dict]:
 ### Extract Content from Webpage
 
 ```{python}
+from bs4 import BeautifulSoup
+
 def extract_content(html: str) -> dict:
     """
-    Extract paragraphs, headers, and tables from HTML.
+    Extract paragraphs from HTML
 
     Returns a dict with keys:
     - 'paragraphs': list[str]
-    - 'headers': list[str]
-    - 'tables': list[list[list[str]]]  # tables -> rows -> cells
     """
     if not html:
         return {"paragraphs": []}
     debug_print("Parsing Output")
     soup = BeautifulSoup(html, "html.parser")
 
-    # Paragraphs
-    paragraphs = [p.get_text(strip=True) for p in soup.find_all("p") if p.get_text(strip=True)]
+    # Paragraphs outside of tables
+    paragraphs = []
+    for p in soup.find_all("p"):
+        if p.find_parent("table") is None:  # ignore if inside table
+            text = p.get_text(strip=True)
+            if text:
+                paragraphs.append(text)
+
     return {
         "paragraphs": paragraphs,
     }
 
+
 def extract_text(text: str):
     """
-    Extract tables, headers, and paragraphs using simplified fixed rules.
+    Extract paragraphs using simplified fixed rules.
     """
 
     # Remove tables from text
@@ -202,19 +210,27 @@ def extract_text(text: str):
 ```{python}
 def filter_by_keywords(content: dict, year: int) -> dict:
     """
-    Filter extracted content to only include items containing keywords.
+    Filter extracted content to only include items containing keywords, 
+    and add some random content for training.
     """
     keywords_lower = [kw.lower() for kw in KEYWORDS]
 
-    def match_text(text: str) -> list[str]:
-        return [kw for kw in keywords_lower if kw in text.lower()]
+    def matches_text(text: str) -> bool:
+        if not text:
+            return False
+        return any(kw in text.lower() for kw in keywords_lower)
 
     # Paragraphs
     debug_print("Matching paragraphs")
-    para_matches = [p for p in content.get("paragraphs", []) if match_text(p)]
+    # Add some paragraphs, and use a random seed to add a non-matching paragraph past the table of contents
+    para_matches = [
+        p for idx, p in enumerate(content.get("paragraphs", []))
+        if matches_text(p) or (random.random() < 0.01 and idx > 50)
+    ]
 
     match_sentences = []
     year_string = f"The current reporting year is {year}. "
+
     # Iterate through each paragraph and extract the sentence
     for paragraph in para_matches:
         paragraph = paragraph.strip()
@@ -222,14 +238,35 @@ def filter_by_keywords(content: dict, year: int) -> dict:
             continue
         paragraph = paragraph.replace("\n", " ")
         paragraph = re.sub(r"\s+", " ", paragraph)
-        sentences = paragraph.split(".")
-        if not sentences or len(sentences.split()) < 6:
+
+        sentences = [s.strip() for s in paragraph.split(".") if s.strip()]
+        if not sentences:
             continue
-        print(sentences)
-        for sentence in sentences:
-            final_sentence = year_string + sentence
-            if match_text(final_sentence) and final_sentence not in match_sentences:
+
+        for idx, sentence in enumerate(sentences):
+            # Skip too short sentences
+            if len(sentence.split()) < 6:
+                continue
+
+            merged_sentences = []
+
+            # Previous sentence
+            if idx > 0:
+                merged_sentences.append(sentences[idx - 1])
+
+            # Current sentence
+            merged_sentences.append(sentence)
+
+            # Next sentence
+            if idx < len(sentences) - 1:
+                merged_sentences.append(sentences[idx + 1])
+
+            merged_string = ". ".join(merged_sentences)
+            final_sentence = year_string + merged_string
+
+            if matches_text(final_sentence) and final_sentence not in match_sentences:
                 match_sentences.append(final_sentence)
+
     return {
         "paragraphs": match_sentences,
     }

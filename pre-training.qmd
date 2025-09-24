@@ -11,6 +11,7 @@ jupyter: python3
 import sqlite3
 import pandas as pd
 import json
+import re
 ```
 
 ## Global variables
@@ -34,6 +35,26 @@ def parse_json(data):
         return json.loads(data).get('paragraphs', [])
     except (json.JSONDecodeError, TypeError):
         return []
+
+def post_process_sentence(sentence):
+    # words to remove
+    REMOVE_WORDS = [
+        "Table of Contents",
+    ]
+
+    for word in REMOVE_WORDS:
+        sentence = sentence.replace(word, " ")
+    
+    # Add a space between capital letters. Then, we will remove double spaces with a single space, since some words are together
+    sentence = re.sub(r'([a-z])([A-Z])', r'\1 \2', sentence)
+    # Add a space between a letter and a number, and the other way around. Then, we will remove double spaces with a single space, since some words are together
+    sentence = re.sub(r'([a-zA-Z])(\d+)', r'\1 \2', sentence)
+    sentence = re.sub(r'(\d+)([a-zA-Z])', r'\1 \2', sentence)
+    # Add space between a letter and a dollar sign
+    sentence = re.sub(r'([a-zA-Z0-9])(\$)', r'\1 \2', sentence)
+    # Remove double spaces
+    sentence = re.sub(r'\s+', ' ', sentence)
+    return sentence
 ```
 
 ## Begin
@@ -53,7 +74,30 @@ training_df = training_df[['cik', 'year', 'sentences']].copy()
 training_df.rename(columns={'sentences': 'sentence'}, inplace=True)
 # Drop columns where sentence is empty
 training_df.dropna(subset=['sentence'], inplace=True)
-training_df.reset_index(drop=True, inplace=True)
+# Apply post processing to sentences
+training_df['sentence'] = training_df['sentence'].apply(post_process_sentence)
+
+```
+
+# 3. Display the status of each sentence length. Then we want to drop those that are too short or too long
+```{python}
+# Display sentence length statistics
+training_df['sentence_length'] = training_df['sentence'].apply(len)
+print(training_df['sentence_length'].describe())
+
+# Define thresholds for dropping sentences
+mean_len = training_df['sentence_length'].mean()
+std_len = training_df['sentence_length'].std()
+
+# Drop sentences that are too short or too long (> 3 standard deviations from mean)
+training_df = training_df[
+    (training_df['sentence_length'] >= mean_len - 1.96 * std_len) &
+    (training_df['sentence_length'] <= mean_len + 1.96 * std_len)
+].copy()
+
+# Recompute sentence length stats after filtering
+training_df['sentence_length'] = training_df['sentence'].apply(len)
+print(training_df['sentence_length'].describe())
 
 ```
 
