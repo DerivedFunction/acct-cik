@@ -72,6 +72,14 @@ ff.head()
 ## Execute INSERT/DELETE/UPDATE Statements
 ```{python}
 
-dd = execute_sql("SELECT * FROM webpage_results", fetch=False)
+dd = execute_sql("DELETE FROM post_results", fetch=False)
 print(dd)
+```
+
+## Save a dataframe as an Excel file
+```{python}
+wp.to_excel("post_results.xlsx", index=False)
+```
+```{python}
+wf.to_excel("webpage_results.xlsx", index=False)
 ```
