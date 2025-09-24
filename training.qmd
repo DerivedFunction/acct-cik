@@ -8,7 +8,7 @@ jupyter: python3
 # Initialization
 ## Required libraries
 ```{python}
-# %pip install -q pandas torch scikit-learn datasets transformers numpy openpyxl accelerate
+# %pip install -q --upgrade pandas torch scikit-learn datasets transformers numpy openpyxl accelerate
 ```
 
 ```{python}
@@ -25,7 +25,7 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 ```{python}
 EXCEL_PATH = "training-post-output.xlsx"
-MODEL_CHECKPOINT = "yiyanghkust/finbert-pretrained"
+MODEL_CHECKPOINT = "yiyanghkust/finbert-pretrain"
 ```
 
 # Data Preparation
