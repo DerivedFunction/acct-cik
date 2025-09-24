@@ -8,7 +8,7 @@ jupyter: python3
 # Initialization
 ## Required libraries
 ```{python}
-# %pip install -q --upgrade pandas torch scikit-learn datasets transformers numpy openpyxl accelerate
+# %pip install pandas torch scikit-learn datasets transformers numpy openpyxl accelerate
 ```
 
 ```{python}
