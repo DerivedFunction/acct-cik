@@ -1,0 +1,65 @@
+---
+title: "Derivative Classification: Pre Training Stage"
+format: html
+editor: visual
+jupyter: python3
+---
+
+# Initialization
+## Required libraries
+```{python}
+import sqlite3
+import pandas as pd
+import json
+```
+
+## Global variables
+```{python}
+DB_PATH = "webpage_results.db"
+```
+
+## Functions
+```{python}
+def fetch_post_results():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM webpage_results")
+    columns = [col[0] for col in c.description]
+    rows = c.fetchall()
+    post_data = pd.DataFrame(rows, columns=columns)
+    conn.close()
+    return post_data
+def parse_json(data):
+    try:
+        return json.loads(data).get('paragraphs', [])
+    except (json.JSONDecodeError, TypeError):
+        return []
+```
+
+## Begin
+### 1. Parse the JSON string in 'json_data' into a Python list of sentences
+# We'll handle potential errors by returning an empty list if parsing fails
+```{python}
+df = fetch_post_results()
+df['sentences'] = df['json_data'].apply(parse_json)
+df.head()
+```
+
+# 2. "Explode" the DataFrame. Each sentence in the list gets its own row,
+# duplicating the 'cik' and 'year' for each new row. Clean up the DataFrame for the next step
+```{python}
+training_df = df.explode('sentences')
+training_df = training_df[['cik', 'year', 'sentences']].copy()
+training_df.rename(columns={'sentences': 'sentence'}, inplace=True)
+# Drop columns where sentence is empty
+training_df.dropna(subset=['sentence'], inplace=True)
+training_df.reset_index(drop=True, inplace=True)
+
+```
+
+# Display the first few rows of the new, transformed DataFrame and save it for labeling
+```{python}
+print(training_df.head())
+# Save the dataframe to an excel file
+training_df.to_excel("training-pre-output.xlsx", index=False)
+```
