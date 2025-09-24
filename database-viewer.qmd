@@ -49,12 +49,19 @@ def execute_sql(sql: str, fetch: bool = True) -> Union[pd.DataFrame, int]:
         conn.close()
 ```
 
-## Execute SELECT Statements
+## Execute SELECT Statements on results
 
 ```{python}
 
-df = execute_sql("SELECT * FROM webpage_results", fetch=True)
-df.head()
+wf = execute_sql("SELECT * FROM webpage_results", fetch=True)
+wf.head()
+```
+
+## Execute SELECT Statements on failures
+```{python}
+
+ff = execute_sql("SELECT * FROM fail_results", fetch=True)
+ff.head()
 ```
 
 ## Execute INSERT/DELETE/UPDATE Statements

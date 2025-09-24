@@ -324,12 +324,12 @@ def create_db():
             json_data TEXT
         )
     """)
+    
     c.execute("""
         CREATE TABLE IF NOT EXISTS fail_results (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
             cik INTEGER,
             year INTEGER,
-            url TEXT,
+            url TEXT PRIMARY KEY
         )
     """)
     conn.commit()
