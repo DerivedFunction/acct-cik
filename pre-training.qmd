@@ -89,7 +89,16 @@ training_df['sentence'] = training_df['sentence'].apply(post_process_sentence)
 # Display sentence length statistics
 training_df['sentence_length'] = training_df['sentence'].apply(len)
 print(training_df['sentence_length'].describe())
+plt.figure(figsize=(10,6))
+plt.hist(training_df['sentence_length'], bins=100, edgecolor='k', alpha=0.7)
+plt.title("Distribution of Sentence Lengths")
+plt.xlabel("Sentence Length (characters)")
+plt.ylabel("Frequency")
+plt.show()
 
+```
+
+```{python}
 # Define thresholds for dropping sentences
 mean_len = training_df['sentence_length'].mean()
 std_len = training_df['sentence_length'].std()
@@ -97,13 +106,17 @@ std_len = training_df['sentence_length'].std()
 # Drop sentences that are too short or too long (> 3 standard deviations from mean)
 training_df = training_df[
     (training_df['sentence_length'] >= mean_len - 1.96 * std_len) &
-    (training_df['sentence_length'] <= mean_len + 1.96 * std_len)
+    (training_df['sentence_length'] <= mean_len + 1.64 * std_len)
 ].copy()
 
 # Recompute sentence length stats after filtering
 training_df['sentence_length'] = training_df['sentence'].apply(len)
+plt.hist(training_df['sentence_length'], bins=100, edgecolor='k', alpha=0.7)
+plt.title("Distribution of Sentence Lengths")
+plt.xlabel("Sentence Length (characters)")
+plt.ylabel("Frequency")
+plt.show()
 print(training_df['sentence_length'].describe())
-
 ```
 
 # Display the first few rows of the new, transformed DataFrame and save it for labeling
