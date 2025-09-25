@@ -64,8 +64,9 @@ ADDITIONAL_KEYWORDS = KEYWORDS | {
     "warrants",
 }
 IGNORE_KEYWORDS = {
-    "Table of Contents",
-    "CONSOLIDATED",
+    "table of contents",
+    "consolidated",
+    "balance sheet",
     "BEGIN PRIVACY-ENHANCED MESSAGE"
 }
 MATCHING_KEYWORDS = {
@@ -472,7 +473,8 @@ def filter_by_keywords(content: str, year: int) -> dict:
 
             final_sentence = ". ".join(merged).strip() + "."
             normalized = final_sentence.lower().strip()
-
+            if any(kw in normalized for kw in ignore_keywords):
+                    continue
             if matches_text(final_sentence):
                 if normalized not in seen_matches:
                     seen_matches.add(normalized)
@@ -744,7 +746,7 @@ def get_n_rows(df: pd.DataFrame, n: int, begin: int) -> pd.DataFrame:
 ```
 
 ```{python}
-dr = get_n_rows(merged_sa, 20, 30)
+dr = get_n_rows(merged_sa, 20, 20)
 # Output the sentences to a temp.txt file
 with open("temp.txt", "w", encoding="utf-8") as f:
     for sentence in dr["sentence"]:
