@@ -768,7 +768,7 @@ def get_n_rows(df: pd.DataFrame, n: int, begin: int) -> pd.DataFrame:
 ```
 
 ```{python}
-dr = get_n_rows(merged_sa, 20, 20)
+dr = get_n_rows(merged_sa, 20, 0)
 # Output the sentences to a temp.txt file
 with open("temp.txt", "w", encoding="utf-8") as f:
     for sentence in dr["sentence"]:
