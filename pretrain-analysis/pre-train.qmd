@@ -163,6 +163,8 @@ def get_webpage_data(url):
     columns = [col[0] for col in c.description]
     result = c.fetchone()
     conn.close()
+    if not result:
+        return pd.DataFrame(columns=columns)
     data = pd.DataFrame([result], columns=columns)
     return data
 
@@ -280,7 +282,7 @@ def extract_content(data: str, asHTML=True) -> dict:
     if asHTML:
         soup = BeautifulSoup(data, "html.parser")
         text = soup.get_text(separator='\n', strip=True)
-        return extract_text(text)
+        return clean_text(text)
     else:
         # Convert single new lines into spaces
         text = re.sub(r"\n", " ", data)
@@ -322,22 +324,23 @@ def process_url(url: str, cik: int, year: int):
     """
     # Check if we have the raw content first:
     data = get_webpage_data(url)
+    text = None
     if data.empty:
-        data = fetch_url(url)
-        if not data:
+        text = fetch_url(url)
+        if not text:
             return ""
         else:
-            save_result(data, url, cik, year)
+            save_result(text, url, cik, year)
     else:
         data = data.iloc[0]["raw_text"]
     
     content = None
     if url.endswith("htm"):
         debug_print("Processing as html")
-        content = extract_content(data, True)
+        content = extract_content(text, True)
     else:
         debug_print("Processing as text")
-        content = extract_content(data, False)
+        content = extract_content(text, False)
     return content
     
 ```
@@ -504,5 +507,12 @@ def _save_partial(records: list) -> pd.DataFrame:
 # Execute Main Loop
 ```{python}
 # Returns all the 10-K links
-report_results = fetch_all_grouped(df)
+# fetch_all_grouped(df)
+```
+
+## Pre-Process each link and store in a database
+```{python}
+for report in existing_report_df.itertuples(index=False):
+    debug_print("Processing", report.cik, report.year)
+    process_url(report.link, report.cik, report.year)
 ```
