@@ -57,8 +57,8 @@ KEYWORDS = {
 
     # Other precise markers
     "notional",
-    "not designated as hedging",
-    "not designated as a hedging"
+    "designated as hedging",
+    "designated as a hedging"
 }
 ADDITIONAL_KEYWORDS = KEYWORDS | {
     "warrants",
@@ -76,7 +76,7 @@ MATCHING_KEYWORDS = {
     "Cross-Currency Swap": ["cross currency swap", "cross-currency swap"],
     "Options": ["option contract", "options contract"],
     "Foreign Exchange Contract": ["forward contract", "foreign exchange contract", "forward foreign", "foreign currency future",],
-    "Not Designated As Hedging": ["not designated as hedging", "not designated as a hedging"],
+    "Designated As Hedging": ["designated as hedging", "designated as a hedging"],
     "Notional Amount": ["notional"],
     "Total Return Swap": ["total return swap"]
 }
@@ -666,13 +666,17 @@ def expand_sentences(df: pd.DataFrame, column: str) -> pd.DataFrame:
     
     # Explode and rename column
     df_expanded = df_copy.explode(column).rename(columns={column: "sentence"})
-    
+
     # Remove null or empty sentences
     df_expanded = df_expanded[df_expanded["sentence"].notna()]
     df_expanded = df_expanded[df_expanded["sentence"].str.strip() != ""]
-    
+    # Prepend reporting year and remove any stray newlines
+    df_expanded["sentence"] = df_expanded.apply(
+        lambda row: f"<reportingYear>{row['year']}</reportingYear> {row['sentence'].replace('\\n', ' ').strip()}",
+        axis=1
+    )
+    df_expanded['label'] = 0 if column == 'matches' else 1
     return df_expanded
-
 ```
 
 ## Fetch the results
@@ -716,5 +720,11 @@ sm_expanded.head()
 ```{python}
 # SN: Drop unneeded columns, keep only cik, year, url, not_matches
 sn_expanded = expand_sentences(wr, "not_matches")
-sm_expanded.head()
+sn_expanded.head()
+```
+
+## Save the results
+```{python}
+merged_sa = pd.concat([sm_expanded, sn_expanded], ignore_index=True)
+merged_sa.to_excel(SENTENCE_EXCEL_PATH, index=False)
 ```
