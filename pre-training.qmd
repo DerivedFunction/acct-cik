@@ -124,6 +124,15 @@ plt.show()
 print(training_df['sentence_length'].describe())
 ```
 
+# Let's attach meaningful information to each sentence
+```{python}
+# Create a final output column that attaches the year to the sentence
+training_df["final_output"] = training_df["sentence"] + "\n<reportingYear> " + training_df["year"].astype(str) + "</reportingYear>"
+
+# Drop unneeded columns
+training_df = training_df[["cik", "year", "final_output"]]
+```
+
 # Display the first few rows of the new, transformed DataFrame and save it for labeling
 ```{python}
 print(training_df.head())
