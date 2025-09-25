@@ -25,6 +25,7 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 ```{python}
 EXCEL_PATH = "training-post-output.xlsx"
+DUMMY_EXCEL_PATH = "training-post-output-dummy.xlsx"
 MODEL_CHECKPOINT = "yiyanghkust/finbert-pretrain"
 ```
 
@@ -32,14 +33,17 @@ MODEL_CHECKPOINT = "yiyanghkust/finbert-pretrain"
 
 ## Load and Pre-process Data
 
-This step loads your labeled Excel file and prepares it for the model. We'll map your labels (`-1, 0, 1`) to what the model expects (`0, 1, 2`).
+This step loads your labeled Excel file and prepares it for the model.
 
 ```{python}
 # Load the labeled data
 df = pd.read_excel(EXCEL_PATH)
+# also append dummy data
+df_dummy = pd.read_excel(DUMMY_EXCEL_PATH)
+df = pd.concat([df, df_dummy], ignore_index=True)
 
-# Drop rows where 'sentence' or 'label' might be empty
-df.dropna(subset=['sentence', 'label'], inplace=True)
+# Drop rows where 'final_output' or 'label' might be empty
+df.dropna(subset=['final_output', 'label'], inplace=True)
 
 # The model needs positive integers for labels
 label_map = {0: 0, 1: 1, 2: 2}
@@ -50,6 +54,7 @@ train_df, val_df = train_test_split(df, test_size=0.2, random_state=42, stratify
 
 print(f"Training set size: {len(train_df)}")
 print(f"Validation set size: {len(val_df)}")
+df.head()
 ```
 
 ## Convert to Hugging Face Dataset
@@ -74,7 +79,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_CHECKPOINT)
 
 # Replace your old tokenize_function with this one
 def tokenize_function(examples):
-    return tokenizer(examples['sentence'], truncation=True, max_length=512)
+    return tokenizer(examples['final_output'], truncation=True, max_length=512)
 
 tokenized_train_dataset = train_dataset.map(tokenize_function, batched=True)
 tokenized_val_dataset = val_dataset.map(tokenize_function, batched=True)
@@ -113,6 +118,7 @@ model = AutoModelForSequenceClassification.from_pretrained(
     id2label=id2label,
     label2id=label2id
 )
+
 collator = DataCollatorWithPadding(tokenizer=tokenizer)
 # Define Training Arguments
 training_args = TrainingArguments(
@@ -129,6 +135,14 @@ training_args = TrainingArguments(
     load_best_model_at_end=True,     # Load the best model found during training
 )
 
+```
+
+```{python}
+#tokenizer.save_pretrained("./finbert_local")
+#model.save_pretrained("./finbert_local")
+```
+
+```{python}
 # Initialize the Trainer
 trainer = Trainer(
     model=model,
@@ -140,5 +154,5 @@ trainer = Trainer(
 )
 
 # Start training!
-trainer.train(resume_from_checkpoint=True)
+trainer.train() #resume_from_checkpoint=True
 ```

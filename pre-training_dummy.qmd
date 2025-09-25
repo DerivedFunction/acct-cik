@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 
 ## Global variables
 ```{python}
-EXCEL_PATH = "post_results.xlsx"
-DB_PATH = "webpage_results.db"
+EXCEL_PATH = "post_results_dummy.xlsx"
+DB_PATH = "webpage_dummy_results.db"
 ```
 
 ## Functions
@@ -69,10 +69,10 @@ def post_process_sentence(sentence):
 ### 1. Parse the JSON string in 'json_data' into a Python list of sentences
 # We'll handle potential errors by returning an empty list if parsing fails
 ```{python}
-df = fetch_excel()
-# fetch_post_results()
+df = fetch_post_results()
+# fetch_excel()
 df['sentences'] = df['json_data'].apply(parse_json)
-df.head()
+df.head(20)
 ```
 
 # 2. "Explode" the DataFrame. Each sentence in the list gets its own row,
@@ -110,8 +110,8 @@ std_len = training_df['sentence_length'].std()
 
 # Drop sentences that are too short or too long (> 3 standard deviations from mean)
 training_df = training_df[
-    (training_df['sentence_length'] >= mean_len - 1.96 * std_len) &
-    (training_df['sentence_length'] <= mean_len + 1.28  * std_len)
+    (training_df['sentence_length'] >= mean_len - 1 * std_len) &
+    (training_df['sentence_length'] <= mean_len + 1  * std_len)
 ].copy()
 training_df = training_df.reset_index(drop=True)
 # Recompute sentence length stats after filtering
@@ -131,11 +131,15 @@ training_df["final_output"] = training_df["sentence"] + "\n<reportingYear> " + t
 
 # Drop unneeded columns
 training_df = training_df[["cik", "year", "final_output"]]
+# Only keep 100 random rows
+training_df = training_df.sample(n=100, random_state=42)
+# Add the labels column and put "1" in all of them
+training_df["label"] = 1
 ```
 
 # Display the first few rows of the new, transformed DataFrame and save it for labeling
 ```{python}
 print(training_df.head())
 # Save the dataframe to an excel file
-training_df.to_excel("training-pre-output.xlsx", index=False)
+training_df.to_excel("training-post-output-dummy.xlsx", index=False)
 ```
