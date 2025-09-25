@@ -69,7 +69,8 @@ def post_process_sentence(sentence):
 ### 1. Parse the JSON string in 'json_data' into a Python list of sentences
 # We'll handle potential errors by returning an empty list if parsing fails
 ```{python}
-df = fetch_excel()
+df = fetch_post_results()
+# fetch_excel()
 # fetch_post_results()
 df['sentences'] = df['json_data'].apply(parse_json)
 df.head()
@@ -137,5 +138,5 @@ training_df = training_df[["cik", "year", "final_output"]]
 ```{python}
 print(training_df.head())
 # Save the dataframe to an excel file
-training_df.to_excel("training-pre-output.xlsx", index=False)
+training_df.to_excel("../excel/training-pre-output.xlsx", index=False)
 ```
