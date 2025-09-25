@@ -138,7 +138,8 @@ training_args = TrainingArguments(
 ```
 
 ```{python}
-%mv ./results/checkpoint-00 .
+# Move the checkpoint to the out of the folder
+# %mv ./results/checkpoint-00 .
 ```
 
 ```{python}
