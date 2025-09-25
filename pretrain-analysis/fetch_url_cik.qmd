@@ -477,6 +477,17 @@ def post_process_sentence(sentence):
     # Remove double spaces
     sentence = re.sub(r'\s+', ' ', sentence)
     return sentence
+
+# Display sentence length statistics
+def plot_data(df):
+    df['sentence_length'] = df['sentence'].apply(len)
+    print(df['sentence_length'].describe())
+    plt.figure(figsize=(10,6))
+    plt.hist(df['sentence_length'], bins=100, edgecolor='k', alpha=0.7)
+    plt.title("Distribution of Sentence Lengths")
+    plt.xlabel("Sentence Length (characters)")
+    plt.ylabel("Frequency")
+    plt.show()
 ```
 
 ## Begin
@@ -504,15 +515,8 @@ training_df.dropna(subset=['sentence'], inplace=True)
 
 # 3. Display the status of each sentence length. Then we want to drop those that are too short or too long
 ```{python}
-# Display sentence length statistics
-training_df['sentence_length'] = training_df['sentence'].apply(len)
-print(training_df['sentence_length'].describe())
-plt.figure(figsize=(10,6))
-plt.hist(training_df['sentence_length'], bins=100, edgecolor='k', alpha=0.7)
-plt.title("Distribution of Sentence Lengths")
-plt.xlabel("Sentence Length (characters)")
-plt.ylabel("Frequency")
-plt.show()
+# Show initial results
+plot_data(training_df)
 
 ```
 
@@ -528,13 +532,7 @@ training_df = training_df[
 ].copy()
 training_df = training_df.reset_index(drop=True)
 # Recompute sentence length stats after filtering
-training_df['sentence_length'] = training_df['sentence'].apply(len)
-plt.hist(training_df['sentence_length'], bins=100, edgecolor='k', alpha=0.7)
-plt.title("Distribution of Sentence Lengths")
-plt.xlabel("Sentence Length (characters)")
-plt.ylabel("Frequency")
-plt.show()
-print(training_df['sentence_length'].describe())
+plot_data(training_df)
 ```
 
 # Let's attach meaningful information to each sentence
