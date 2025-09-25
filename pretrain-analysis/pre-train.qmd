@@ -677,6 +677,8 @@ def expand_sentences(df: pd.DataFrame, column: str) -> pd.DataFrame:
     df_expanded['sentence'] = df_expanded['sentence'].apply(
         lambda x: x.encode('utf-8').decode('unicode_escape') if isinstance(x, str) else x
     )
+    # Remove newlines
+    df_expanded['sentence'] = df_expanded['sentence'].str.replace('\n', ' ')
     # Prepend reporting year and remove any stray newlines
     df_expanded["sentence"] = df_expanded.apply(
         lambda row: f"<reportingYear>{row['year']}</reportingYear> {row['sentence'].replace('\\n', ' ').strip()}",
@@ -734,4 +736,17 @@ sn_expanded.head()
 ```{python}
 merged_sa = pd.concat([sm_expanded, sn_expanded], ignore_index=True)
 merged_sa.to_excel(SENTENCE_EXCEL_PATH, index=False)
+```
+
+```{python}
+def get_n_rows(df: pd.DataFrame, n: int, begin: int) -> pd.DataFrame:
+    return df.iloc[begin:begin+n]
+```
+
+```{python}
+dr = get_n_rows(merged_sa, 10, 0)
+# Output the sentences to a temp.txt file
+with open("temp.txt", "w", encoding="utf-8") as f:
+    for sentence in dr["sentence"]:
+        f.write(sentence + "\n")
 ```
