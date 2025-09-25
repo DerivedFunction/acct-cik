@@ -269,35 +269,55 @@ def get_cik_filings(cik: str) -> List[dict]:
 ### Extract Content from Webpage
 
 ```{python}
-def extract_content(data: str, asHTML=True) -> dict:
+def extract_content(data: str, asHTML=True) -> str:
     """
-    Extract text from HTML or plaintext
-
-    Returns text as a string
-    - 'text': str
+    Extract and clean text from HTML or plaintext in one pass.
+    
+    - Preserves paragraph breaks (\n\n)
+    - Normalizes internal whitespace
+    - Fixes crunched words/numbers/symbols
     """
     if not data:
         return ""
+
     debug_print("Parsing Output")
+
+    # Get raw text
     if asHTML:
+        from bs4 import BeautifulSoup
         soup = BeautifulSoup(data, "html.parser")
         text = soup.get_text(separator='\n', strip=True)
-        return clean_text(text)
     else:
-        # Convert single new lines into spaces
-        text = re.sub(r"\n", " ", data)
-        return clean_text(text)
+        text = data
 
-def clean_text(text: str):
-    """
-    Clean text from unnessary whitespace
-    """
-    
-    # Strip double newlines, spaces, and tabs
-    cleaned_text = re.sub(r"\t", " ", text)
-    cleaned_text = re.sub(r"\n\n", "\n", cleaned_text)
-    cleaned_text = re.sub(r"\s+", " ", cleaned_text)
-    return cleaned_text
+    # Split into paragraphs by double newlines (or more)
+    paragraphs = re.split(r'\n\s*\n', text)
+    cleaned_paragraphs = []
+
+    for para in paragraphs:
+        para = para.strip()
+        if not para:
+            continue
+
+        # 1. Convert single newlines within paragraph into space
+        para = re.sub(r'\n+', ' ', para)
+
+        # 2. Fix crunched text (letters/numbers/symbols)
+        para = re.sub(r'([a-z])([A-Z])', r'\1 \2', para)
+        para = re.sub(r'([a-zA-Z])(\d+)', r'\1 \2', para)
+        para = re.sub(r'(\d+)([a-zA-Z])', r'\1 \2', para)
+        para = re.sub(r'([a-zA-Z0-9])(\$)', r'\1 \2', para)
+
+        # 3. Normalize multiple spaces into one
+        para = re.sub(r'\s+', ' ', para).strip()
+
+        if para:
+            cleaned_paragraphs.append(para)
+
+    # Rejoin paragraphs with double newlines
+    final_text = "\n\n".join(cleaned_paragraphs)
+    debug_print("Parsed Output", final_text)
+    return final_text
 
 def fetch_url(url: str, timeout: int = 10) -> str | None:
     """
@@ -515,4 +535,5 @@ fetch_all_grouped(df)
 ```{python}
 for report in existing_report_df.itertuples(index=False):
     process_url(report.link, report.cik, report.year)
+    break
 ```

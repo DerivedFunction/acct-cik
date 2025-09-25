@@ -53,7 +53,7 @@ def execute_sql(sql: str, fetch: bool = True) -> Union[pd.DataFrame, int]:
 
 ```{python}
 
-wf = execute_sql("SELECT * FROM webpage_results", fetch=True)
+wf = execute_sql("SELECT * FROM webpage_data", fetch=True)
 wf.head()
 ```
 
