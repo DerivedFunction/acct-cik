@@ -7,4 +7,4 @@ Use the following classification scheme:
 
 Provide your answer in a CSV format with a single column: 'label'. Do not include any other text or explanations outside of the CSV. There is no need to think hard.
 Output CSV format with single 'label' column. No explanations needed.
-Paragraphs end with <reportingYear>year</reportingYear> tags.
+Paragraphs end with <reportingYear>year</reportingYear> tags, which is not part of the paragraph.
