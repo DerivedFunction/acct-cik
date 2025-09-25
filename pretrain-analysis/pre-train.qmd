@@ -438,7 +438,7 @@ def find_count_by_keywords(content: str, year: int) -> dict:
 
 def filter_by_keywords(content: str, year: int) -> dict:
     keywords_lower = [kw.lower() for kw in KEYWORDS]
-
+    ignore_keywords = [kw.lower() for kw in IGNORE_KEYWORDS]
     def matches_text(text: str) -> bool:
         return bool(text) and any(kw in text.lower() for kw in keywords_lower)
 
@@ -478,6 +478,8 @@ def filter_by_keywords(content: str, year: int) -> dict:
                     seen_matches.add(normalized)
                     match_sentences.append(final_sentence)
             else:
+                # Make sure it doesn't contain ignored keywords
+                if not any(kw in normalized for kw in ignore_keywords):
                 count_non_matches += 1
                 if len(not_match_sentences) < final_size:
                     if normalized not in seen_non_matches:
