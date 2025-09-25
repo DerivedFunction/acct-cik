@@ -456,10 +456,9 @@ def fetch_all_grouped(df: pd.DataFrame,
 
         # Only fetch if at least one year is missing
         years_to_fetch = [y for y in years if (cik, y) not in already_done]
-        debug_print(years_to_fetch)
         if not years_to_fetch:
             continue
-
+        debug_print("Fetching", years_to_fetch)
         filings = get_cik_filings(cik)  # fetch once
 
         for fyear in years_to_fetch:
