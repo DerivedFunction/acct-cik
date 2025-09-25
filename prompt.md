@@ -6,5 +6,5 @@ a) dollar amount, b) year or c) other evidence.
 - 1: The paragraph is neutral, irrelevant, uses a keyword in a different context (e.g., legal "warrants") other than derivatives, or provide formal definition of accounting terms or policies.
 - 0: The paragraph more than likely confirms derivative use but for a different year (past or future), or we cannot infer the usage for that year.
 
-Output CSV format with single 'label' column. No explanations needed.
+Output CSV format with single column, no headers. No explanations needed.
 Paragraphs end with <reportingYear>year</reportingYear> tags, which is not part of the paragraph. Consider each paragraph independently.
