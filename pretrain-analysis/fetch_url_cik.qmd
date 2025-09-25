@@ -51,8 +51,8 @@ KEYWORDS = [
     # Forwards
     "forward contract",
     "foreign exchange contract",
-    "forward foreign"
-    "foreign currency future"
+    "forward foreign",
+    "foreign currency future",
 
     # Other precise markers
     "notional amount",
