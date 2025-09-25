@@ -163,8 +163,6 @@ def get_cik_filings(cik: str) -> List[dict]:
 ### Extract Content from Webpage
 
 ```{python}
-from bs4 import BeautifulSoup
-
 def extract_content(html: str) -> dict:
     """
     Extract paragraphs from HTML
