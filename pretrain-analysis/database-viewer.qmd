@@ -53,8 +53,8 @@ def execute_sql(sql: str, fetch: bool = True) -> Union[pd.DataFrame, int]:
 
 ```{python}
 
-wf = execute_sql("SELECT * FROM webpage_data", fetch=True)
-wf.head()
+wf = execute_sql("SELECT * FROM webpage_result", fetch=True)
+wf.head(20)
 ```
 
 
@@ -68,7 +68,7 @@ ff.head()
 ## Execute INSERT/DELETE/UPDATE Statements
 ```{python}
 
-dd = execute_sql("DELETE FROM webpage_results", fetch=False)
+dd = execute_sql("DELETE FROM webpage_result", fetch=False)
 print(dd)
 ```
 
