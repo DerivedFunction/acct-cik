@@ -39,9 +39,7 @@ KEYWORDS = [
     # Ignore the 
     "BEGIN PRIVACY-ENHANCED MESSAGE"
     # General derivative disclosures
-    "derivative liability",
-    "derivative liabilities",
-    "embedded derivative",
+    "derivative"
 
     # Swaps
     "interest rate swap",
