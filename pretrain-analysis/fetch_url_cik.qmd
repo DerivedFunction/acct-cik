@@ -69,7 +69,7 @@ df.head()
 
 ## Predefined Functions
 
-## Debug printing
+### Debug printing
 ```{python}
 debug = True # Debug printing
 def debug_print(*args):
@@ -427,25 +427,9 @@ for report in report_results.itertuples(index=False):
     save_result(result, report)
 ```
 
-## Post-Process
-### Prefetch from database
-```{python}
-pre_data = fetch_webpage_results()
-pre_data.head()
-```
-
 # Post-Process and store in database
 ## Functions
 ```{python}
-def fetch_post_results():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT * FROM webpage_results")
-    columns = [col[0] for col in c.description]
-    rows = c.fetchall()
-    post_data = pd.DataFrame(rows, columns=columns)
-    conn.close()
-    return post_data
 def fetch_excel():
     return pd.read_excel(EXCEL_PATH)
 def parse_json(data):
@@ -494,7 +478,7 @@ def plot_data(df):
 ### 1. Parse the JSON string in 'json_data' into a Python list of sentences
 # We'll handle potential errors by returning an empty list if parsing fails
 ```{python}
-dp = fetch_post_results()
+dp = fetch_webpage_results()
 dp['sentences'] = dp['json_data'].apply(parse_json)
 dp.head()
 ```
