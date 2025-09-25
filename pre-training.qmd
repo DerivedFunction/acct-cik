@@ -41,13 +41,17 @@ def parse_json(data):
         return []
 
 def post_process_sentence(sentence):
-    # words to remove
+    if not sentence or not isinstance(sentence, str):
+        return None
+    # words to remove. If it exists, then we set it to null
     REMOVE_WORDS = [
         "Table of Contents",
+        "CONSOLIDATED BALANCE SHEETS"
     ]
-
+    temp_sentence = str(sentence).lower()
     for word in REMOVE_WORDS:
-        sentence = sentence.replace(word, " ")
+        if word.lower() in temp_sentence:
+            return None
     
     # Add a space between capital letters. Then, we will remove double spaces with a single space, since some words are together
     sentence = re.sub(r'([a-z])([A-Z])', r'\1 \2', sentence)
@@ -77,10 +81,11 @@ df.head()
 training_df = df.explode('sentences')
 training_df = training_df[['cik', 'year', 'sentences']].copy()
 training_df.rename(columns={'sentences': 'sentence'}, inplace=True)
-# Drop columns where sentence is empty
-training_df.dropna(subset=['sentence'], inplace=True)
+
 # Apply post processing to sentences
 training_df['sentence'] = training_df['sentence'].apply(post_process_sentence)
+# Drop columns where sentence is empty
+training_df.dropna(subset=['sentence'], inplace=True)
 
 ```
 
@@ -108,7 +113,7 @@ training_df = training_df[
     (training_df['sentence_length'] >= mean_len - 1.96 * std_len) &
     (training_df['sentence_length'] <= mean_len + 1.64 * std_len)
 ].copy()
-
+training_df = training_df.reset_index(drop=True)
 # Recompute sentence length stats after filtering
 training_df['sentence_length'] = training_df['sentence'].apply(len)
 plt.hist(training_df['sentence_length'], bins=100, edgecolor='k', alpha=0.7)
