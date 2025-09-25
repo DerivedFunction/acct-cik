@@ -41,9 +41,8 @@ df = pd.read_excel(EXCEL_PATH)
 # Drop rows where 'sentence' or 'label' might be empty
 df.dropna(subset=['sentence', 'label'], inplace=True)
 
-# Map labels from {-1, 0, 1} to {0, 1, 2}
 # The model needs positive integers for labels
-label_map = {-1: 0, 0: 1, 1: 2}
+label_map = {0: 0, 1: 1, 2: 2}
 df['label'] = df['label'].map(label_map)
 
 # Split the data into training and validation sets
