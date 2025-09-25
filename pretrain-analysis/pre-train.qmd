@@ -459,7 +459,7 @@ def filter_by_keywords(content: str, year: int) -> dict:
         if not paragraph:
             continue
 
-        sentences = [s.strip() for s in re.split(r'(?<!\d)\.(?!\d)', paragraph) if s.strip()]
+        sentences = [s.strip() for s in re.split(r'(?<![A-Z0-9])\s*\.\s*(?![A-Z0-9])', paragraph) if s.strip()]
         for idx, sentence in enumerate(sentences):
             if len(sentence.split()) < 6:
                 continue
