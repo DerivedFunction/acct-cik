@@ -33,7 +33,7 @@ print(f"Model loaded on: {device}")
 ```{python}
 EXCEL_PATH="sample-text.xlsx"
 df = pd.read_excel(EXCEL_PATH)
-new_sentences = df['text'].tolist()
+new_sentences = df['final_output'].tolist()
 ```
 
 # --- 3. Make Predictions ---
@@ -41,7 +41,7 @@ new_sentences = df['text'].tolist()
 model.eval() # Put the model in evaluation mode
 predictions = []
 # This is the mapping from the model's output index back to your original labels
-id2label = {0: 1, 1: 1, 2: 2}
+id2label = {0: 0, 1: 1, 2: 2}
 
 for sentence in new_sentences:
     # Tokenize the sentence and move tensors to the correct device
