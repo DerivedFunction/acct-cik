@@ -32,6 +32,7 @@ import re # Regex expressions
 ```{python}
 filename = "sample.csv"
 DB_PATH = "../db/keyword_results.db"
+EXCEL_PATH="../excel/keyword_results.xlsx"
 KEYWORDS = [
     # General derivative disclosures
     "derivative liability",
@@ -363,14 +364,69 @@ for report in report_results.itertuples(index=False):
     save_result(result, report)
 ```
 
-## Post-Process
-### Prefetch from database
 ```{python}
-pre_data = fetch_webpage_results()
-pre_data.head()
+dp = fetch_webpage_results()
+dp.head()
 ```
 
-### Post-Process and store in database
+## Post-Process and store in database
+### Functions
 ```{python}
-pre_data.to_excel("../excel/keyword_results.xlsx", index=False)
+def fetch_excel():
+    return pd.read_excel(EXCEL_PATH)
+def parse_json(data):
+    try:
+        return json.loads(data)
+    except (json.JSONDecodeError, TypeError):
+        return []
+def plot_data(df):
+    print(df.describe())
+    plt.figure(figsize=(10,6))
+    df.plot(kind='bar', stacked=True)
+    plt.title("Distribution of Keyword Counts")
+    plt.xlabel("Keywords")
+    plt.ylabel("Count")
+    plt.show()
 ```
+
+### Begin
+### 1. Parse the JSON string in 'json_data' into a Python list of keywords
+We'll handle potential errors by returning an empty list if parsing fails
+```{python}
+dp = fetch_webpage_results()
+dp['keywords'] = dp['json_data'].apply(parse_json)
+dp.head()
+```
+
+### 2. "Apply" the DataFrame. 
+Each keyword in the set gets its own column
+```{python}
+training_df = dp.json_normalize(dp['keywords'])
+training_df.head()
+```
+
+### 3. Display the status of each keyword count.
+```{python}
+# We want to first merge similar keywords together
+training_df["Derivative Liability"] = training_df["derivative liability"] + training_df["derivative liabilities"]
+
+training_df["Cross-Currency Swap"] = training_df["cross currency swap"] + training_df["cross-currency swap"]
+
+training_df["Options"] = training_df["option contract"] + training_df["options contract"]
+
+training_df["Foreign Exchange Contract"] = training_df["forward contract"] + training_df["foreign exchange contract"] + training_df["forward foreign"] + training_df["foreign currency future"]
+
+training_df["Not Designated As Hedging"] = training_df["not designated as hedging"] + training_df["not designated as a hedging"]
+
+# Drop unneeded columns
+training_df = training_df[['cik', 'year', 'Derivative Liability', 'warrants', 'Cross-Currency Swap', 'Options', 'Foreign Exchange Contract', 'Not Designated As Hedging', "notional amount", "total return swap"]]
+
+# Plot
+plot_data(training_df)
+```
+
+### Display the first few rows of the new, transformed DataFrame and save it for labeling
+```{python}
+print(training_df.head())
+# Save the dataframe to an excel file
+training_df.to_excel(EXCEL_PATH, index=False)
