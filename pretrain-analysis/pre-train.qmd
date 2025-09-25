@@ -21,6 +21,8 @@ from typing import List
 import random
 import re # Regex expressions
 import matplotlib.pyplot as plt # For plotting
+from concurrent.futures import ThreadPoolExecutor, as_completed # Concurrency
+from tqdm import tqdm
 ```
 
 ```{python}
@@ -29,6 +31,7 @@ DB_PATH = "../db/webpage_results.db"
 REPORT_RESULTS_EXCEL_PATH="../excel/report_results.xlsx"
 SENTENCE_EXCEL_PATH="../excel/pre-train-data.xlsx"
 KEYWORD_EXCEL_PATH="../excel/keywords.xlsx"
+NUM_THREADS = 4
 KEYWORDS = {
     # General derivative disclosures
     "derivative liability",
@@ -122,6 +125,17 @@ def create_db():
             )
         """)
         c.execute("""
+            CREATE TABLE IF NOT EXISTS webpage_result (
+                cik INTEGER,
+                year INTEGER,
+                url TEXT PRIMARY KEY,
+                matches TEXT,
+                not_matches TEXT,
+                keywords TEXT,
+                FOREIGN KEY (url) REFERENCES webpage_data (url)
+            )
+        """)
+        c.execute("""
             CREATE TABLE IF NOT EXISTS fail_results (
                 cik INTEGER,
                 year INTEGER,
@@ -168,9 +182,9 @@ def get_webpage_data(url):
     data = pd.DataFrame([result], columns=columns)
     return data
 
-def fetch_webpage_results():
+def fetch_webpage_data():
     """
-    Fetch results from webpage_results
+    Fetch results from webpage_data
     """
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -180,6 +194,44 @@ def fetch_webpage_results():
     pre_data = pd.DataFrame(rows, columns=columns)
     conn.close()
     return pre_data
+
+def fetch_webpage_results():
+    """
+    Fetch results from webpage_results
+    """
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM webpage_result")
+    columns = [col[0] for col in c.description]
+    rows = c.fetchall()
+    pre_data = pd.DataFrame(rows, columns=columns)
+    conn.close()
+    return pre_data
+
+def get_processed_urls() -> set[tuple]:
+    """
+    Return a set of (cik, year, url) that are already processed in `webpage_result`.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT cik, year, url FROM webpage_result")
+    rows = c.fetchall()
+    conn.close()
+    return set(rows)
+
+def save_process_result(df):
+    """
+    Inserts a new item into the webpage_result table
+    """
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute(
+        "INSERT INTO webpage_result (url, cik, year, matches, not_matches, keywords) VALUES (?, ?, ?, ?, ?, ?)",
+        (df.url, df.cik, df.year, json.dumps(df.matches), json.dumps(df.not_matches), json.dumps(df.keywords)
+        )
+    )
+    conn.commit()
+    conn.close()
 
 create_db()
 ```
@@ -535,3 +587,54 @@ fetch_all_grouped(df)
 for report in existing_report_df.itertuples(index=False):
     process_url(report.link, report.cik, report.year)
 ```
+
+## Parallel execution: Perform keyword extraction
+And then save the results to the database
+```{python}
+
+processed_set = get_processed_urls()
+
+def process_keywords_for_report(report):
+    key = (report.cik, report.year, report.link)
+    if key in processed_set:
+        debug_print(f"Skipping already processed: {key}")
+        return None
+
+    content = process_url(report.link, report.cik, report.year)
+    if not content:
+        return None
+
+    keywords = find_count_by_keywords(content, report.year)
+    sentences = filter_by_keywords(content, report.year)
+
+    result_row = pd.Series({
+        "url": report.link,
+        "cik": report.cik,
+        "year": report.year,
+        "matches": sentences["matches"],
+        "not_matches": sentences["not_matches"],
+        "keywords": keywords
+    })
+
+    save_process_result(result_row)
+    return result_row
+
+
+
+# Only process reports not already in webpage_result
+reports_to_process = [
+    r for r in existing_report_df.itertuples(index=False)
+    if (r.cik, r.year, r.link) not in processed_set
+]
+
+results = []
+
+with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+    future_to_report = {executor.submit(process_keywords_for_report, r): r for r in reports_to_process}
+
+    for future in tqdm(as_completed(future_to_report), total=len(future_to_report)):
+        res = future.result()
+        if res is not None:
+            results.append(res)
+
+print(f"Processed {len(results)} new reports in parallel.")
