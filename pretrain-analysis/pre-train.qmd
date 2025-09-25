@@ -688,6 +688,24 @@ def expand_sentences(df: pd.DataFrame, column: str) -> pd.DataFrame:
     )
     df_expanded['label'] = -1 if column == 'matches' else 3
     return df_expanded
+
+def plot_data(df):
+    df['sentence_length'] = df['sentence'].apply(len)
+    print(df['sentence_length'].describe())
+    plt.figure(figsize=(10,6))
+    plt.hist(df['sentence_length'], bins=100, edgecolor='k', alpha=0.7)
+    plt.title("Distribution of Sentence Lengths")
+    plt.xlabel("Sentence Length (characters)")
+    plt.ylabel("Frequency")
+    plt.show()
+
+def drop_outliers(df, low=1.96, high=1.44):
+    MAX_LENGTH = 1200
+    df['sentence_length'] = df['sentence'].apply(len)
+    df = df[df['sentence_length'] <= MAX_LENGTH].copy()
+    df = df.drop(columns=['sentence_length'])
+    df = df.reset_index(drop=True)
+    return df
 ```
 
 ## Fetch the results
@@ -724,14 +742,18 @@ kw_summary.to_excel(KEYWORD_EXCEL_PATH, index=False)
 ```{python}
 # SM: Drop unneeded columns, keep only cik, year, url, matches
 sm_expanded = expand_sentences(wr, "matches")
-sm_expanded.head()
+plot_data(sm_expanded)
+sm_expanded = drop_outliers(sm_expanded)
+plot_data(sm_expanded)
 ```
 
 ### Non-Matching Sentences
 ```{python}
 # SN: Drop unneeded columns, keep only cik, year, url, not_matches
 sn_expanded = expand_sentences(wr, "not_matches")
-sn_expanded.head()
+plot_data(sm_expanded)
+sn_expanded = drop_outliers(sn_expanded)
+plot_data(sm_expanded)
 ```
 
 ## Save the results
