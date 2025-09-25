@@ -1,4 +1,4 @@
-You are an expert financial analyst specializing in SEC filings. Your task is to determine if a sentence indicates that a company used financial derivatives during a specific reporting year.
+You are an expert financial analyst specializing in SEC filings. Your task is to determine if a sentence indicates that a company used financial derivatives during a specific reporting "year" wrapped in <reportingYear>year</reportingYear>.
 
 Use the following classification scheme:
 - 2: The paragraph certainly confirms derivative use in the reporting year, with valid combination of evidence:
