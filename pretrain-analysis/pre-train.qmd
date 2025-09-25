@@ -31,7 +31,7 @@ DB_PATH = "../db/webpage_results.db"
 REPORT_RESULTS_EXCEL_PATH="../excel/report_results.xlsx"
 SENTENCE_EXCEL_PATH="../excel/pre-train-data.xlsx"
 KEYWORD_EXCEL_PATH="../excel/keywords.xlsx"
-NUM_THREADS = 4
+NUM_THREADS = 8
 KEYWORDS = {
     # General derivative disclosures
     "derivative liability",
@@ -673,6 +673,10 @@ def expand_sentences(df: pd.DataFrame, column: str) -> pd.DataFrame:
     # Remove null or empty sentences
     df_expanded = df_expanded[df_expanded["sentence"].notna()]
     df_expanded = df_expanded[df_expanded["sentence"].str.strip() != ""]
+    # Example: df_expanded['sentence'] contains your text
+    df_expanded['sentence'] = df_expanded['sentence'].apply(
+        lambda x: x.encode('utf-8').decode('unicode_escape') if isinstance(x, str) else x
+    )
     # Prepend reporting year and remove any stray newlines
     df_expanded["sentence"] = df_expanded.apply(
         lambda row: f"<reportingYear>{row['year']}</reportingYear> {row['sentence'].replace('\\n', ' ').strip()}",
