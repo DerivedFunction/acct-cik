@@ -1,5 +1,5 @@
 ---
-title: "Fetch URL from CIK"
+title: "Fetch URL from CIK Dummy Data"
 format: html
 editor: visual
 jupyter: python3
@@ -31,8 +31,11 @@ import re # Regex expressions
 
 ```{python}
 filename = "sample.csv"
-DB_PATH = "webpage_results.db"
+DB_PATH = "../db/webpage_dummy_results.db"
+# We want to look for paragraphs not with these keywords
 KEYWORDS = [
+    # Ignore the 
+    "BEGIN PRIVACY-ENHANCED MESSAGE"
     # General derivative disclosures
     "derivative liability",
     "derivative liabilities",
@@ -210,7 +213,7 @@ def extract_text(text: str):
 ```{python}
 def filter_by_keywords(content: dict, year: int) -> dict:
     """
-    Filter extracted content to only include items containing keywords, 
+    Filter extracted content to only include not items containing keywords, 
     and add some random content for training.
     """
     keywords_lower = [kw.lower() for kw in KEYWORDS]
@@ -222,12 +225,18 @@ def filter_by_keywords(content: dict, year: int) -> dict:
 
     # Paragraphs
     debug_print("Matching paragraphs")
+    data = content.get("paragraphs", [])
+    MAX_SIZE = max(20, len(data))
     # Add some paragraphs, and use a random seed to add a non-matching paragraph past the table of contents
     para_matches = [
-        p for idx, p in enumerate(content.get("paragraphs", []))
-        if matches_text(p)
+        p for idx, p in enumerate(data)
+        if not matches_text(p) and len(p) > 0
     ]
-
+    debug_print("Found", len(para_matches), "matches")
+    # Shuffle the para_matches and only keep 20
+    random.seed(year)
+    random.shuffle(para_matches)
+    para_matches = para_matches[:MAX_SIZE]
     match_sentences = []
 
     # Iterate through each paragraph and extract the sentence
@@ -263,7 +272,7 @@ def filter_by_keywords(content: dict, year: int) -> dict:
             merged_string = ". ".join(merged_sentences)
             final_sentence = merged_string.strip() + "."
 
-            if matches_text(final_sentence) and final_sentence not in match_sentences:
+            if final_sentence not in match_sentences:
                 match_sentences.append(final_sentence)
 
     return {
@@ -436,5 +445,5 @@ pre_data.head()
 
 ### Post-Process and store in database
 ```{python}
-pre_data.to_excel("post_results.xlsx", index=False)
+pre_data.to_excel("../excel/post_results_dummy.xlsx", index=False)
 ```

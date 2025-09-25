@@ -12,7 +12,7 @@ import sqlite3
 import pandas as pd
 import json
 from typing import Union
-db_path = "webpage_results.db"
+db_path = "../db/webpage_results.db"
 
 def execute_sql(sql: str, fetch: bool = True) -> Union[pd.DataFrame, int]:
     """
@@ -74,5 +74,5 @@ print(dd)
 
 ## Save a dataframe as an Excel file
 ```{python}
-wf.to_excel("webpage_results.xlsx", index=False)
+wf.to_excel("../excel/webpage_results.xlsx", index=False)
 ```

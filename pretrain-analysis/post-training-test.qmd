@@ -31,7 +31,7 @@ print(f"Model loaded on: {device}")
 
 # --- 2. Prepare Your Input Sentences ---
 ```{python}
-EXCEL_PATH="sample-text.xlsx"
+EXCEL_PATH="../excel/sample-text.xlsx"
 df = pd.read_excel(EXCEL_PATH)
 new_sentences = df['final_output'].tolist()
 ```
