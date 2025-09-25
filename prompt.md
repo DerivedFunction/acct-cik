@@ -36,5 +36,5 @@ You are an expert financial analyst specializing in SEC filings, labeling data f
   * "<reportingYear>2015</reportingYear>Warrants are classified as equity instruments." 
   * "<reportingYear>2015</reportingYear>A thorough analysis of the various technical factors, utilizing some of these advanced evaluation capabilities, is essential to accurately quantify reserve potential and risks.." 
 
-Then give an explanation. Output CSV format with single column, no headers in  a code block.
+Output CSV format with single column, no headers in  a code block. Then state "N rows processed"
 Paragraphs begin with <reportingYear>year</reportingYear> tags, which is not part of the paragraph. Consider each paragraph independently.
