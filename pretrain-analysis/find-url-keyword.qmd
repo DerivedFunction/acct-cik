@@ -186,7 +186,7 @@ def extract_text(text: str):
     """
     
     # Strip double newlines and spaces
-    cleaned_text = re.sub(r"\n\s*\n", "\n", cleaned_text)
+    cleaned_text = re.sub(r"\n\s*\n", "\n", text)
 
     return cleaned_text
 
@@ -245,7 +245,7 @@ def process_url(url: str, year: int):
     else:
         debug_print("Processing as text")
         content = extract_text(data)
-    filtered = filter_by_keywords(content, year)
+    filtered = find_count_by_keywords(content, year)
     return filtered
 ```
 
