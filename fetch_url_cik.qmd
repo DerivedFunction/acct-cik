@@ -229,7 +229,6 @@ def filter_by_keywords(content: dict, year: int) -> dict:
     ]
 
     match_sentences = []
-    year_string = f"The current reporting year is {year}. "
 
     # Iterate through each paragraph and extract the sentence
     for paragraph in para_matches:
@@ -262,7 +261,7 @@ def filter_by_keywords(content: dict, year: int) -> dict:
                 merged_sentences.append(sentences[idx + 1])
 
             merged_string = ". ".join(merged_sentences)
-            final_sentence = year_string + merged_string
+            final_sentence = merged_string.strip() + "."
 
             if matches_text(final_sentence) and final_sentence not in match_sentences:
                 match_sentences.append(final_sentence)
