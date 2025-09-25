@@ -487,15 +487,15 @@ def plot_data(df):
 
 ## Begin
 ### 1. Parse the JSON string in 'json_data' into a Python list of sentences
-# We'll handle potential errors by returning an empty list if parsing fails
+We'll handle potential errors by returning an empty list if parsing fails
 ```{python}
 dp = fetch_webpage_results()
 dp['sentences'] = dp['json_data'].apply(parse_json)
 dp.head()
 ```
 
-# 2. "Explode" the DataFrame. Each sentence in the list gets its own row,
-# duplicating the 'cik' and 'year' for each new row. Clean up the DataFrame for the next step
+### 2. "Explode" the DataFrame. 
+Each sentence in the list gets its own row, duplicating the 'cik' and 'year' for each new row. Clean up the DataFrame for the next step
 ```{python}
 training_df = dp.explode('sentences')
 training_df = training_df[['cik', 'year', 'sentences']].copy()
@@ -508,7 +508,8 @@ training_df.dropna(subset=['sentence'], inplace=True)
 
 ```
 
-# 3. Display the status of each sentence length. Then we want to drop those that are too short or too long
+### 3. Display the status of each sentence length. 
+Then we want to drop those that are too short or too long
 ```{python}
 # Show initial results
 plot_data(training_df)
@@ -530,7 +531,7 @@ training_df = training_df.reset_index(drop=True)
 plot_data(training_df)
 ```
 
-# Let's attach meaningful information to each sentence
+### Let's attach meaningful information to each sentence
 ```{python}
 # Create a final output column that attaches the year to the sentence
 training_df["final_output"] = "<reportingYear>" + training_df["year"].astype(str) + "</reportingYear>\n"+ training_df["sentence"]
@@ -543,7 +544,7 @@ training_df = training_df.sample(n=100)
 training_df["label"] = 1
 ```
 
-# Display the first few rows of the new, transformed DataFrame and save it for labeling
+### Display the first few rows of the new, transformed DataFrame and save it for labeling
 ```{python}
 print(training_df.head())
 # Save the dataframe to an excel file
