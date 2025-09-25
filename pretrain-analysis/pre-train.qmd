@@ -675,7 +675,7 @@ def expand_sentences(df: pd.DataFrame, column: str) -> pd.DataFrame:
         lambda row: f"<reportingYear>{row['year']}</reportingYear> {row['sentence'].replace('\\n', ' ').strip()}",
         axis=1
     )
-    df_expanded['label'] = 0 if column == 'matches' else 1
+    df_expanded['label'] = -1 if column == 'matches' else 3
     return df_expanded
 ```
 
