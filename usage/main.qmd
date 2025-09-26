@@ -480,6 +480,7 @@ def filter_by_keywords(content: str, year: int) -> dict:
                 merged.append(sentences[idx + 1])
 
             final_sentence = ". ".join(merged).strip() + "."
+            final_sentence = re.sub(r"\s+", " ", final_sentence)
             normalized = final_sentence.lower().strip()
             if any(kw in normalized for kw in ignore_keywords):
                     continue
