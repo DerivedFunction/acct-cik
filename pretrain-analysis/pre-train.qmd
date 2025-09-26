@@ -31,7 +31,7 @@ DB_PATH = "../db/webpage_results.db"
 REPORT_RESULTS_EXCEL_PATH="../excel/report_results.xlsx"
 SENTENCE_EXCEL_PATH="../excel/pre-train-data.xlsx"
 KEYWORD_EXCEL_PATH="../excel/keywords_results.xlsx"
-NUM_THREADS = 8
+NUM_THREADS = 6
 KEYWORDS = {
     # General derivative disclosures
     "derivative liability",
@@ -107,7 +107,7 @@ df.head()
 
 ### Debug printing
 ```{python}
-debug = True # Debug printing
+debug = False # Debug printing
 def debug_print(*args):
     if debug:
         print(*args)
@@ -253,7 +253,7 @@ def fetch_json(url: str) -> dict | None:
     rate_limit_sleep()
     try:
         resp = requests.get(url, headers=headers, timeout=10)
-        print("Fetching", url)
+        debug_print("Fetching", url)
         if resp.status_code == 429:
             retry_after = resp.headers.get("Retry-After")
             if retry_after:
@@ -382,7 +382,7 @@ def fetch_url(url: str, timeout: int = 10) -> str | None:
         return None
     try:
         rate_limit_sleep()
-        print("Fetching", url)
+        debug_print("Fetching", url)
         resp = requests.get(url, timeout=timeout, headers={"User-Agent": "sync-fetch@example.com"})
         if resp.status_code != 200:
             print(f"Error {resp.status_code} for {url}")
