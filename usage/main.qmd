@@ -731,12 +731,11 @@ def get_keyword_analysis():
 # Generate keyword analysis
 kw_summary = get_keyword_analysis()
 if not kw_summary.empty:
-    print(f"Keyword analysis for {len(kw_summary)} reports:")
-    print(kw_summary.head())
-    
+    print(f"Keyword analysis for {len(kw_summary)} reports:") 
     # Save KW file
     kw_summary.to_excel(KEYWORD_EXCEL_PATH, index=False)
     print(f"Keyword results saved to: {KEYWORD_EXCEL_PATH}")
+    kw_summary.head()
 else:
     print("No processed results found for keyword analysis")
 ```
@@ -776,11 +775,10 @@ def get_sentence_analysis():
 sa = get_sentence_analysis()
 if not sa.empty:
     print(f"Sentence analysis for {len(sa)} reports:")
-    print(sa.head())
-    
     # Save sentence results
     sa.to_excel(SENTENCE_EXCEL_PATH, index=False)
     print(f"Sentence analysis saved to: {SENTENCE_EXCEL_PATH}")
+    sa.head()
 else:
     print("No processed results found for sentence analysis")
 ```
