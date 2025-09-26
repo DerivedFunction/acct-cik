@@ -177,7 +177,7 @@ def save_result(result, url, cik, year):
     try:
         c.execute(
             "INSERT INTO webpage_data (url, cik, year, raw_text) VALUES (?, ?, ?, ?)",
-            (url, cik, year, json.dumps(result))
+            (url, cik, year, result)
         )
     except sqlite3.IntegrityError:
         # Insert into fail_results if duplicate or other integrity error
@@ -470,6 +470,8 @@ def filter_by_keywords(content: str, year: int) -> dict:
 
         sentences = [s.strip() for s in re.split(r'(?<![A-Z0-9])\s*\.\s*(?![A-Z0-9])', paragraph) if s.strip()]
         for idx, sentence in enumerate(sentences):
+            if len(sentence.split()) < 6:
+                continue
             merged = []
             if idx > 0:
                 merged.append(sentences[idx - 1])
@@ -778,7 +780,8 @@ if not sa.empty:
     # Save sentence results
     sa.to_excel(SENTENCE_EXCEL_PATH, index=False)
     print(f"Sentence analysis saved to: {SENTENCE_EXCEL_PATH}")
-    sa.head()
+    
 else:
     print("No processed results found for sentence analysis")
+sa.head(10)
 ```
