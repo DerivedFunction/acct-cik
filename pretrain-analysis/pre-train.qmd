@@ -30,7 +30,7 @@ filename = "sample.csv"
 DB_PATH = "../db/webpage_results.db"
 REPORT_RESULTS_EXCEL_PATH="../excel/report_results.xlsx"
 SENTENCE_EXCEL_PATH="../excel/pre-train-data.xlsx"
-KEYWORD_EXCEL_PATH="../excel/keywords.xlsx"
+KEYWORD_EXCEL_PATH="../excel/keywords_results.xlsx"
 NUM_THREADS = 8
 KEYWORDS = {
     # General derivative disclosures
@@ -91,7 +91,7 @@ FILING_TYPES = {
     "10-K405", "10KSB", "10KSB40"
 }
 
-SEC_RATE_LIMIT = 5  # requests per second
+SEC_RATE_LIMIT = 10  # requests per second
 
 df = pd.read_csv(filename)
 def existing_report_df() -> pd.DataFrame | None:
