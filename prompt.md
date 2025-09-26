@@ -21,15 +21,11 @@ You are an expert financial analyst specializing in SEC filings. Your task is to
 * **Condition:** Sentence does **not relate to actual derivative usage**, e.g., legal, accounting, or general financial topics unrelated to derivatives.  
 * **Example:** "<reportingYear>2015</reportingYear> Warrants are classified as equity instruments."
 
-**4 – Warrants**  
+**4 – Warrants and Derivative Liabilities**  
 * **Condition:** Sentence explicitly mentions **warrant derivative liabilities** measured at fair value.  
 * **Exclude:** Hedging instruments, other general derivatives.  
 * **Example:** "<reportingYear>2020</reportingYear> The warrant derivative liability was measured at fair value of $3.5M."
 
-**5 – Other derivative liabilities**  
-* **Condition:** Sentence refers to **derivative liabilities** **other than warrants**, e.g., embedded conversion features, equity-linked instruments, or similar, and includes measurement or accounting details.  
-* **Exclude:** Hedging instruments and warrants.  
-* **Example:** "<reportingYear>2021</reportingYear> The company classified embedded conversion features as derivative liabilities."
 
 ### Output Instructions
 * Output as CSV with a single column (no headers) inside a code block.  
@@ -60,15 +56,10 @@ You are an expert financial analyst specializing in SEC filings. Your task is to
 * **Condition:** Sentence does **not relate to actual derivative usage**, e.g., legal, accounting, or general financial topics unrelated to derivatives.  
 * **Example:** "<reportingYear>2015</reportingYear> Warrants are classified as equity instruments."
 
-**4 – Warrants**  
+**4 – Warrants and Derivative Liabilities**  
 * **Condition:** Sentence explicitly mentions **warrant derivative liabilities** measured at fair value.  
 * **Exclude:** Hedging instruments, other general derivatives.  
 * **Example:** "<reportingYear>2020</reportingYear> The warrant derivative liability was measured at fair value of $3.5M."
-
-**5 – Other derivative liabilities**  
-* **Condition:** Sentence refers to **derivative liabilities** **other than warrants**, e.g., embedded conversion features, equity-linked instruments, or similar, and includes measurement or accounting details.  
-* **Exclude:** Hedging instruments and warrants.  
-* **Example:** "<reportingYear>2021</reportingYear> The company classified embedded conversion features as derivative liabilities."
 
 ### Output Instructions
 * If the model's label is incorrect, output a line in the format:  
