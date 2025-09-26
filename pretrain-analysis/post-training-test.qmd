@@ -13,6 +13,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import numpy as np
 import pandas as pd
 import random
+import re
 ```
 
 
@@ -67,7 +68,10 @@ def modify_dict(case_labels):
     with open('modified_labels.txt', 'a+', encoding='utf-8') as f:
         for case_num, label_num in case_labels.items():
             if case_num in result_dict:
-                f.write(f"{result_dict[case_num]}\t{label_num}\n")
+                # Strip double spaces, etc
+                sentence_string = result_dict[case_num].strip()
+                sentence_string = re.sub(r"\s+", " ", sentence_string)
+                f.write(f"{sentence_string}\t{label_num}\n")
                 
 model.eval()  # Put the model in evaluation mode
 predictions = []
@@ -96,4 +100,10 @@ case_labels = {
 
 modify_dict(case_labels)
 
+```
+
+# Convert our modified file to a dataframe and save it
+```{python}
+modified_df = pd.read_csv("modified_labels.txt", sep="\t")
+modified_df.to_excel("modified_labels.xlsx", index=False)
 ```
