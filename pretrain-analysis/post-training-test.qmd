@@ -41,10 +41,10 @@ random.shuffle(new_sentences)
 
 # --- 3. Make Predictions ---
 ```{python}
-def getBatch(size=20, index=random.randint(0, len(new_sentences))):
+def getBatch(size=20, index=None):
     result_dict = {}
-    if index + size > len(new_sentences):
-        size = len(new_sentences) - index
+    if index is None:
+        index = random.randint(0, len(new_sentences) - size)
     with open('temp.xml', 'w', encoding='utf-8') as f:
         for i in range(size):
             if index + i < len(new_sentences):
