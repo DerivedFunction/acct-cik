@@ -35,7 +35,7 @@ REPORT_RESULTS_EXCEL_PATH="../excel/final_cik_urls.xlsx"
 SENTENCE_EXCEL_PATH="../excel/final_sentence_results.xlsx"
 KEYWORD_EXCEL_PATH="../excel/final_keywords_results.xlsx"
 MERGED_EXCEL_PATH="../excel/final_merged_results.xlsx"
-NUM_THREADS = 4
+NUM_THREADS = 2
 SERVER_URL = "http://127.0.0.1:5000/predict"
 
 KEYWORDS = {
@@ -505,8 +505,10 @@ def filter_by_fyear(filings: list[dict], fyear: int) -> list[dict]:
     return [f for f in filings if f.get("report_date") and f.get("report_date").startswith(str(fyear))]
 
 def fetch_all_grouped(df: pd.DataFrame,
-                      saveIteration: int = 10) -> pd.DataFrame:
+                      saveIteration: int = 10, use_existing=True) -> pd.DataFrame:
     global existing_report_df
+    if use_existing:
+        return existing_report_df
     """
     Fetch filings once per CIK, filter by fiscal years,
     and return as a new DataFrame.
