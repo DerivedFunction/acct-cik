@@ -1,10 +1,9 @@
 ---
-title: "Use Model for classification"
+title: "Derivative Classification: Final"
 format: html
 editor: visual
 jupyter: python3
 ---
-
 # Importing required libraries
 ```{python}
 # Installing required libraries
@@ -26,12 +25,13 @@ from tqdm import tqdm
 ```
 
 ```{python}
-filename = "data"
-DB_PATH = "../db/webpage_results.db"
-REPORT_RESULTS_EXCEL_PATH="../excel/data/report_results.xlsx"
-SENTENCE_EXCEL_PATH="../excel/data/pre-train-data.xlsx"
-KEYWORD_EXCEL_PATH="../excel/data/keywords.xlsx"
-NUM_THREADS = 8
+filename = "data.csv"
+DB_PATH = "../db/final_webpage_data.db"
+REPORT_RESULTS_EXCEL_PATH="../excel/report_results.xlsx"
+SENTENCE_EXCEL_PATH="../excel/final_data.xlsx"
+KEYWORD_EXCEL_PATH="../excel/keywords_results.xlsx"
+NUM_THREADS = 6
+SERVER_URL = "http://127.0.0.1:5000/predict"
 KEYWORDS = {
     # General derivative disclosures
     "derivative liability",
@@ -91,7 +91,7 @@ FILING_TYPES = {
     "10-K405", "10KSB", "10KSB40"
 }
 
-SEC_RATE_LIMIT = 5  # requests per second
+SEC_RATE_LIMIT = 10  # requests per second
 
 df = pd.read_csv(filename)
 def existing_report_df() -> pd.DataFrame | None:
@@ -133,8 +133,7 @@ def create_db():
                 cik INTEGER,
                 year INTEGER,
                 url TEXT PRIMARY KEY,
-                matches TEXT,
-                not_matches TEXT,
+                server_response TEXT,
                 keywords TEXT,
                 FOREIGN KEY (url) REFERENCES webpage_data (url)
             )
@@ -230,8 +229,8 @@ def save_process_result(df):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute(
-        "INSERT INTO webpage_result (url, cik, year, matches, not_matches, keywords) VALUES (?, ?, ?, ?, ?, ?)",
-        (df.url, df.cik, df.year, json.dumps(df.matches), json.dumps(df.not_matches), json.dumps(df.keywords)
+        "INSERT INTO webpage_result (url, cik, year, server_response, keywords) VALUES (?, ?, ?, ?, ?)",
+        (df.url, df.cik, df.year, json.dumps(df.server_response), json.dumps(df.keywords)
         )
     )
     conn.commit()
@@ -253,7 +252,7 @@ def fetch_json(url: str) -> dict | None:
     rate_limit_sleep()
     try:
         resp = requests.get(url, headers=headers, timeout=10)
-        print("Fetching", url)
+        debug_print("Fetching", url)
         if resp.status_code == 429:
             retry_after = resp.headers.get("Retry-After")
             if retry_after:
@@ -323,7 +322,6 @@ def get_cik_filings(cik: str) -> List[dict]:
 ```
 
 ### Extract Content from Webpage
-
 ```{python}
 def extract_content(data: str, asHTML=True) -> str:
     """
@@ -382,7 +380,7 @@ def fetch_url(url: str, timeout: int = 10) -> str | None:
         return None
     try:
         rate_limit_sleep()
-        print("Fetching", url)
+        debug_print("Fetching", url)
         resp = requests.get(url, timeout=timeout, headers={"User-Agent": "sync-fetch@example.com"})
         if resp.status_code != 200:
             print(f"Error {resp.status_code} for {url}")
@@ -441,69 +439,47 @@ def find_count_by_keywords(content: str, year: int) -> dict:
 ```{python}
 
 def filter_by_keywords(content: str, year: int) -> dict:
-    keywords_lower = [kw.lower() for kw in KEYWORDS]
+    keywords_lower = [kw.lower() for kw in ADDITIONAL_KEYWORDS]
     ignore_keywords = [kw.lower() for kw in IGNORE_KEYWORDS]
-    not_matches_keywords = [kw.lower() for kw in NOT_MATCHES_KEYWORDS]
-    def matches_text(text: str, keywords_lower=keywords_lower) -> bool:
+
+    def matches_text(text: str) -> bool:
         return bool(text) and any(kw in text.lower() for kw in keywords_lower)
 
     paragraphs = content.split("\n")
-    match_sentences = []
-    not_match_sentences = []
-
     seen_matches = set()
-    seen_non_matches = set()
-
-    random.seed(year)
-    count_non_matches = 0
-    final_size = 20
+    match_chunks = []
 
     for paragraph in paragraphs:
         paragraph = re.sub(r"\s+", " ", paragraph.strip())
         if not paragraph:
             continue
 
-        sentences = [s.strip() for s in re.split(r'(?<![A-Z0-9])\s*\.\s*(?![A-Z0-9])', paragraph) if s.strip()]
-        for idx, sentence in enumerate(sentences):
-            if len(sentence.split()) < 6:
-                continue
+        normalized = paragraph.lower().strip()
+        if any(kw in normalized for kw in ignore_keywords):
+            continue
 
-            merged = []
-            if idx > 0:
-                merged.append(sentences[idx - 1])
-            merged.append(sentence)
-            if idx < len(sentences) - 1:
-                merged.append(sentences[idx + 1])
+        if matches_text(paragraph):
+            # Split into sentences
+            sentences = [s.strip() for s in re.split(
+                r'(?<![A-Z0-9])\s*\.\s*(?![A-Z0-9])',
+                paragraph
+            ) if s.strip()]
 
-            final_sentence = ". ".join(merged).strip() + "."
-            normalized = final_sentence.lower().strip()
-            if any(kw in normalized for kw in ignore_keywords):
-                    continue
-            if matches_text(final_sentence, keywords_lower):
-                if normalized not in seen_matches:
-                    seen_matches.add(normalized)
-                    match_sentences.append(final_sentence)
-            else:
-                # Make sure it doesn't contain ignored keywords
-                if any(kw in normalized for kw in ignore_keywords):
-                    continue
-                if any(kw in normalized for kw in not_matches_keywords):
-                    continue
-                count_non_matches += 1
-                if len(not_match_sentences) < final_size:
-                    if normalized not in seen_non_matches:
-                        seen_non_matches.add(normalized)
-                        not_match_sentences.append(final_sentence)
-                else:
-                    j = random.randint(0, count_non_matches - 1)
-                    if j < final_size:
-                        if normalized not in seen_non_matches:
-                            seen_non_matches.add(normalized)
-                            not_match_sentences[j] = final_sentence
+            # Random chunking 4–6 sentences, with overlap
+            i = 0
+            while i < len(sentences):
+                chunk_size = random.randint(4, 6)
+                chunk = ". ".join(sentences[i:i+chunk_size]).strip()
+                if chunk:
+                    chunk_norm = chunk.lower()
+                    if chunk_norm not in seen_matches:
+                        seen_matches.add(chunk_norm)
+                        match_chunks.append(chunk + ".")
+                # Move forward with overlap of 1 sentence
+                i += chunk_size - 1
 
     return {
-        "matches": match_sentences,
-        "not_matches": not_match_sentences
+        "matches": match_chunks,
     }
 ```
 
@@ -595,8 +571,14 @@ fetch_all_grouped(df)
 
 ## Pre-Process each link and store in a database
 ```{python}
-for report in existing_report_df.itertuples(index=False):
-    process_url(report.link, report.cik, report.year)
+with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+    futures = [
+        executor.submit(process_url, report.link, report.cik, report.year)
+        for report in existing_report_df.itertuples(index=False)
+    ]
+    
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        future.result()  # Wait for completion and handle any exceptions
 ```
 
 ## Parallel execution: Perform keyword extraction
@@ -623,7 +605,6 @@ def process_keywords_for_report(report):
         "cik": report.cik,
         "year": report.year,
         "matches": sentences["matches"],
-        "not_matches": sentences["not_matches"],
         "keywords": keywords
     })
 
@@ -652,69 +633,27 @@ print(f"Processed {len(results)} new reports in parallel.")
 ```
 
 # Post Data Extraction Stage
-## Functions
+We want to iterate over `existing_report_df`, and use the server to label each report using `server.py`
 ```{python}
-def parse_json(data):
-    try:
-        return json.loads(data)
-    except (json.JSONDecodeError, TypeError):
-        return []
-
-def expand_sentences(df: pd.DataFrame, column: str) -> pd.DataFrame:
-    """
-    Expand a column containing lists of sentences into separate rows.
-    Null, empty, or whitespace-only sentences are removed.
+def get_result_from_server(sentences, batch_size=32):
+    predictions = []
+    headers = {"Content-Type": "application/json"}
     
-    Args:
-        df: Original DataFrame
-        column: Column name containing lists (e.g., "matches" or "not_matches")
-    
-    Returns:
-        Expanded DataFrame with one sentence per row in a column named 'sentence'.
-    """
-    df_copy = df[["cik", "year", "url", column]].copy()
-    df_copy[column] = df_copy[column].apply(parse_json)
-    
-    # Explode and rename column
-    df_expanded = df_copy.explode(column).rename(columns={column: "sentence"})
-
-    # Remove null or empty sentences
-    df_expanded = df_expanded[df_expanded["sentence"].notna()]
-    df_expanded = df_expanded[df_expanded["sentence"].str.strip() != ""]
-    # Example: df_expanded['sentence'] contains your text
-    df_expanded['sentence'] = df_expanded['sentence'].apply(
-        lambda x: x.encode('utf-8').decode('unicode_escape') if isinstance(x, str) else x
-    )
-    # Remove newlines
-    df_expanded['sentence'] = df_expanded['sentence'].str.replace('\n', ' ')
-    # Prepend reporting year and remove any stray newlines
-    df_expanded["sentence"] = df_expanded.apply(
-        lambda row: f"<reportingYear>{row['year']}</reportingYear> {row['sentence'].replace('\\n', ' ').strip()}",
-        axis=1
-    )
-    df_expanded['label'] = -1 if column == 'matches' else 3
-    return df_expanded
-
-def plot_data(df):
-    df['sentence_length'] = df['sentence'].apply(len)
-    print(df['sentence_length'].describe())
-    plt.figure(figsize=(10,6))
-    plt.hist(df['sentence_length'], bins=100, edgecolor='k', alpha=0.7)
-    plt.title("Distribution of Sentence Lengths")
-    plt.xlabel("Sentence Length (characters)")
-    plt.ylabel("Frequency")
-    plt.show()
-
-def drop_outliers(df, low=1.96, high=1.44):
-    MAX_LENGTH = 1200
-    df['sentence_length'] = df['sentence'].apply(len)
-    df = df[df['sentence_length'] <= MAX_LENGTH].copy()
-    df = df.drop(columns=['sentence_length'])
-    df = df.reset_index(drop=True)
-    return df
+    for i in range(0, len(sentences), batch_size):
+        batch = sentences[i:i+batch_size]
+        payload = {"texts": batch}
+        try:
+            response = requests.post(SERVER_URL, headers=headers, data=json.dumps(payload))
+            response.raise_for_status()
+            preds = response.json().get("predictions", [])
+            predictions.extend(preds)
+        except requests.exceptions.RequestException as e:
+            print(f"Error communicating with server: {e}")
+            predictions.extend([-1] * len(batch))  # placeholder for failures
+    return predictions
 ```
 
-## Fetch the results
+
 ```{python}
 wr = fetch_webpage_results()
 wr.head()
@@ -744,39 +683,34 @@ kw_summary.to_excel(KEYWORD_EXCEL_PATH, index=False)
 ```
 
 ## Sentence Analysis
-### Matching Sentences
 ```{python}
-# SM: Drop unneeded columns, keep only cik, year, url, matches
-sm_expanded = expand_sentences(wr, "matches")
-plot_data(sm_expanded)
-sm_expanded = drop_outliers(sm_expanded)
-plot_data(sm_expanded)
+# SA: Drop unneeded columns,keep only cik, year, url, and matches
+sa = wr[["cik", "year", "url", "matches"]]
+sa.head()
 ```
 
-### Non-Matching Sentences
+### Send each sentence array to the server and get the results
 ```{python}
-# SN: Drop unneeded columns, keep only cik, year, url, not_matches
-sn_expanded = expand_sentences(wr, "not_matches")
-plot_data(sm_expanded)
-sn_expanded = drop_outliers(sn_expanded)
-plot_data(sm_expanded)
-```
+# Get already processed URLs
+processed_urls = get_processed_urls()
 
-## Save the results
-```{python}
-merged_sa = pd.concat([sm_expanded, sn_expanded], ignore_index=True)
-merged_sa.to_excel(SENTENCE_EXCEL_PATH, index=False)
-```
-
-```{python}
-def get_n_rows(df: pd.DataFrame, n: int, begin: int) -> pd.DataFrame:
-    return df.iloc[begin:begin+n]
-```
-
-```{python}
-dr = get_n_rows(merged_sa, 20, 0)
-# Output the sentences to a temp.txt file
-with open("temp.txt", "w", encoding="utf-8") as f:
-    for sentence in dr["sentence"]:
-        f.write(sentence + "\n")
-```
+with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+    future_to_report = {}
+    
+    # Submit only unprocessed tasks 
+    for report in sa.itertuples():
+        if (report.cik, report.year, report.url) in processed_urls:
+            debug_print(f"Report {report.cik} {report.year} already processed")
+            continue
+            
+        future = executor.submit(get_result_from_server, report.matches)
+        future_to_report[future] = report.Index
+    
+    # Process results as they complete
+    for future in tqdm(as_completed(future_to_report), total=len(future_to_report)):
+        idx = future_to_report[future]
+        try:
+            result = future.result()
+            sa.loc[idx, "server_response"] = json.dumps(result)
+        except Exception as e:
+            print(f"Error processing report at index {idx}: {e}")
