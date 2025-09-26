@@ -36,7 +36,7 @@ def predict_batch(texts):
         predicted_ids = torch.argmax(logits, dim=1).tolist()
 
     # Map to label strings
-    predictions = [{"label_id": pid, "label": id2label[pid]} for pid in predicted_ids]
+    predictions = {"predictions": [{"label_id": pid, "label": id2label[pid]} for pid in predicted_ids]}
     return predictions
 
 
