@@ -19,7 +19,7 @@ import random
 # --- 1. Load the Fine-Tuned Model and Tokenizer ---
 ```{python}
 # This path should point to the directory where your best model was saved.
-MODEL_PATH = '../model' 
+MODEL_PATH = '../results/checkpoint-140' 
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
@@ -43,7 +43,7 @@ random.shuffle(new_sentences)
 ```{python}
 def getBatch(size, index):
     result_dict = {}
-    with open('temp.txt', 'w', encoding='utf-8') as f:
+    with open('temp.xml', 'w', encoding='utf-8') as f:
         for i in range(size):
             if index + i < len(new_sentences):
                 # Get the model's prediction
@@ -62,7 +62,7 @@ def getBatch(size, index):
     return result_dict
 
 def modify_dict(case_labels):
-    with open('modified_labels.txt', 'w', encoding='utf-8') as f:
+    with open('modified_labels.txt', 'a+', encoding='utf-8') as f:
         for case_num, label_num in case_labels.items():
             if case_num in result_dict:
                 f.write(f"{result_dict[case_num]}\t{label_num}\n")
@@ -70,15 +70,21 @@ def modify_dict(case_labels):
 model.eval()  # Put the model in evaluation mode
 predictions = []
 # This is the mapping from the model's output index back to your original labels
-id2label = {0: "0: Confirmed derivative usage",
-            1: "1: Likely derivative usage",
-            2: "2: Mentioned derivative usage",
-            3: "3: Irrelevant",
-            4: "Derivative Liability/Warrants"}
+id2label = {
+    0: "Confirmed hedging derivative usage",
+    1: "Likely hedging derivative usage (not confirmed for reporting year)",
+    2: "Mentions derivatives, speculative or policy-related",
+    3: "Irrelevant / unrelated context",
+    4: "Warrants and Derivative Liability",
+}
+
+label2id = {v: k for k, v in id2label.items()}
+
+
 ```
 ```{python}
 batch_size = 20  # Adjust this value based on your needs
-m = 400  # Starting index
+m = 100  # Starting index
 result_dict = getBatch(batch_size, m)  # Initial batch write
 ```
 
@@ -86,7 +92,15 @@ result_dict = getBatch(batch_size, m)  # Initial batch write
 ```{python}
 
 case_labels = {
+  101: 4,  # Warrant derivative liability expired → should be Derivative Liability/Warrants
+  104: 4,  # Warrant derivative liability measured at fair value → Confirmed derivative usage
+  106: 4,  # Change in derivative liability fair value mentioned in cash flows → Mentioned derivative usage
+  113: 2,  # Change in fair value of derivative liability mentioned → Mentioned derivative usage
+  117: 2   # Foreign currency forward contracts used for hedging → Mentioned derivative usage
 }
+
+
+
 
 modify_dict(case_labels)
 
