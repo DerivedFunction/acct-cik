@@ -63,6 +63,9 @@ KEYWORDS = {
 ADDITIONAL_KEYWORDS = KEYWORDS | {
     "warrants",
 }
+NOT_MATCHES_KEYWORDS = ADDITIONAL_KEYWORDS | {
+    "derivative"
+}
 IGNORE_KEYWORDS = {
     "table of contents",
     "consolidated",
