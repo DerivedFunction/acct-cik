@@ -63,7 +63,7 @@ KEYWORDS = {
 ADDITIONAL_KEYWORDS = KEYWORDS | {
     "warrants",
 }
-NOT_MATCHES_KEYWORDS = ADDITIONAL_KEYWORDS | {
+NOT_MATCHES_KEYWORDS = {
     "derivative"
 }
 IGNORE_KEYWORDS = {
@@ -443,7 +443,8 @@ def find_count_by_keywords(content: str, year: int) -> dict:
 def filter_by_keywords(content: str, year: int) -> dict:
     keywords_lower = [kw.lower() for kw in KEYWORDS]
     ignore_keywords = [kw.lower() for kw in IGNORE_KEYWORDS]
-    def matches_text(text: str) -> bool:
+    not_matches_keywords = [kw.lower() for kw in NOT_MATCHES_KEYWORDS]
+    def matches_text(text: str, keywords_lower=keywords_lower) -> bool:
         return bool(text) and any(kw in text.lower() for kw in keywords_lower)
 
     paragraphs = content.split("\n")
@@ -478,13 +479,15 @@ def filter_by_keywords(content: str, year: int) -> dict:
             normalized = final_sentence.lower().strip()
             if any(kw in normalized for kw in ignore_keywords):
                     continue
-            if matches_text(final_sentence):
+            if matches_text(final_sentence, keywords_lower):
                 if normalized not in seen_matches:
                     seen_matches.add(normalized)
                     match_sentences.append(final_sentence)
             else:
                 # Make sure it doesn't contain ignored keywords
                 if any(kw in normalized for kw in ignore_keywords):
+                    continue
+                if any(kw in normalized for kw in not_matches_keywords):
                     continue
                 count_non_matches += 1
                 if len(not_match_sentences) < final_size:
