@@ -34,7 +34,7 @@ DB_PATH = "../db/final_webpage_data.db"
 REPORT_RESULTS_EXCEL_PATH="../excel/final_report_results.xlsx"
 SENTENCE_EXCEL_PATH="../excel/final_data.xlsx"
 KEYWORD_EXCEL_PATH="../excel/final_keywords_results.xlsx"
-NUM_THREADS = 6
+NUM_THREADS = 4
 SERVER_URL = "http://127.0.0.1:5000/predict"
 
 KEYWORDS = {
@@ -453,60 +453,42 @@ def find_count_by_keywords(content: str, year: int) -> dict:
 ### Match Text: Find matching keywords and extract the paragraphs
 ```{python}
 def filter_by_keywords(content: str, year: int) -> dict:
-    """
-    Finds paragraphs matching keywords, chunks them into overlapping
-    sentence groups, and returns them.
-    """
     keywords_lower = [kw.lower() for kw in ADDITIONAL_KEYWORDS]
     ignore_keywords = [kw.lower() for kw in IGNORE_KEYWORDS]
+    def matches_text(text: str, keywords_lower=keywords_lower) -> bool:
+        return bool(text) and any(kw in text.lower() for kw in keywords_lower)
 
-    def matches_text(text: str) -> bool:
-        """Checks if any keyword is in the text."""
-        return any(kw in text.lower() for kw in keywords_lower)
+    paragraphs = content.split("\n")
+    match_sentences = []
 
-    # Use the year to ensure chunking is consistent for the same report
-    random.seed(year)
-
-    # Correctly split content into paragraphs using double newlines
-    paragraphs = content.split("\n\n")
-    match_chunks = []
     seen_matches = set()
 
     for paragraph in paragraphs:
-        # Normalize paragraph by removing excess whitespace
         paragraph = re.sub(r"\s+", " ", paragraph.strip())
         if not paragraph:
             continue
 
-        normalized_paragraph = paragraph.lower()
-        
-        # Skip paragraph if it contains ignore words or no keywords
-        if any(kw in normalized_paragraph for kw in ignore_keywords):
-            continue
-        if not matches_text(normalized_paragraph):
-            continue
+        sentences = [s.strip() for s in re.split(r'(?<![A-Z0-9])\s*\.\s*(?![A-Z0-9])', paragraph) if s.strip()]
+        for idx, sentence in enumerate(sentences):
+            merged = []
+            if idx > 0:
+                merged.append(sentences[idx - 1])
+            merged.append(sentence)
+            if idx < len(sentences) - 1:
+                merged.append(sentences[idx + 1])
 
-        # Split the relevant paragraph into sentences
-        sentences = [s.strip() for s in re.split(r'(?<=[.?!])\s+', paragraph) if s.strip()]
+            final_sentence = ". ".join(merged).strip() + "."
+            normalized = final_sentence.lower().strip()
+            if any(kw in normalized for kw in ignore_keywords):
+                    continue
+            if matches_text(final_sentence, keywords_lower):
+                if normalized not in seen_matches:
+                    seen_matches.add(normalized)
+                    match_sentences.append(final_sentence)
 
-        # **New Chunking Logic**
-        # Group sentences into random-sized chunks (4 to 6) with overlap
-        i = 0
-        while i < len(sentences):
-            chunk_size = random.randint(4, 6)
-            # Create a chunk from the current sentence to the end of the chunk size
-            chunk = ". ".join(sentences[i : i + chunk_size])
-            
-            if chunk:
-                normalized_chunk = chunk.lower()
-                if normalized_chunk not in seen_matches:
-                    seen_matches.add(normalized_chunk)
-                    match_chunks.append(chunk)
-            
-            # Move the starting point forward, creating a 1-sentence overlap
-            i += chunk_size - 1
-
-    return {"matches": match_chunks}
+    return {
+        "matches": match_sentences,
+    }
 ```
 
 ## Merge it all together
@@ -612,7 +594,27 @@ with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
 ## Parallel execution: Perform keyword extraction
 And then save the results to the database
 
+# Post Data Extraction Stage
+We want to iterate over `existing_report_df`, and use the server to label each report using `server.py`
+
 ```{python}
+def get_result_from_server(sentences, batch_size=32):
+    predictions = []
+    headers = {"Content-Type": "application/json"}
+    
+    for i in range(0, len(sentences), batch_size):
+        batch = sentences[i:i+batch_size]
+        payload = {"texts": batch}
+        try:
+            response = requests.post(SERVER_URL, headers=headers, data=json.dumps(payload))
+            response.raise_for_status()
+            preds = response.json().get("predictions", [])
+            debug_print("Predictions", preds)
+            predictions.extend(preds)
+        except requests.exceptions.RequestException as e:
+            print(f"Error communicating with server: {e}")
+            predictions.extend([-1] * len(batch))  # placeholder for failures
+    return predictions
 def process_report_fully(report):
     """
     Processes a single report completely:
@@ -638,7 +640,6 @@ def process_report_fully(report):
     # Extract sentences that match keywords
     sentences_data = filter_by_keywords(content, report.year)
     sentences_to_analyze = sentences_data.get("matches", [])
-    print(sentences_data)
     # Get sentence analysis from the server
     server_predictions = []
     if sentences_to_analyze:
@@ -676,30 +677,6 @@ with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
             results.append(res)
 
 print(f"Processed {len(results)} new reports in parallel.")
-```
-
-# Post Data Extraction Stage
-We want to iterate over `existing_report_df`, and use the server to label each report using `server.py`
-
-```{python}
-def get_result_from_server(sentences, batch_size=32):
-    predictions = []
-    headers = {"Content-Type": "application/json"}
-    
-    for i in range(0, len(sentences), batch_size):
-        batch = sentences[i:i+batch_size]
-        payload = {"texts": batch}
-        print(payload)
-        try:
-            response = requests.post(SERVER_URL, headers=headers, data=json.dumps(payload))
-            response.raise_for_status()
-            preds = response.json().get("predictions", [])
-            debug_print(preds)
-            predictions.extend(preds)
-        except requests.exceptions.RequestException as e:
-            print(f"Error communicating with server: {e}")
-            predictions.extend([-1] * len(batch))  # placeholder for failures
-    return predictions
 ```
 
 ```{python}
@@ -783,7 +760,7 @@ def get_sentence_analysis():
         # Count prediction types
         pred_counts = {}
         for pred in predictions:
-            pred_counts[pred] = pred_counts.get(pred, 0) + 1
+            pred_counts[pred["label"]] = pred_counts.get(pred["label"], 0) + 1
         
         analysis_data.append({
             "cik": row["cik"],
