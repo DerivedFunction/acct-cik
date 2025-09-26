@@ -28,7 +28,7 @@ from tqdm import tqdm
 ```{python}
 filename = "sample.csv"
 DB_PATH = "../db/webpage_results.db"
-REPORT_RESULTS_EXCEL_PATH="../excel/report_results.xlsx"
+REPORT_RESULTS_EXCEL_PATH="../excel/cik_urls.xlsx"
 SENTENCE_EXCEL_PATH="../excel/pre-train-data.xlsx"
 KEYWORD_EXCEL_PATH="../excel/keywords_results.xlsx"
 NUM_THREADS = 6
