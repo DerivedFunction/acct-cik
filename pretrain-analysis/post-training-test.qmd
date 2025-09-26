@@ -19,7 +19,7 @@ import random
 # --- 1. Load the Fine-Tuned Model and Tokenizer ---
 ```{python}
 # This path should point to the directory where your best model was saved.
-MODEL_PATH = '../results/checkpoint-140' 
+MODEL_PATH = '../results/checkpoint-280' 
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
@@ -71,11 +71,11 @@ model.eval()  # Put the model in evaluation mode
 predictions = []
 # This is the mapping from the model's output index back to your original labels
 id2label = {
-    0: "Confirmed hedging derivative usage",
-    1: "Likely hedging derivative usage (not confirmed for reporting year)",
-    2: "Mentions derivatives, speculative or policy-related",
-    3: "Irrelevant / unrelated context",
-    4: "Warrants and Derivative Liability",
+    0: "0: Confirmed hedging derivative usage",
+    1: "1: Likely hedging derivative usage (not confirmed for reporting year)",
+    2: "2: Mentions derivatives, speculative or policy-related",
+    3: "3: Irrelevant / unrelated context",
+    4: "4: Warrants and Derivative Liability",
 }
 
 label2id = {v: k for k, v in id2label.items()}
@@ -84,7 +84,7 @@ label2id = {v: k for k, v in id2label.items()}
 ```
 ```{python}
 batch_size = 20  # Adjust this value based on your needs
-m = 100  # Starting index
+m = 0  # Starting index
 result_dict = getBatch(batch_size, m)  # Initial batch write
 ```
 
@@ -92,15 +92,7 @@ result_dict = getBatch(batch_size, m)  # Initial batch write
 ```{python}
 
 case_labels = {
-  101: 4,  # Warrant derivative liability expired → should be Derivative Liability/Warrants
-  104: 4,  # Warrant derivative liability measured at fair value → Confirmed derivative usage
-  106: 4,  # Change in derivative liability fair value mentioned in cash flows → Mentioned derivative usage
-  113: 2,  # Change in fair value of derivative liability mentioned → Mentioned derivative usage
-  117: 2   # Foreign currency forward contracts used for hedging → Mentioned derivative usage
 }
-
-
-
 
 modify_dict(case_labels)
 
