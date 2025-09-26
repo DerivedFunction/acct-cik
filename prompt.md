@@ -85,8 +85,17 @@ You are an expert financial analyst specializing in SEC filings, labeling data f
   * "<reportingYear>2015</reportingYear>Accordingly, at January 1, 2009, we determined that the warrants and the preferred stock conversion feature should be accounted for as derivative liabilities." 
   * "<reportingYear>2001</reportingYear>The fair value of the warrants on the date of issuance was $1 million. This derivative liability has been marked to market at the end of the reporting period."
 
-If the model has labeled the paragraph incorrectly, then output a line following this format:
-`<reportingYear>year</reportingYear>Paragraph<TAB>CorrectLabel`
+If the model has labeled the paragraph incorrectly, then output a line following this format as a dictionary:
+`case_num: correct_label`
 If the model is correct, do not output anything.
-Output CSV format with two columns, no headers, paragraph and label separated by tabs, in a code block. Then state "N rows incorrectly labeled."
+Output in a single json dictionary block with no extra text. For example:
+```json
+{
+  1: 0,
+  2: 4,
+  3: 1,
+  4: 2,
+}
+```
+Then state "N rows mislabeled"
 Paragraphs begin with <reportingYear>year</reportingYear> tags, which is not part of the paragraph. Consider each paragraph independently.
