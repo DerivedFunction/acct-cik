@@ -24,9 +24,9 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 ## Global variables
 
 ```{python}
-EXCEL_PATH = "../excel/ai-post-pretrain.xlsx"
-EXCEL_PATH2 = "../excel/post-train-data.xlsx"
-MODEL_CHECKPOINT = "../results/checkpoint-2565"
+EXCEL_PATH = "../excel/ai-post-train-new-data.xlsx"
+EXCEL_PATH2 = "../excel/ai-post-pretrain-1.xlsx"
+MODEL_CHECKPOINT = "DerivedFunction/finbert-derivative-usage-classifier"
 ```
 
 # Data Preparation
@@ -102,20 +102,27 @@ def compute_metrics(pred):
 Here, we define the training parameters and launch the fine-tuning process. 🚀
 
 ```{python}
-# Define the model, specifying we have 4 labels
+# Define the model, specifying we have 5 labels (1 new label from model checkpoint)
 id2label = {0: "Confirmed derivative usage",
             1: "Likely derivative usage",
             2: "Mentioned derivative usage",
-            3: "Irrelevant"}
+            3: "Irrelevant",
+            4: "Derivative Liability/Warrants"}
 label2id = {"Confirmed derivative usage": 0,
             "Likely derivative usage": 1,
             "Mentioned derivative usage": 2,
-            "Irrelevant": 3}
+            "Irrelevant": 3,
+            "Derivative Liability/Warrants": 4}
 model = AutoModelForSequenceClassification.from_pretrained(
     MODEL_CHECKPOINT,
-    num_labels=4,
+    num_labels=5,
     id2label=id2label,
-    label2id=label2id
+    label2id=label2id,
+    # Allow loading even if the checkpoint's head has a different size.
+    # This prevents the RuntimeError when you add/remove labels compared to
+    # the original checkpoint. The classification head weights will be
+    # randomly initialized for the mismatched entries.
+    ignore_mismatched_sizes=True
 )
 
 collator = DataCollatorWithPadding(tokenizer=tokenizer)
@@ -153,7 +160,7 @@ trainer = Trainer(
 )
 
 # Start training!
-trainer.train(resume_from_checkpoint=True)
+trainer.train() # resume_from_checkpoint=True
 ```
 
 ```{python}
