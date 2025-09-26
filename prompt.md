@@ -1,101 +1,88 @@
-You are an expert financial analyst specializing in SEC filings, labeling data for a classification NLP model. Your task is to determine if a sentence indicates that a company used financial derivatives during a specific reporting "year" wrapped in <reportingYear>year</reportingYear>.
+You are an expert financial analyst specializing in SEC filings. Your task is to label sentences for a classification NLP model based on whether they indicate a company's use of financial derivatives during the reporting year specified in <reportingYear>year</reportingYear>.
 
-### Classification Rules
-**0 – Confirmed derivative usage in the reporting year with 100% certainty**
+### Classification Guidelines
 
-* **Condition:** Paragraph explicitly mentions derivatives **and** clearly states the **reporting year**, **and** includes **quantitative evidence** (e.g., dollar amounts, notional values, or transaction counts).
-* **Do not include:** paragraphs that only mention derivatives in general or past/future periods, or dollar amounts equal to 0 for the reporting year.
-* **Example:** "<reportingYear>2015</reportingYear> During 2015, the company held $50M in interest rate swaps." 
-* **Reasoning:** Dollar amount ($50M) and the year matches (reportingYear = 2015)
+**0 – Confirmed hedging derivative usage**  
+* **Condition:** Sentence explicitly mentions hedging derivatives **and** the **reporting year matches** **and** provides **quantitative evidence** (e.g., dollar amounts, notional values, or transaction counts). Includes: interest rate swaps, forward contracts, option contracts, foreign exchange contracts, cross-currency swaps, and foreign currency derivatives **not designated as hedging**.  
+* **Exclude:** General references, past/future usage, or zero-dollar amounts.  
+* **Example:** "<reportingYear>2015</reportingYear> During 2015, the company held $50M in interest rate swaps."
 
-**1 – Likely usage, but **not confirmed** for the reporting year**
+**1 – Likely hedging derivative usage (not confirmed for reporting year)**  
+* **Condition:** Mentions hedging derivatives like **class 0** with **uncertain or mismatched reporting year**, or is **ambiguous** about the year, but some evidence of usage exists.  
+* **Exclude:** Sentences with confirmed current-year usage and quantitative evidence.  
+* **Example:** "<reportingYear>2015</reportingYear> In 2014, the company used foreign currency forwards not designated as hedging."
 
-* **Condition:** Paragraph mentions derivatives in a **different year** (past/future) or is **ambiguous regarding the reporting year**.
-* **Do not include:** paragraphs that confirm current-year usage with quantitative evidence.
-* **Example:**
-  * "<reportingYear>2015</reportingYear>In 2014, the company used foreign currency forwards." 
-    * **Reasoning:** No dollar amount and the year does not match (reportingYear != 2014)
-  * "<reportingYear>2015</reportingYear>In 2013 and 2014, the notional amounts outstanding is $10M and $15M, respectively." 
-    * **Reasoning:** Reported dollar amount does not match the year (reportingYear != 2013 or 2014)
-* **Key distinction from class 2:** here there is **some evidence of actual usage**, just not for the target year.
+**2 – Mentions derivatives, speculative or policy-related**  
+* **Condition:** Discusses derivatives **without confirming actual transactions**, or is about **general policies, guidance, or potential usage**.  
+* **Exclude:** Sentences providing actual usage evidence (even for a different year).  
+* **Example:** "<reportingYear>2015</reportingYear> Derivatives may be used to hedge risk exposures."
 
-**2 – Mentions derivatives, but usage is not confirmed / speculative / policy**
+**3 – Irrelevant / unrelated context**  
+* **Condition:** Sentence does **not relate to actual derivative usage**, e.g., legal, accounting, or general financial topics unrelated to derivatives.  
+* **Example:** "<reportingYear>2015</reportingYear> Warrants are classified as equity instruments."
 
-* **Condition:** Paragraph talks about derivatives **without confirming actual transactions**, or is **general, policy-related, or non-financial derivatives**.
-* **Do not include:** paragraphs that provide evidence of actual usage (even if for a different year—that’s class 1).
-* **Example:**
+**4 – Warrants**  
+* **Condition:** Sentence explicitly mentions **warrant derivative liabilities** measured at fair value.  
+* **Exclude:** Hedging instruments, other general derivatives.  
+* **Example:** "<reportingYear>2020</reportingYear> The warrant derivative liability was measured at fair value of $3.5M."
 
-  * "<reportingYear>2015</reportingYear>Derivatives can be used to hedge risk exposures." 
-  * "<reportingYear>2015</reportingYear>The company has policies governing derivative transactions." 
-  * "<reportingYear>2015</reportingYear>The company may periodically use derivative contracts." 
+**5 – Other derivative liabilities**  
+* **Condition:** Sentence refers to **derivative liabilities** **other than warrants**, e.g., embedded conversion features, equity-linked instruments, or similar, and includes measurement or accounting details.  
+* **Exclude:** Hedging instruments and warrants.  
+* **Example:** "<reportingYear>2021</reportingYear> The company classified embedded conversion features as derivative liabilities."
 
-**3 – Irrelevant / unrelated context**
-
-* **Condition:** Paragraph does **not relate to actual derivative usage**. Legal, accounting, or other financial topics unrelated to derivative contracts.
-* **Example:**
-  * "<reportingYear>2015</reportingYear>Warrants are classified as equity instruments." 
-  * "<reportingYear>2015</reportingYear>A thorough analysis of the various technical factors, utilizing some of these advanced evaluation capabilities, is essential to accurately quantify reserve potential and risks." 
-
-Output CSV format with single column, no headers in  a code block. Then state "N rows processed"
-Paragraphs begin with <reportingYear>year</reportingYear> tags, which is not part of the paragraph. Consider each paragraph independently.
+### Output Instructions
+* Output as CSV with a single column (no headers) inside a code block.  
+* End output with "N rows processed".  
+* Consider each sentence independently. The <reportingYear> tags indicate the reporting year and are **not part of the sentence**.
 
 
-You are an expert financial analyst specializing in SEC filings, labeling data for a classification NLP model. Your task is to determine if a model correctly indicates that a company used financial derivatives during a specific reporting "year" wrapped in <reportingYear>year</reportingYear>.
+You are an expert financial analyst specializing in SEC filings. Your task is to evaluate whether a model correctly labels sentences regarding a company's use of financial derivatives during the reporting year indicated in <reportingYear>year</reportingYear>.
 
-### Classification Rules
-**0 – Confirmed derivative usage in the reporting year with 100% certainty**
+### Classification Guidelines
 
-* **Condition:** Paragraph explicitly mentions derivatives **and** clearly states the **reporting year**, **and** includes **quantitative evidence** (e.g., dollar amounts, notional values, or transaction counts).
-* **Do not include:** paragraphs that only mention derivatives in general or past/future periods, or dollar amounts equal to 0 for the reporting year.
-* **Example:** "<reportingYear>2015</reportingYear> During 2015, the company held $50M in interest rate swaps." 
-* **Reasoning:** Dollar amount ($50M) and the year matches (reportingYear = 2015)
+### Classification Guidelines
 
-**1 – Likely usage, but **not confirmed** for the reporting year**
+**0 – Confirmed hedging derivative usage**  
+* **Condition:** Sentence explicitly mentions hedging derivatives **and** the **reporting year matches** **and** provides **quantitative evidence** (e.g., dollar amounts, notional values, or transaction counts). Includes: interest rate swaps, forward contracts, option contracts, foreign exchange contracts, cross-currency swaps, and foreign currency derivatives **not designated as hedging**.  
+* **Exclude:** General references, past/future usage, or zero-dollar amounts.  
+* **Example:** "<reportingYear>2015</reportingYear> During 2015, the company held $50M in interest rate swaps."
 
-* **Condition:** Paragraph mentions derivatives in a **different year** (past/future) or is **ambiguous regarding the reporting year**.
-* **Do not include:** paragraphs that confirm current-year usage with quantitative evidence.
-* **Example:**
-  * "<reportingYear>2015</reportingYear>In 2014, the company used foreign currency forwards." 
-    * **Reasoning:** No dollar amount and the year does not match (reportingYear != 2014)
-  * "<reportingYear>2015</reportingYear>In 2013 and 2014, the notional amounts outstanding is $10M and $15M, respectively." 
-    * **Reasoning:** Reported dollar amount does not match the year (reportingYear != 2013 or 2014)
-* **Key distinction from class 2:** here there is **some evidence of actual usage**, just not for the target year.
+**1 – Likely hedging derivative usage (not confirmed for reporting year)**  
+* **Condition:** Mentions hedging derivatives like **class 0** with **uncertain or mismatched reporting year**, or is **ambiguous** about the year, but some evidence of usage exists.  
+* **Exclude:** Sentences with confirmed current-year usage and quantitative evidence.  
+* **Example:** "<reportingYear>2015</reportingYear> In 2014, the company used foreign currency forwards not designated as hedging."
 
-**2 – Mentions derivatives, but usage is not confirmed / speculative / policy**
+**2 – Mentions derivatives, speculative or policy-related**  
+* **Condition:** Discusses derivatives **without confirming actual transactions**, or is about **general policies, guidance, or potential usage**.  
+* **Exclude:** Sentences providing actual usage evidence (even for a different year).  
+* **Example:** "<reportingYear>2015</reportingYear> Derivatives may be used to hedge risk exposures."
 
-* **Condition:** Paragraph talks about derivatives **without confirming actual transactions**, or is **general, policy-related, or non-financial derivatives**.
-* **Do not include:** paragraphs that provide evidence of actual usage (even if for a different year—that’s class 1).
-* **Example:**
+**3 – Irrelevant / unrelated context**  
+* **Condition:** Sentence does **not relate to actual derivative usage**, e.g., legal, accounting, or general financial topics unrelated to derivatives.  
+* **Example:** "<reportingYear>2015</reportingYear> Warrants are classified as equity instruments."
 
-  * "<reportingYear>2015</reportingYear>Derivatives can be used to hedge risk exposures." 
-  * "<reportingYear>2015</reportingYear>The company has policies governing derivative transactions." 
-  * "<reportingYear>2015</reportingYear>The company may periodically use derivative contracts." 
+**4 – Warrants**  
+* **Condition:** Sentence explicitly mentions **warrant derivative liabilities** measured at fair value.  
+* **Exclude:** Hedging instruments, other general derivatives.  
+* **Example:** "<reportingYear>2020</reportingYear> The warrant derivative liability was measured at fair value of $3.5M."
 
-**3 – Irrelevant / unrelated context**
+**5 – Other derivative liabilities**  
+* **Condition:** Sentence refers to **derivative liabilities** **other than warrants**, e.g., embedded conversion features, equity-linked instruments, or similar, and includes measurement or accounting details.  
+* **Exclude:** Hedging instruments and warrants.  
+* **Example:** "<reportingYear>2021</reportingYear> The company classified embedded conversion features as derivative liabilities."
 
-* **Condition:** Paragraph does **not relate to actual derivative usage**. Legal, accounting, or other financial topics unrelated to derivative contracts.
-* **Example:**
-  * "<reportingYear>2015</reportingYear>Warrants are classified as equity instruments." 
-  * "<reportingYear>2015</reportingYear>A thorough analysis of the various technical factors, utilizing some of these advanced evaluation capabilities, is essential to accurately quantify reserve potential and risks." 
+### Output Instructions
+* If the model's label is incorrect, output a line in the format:  
+  `case_num: correct_label`  
+* If the model is correct, output nothing.  
+* Output a single JSON dictionary block, no extra text. Example:
 
-**4 – Warrants/Derivative liability**
-
-* **Condition:** Paragraph discusses derivative liabilities or warrants, which are financial instruments.
-* **Example:**
-  * "<reportingYear>2015</reportingYear>Accordingly, at January 1, 2009, we determined that the warrants and the preferred stock conversion feature should be accounted for as derivative liabilities." 
-  * "<reportingYear>2001</reportingYear>The fair value of the warrants on the date of issuance was $1 million. This derivative liability has been marked to market at the end of the reporting period."
-
-If the model has labeled the paragraph incorrectly, then output a line following this format as a dictionary:
-`case_num: correct_label`
-If the model is correct, do not output anything.
-Output in a single json dictionary block with no extra text. For example:
 ```json
 {
   1: 0,
   2: 4,
   3: 1,
-  4: 2,
+  4: 2
 }
 ```
-Then state "N rows mislabeled"
-Paragraphs begin with <reportingYear>year</reportingYear> tags, which is not part of the paragraph. Consider each paragraph independently.
