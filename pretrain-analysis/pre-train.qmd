@@ -595,8 +595,14 @@ fetch_all_grouped(df)
 
 ## Pre-Process each link and store in a database
 ```{python}
-for report in existing_report_df.itertuples(index=False):
-    process_url(report.link, report.cik, report.year)
+with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+    futures = [
+        executor.submit(process_url, report.link, report.cik, report.year)
+        for report in existing_report_df.itertuples(index=False)
+    ]
+    
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        future.result()  # Wait for completion and handle any exceptions
 ```
 
 ## Parallel execution: Perform keyword extraction
