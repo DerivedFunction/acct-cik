@@ -487,7 +487,9 @@ def filter_by_keywords(content: str, year: int) -> dict:
                 if normalized not in seen_matches:
                     seen_matches.add(normalized)
                     match_sentences.append(final_sentence)
-
+    for sentence in match_sentences:
+        # Append the "<reportingYear>{year}</reportingYear>" to the beginning
+        sentence = f"<reportingYear>{year}</reportingYear>" + sentence
     return {
         "matches": match_sentences,
     }
