@@ -163,7 +163,7 @@ def save_result(result, url, cik, year):
     try:
         c.execute(
             "INSERT INTO webpage_data (url, cik, year, raw_text) VALUES (?, ?, ?, ?)",
-            (url, cik, year, json.dumps(result))
+            (url, cik, year, result)
         )
     except sqlite3.IntegrityError:
         # Insert into fail_results if duplicate or other integrity error
