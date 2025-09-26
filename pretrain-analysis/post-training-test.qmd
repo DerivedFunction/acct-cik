@@ -33,45 +33,62 @@ print(f"Model loaded on: {device}")
 
 # --- 2. Prepare Your Input Sentences ---
 ```{python}
-EXCEL_PATH="../excel/ai-post-pretrain.xlsx"
+EXCEL_PATH="../excel/pre-train-data.xlsx"
 df = pd.read_excel(EXCEL_PATH)
 new_sentences = df['sentence'].tolist()
 random.shuffle(new_sentences)
-new_sentences = new_sentences[:15]
 ```
 
 # --- 3. Make Predictions ---
 ```{python}
-model.eval() # Put the model in evaluation mode
+def getBatch(size, index):
+    result_dict = {}
+    with open('temp.txt', 'w', encoding='utf-8') as f:
+        for i in range(size):
+            if index + i < len(new_sentences):
+                # Get the model's prediction
+                inputs = tokenizer(new_sentences[index + i], return_tensors="pt", truncation=True, padding=True)
+                inputs = {name: tensor.to(device) for name, tensor in inputs.items()}
+                outputs = model(**inputs)
+                # label string
+                label_string = id2label[np.argmax(outputs.logits.cpu().detach().numpy())]
+                # Sentence string
+                sentence_string = new_sentences[index + i]
+                # Store in dictionary
+                result_dict[index + i] = sentence_string
+                # Write to file
+                case_string = f"<case num=\"{index + i}\"><sentence>{sentence_string}</sentence><label>{label_string}</label></case>\n"
+                f.write(case_string)
+    return result_dict
+                
+                
+
+model.eval()  # Put the model in evaluation mode
 predictions = []
 # This is the mapping from the model's output index back to your original labels
-id2label = {0: "Confirmed derivative usage",
-            1: "Likely derivative usage",
-            2: "Mentioned derivative usage",
-            3: "Irrelevant"}
+id2label = {0: "0: Confirmed derivative usage",
+            1: "1: Likely derivative usage",
+            2: "2: Mentioned derivative usage",
+            3: "3: Irrelevant"}
+```
+```{python}
+batch_size = 20  # Adjust this value based on your needs
+m = 400  # Starting index
+def modify_dict(case_labels):
+    with open('modified_labels.txt', 'w', encoding='utf-8') as f:
+        for case_num, label_num in case_labels.items():
+            if case_num in result_dict:
+                f.write(f"{result_dict[case_num]}\t{label_num}\n")
 
-for sentence in new_sentences:
-    # Tokenize the sentence and move tensors to the correct device
-    inputs = tokenizer(sentence, return_tensors="pt", truncation=True, padding=True).to(device)
+result_dict = getBatch(batch_size, m)  # Initial batch write
+```
 
-    # Get model outputs
-    with torch.no_grad():
-        outputs = model(**inputs)
+## Our goal is to try to fix labeling errors using AI
+```{python}
 
-    # Get the predicted class index by finding the logit with the highest score
-    logits = outputs.logits
-    predicted_class_id = torch.argmax(logits, dim=-1).item()
-    
-    # Convert the index back to your original label
-    predicted_label = id2label[predicted_class_id]
-    predictions.append({
-        'sentence': sentence,
-        'predicted_label': predicted_label
-    })
+case_labels = {
+}
 
-# --- 4. Display the Results ---
-for prediction in predictions:
-    print(f"Sentence: \"{prediction['sentence']}\"")
-    print(f"Predicted Label: {prediction['predicted_label']}\n")
+modify_dict(case_labels)
 
 ```
