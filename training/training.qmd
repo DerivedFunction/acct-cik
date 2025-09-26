@@ -26,7 +26,7 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 ```{python}
 EXCEL_PATH = "../excel/used_data/ai-post-train-new-data.xlsx"
 EXCEL_PATH2 = "../excel/used_data/ai-post-pretrain-1.xlsx"
-MODEL_CHECKPOINT = "../results/checkpoint-140"
+MODEL_CHECKPOINT = "../results/checkpoint-280"
 ```
 
 # Data Preparation
@@ -128,7 +128,7 @@ collator = DataCollatorWithPadding(tokenizer=tokenizer)
 # Define Training Arguments
 training_args = TrainingArguments(
     output_dir='../results',          # Directory to save the model
-    num_train_epochs=8,              # Total number of training epochs
+    num_train_epochs=2,              # Total number of training epochs
     per_device_train_batch_size=8,   # Batch size for training
     per_device_eval_batch_size=8,    # Batch size for evaluation
     warmup_steps=500,                # Number of warmup steps for learning rate scheduler
@@ -159,7 +159,7 @@ trainer = Trainer(
 )
 
 # Start training!
-trainer.train(resume_from_checkpoint=True) # resume_from_checkpoint=True
+trainer.train() # resume_from_checkpoint=True
 ```
 
 ```{python}
