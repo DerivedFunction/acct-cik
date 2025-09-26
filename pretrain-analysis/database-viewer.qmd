@@ -76,3 +76,16 @@ print(dd)
 ```{python}
 wf.to_excel("../excel/webpage_results.xlsx", index=False)
 ```
+
+```{python}
+# Grab data from this database and copy it over to another
+conn2 = sqlite3.connect("../db/final_webpage_data.db")
+cursor2 = conn2.cursor()
+
+wd = execute_sql("SELECT * FROM webpage_data", fetch=True)
+wd.head()
+```
+
+```{python}
+wd.to_sql("webpage_data", conn2, if_exists="replace", index=False)
+```
