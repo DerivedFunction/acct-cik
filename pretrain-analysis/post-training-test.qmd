@@ -41,8 +41,10 @@ random.shuffle(new_sentences)
 
 # --- 3. Make Predictions ---
 ```{python}
-def getBatch(size, index):
+def getBatch(size=20, index=random.randint(0, len(new_sentences))):
     result_dict = {}
+    if index + size > len(new_sentences):
+        size = len(new_sentences) - index
     with open('temp.xml', 'w', encoding='utf-8') as f:
         for i in range(size):
             if index + i < len(new_sentences):
@@ -83,9 +85,7 @@ label2id = {v: k for k, v in id2label.items()}
 
 ```
 ```{python}
-batch_size = 20  # Adjust this value based on your needs
-m = 0  # Starting index
-result_dict = getBatch(batch_size, m)  # Initial batch write
+result_dict = getBatch()  # Initial batch write
 ```
 
 ## Our goal is to try to fix labeling errors using AI
