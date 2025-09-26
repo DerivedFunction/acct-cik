@@ -41,8 +41,6 @@ You are an expert financial analyst specializing in SEC filings. Your task is to
 
 ### Classification Guidelines
 
-### Classification Guidelines
-
 **0 – Confirmed hedging derivative usage**  
 * **Condition:** Sentence explicitly mentions hedging derivatives **and** the **reporting year matches** **and** provides **quantitative evidence** (e.g., dollar amounts, notional values, or transaction counts). Includes: interest rate swaps, forward contracts, option contracts, foreign exchange contracts, cross-currency swaps, and foreign currency derivatives **not designated as hedging**.  
 * **Exclude:** General references, past/future usage, or zero-dollar amounts.  
