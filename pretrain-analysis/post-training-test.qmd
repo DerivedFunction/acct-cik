@@ -60,26 +60,25 @@ def getBatch(size, index):
                 case_string = f"<case num=\"{index + i}\"><sentence>{sentence_string}</sentence><label>{label_string}</label></case>\n"
                 f.write(case_string)
     return result_dict
-                
-                
 
+def modify_dict(case_labels):
+    with open('modified_labels.txt', 'w', encoding='utf-8') as f:
+        for case_num, label_num in case_labels.items():
+            if case_num in result_dict:
+                f.write(f"{result_dict[case_num]}\t{label_num}\n")
+                
 model.eval()  # Put the model in evaluation mode
 predictions = []
 # This is the mapping from the model's output index back to your original labels
 id2label = {0: "0: Confirmed derivative usage",
             1: "1: Likely derivative usage",
             2: "2: Mentioned derivative usage",
-            3: "3: Irrelevant"}
+            3: "3: Irrelevant",
+            4: "Derivative Liability/Warrants"}
 ```
 ```{python}
 batch_size = 20  # Adjust this value based on your needs
 m = 400  # Starting index
-def modify_dict(case_labels):
-    with open('modified_labels.txt', 'w', encoding='utf-8') as f:
-        for case_num, label_num in case_labels.items():
-            if case_num in result_dict:
-                f.write(f"{result_dict[case_num]}\t{label_num}\n")
-
 result_dict = getBatch(batch_size, m)  # Initial batch write
 ```
 
