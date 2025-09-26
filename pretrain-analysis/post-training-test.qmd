@@ -19,7 +19,7 @@ import random
 # --- 1. Load the Fine-Tuned Model and Tokenizer ---
 ```{python}
 # This path should point to the directory where your best model was saved.
-MODEL_PATH = '../model' 
+MODEL_PATH = '../results/checkpoint-2565' 
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
@@ -32,7 +32,7 @@ print(f"Model loaded on: {device}")
 
 # --- 2. Prepare Your Input Sentences ---
 ```{python}
-EXCEL_PATH="../excel/sample.xlsx"
+EXCEL_PATH="../excel/ai-post-pretrain.xlsx"
 df = pd.read_excel(EXCEL_PATH)
 new_sentences = df['sentence'].tolist()
 random.shuffle(new_sentences)
