@@ -19,11 +19,12 @@ import random
 # --- 1. Load the Fine-Tuned Model and Tokenizer ---
 ```{python}
 # This path should point to the directory where your best model was saved.
-MODEL_PATH = '../results/checkpoint-2565' 
+MODEL_PATH = '../model' 
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
-
+```
+```{python}
 # Check if a GPU is available and move the model to the GPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
