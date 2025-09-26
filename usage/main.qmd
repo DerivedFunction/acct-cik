@@ -121,7 +121,7 @@ df.head()
 
 ### Debug printing
 ```{python}
-debug = True # Debug printing
+debug = False # Debug printing
 def debug_print(*args):
     if debug:
         print(*args)

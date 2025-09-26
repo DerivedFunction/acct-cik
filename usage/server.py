@@ -39,10 +39,10 @@ def predict_batch(texts):
     predictions = {"predictions": [{"label_id": pid, "label": id2label[pid]} for pid in predicted_ids]}
     
     # Write results to tab-separated file
-    with open('predictions.xml', 'a') as f:
-        for idx, (text, pred) in enumerate(zip(texts, predictions['predictions'])):
-            case_string = f"<case num=\"{idx}\"><text>{text}</text><label>{pred['label']}</label><label_id>{pred['label_id']}</label_id></case>\n"
-            f.write(case_string)
+    # with open('predictions.xml', 'a') as f:
+    #     for idx, (text, pred) in enumerate(zip(texts, predictions['predictions'])):
+    #         case_string = f"<case num=\"{idx}\"><text>{text}</text><label>{pred['label']}</label><label_id>{pred['label_id']}</label_id></case>\n"
+    #         f.write(case_string)
             
     return predictions
 
