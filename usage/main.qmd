@@ -31,9 +31,10 @@ from tqdm import tqdm
 ```{python}
 filename = "data.csv"
 DB_PATH = "../db/final_webpage_data.db"
-REPORT_RESULTS_EXCEL_PATH="../excel/final_report_results.xlsx"
-SENTENCE_EXCEL_PATH="../excel/final_data.xlsx"
+REPORT_RESULTS_EXCEL_PATH="../excel/final_cik_urls.xlsx"
+SENTENCE_EXCEL_PATH="../excel/final_sentence_results.xlsx"
 KEYWORD_EXCEL_PATH="../excel/final_keywords_results.xlsx"
+MERGED_EXCEL_PATH="../excel/final_merged_results.xlsx"
 NUM_THREADS = 4
 SERVER_URL = "http://127.0.0.1:5000/predict"
 
@@ -786,5 +787,15 @@ if not sa.empty:
     
 else:
     print("No processed results found for sentence analysis")
+# Fill missing values with 0's
+sa = sa.fillna(0)
 sa.head(10)
 ```
+
+# Merge the results
+```{python}
+# Join kw and sa on url
+merged = kw_summary.merge(sa.drop(columns=["total_sentences", "cik", "year", "Irrelevant / unrelated context"]), on=["url"], how="left")
+merged.to_excel(MERGED_EXCEL_PATH, index=False)
+print(f"Merged results saved to: {MERGED_EXCEL_PATH}")
+merged.head()
