@@ -177,29 +177,6 @@ def save_result(result, url, cik, year):
     conn.commit()
     conn.close()
 
-def update_result(result, url, cik, year):
-    """
-    Save a single page result to SQLite.
-    If insert fails (e.g., duplicate url), insert into fail_results.
-    """
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    try:
-        c.execute(
-            "UPDATE webpage_data SET raw_text=? WHERE url=? AND cik=? AND year=?",
-            (result, url, cik, year)
-        )
-        debug_print("Updated", url)
-    except sqlite3.IntegrityError:
-        # Insert into fail_results if duplicate or other integrity error
-        debug_print("Failed to update", url)
-        c.execute(
-            "INSERT OR IGNORE INTO fail_results (url, cik, year) VALUES (?, ?, ?)",
-            (url, cik, year)
-        )
-    conn.commit()
-    conn.close()
-
 def get_webpage_data(url):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
