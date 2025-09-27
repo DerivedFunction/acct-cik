@@ -16,8 +16,8 @@ import random
 import re
 ```
 
-
 # --- 1. Load the Fine-Tuned Model and Tokenizer ---
+
 ```{python}
 # This path should point to the directory where your best model was saved.
 MODEL_PATH = '../results/checkpoint-280' 
@@ -25,6 +25,7 @@ MODEL_PATH = '../results/checkpoint-280'
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
 ```
+
 ```{python}
 # Check if a GPU is available and move the model to the GPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -33,6 +34,7 @@ print(f"Model loaded on: {device}")
 ```
 
 # --- 2. Prepare Your Input Sentences ---
+
 ```{python}
 EXCEL_PATH="../excel/pre-train-data.xlsx"
 df = pd.read_excel(EXCEL_PATH)
@@ -41,6 +43,7 @@ random.shuffle(new_sentences)
 ```
 
 # --- 3. Make Predictions ---
+
 ```{python}
 def getBatch(size=20, index=None):
     result_dict = {}
@@ -88,11 +91,13 @@ label2id = {v: k for k, v in id2label.items()}
 
 
 ```
+
 ```{python}
 result_dict = getBatch()  # Initial batch write
 ```
 
 ## Our goal is to try to fix labeling errors using AI
+
 ```{python}
 
 case_labels = {
@@ -103,6 +108,7 @@ modify_dict(case_labels)
 ```
 
 # Convert our modified file to a dataframe and save it
+
 ```{python}
 modified_df = pd.read_csv("modified_labels.txt", sep="\t")
 modified_df.to_excel("modified_labels.xlsx", index=False)
