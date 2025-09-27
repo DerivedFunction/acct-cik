@@ -391,7 +391,10 @@ def extract_content(data: str, asHTML=True) -> str:
     
         # Strip multiple symbols but keep single ones such as '-----' but not '-'
         para = re.sub(r"(-{3,}|={3,}|\.{3,})", "", para)
-    
+
+        # Remove table of contents at the bottom of page
+        para = re.sub(r"\ntable of contents", "", para, flags=re.IGNORECASE)
+        
         # Remove <> tags
         para = re.sub(r"<.*?>", "", para)
         
