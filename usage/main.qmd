@@ -604,7 +604,7 @@ def store_webpage_data():
             for report in existing_report_df.itertuples(index=False)
         ]
         
-        for futu    re in tqdm(as_completed(futures), total=len(futures)):
+        for future in tqdm(as_completed(futures), total=len(futures)):
             future.result()  # Wait for completion and handle any exceptions
 # store_webpage_data()
 ```
@@ -781,6 +781,8 @@ def get_sentence_analysis():
         # Count prediction types
         pred_counts = {}
         for pred in predictions:
+            if not isinstance(pred, dict):
+                continue
             pred_counts[pred["label"]] = pred_counts.get(pred["label"], 0) + 1
         
         analysis_data.append({

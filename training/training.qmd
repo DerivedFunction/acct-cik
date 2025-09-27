@@ -6,7 +6,9 @@ jupyter: python3
 ---
 
 # Initialization
+
 ## Required libraries
+
 ```{python}
 # %pip install pandas torch scikit-learn datasets transformers numpy openpyxl accelerate
 ```
@@ -60,7 +62,6 @@ train_dataset = Dataset.from_pandas(train_df)
 val_dataset = Dataset.from_pandas(val_df)
 ```
 
------
 
 # Model Fine-Tuning
 
@@ -143,11 +144,6 @@ training_args = TrainingArguments(
 ```
 
 ```{python}
-# Move the checkpoint to the out of the folder
-# %mv ./results/checkpoint-00 .
-```
-
-```{python}
 # Initialize the Trainer
 trainer = Trainer(
     model=model,
@@ -163,9 +159,9 @@ trainer.train() # resume_from_checkpoint=True
 ```
 
 ```{python}
-# Save the model %pip install -U "huggingface_hub[cli]"
-## hf auth login
+# Save the model %pip install -U "huggingface_hub[cli]" 
+## hf auth login 
 ## hf upload DerivedFunction/finbert-derivative-usage-classifier [folder-path]
-
-# model.save_pretrained("../model")
-# tokenizer.save_pretrained("../model")
+model.save_pretrained("../model")
+tokenizer.save_pretrained("../model")
+```

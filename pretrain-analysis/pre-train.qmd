@@ -6,10 +6,12 @@ jupyter: python3
 ---
 
 # Importing required libraries
+
 ```{python}
 # Installing required libraries
 # %pip install pandas requests bs4 matplotlib
 ```
+
 ```{python}
 import pandas as pd  # Data processing
 import requests      # Synchronous HTTP requests
@@ -106,6 +108,7 @@ df.head()
 ## Predefined Functions
 
 ### Debug printing
+
 ```{python}
 debug = True # Debug printing
 def debug_print(*args):
@@ -264,6 +267,7 @@ create_db()
 ```
 
 ### Fetch report URLS
+
 ```{python}
 def rate_limit_sleep():
     """Simple sleep to respect SEC rate limits synchronously."""
@@ -446,6 +450,7 @@ def process_url(url: str, cik: int, year: int):
 ```
 
 ### Keywords Finder: Find keywords
+
 ```{python}
 def find_count_by_keywords(content: str, year: int) -> dict:
     """
@@ -461,6 +466,7 @@ def find_count_by_keywords(content: str, year: int) -> dict:
 ```
 
 ### Match Text: Find matching keywords and extract the paragraphs
+
 ```{python}
 
 def filter_by_keywords(content: str, year: int) -> dict:
@@ -612,12 +618,14 @@ def _save_partial(records: list) -> pd.DataFrame:
 ```
 
 # Execute Main Loop
+
 ```{python}
 # Returns all the 10-K links
 fetch_all_grouped(df)
 ```
 
 ## Pre-Process each link and store in a database
+
 ```{python}
 with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
     futures = [
@@ -630,7 +638,9 @@ with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
 ```
 
 ## Parallel execution: Perform keyword extraction
+
 And then save the results to the database
+
 ```{python}
 
 processed_set = get_processed_urls()
@@ -682,7 +692,9 @@ print(f"Processed {len(results)} new reports in parallel.")
 ```
 
 # Post Data Extraction Stage
+
 ## Functions
+
 ```{python}
 def parse_json(data):
     try:
@@ -745,12 +757,14 @@ def drop_outliers(df, low=1.96, high=1.44):
 ```
 
 ## Fetch the results
+
 ```{python}
 wr = fetch_webpage_results()
 wr.head()
 ```
 
 ## Keyword Analysis
+
 ```{python}
 # KW: Drop unneeded columns,keep only cik, year, url, and keywords
 kw = wr[["cik", "year", "url", "keywords"]]
@@ -768,13 +782,16 @@ for group_name, kw_list in MATCHING_KEYWORDS.items():
 kw_summary = kw.drop(columns=["keywords"])
 kw_summary.head()
 ```
+
 ```{python}
 # Save KW file
 kw_summary.to_excel(KEYWORD_EXCEL_PATH, index=False)
 ```
 
 ## Sentence Analysis
+
 ### Matching Sentences
+
 ```{python}
 # SM: Drop unneeded columns, keep only cik, year, url, matches
 sm_expanded = expand_sentences(wr, "matches")
@@ -784,6 +801,7 @@ plot_data(sm_expanded)
 ```
 
 ### Non-Matching Sentences
+
 ```{python}
 # SN: Drop unneeded columns, keep only cik, year, url, not_matches
 sn_expanded = expand_sentences(wr, "not_matches")
@@ -793,6 +811,7 @@ plot_data(sm_expanded)
 ```
 
 ## Save the results
+
 ```{python}
 merged_sa = pd.concat([sm_expanded, sn_expanded], ignore_index=True)
 merged_sa.to_excel(SENTENCE_EXCEL_PATH, index=False)
