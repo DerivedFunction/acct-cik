@@ -8,3 +8,4 @@ temp.txt
 temp.xml
 model
 modified_labels.txt
+*.db-journal
