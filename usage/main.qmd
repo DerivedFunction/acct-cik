@@ -386,11 +386,14 @@ def extract_content(data: str, asHTML=True) -> str:
         para = re.sub(r'\s+', ' ', para).strip()
 
         # Clean up parentheses spacing
-        para = re.sub(r"\s*\(\s*", "(", para)
-        para = re.sub(r"\s*\)\s*", ")", para)
-
-        # Strip multiple dashes such as '-----'
-        para = re.sub(r"(\-{3,})", r"\1", para)
+        para = re.sub(r"\(\s*", "(", para)
+        para = re.sub(r"\s*\)", ")", para)
+    
+        # Strip multiple symbols but keep single ones such as '-----' but not '-'
+        para = re.sub(r"(-{3,}|={3,}|\.{3,})", "", para)
+    
+        # Remove <> tags
+        para = re.sub(r"<.*?>", "", para)
         
         if para:
             cleaned_paragraphs.append(para)
