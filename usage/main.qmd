@@ -385,6 +385,13 @@ def extract_content(data: str, asHTML=True) -> str:
         # 3. Normalize multiple spaces into one
         para = re.sub(r'\s+', ' ', para).strip()
 
+        # Clean up parentheses spacing
+        para = re.sub(r"\s*\(\s*", "(", para)
+        para = re.sub(r"\s*\)\s*", ")", para)
+
+        # Strip multiple dashes such as '-----'
+        para = re.sub(r"(\-{3,})", r"\1", para)
+        
         if para:
             cleaned_paragraphs.append(para)
 
@@ -475,7 +482,7 @@ def filter_by_keywords(content: str, year: int) -> dict:
         if not paragraph:
             continue
 
-        sentences = [s.strip() for s in re.split(r'(?<![A-Z0-9])\s*\.\s*(?![A-Z0-9])', paragraph) if s.strip()]
+        sentences = [s.strip() for s in re.split(r'(?<![A-Z0-9])\s*\.\s*(?![a-zA-Z0-9])', paragraph) if s.strip()]
         for idx, sentence in enumerate(sentences):
             if len(sentence.split()) < 6:
                 continue
