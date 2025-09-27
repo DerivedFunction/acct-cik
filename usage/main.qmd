@@ -6,6 +6,7 @@ jupyter: python3
 ---
 
 # Importing required libraries
+
 ```{python}
 # Installing required libraries
 # %pip install pandas requests bs4 matplotlib
@@ -120,6 +121,7 @@ df.head()
 ## Predefined Functions
 
 ### Debug printing
+
 ```{python}
 debug = False # Debug printing
 def debug_print(*args):
@@ -128,8 +130,8 @@ def debug_print(*args):
 ```
 
 ## Database Functions
-`webpage_data` stores the cache of the 10-K report.
-`webpage_result` stores the processed data from server and keyword search.
+
+`webpage_data` stores the cache of the 10-K report. `webpage_result` stores the processed data from server and keyword search.
 
 ```{python}
 def create_db():
@@ -256,6 +258,7 @@ create_db()
 ```
 
 ### Fetch report URLS
+
 ```{python}
 def rate_limit_sleep():
     """Simple sleep to respect SEC rate limits synchronously."""
@@ -338,6 +341,7 @@ def get_cik_filings(cik: str) -> List[dict]:
 ```
 
 ### Extract Content from Webpage
+
 ```{python}
 def extract_content(data: str, asHTML=True) -> str:
     """
@@ -437,6 +441,7 @@ def process_url(url: str, cik: int, year: int):
 ```
 
 ### Keywords Finder: Find keywords
+
 ```{python}
 def find_count_by_keywords(content: str, year: int) -> dict:
     """
@@ -452,6 +457,7 @@ def find_count_by_keywords(content: str, year: int) -> dict:
 ```
 
 ### Match Text: Find matching keywords and extract the paragraphs
+
 ```{python}
 def filter_by_keywords(content: str, year: int) -> dict:
     keywords_lower = [kw.lower() for kw in ADDITIONAL_KEYWORDS]
@@ -581,6 +587,7 @@ def _save_partial(records: list) -> pd.DataFrame:
 # Execute Main Loop
 
 ## Fetch all 10-K report URLs
+
 ```{python}
 # Returns all the 10-K links
 existing_report_df = fetch_all_grouped(df)
@@ -588,6 +595,7 @@ print(f"Total reports found: {len(existing_report_df)}")
 ```
 
 ## Pre-Process each link and store in database
+
 ```{python}
 def store_webpage_data():
     with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
@@ -602,9 +610,11 @@ def store_webpage_data():
 ```
 
 ## Parallel execution: Perform keyword extraction
+
 And then save the results to the database
 
 # Post Data Extraction Stage
+
 We want to iterate over `existing_report_df`, and use the server to label each report using `server.py`
 
 ```{python}
@@ -720,6 +730,7 @@ def get_final_results():
 ```
 
 ## Keyword Analysis
+
 ```{python}
 def get_keyword_analysis():
     """Get keyword analysis from processed data"""
@@ -751,6 +762,7 @@ else:
 ```
 
 ## Sentence Analysis
+
 ```{python}
 def get_sentence_analysis():
     """Get sentence analysis with server predictions"""
@@ -797,9 +809,13 @@ sa.head(10)
 ```
 
 # Merge the results
+
 ```{python}
-# Join kw and sa on url
-merged = kw_summary.merge(sa.drop(columns=["total_sentences", "cik", "year", "Irrelevant / unrelated context"]), on=["url"], how="left")
-merged.to_excel(MERGED_EXCEL_PATH, index=False)
-print(f"Merged results saved to: {MERGED_EXCEL_PATH}")
+# Join kw and sa on url 
+merged = kw_summary.merge(
+    sa.drop(columns=["total_sentences", "cik", "year", "Irrelevant / unrelated context"]), 
+    on=["url"], how="left") 
+merged.to_excel(MERGED_EXCEL_PATH, index=False) 
+print(f"Merged results saved to: {MERGED_EXCEL_PATH}") 
 merged.head()
+```
