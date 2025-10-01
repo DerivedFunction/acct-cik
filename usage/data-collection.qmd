@@ -502,9 +502,9 @@ def fetch_all_grouped(saveIteration: int = 10, max_workers: int = 5
     records = []
 
     if existing_report_df is None or existing_report_df.empty:
-        existing_report_df = pd.DataFrame(columns=["cik", "year"])
+        existing_report_df = pd.DataFrame(columns=["cik", "fyear"])
 
-    already_done = set(zip(existing_report_df["cik"], existing_report_df["year"]))
+    already_done = set(zip(existing_report_df["cik"], existing_report_df["fyear"]))
     # group: {cik -> [fyears]}
     cik_groups = existing_report_df.groupby("cik")["fyear"].apply(list).reset_index()
 
