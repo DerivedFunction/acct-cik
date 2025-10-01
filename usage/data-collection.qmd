@@ -31,7 +31,7 @@ filename = "derivatives_data.csv"
 DB_PATH = "../db/web_data.db"
 KEYWORDS_FILE = "../config/keywords_find.json"
 NUM_THREADS = 4
-SEC_RATE_LIMIT = 10  # requests per second
+SEC_RATE_LIMIT = (NUM_THREADS + 0.1) / 10  # requests per second
 ```
 
 # Regex Patterns and Keyword Matching
@@ -268,7 +268,7 @@ print(f"Found {len(fetch_report_data(False))} invalid/failed reports in database
 ```{python}
 def rate_limit_sleep():
     """Simple sleep to respect SEC rate limits synchronously."""
-    time.sleep(NUM_THREADS / SEC_RATE_LIMIT)
+    time.sleep(SEC_RATE_LIMIT)
 
 def fetch_json(url: str) -> dict | None:
     """Fetch a URL and return JSON as dict, or None if failed."""
@@ -761,7 +761,7 @@ def fetch_all_grouped(
 
     # Process CIKs concurrently
     total_ciks = len(cik_groups)
-    with ThreadPoolExecutor(max_workers=max(2, NUM_THREADS)) as executor:
+    with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         # Submit all tasks
         future_to_cik = {
             executor.submit(process_cik, row): i
