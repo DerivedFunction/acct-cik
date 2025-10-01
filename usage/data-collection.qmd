@@ -537,7 +537,7 @@ def fetch_all_grouped(saveIteration: int = 10) -> pd.DataFrame:
 
     # Process CIKs concurrently
     total_ciks = len(cik_groups)
-    SEC_RATE_LIMIT = NUM_THREADS / 10  # requests per second
+    SEC_RATE_LIMIT = NUM_THREADS / 5  # requests per second
     with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         # Submit all tasks
         future_to_cik = {
