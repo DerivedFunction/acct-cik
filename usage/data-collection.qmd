@@ -489,8 +489,7 @@ def filter_by_fyear(filings: list[dict], fyear: int) -> list[dict]:
     ]
 
 
-def fetch_all_grouped(saveIteration: int = 10, max_workers: int = 5
-) -> pd.DataFrame:
+def fetch_all_grouped(saveIteration: int = 10) -> pd.DataFrame:
     global existing_report_df
     """
     Fetch filings once per CIK, filter by fiscal years,
