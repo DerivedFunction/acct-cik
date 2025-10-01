@@ -489,8 +489,7 @@ def filter_by_fyear(filings: list[dict], fyear: int) -> list[dict]:
     ]
 
 
-def fetch_all_grouped(
-    df: pd.DataFrame, saveIteration: int = 10, max_workers: int = 5
+def fetch_all_grouped(saveIteration: int = 10, max_workers: int = 5
 ) -> pd.DataFrame:
     global existing_report_df
     """
@@ -507,7 +506,7 @@ def fetch_all_grouped(
 
     already_done = set(zip(existing_report_df["cik"], existing_report_df["year"]))
     # group: {cik -> [fyears]}
-    cik_groups = df.groupby("cik")["fyear"].apply(list).reset_index()
+    cik_groups = existing_report_df.groupby("cik")["fyear"].apply(list).reset_index()
 
     def process_cik(row):
         """Process a single CIK and return records for all its years."""
@@ -640,7 +639,7 @@ def process_all_reports_fully():
 ```{python}
 # Click run above to init
 # Returns all the 10-K links
-fetch_all_grouped(df)
+fetch_all_grouped()
 ```
 
 
