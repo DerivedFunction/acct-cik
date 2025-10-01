@@ -31,7 +31,7 @@ filename = "derivatives_data.csv"
 DB_PATH = "../db/web_data.db"
 KEYWORDS_FILE = "../config/keywords_find.json"
 NUM_THREADS = 4
-SEC_RATE_LIMIT = (NUM_THREADS + 0.1) / 10  # requests per second
+SEC_RATE_LIMIT = NUM_THREADS * 1/5  # requests per second
 ```
 
 # Regex Patterns and Keyword Matching
