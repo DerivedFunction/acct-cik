@@ -501,16 +501,16 @@ def fetch_all_grouped(saveIteration: int = 10) -> pd.DataFrame:
     records = []
 
     if existing_report_df is None or existing_report_df.empty:
-        existing_report_df = pd.DataFrame(columns=["cik", "fyear"])
+        existing_report_df = pd.DataFrame(columns=["cik", "year"])
 
-    already_done = set(zip(existing_report_df["cik"], existing_report_df["fyear"]))
+    already_done = set(zip(existing_report_df["cik"], existing_report_df["year"]))
     # group: {cik -> [fyears]}
-    cik_groups = existing_report_df.groupby("cik")["fyear"].apply(list).reset_index()
+    cik_groups = existing_report_df.groupby("cik")["year"].apply(list).reset_index()
 
     def process_cik(row):
         """Process a single CIK and return records for all its years."""
         cik = row.cik
-        years = row.fyear
+        years = row.year
         cik_records = []
 
         # Only fetch if at least one year is missing
