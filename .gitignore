@@ -1,0 +1,8 @@
+*.zip
+*.db
+*.xlsx
+results
+temp
+model
+logs
+*.db-journal
