@@ -31,7 +31,7 @@ filename = "derivatives_data.csv"
 DB_PATH = "../db/web_data.db"
 KEYWORDS_FILE = "../config/keywords_find.json"
 NUM_THREADS = 4
-SEC_RATE_LIMIT = 1/10  # requests per second
+SEC_RATE_LIMIT = 1 / 5 # requests per second
 ```
 
 # Regex Patterns and Keyword Matching
@@ -102,7 +102,7 @@ TABLE_SPLIT_PATTERN = re.compile(
 )
 ```
 ```{python}
-df = pd.read_csv(filename)
+all_derivatives_df = pd.read_csv(filename)
 
 with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
     keyword_data = json.load(f)
@@ -490,7 +490,7 @@ def filter_by_fyear(filings: list[dict], fyear: int) -> list[dict]:
 
 
 def fetch_all_grouped(saveIteration: int = 10) -> pd.DataFrame:
-    global existing_report_df
+    global existing_report_df, all_derivatives_df
     """
     Fetch filings once per CIK, filter by fiscal years,
     and return as a new DataFrame.
@@ -505,7 +505,7 @@ def fetch_all_grouped(saveIteration: int = 10) -> pd.DataFrame:
 
     already_done = set(zip(existing_report_df["cik"], existing_report_df["year"]))
     # group: {cik -> [fyears]}
-    cik_groups = existing_report_df.groupby("cik")["year"].apply(list).reset_index()
+    cik_groups = all_derivatives_df.groupby("cik")["year"].apply(list).reset_index()
 
     def process_cik(row):
         """Process a single CIK and return records for all its years."""
@@ -612,7 +612,7 @@ def process_all_reports_fully():
 
     results = 0
     empty_results = 0
-    SEC_RATE_LIMIT = NUM_THREADS / 10  # requests per second
+    SEC_RATE_LIMIT = NUM_THREADS / 5  # requests per second
     with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         future_to_report = {
             executor.submit(process_keywords_for_report, r): r
