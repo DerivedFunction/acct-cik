@@ -29,7 +29,6 @@ from tqdm import tqdm
 ```{python}
 filename = "derivatives_data.csv"
 DB_PATH = "../db/web_data.db"
-REPORT_RESULTS_EXCEL_PATH = "../excel/report_urls.xlsx"
 KEYWORDS_FILE = "../config/keywords_find.json"
 NUM_THREADS = 4
 SEC_RATE_LIMIT = 10  # requests per second
