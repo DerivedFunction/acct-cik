@@ -75,7 +75,7 @@ def update_result(result, url, cik, year):
 
 ```{python}
 
-wf = execute_sql("SELECT * FROM report_data", fetch=True)
+wf = execute_sql("SELECT * FROM report_data WHERE NOT url=''", fetch=True)
 len(wf)
 ```
 

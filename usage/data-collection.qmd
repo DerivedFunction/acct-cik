@@ -31,7 +31,7 @@ filename = "derivatives_data.csv"
 DB_PATH = "../db/web_data.db"
 KEYWORDS_FILE = "../config/keywords_find.json"
 NUM_THREADS = 4
-SEC_RATE_LIMIT = NUM_THREADS * 1/5  # requests per second
+SEC_RATE_LIMIT = 1/10  # requests per second
 ```
 
 # Regex Patterns and Keyword Matching
@@ -266,14 +266,10 @@ print(f"Found {len(fetch_report_data(False))} invalid/failed reports in database
 ### Fetch report URLS
 
 ```{python}
-def rate_limit_sleep():
-    """Simple sleep to respect SEC rate limits synchronously."""
-    time.sleep(SEC_RATE_LIMIT)
-
 def fetch_json(url: str) -> dict | None:
     """Fetch a URL and return JSON as dict, or None if failed."""
     headers = {"User-Agent": f"testing {random.randint(1000,9999)}@example.com"}
-    rate_limit_sleep()
+    time.sleep(SEC_RATE_LIMIT)
     try:
         resp = requests.get(url, headers=headers, timeout=10)
         debug_print("Fetching", url)
@@ -299,17 +295,19 @@ def extract_filings(data: dict, cik: str, name: str, ticker: str) -> List[dict]:
         if f_type in FILING_TYPES:
             accession = accession_numbers[i].replace("-", "")
             doc = primary_docs[i]
-            if not doc or doc.endswith("txt"): # For old files
+            if not doc or doc.endswith("txt"):  # For old files
                 doc = f"{accession[:10]}-{accession[10:12]}-{accession[12:]}.txt"
             link = f"https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{doc}"
-            links.append({
-                "name": name,
-                "filing_date": filing_dates[i],
-                "report_date": report_dates[i],
-                "url": link,
-                "ticker": ticker,
-                "type": f_type
-            })
+            links.append(
+                {
+                    "name": name,
+                    "filing_date": filing_dates[i],
+                    "report_date": report_dates[i],
+                    "url": link,
+                    "ticker": ticker,
+                    "type": f_type,
+                }
+            )
     return links
 
 
@@ -342,227 +340,7 @@ def get_cik_filings(cik: str) -> List[dict]:
 ### Extract Content from Webpage
 
 ```{python}
-def extract_content(data: str, asHTML=True, max_len=2000) -> str:
-    """
-    Extract and clean text from HTML or plaintext in one pass.
-    Optimized version with reduced regex compilation and string operations.
-    """
-    if not data:
-        return ""
-
-
-    if asHTML:
-        soup = BeautifulSoup(data, "html.parser")
-        text = soup.get_text(separator="\n\n", strip=True)
-        text = keep_allowed_chars(text, True)
-        # Split into candidate paragraphs
-        paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
-        merged_paragraphs = []
-
-        i = 0
-        while i < len(paragraphs):
-            line = paragraphs[i]
-
-            # Check for bullets
-            if BULLET_PATTERN.match(line):
-                # Merge single-character bullet with next line
-                if len(line.strip()) == 1 and i + 1 < len(paragraphs):
-                    line = f"{line} {paragraphs[i + 1]}"
-                    i += 1  # Skip next line
-
-                # Merge with previous bullet if applicable
-                if merged_paragraphs and BULLET_PATTERN.match(merged_paragraphs[-1]):
-                    merged_paragraphs[-1] += f"\n{line}"
-                else:
-                    merged_paragraphs.append(line)
-
-            # Check for numbered lists
-            elif NUMBERED_PATTERN.match(line):
-                if merged_paragraphs and NUMBERED_PATTERN.match(merged_paragraphs[-1]):
-                    merged_paragraphs[-1] += f"\n{line}"
-                else:
-                    merged_paragraphs.append(line)
-
-            # Merge if previous line doesn't end in punctuation
-            elif merged_paragraphs and not PUNCTUATION_END_PATTERN.search(
-                merged_paragraphs[-1]
-            ):
-                merged_paragraphs[-1] += f" {line}"
-            else:
-                merged_paragraphs.append(line)
-
-            i += 1
-
-        # Handle max length with pre-compiled regex
-        final_paragraphs = []
-        for para in merged_paragraphs:
-            if len(para) <= max_len:
-                final_paragraphs.append(para)
-            else:
-                parts = SENTENCE_SPLIT_PATTERN.split(para)
-                current_chunk = ""
-
-                for part in parts:
-                    if len(current_chunk) + len(part) + 1 <= max_len:
-                        current_chunk += f" {part}" if current_chunk else part
-                    else:
-                        if current_chunk:
-                            final_paragraphs.append(current_chunk)
-                        current_chunk = part
-
-                if current_chunk:
-                    final_paragraphs.append(current_chunk)
-
-        paragraphs = final_paragraphs
-
-    else:  # Plain text processing
-        text = keep_allowed_chars(data, False)
-        parts = TABLE_SPLIT_PATTERN.split(text)
-        paragraphs = []
-
-        for part in parts:
-            if part.strip().lower().startswith("<table>"):
-                rows = parse_plain_text_table_fixed(part)
-                table_text = "\n".join(["\t".join(row) for row in rows])
-                paragraphs.append(table_text)
-            else:
-                # Use list comprehension for better performance
-                sub_paras = [p for p in re.split(r"\n\s*\n", part) if p.strip()]
-                paragraphs.extend(sub_paras)
-
-    # Optimized cleaning loop
-    cleaned_paragraphs = []
-    for para in paragraphs:
-        para = para.strip()
-        if not para:
-            continue
-
-        # Keep newlines for bullets and numbered lists (check once)
-        is_list_item = BULLET_PATTERN.match(para) or NUMBERED_PATTERN.match(para)
-        if not is_list_item:
-            para = re.sub(r"\n+", " ", para)
-
-        # Apply crunched text fixes
-        for pattern, replacement in CRUNCHED_TEXT_PATTERNS:
-            para = pattern.sub(replacement, para)
-
-        # Apply cleanup patterns
-        for pattern, replacement in CLEANUP_PATTERNS:
-            para = pattern.sub(replacement, para)
-
-        para = para.strip()
-
-        # Merge short paragraphs
-        if len(para) < 15 and cleaned_paragraphs:
-            cleaned_paragraphs[-1] = f"{cleaned_paragraphs[-1]} {para}"
-        elif para:
-            cleaned_paragraphs.append(para)
-
-    return "\n\n".join(cleaned_paragraphs)
-
-
-
-
-def keep_allowed_chars(text, asHTML=False):
-    """Optimized version with single pass processing"""
-    if not isinstance(text, str):
-        return text  # Ignore non-strings
-
-    # Try HTML decode if requested
-    if asHTML:
-        try:
-            text = text.encode("utf-8").decode("unicode_escape")
-        except Exception:
-            pass  # Leave text as-is if decoding fails
-
-    # Apply placeholders
-    for sym, ph in REPLACE_HOLDERS.items():
-        text = text.replace(sym, ph)
-
-    # Remove non-ASCII in single pass
-    text = NON_ASCII_PATTERN.sub("", text)
-
-    # Restore placeholders
-    for sym, ph in PLACEHOLDERS.items():
-        text = text.replace(ph, sym)
-    return text
-
-
-def parse_plain_text_table_fixed(block: str):
-    """
-    Optimized table parsing with pre-compiled patterns
-    """
-
-    rows = []
-    first_col_buffer = ""
-    first_col_active = True
-
-    # Process lines more efficiently
-    lines = [line.rstrip() for line in block.splitlines() if line.strip()]
-
-    for line in lines:
-        if SEPARATOR_PATTERN.fullmatch(line) or CAPTION_PATTERN.match(line.strip()):
-            continue
-
-        if "<S>" in line:
-            first_col_active = False
-            line = line.replace("<S>", "").lstrip()
-
-        if first_col_active:
-            first_col_buffer = f"{first_col_buffer} {line.strip()}".strip()
-            continue
-
-        # Split columns efficiently
-        cols = [col.strip() for col in COLUMN_SPLIT_PATTERN.split(line)]
-
-        if first_col_buffer:
-            rows.append([first_col_buffer] + cols)
-            first_col_buffer = ""
-        else:
-            rows.append(cols)
-
-    return rows
-
-
-def fetch_url(url: str, timeout: int = 10) -> str | None:
-    """
-    Fetch the content of a webpage synchronously.
-    """
-    if not url:
-        return None
-    try:
-        rate_limit_sleep()
-        debug_print("Fetching", url)
-        resp = requests.get(
-            url, timeout=timeout, headers={"User-Agent": "sync-fetch@example.com"}
-        )
-        if resp.status_code != 200:
-            print(f"Error {resp.status_code} for {url}")
-            return None
-        return resp.text
-    except Exception as e:
-        print(f"Error fetching {url}: {e}")
-        return None
-
-
-def process_url(url: str, cik: int, year: int):
-    """
-    Processes a URL and its data synchronously.
-    Saves the extracted content in the DB if not already cached.
-    """
-    debug_str = f"Processing {cik} for year {year}"
-    debug_print(debug_str)
-    raw_text = fetch_url(url)
-    if not raw_text:
-        return ""
-    # Extract content
-    if url.endswith("htm"):
-        debug_print("Processing as html")
-        content = extract_content(raw_text, True)
-    else:
-        debug_print("Processing as text")
-        content = extract_content(raw_text, False)
-    return content    
+    
 ```
 
 ### Keywords Finder: Find keywords
@@ -609,7 +387,7 @@ def filter_by_keywords(content: str, year: int, min_char_length: int = 400, max_
         normalized = text.lower()
         return any(kw in normalized for kw in ignore_keywords)
     
-    def expand_context(all_sentences: list, target_idx: int, has_keyword: bool) -> list:
+    def expand_context(all_sentences: list, target_idx: int, has_keyword: bool) -> str:
         """Expand context around target sentence with randomized min_char_length and truncation"""
         # Randomize min length within range (e.g., 600–800)
         random.seed(year + target_idx)  # stable per target sentence
@@ -761,6 +539,7 @@ def fetch_all_grouped(
 
     # Process CIKs concurrently
     total_ciks = len(cik_groups)
+    SEC_RATE_LIMIT = NUM_THREADS / 10  # requests per second
     with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         # Submit all tasks
         future_to_cik = {
@@ -788,6 +567,7 @@ def fetch_all_grouped(
         print(f"Saved {len(records)} urls to database")
 
     return fetch_report_data()
+
 
 def process_all_reports_fully():
     processed_set = get_processed_urls()
@@ -821,6 +601,7 @@ def process_all_reports_fully():
         except Exception as e:
             print(f"Error processing {url}: {e}")
             return None
+
     # Only process reports not already in webpage_result
     reports_to_process = [
         r
@@ -833,6 +614,7 @@ def process_all_reports_fully():
 
     results = 0
     empty_results = 0
+    SEC_RATE_LIMIT = NUM_THREADS / 10  # requests per second
     with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         future_to_report = {
             executor.submit(process_keywords_for_report, r): r
