@@ -926,7 +926,6 @@ def process_all_reports_fully():
             result_row = pd.Series(
                 {
                     "url": url,
-                    "name": report.name,
                     "ir": sentences.ir,
                     "fx": sentences.fx,
                     "cp": sentences.cp,
