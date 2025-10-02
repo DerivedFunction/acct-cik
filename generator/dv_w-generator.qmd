@@ -2605,9 +2605,8 @@ def generate_labeled_hedge_paragraph(
     if swapType is None:
         swapType = random.choice(["ir", "fx", "cp", "gen"])
 
-    swap_types = (
-        all_derivatives if swapType == "gen" else derivative_keywords[swapType]
-    )
+    swap_types = derivative_keywords[swapType]
+    
     money_units = random.choice(money_unit_list)
     currency_code = random.choice(currency_codes)
     major_currency = random.choice(all_currencies)
@@ -4707,7 +4706,7 @@ def generate(size_per_label=100):
             all_samples.append((paragraph, label))
 
         for _ in range(size_per_label):
-            paragraph, _ = generate_labeled_hedge_paragraph(
+            paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=False, swapType=prefix
             )
             all_samples.append((paragraph, label))
