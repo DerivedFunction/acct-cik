@@ -3,6 +3,7 @@ import random
 import pandas as pd
 from openpyxl import load_workbook
 import re
+import string
 ```
 
 # Common Variables
@@ -753,6 +754,7 @@ hedge_standards = [
     "accounting standards",
 ]
 ```
+
 ```{python}
 derivative_template = {
     "IR_PLACEHOLDER": [
@@ -882,8 +884,6 @@ derivative_keywords = {
 
 ## Commodities
 ```{python}
-
-
 cp_strategy_templates = [
     "{company} entered into {swap_type} to hedge anticipated changes in {commodity} prices, resulting in {currency_code}{amount} {money_unit} of unrealized gains/losses recorded in OCI",
     "During {month} {year}, {company} executed {swap_type} to stabilize {commodity} costs for forecasted production, with {currency_code}{amount} {money_unit} in deferred fair value adjustments",
@@ -1261,6 +1261,48 @@ hedged_items = [
 
 # Random Noise
 ```{python}
+
+# Common SEC patterns
+headers = [
+    "FORM 10-K", "FORM 10-Q", "FORM 8-K", "PROSPECTUS",
+    "Table of Contents", "UNITED STATES SECURITIES AND EXCHANGE COMMISSION",
+]
+
+# Table of Contents patterns with placeholders for page numbers
+sec_toc_patterns = [
+    "Item 1. Business {page}",
+    "A. History and Development of the Company {page}",
+    "B. Business Overview {page}",
+    "C. Organizational Structure {page}",
+    "Item 1A. Risk Factors {page}",
+    "Item 1B. Unresolved Staff Comments {page}",
+    "Item 2. Properties {page}",
+    "Item 3. Legal Proceedings {page}",
+    "Item 4. Submission of Matters to a Vote of Security Holders {page}",
+    "Item 5. Market for Registrant's Common Equity, Related Stockholder Matters and Issuer Purchases of Equity Securities {page}",
+    "A. Market Information {page}",
+    "B. Holders {page}",
+    "C. Dividends {page}",
+    "D. Restrictions on Share Ownership by Non-Canadians {page}",
+    "E. Exchange Controls {page}",
+    "F. Taxation {page}",
+    "G. Sale of Unregistered Securities {page}",
+    "H. Purchases of Equity Securities by the Company and Affiliated Purchases {page}",
+    "Item 6. Selected Financial Data {page}",
+    "Item 7. Management's Discussion and Analysis of Financial Condition and Results of Operation {page}",
+    "Item 7A. Quantitative and Qualitative Disclosures About Market Risk {page}",
+    "Item 8. Financial Statements and Supplementary Data {page}",
+    "Item 9. Changes in and Disagreements with Accountants on Accounting and Financial Disclosure {page}",
+    "Item 9A. Controls and Procedures {page}",
+    "Item 9B. Other Information {page}",
+    "Item 10. Directors, Executive Officers and Corporate Governance {page}",
+    "Item 11. Executive Compensation {page}",
+    "Item 12. Security Ownership of Certain Beneficial Owners and Management and Related Stockholder Matters {page}",
+    "Item 13. Certain Relationships and Related Transactions, and Director Independence {page}",
+    "Item 14. Principal Accounting Fees and Services {page}",
+    "Item 15. Exhibits, Financial Statement Schedules {page}",
+    "SIGNATURES {page}",
+]
 # ============ LITIGATION AND LEGAL MATTERS ============
 
 litigation_templates = [
@@ -3572,8 +3614,8 @@ def generate_labeled_hedge_paragraph(
             if random.random() < 0.6:
                 template = random.choice(cp_context_templates)
                 commodity = random.choice(commodities)
-                all_sentences.append(template.format(
-                    company=company_name, commodity=commodity)
+                all_sentences.append(
+                    template.format(company=company_name, commodity=commodity)
                 )
 
             # Impact sentences
@@ -3581,7 +3623,7 @@ def generate_labeled_hedge_paragraph(
                 template = random.choice(cp_impact_templates)
                 verb = random.choice(hedge_change_verbs)
                 commodity = random.choice(commodities)
-                cost_type=random.choice(cost_types)
+                cost_type = random.choice(cost_types)
                 all_sentences.append(
                     template.format(
                         company=company_name,
@@ -3598,12 +3640,14 @@ def generate_labeled_hedge_paragraph(
                     template = random.choice(cp_strategy_templates)
                     swap_type = random.choice(swap_types)
                     commodity = random.choice(commodities)
+                    if random.random() < 0.3: # Chance to replace with actual commodity
+                        swap_type = re.sub("commodity", commodity, swap_type)
                     amount = random.randint(5, 50)
                     notional = random.randint(50, 500)
                     event_year = (
                         random.choice(past_years) if past_years else current_year
                     )
-                    cost_type=random.choice(cost_types)
+                    cost_type = random.choice(cost_types)
                     sentence = template.format(
                         company=company_name,
                         swap_type=swap_type,
@@ -3626,6 +3670,8 @@ def generate_labeled_hedge_paragraph(
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 500)
                 commodity = random.choice(commodities)
+                if random.random() < 0.3: # Chance to replace with actual commodity
+                    swap_type = re.sub("commodity", commodity, swap_type)
                 sentence = template.format(
                     company=company_name,
                     swap_type=swap_type,
@@ -3644,6 +3690,8 @@ def generate_labeled_hedge_paragraph(
                     template = random.choice(cp_specific_templates)
                     swap_type = random.choice(swap_types)
                     commodity = random.choice(commodities)
+                    if random.random() < 0.3: # Chance to replace with actual commodity
+                        swap_type = re.sub("commodity", commodity, swap_type)
                     cost_type = random.choice(cost_types)
                     volume = random.randint(100, 10000)
                     volume_unit = random.choice(volume_units)
@@ -3698,6 +3746,8 @@ def generate_labeled_hedge_paragraph(
                     )  # Use event templates
                     swap_type = random.choice(swap_types)
                     commodity = random.choice(commodities)
+                    if random.random() < 0.3: # Chance to replace with actual commodity
+                        swap_type = re.sub("commodity", commodity, swap_type)
                     notional = random.randint(5, 50)
                     past_year = (
                         random.choice(past_years) if past_years else current_year
@@ -3832,7 +3882,7 @@ def generate_labeled_hedge_paragraph(
                     all_sentences.append(sentence)
     if len(all_sentences) < max_len:
         return generate_labeled_hedge_paragraph(
-            has_active_derivative=has_active_derivative, swapType=swapType, max_len = 3
+            has_active_derivative=has_active_derivative, swapType=swapType, max_len=3
         )
     # Shuffle and select sentences
     random.shuffle(all_sentences)
@@ -4222,13 +4272,19 @@ def generate_accounting_noise_paragraph(
             )
         else:
             template = random.choice(lease_commitment_templates)
-            amount = round(random.uniform(100, 400), 1)
+            amount = round(random.uniform(100, 800), 1)
+            amount2=round(random.uniform(100, 600), 1)
+            amount3=round(random.uniform(100, 400), 1)
             pv_amount = round(random.uniform(100, 900), 1)
             years = round(random.uniform(3, 8), 1)
-            rate = round(random.uniform(3.0, 7.0), 1)
+            rate = round(random.uniform(3.0, 7.0), 1),
             sentence = template.format(
                 amount=amount,
+                amount2=amount2,
+                amount3=amount3,
                 year=current_year,
+                next_year=current_year + 1,
+                next2_year=current_year + 2,
                 years=years,
                 month=random.choice(months),
                 rate=rate,
@@ -4924,6 +4980,10 @@ def generate_accounting_noise_paragraph(
             template = random.choice(clawback_templates)
             sentence = template.format(company=company_name)
         all_sentences.append(sentence)
+    if random.random() < 0.05:  # Generat of text and numbers
+        noise = generate_sec_noise(company=company_name, currency_unit=money_units, month=random.choice(months), year=current_year)
+        all_sentences.extend(noise)
+
     # Shuffle and select
     random.shuffle(all_sentences)
     selected_sentences = all_sentences[:max_len]
@@ -4941,7 +5001,36 @@ def generate_accounting_noise_paragraph(
     
     if paragraph.find("{") != -1 or paragraph.find("[") != -1:
         print("Error in format", paragraph)
-    return paragraph, 3    
+    return paragraph, 3  
+
+def generate_sec_noise(company, currency_unit, month, year):
+    def generate_toc_line():
+        template = random.choice(sec_toc_patterns)
+        page_num = random.randint(1, 200)  # simulate TOC page numbers
+        return template.format(page=page_num) + " "
+    phrases = [
+        "Commission file number " + str(random.randint(1, 99999)).zfill(5),
+        f"ANNUAL REPORT PURSUANT TO SECTION {random.choice(['13','15(d)'])} OF THE SECURITIES EXCHANGE ACT OF 1934",
+        f"Registrant's telephone number, including area code ({random.randint(100,999)}) {random.randint(100,999)}-{random.randint(1000,9999)}",
+        f"For the fiscal year ended {month} {end_day} {year}",
+        f"For the transition period from {month} {end_day} {year - 1} to {month} {end_day} {year}",
+        f"{company_name} (Exact Name , of Registrant as Specified in its Charter)",
+        f"Indicate by check mark if the registrant is a well-known seasoned issuer. Yes {random.choice(['[x]','[]'])} No {random.choice(['[x]','[]'])}",
+        f"Indicate by check mark whether the registrant (1) has filed all reports required to be filed by Section 13 or Section 15(d) of the Securities Exchange Act of 1934 during the preceding 12 months (or for such shorter period that the registrant was required to file such reports), and (2) has been subject to such filing requirements for the past 90 days. Yes {random.choice(['[x]','[]'])} No {random.choice(['[x]','[]'])}",
+        f"Note — Checking the box above will not relieve any registrant required to file reports pursuant to Section 13 or 15(d) of the Exchange Act from their obligations under those Sections",
+        f"Indicate by check mark whether the registrant has submitted electronically and posted on its corporate Website, if any, every Interactive Data File required to be submitted and posted to Rule 405 of Regulations S-T (§232.405 of this chapter) during the preceding 12 months (or for such shorter period that the registrant was required to submit and post such files). Yes {random.choice(['[x]','[]'])} No {random.choice(['[x]','[]'])}",
+        f'Indicate by check mark whether the registrant is a large accelerated filer, an accelerated filer, a non-accelerated filer, or a smaller reporting company. See the definitions of "large accelerated filer," "accelerated filer" and "smaller reporting company" in Rule 12b-2 of the Exchange Act Yes {random.choice(['[x]','[]'])} No {random.choice(['[x]','[]'])}',
+        f"The aggregate market value of the common shares held by non-affiliates was {currency_unit}{random.randint(10**6,10**9):,}",
+        f"{random.randint(50_000_000,200_000_000):,} common shares outstanding as of {random.randint(1,12)}/{random.randint(1,28)}/{random.randint(2000,2024)}",
+        f"Part III incorporates certain information by reference from the registrant's proxy statement for the {year} Annual Meeting of Shareholders expected to be held on {month} {random.randint(1,28)}, {year + 1} . Such proxy statement will be filed no later than 120 days after the close of the registrant's fiscal year ended {month} {random.randint(1,28)},  {year}."
+    ]
+
+    gibberish = ''.join(random.choices(string.ascii_lowercase + string.digits, k=random.randint(6,12))) + random.choice([".htm", ".txt"])
+    
+    # Randomly choose 1–3 fragments
+    chunks = random.sample(headers + phrases + [gibberish] + [generate_toc_line()], k=random.randint(1,3))
+    return chunks
+  
 ```
 
 
