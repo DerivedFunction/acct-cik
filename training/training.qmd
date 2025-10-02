@@ -29,7 +29,7 @@ import json
 ```{python}
 EXCEL_PATH = "../excel/training_data.xlsx"
 MODEL_CHECKPOINT = "DerivedFunction/finbert-derivative-usage-classifier"
-KEYWORDS_FILE = "../config/keywords_labels.json"
+KEYWORDS_FILE = "../config/keywords_find.json"
 ```
 
 # Data Preparation

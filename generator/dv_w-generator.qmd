@@ -2558,7 +2558,7 @@ def generate_labeled_hedge_paragraph(
     swapType=None,  # Added parameter
     year_range=(1999, 2025),
     max_past_years=3,
-    max_len=None,
+    max_len=random.randint(4, 7),
     include_policy=None,
     company_name=None,
 ):
@@ -3789,7 +3789,6 @@ def generate_labeled_hedge_paragraph(
                     )
                     all_sentences.append(sentence)
     if len(all_sentences) < max_len:
-        print("Too short, regenerating")
         return generate_labeled_hedge_paragraph(
             has_active_derivative=has_active_derivative, swapType=swapType
         )
