@@ -109,7 +109,7 @@ label2id = {v: int(k) for k, v in keyword_data["id2label"].items()}
 
 model = AutoModelForSequenceClassification.from_pretrained(
     MODEL_CHECKPOINT,
-    num_labels=8,
+    num_labels=len(id2label),
     id2label=id2label,
     label2id=label2id,
     # Allow loading even if the checkpoint's head has a different size.
