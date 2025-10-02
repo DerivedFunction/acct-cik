@@ -794,6 +794,8 @@ derivative_keywords = {
         "currency floor",
         "currency collar",
         "foreign currency forward",
+        "foreign currency forward exchange contract",
+        "foreign currency exchange contract",
         "foreign currency forward contract",
         "foreign currency purchased put option",
     ],
@@ -964,6 +966,7 @@ fx_strategy_templates = [
     "in the {quarter} quarter of {year}, {company} entered into {swap_type} as part of a collar to manage forex exposure",
     "Collar strategies with {swap_type} were implemented to stabilize currency impacts on forecasted transactions",
     "{company} used {swap_type} in a collar framework to cap foreign exchange risk while retaining flexibility",
+    "{company} enter into {swap_type} to manage exposures to changes in foreign exchange rates for anticipated intercompany purchases by those subsidiaries whose functional currencies are not the {major_currency}",
 ]
 
 fx_context_templates = [
@@ -1019,6 +1022,7 @@ fx_mitigation_templates = [
     "{swap_type} not designated as hedges, failing to be hedges or failing to continue as effective hedges are included in operations as {swap_type} gains or losses",
     "Discounts or premiums on {swap_type} designated and effective as hedges are amortized or accreted to expense using the straight-line method over the term of the related contract",
     "Discounts or premiums on {swap_type} not designated or effective as hedges are included in the mark to market adjustment and recognized in income as {swap_type} gains or losses",
+    "{swap_type} are marked-to-market with the resulting gains or losses reflected in Accumulated other comprehensive income (loss)",
 ]
 
 
@@ -1046,6 +1050,7 @@ fx_generic_hedge_templates = [
     "From time to time, {company} {verb} {swap_type} to hedge {hedge_type} in foreign operations",
     "{hedge_type} hedges protect the value of {company}'s investments in foreign subsidiaries from adverse currency movements",
     "{company} {verb} derivative instruments designated as {hedge_type} hedges to mitigate currency translation risk on foreign operations",
+    "These {swap_type} are designated as {hedge_type} hedges of the variability of the cash flows due to changes in foreign currency exchange rates",
 ]
 
 fx_specific_hedge_templates = [
