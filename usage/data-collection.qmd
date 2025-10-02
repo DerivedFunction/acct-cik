@@ -200,6 +200,9 @@ def save_batch_report_urls(df):
             name = name.dropna()
             name["name"] = name["name"].str.title()
             name.to_sql("names", conn, if_exists="append", index=False)
+        except:
+            pass
+        try:
             report = df[["cik", "year", "url"]]
             report.to_sql("report_data", conn, if_exists="append", index=False)
             return True
