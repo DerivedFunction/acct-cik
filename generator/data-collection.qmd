@@ -98,29 +98,48 @@ CAPTION_PATTERN = re.compile(r"<CAPTION>", re.IGNORECASE)
 COLUMN_SPLIT_PATTERN = re.compile(r"\s{2,}")
 # Use more efficient split with compiled regex
 TABLE_SPLIT_PATTERN = re.compile(r"(<TABLE>.*?</TABLE>)", re.DOTALL | re.IGNORECASE)
+
 # Pre-compiled regex patterns for each category (mega-patterns)
 IR_REGEX = re.compile(
-    r"\binterest rate (contract|derivative|instrument|forward|future|collar|swap|option|cap|floor|lock)|zero coupon swap|single currency basis swap|swaption\b",
+    r"\binterest rate (contract|derivative|instrument|forward|future|collar|swap|option|cap|floor|lock)"
+    r"|zero coupon swap|single currency basis swap|swaption\b",
     flags=re.IGNORECASE,
 )
+
 FX_REGEX = re.compile(
-    r"\b(forward rate (agreement|contract|option)|"
-    r"((foreign exchange|currency|cross-currency)( rate)? (contract|derivative|instrument|forward|future|swap|option|cap|floor|collar)))\b",
+    r"\b(forward rate (agreement|contract|option)"
+    r"|((foreign exchange|currency|cross-currency)( rate)? (contract|derivative|instrument|forward|future|swap|option|cap|floor|collar))"
+    r"|forward foreign exchange)\b",
     flags=re.IGNORECASE,
 )
+
 CP_REGEX = re.compile(
     r"\bcommodity( price)? (contract|derivative|instrument|forward|future|option|cap|floor|collar|swap)\b",
     flags=re.IGNORECASE,
 )
+
 GEN_REGEX = re.compile(
-    r"\b(derivative (contract|instrument|financial instrument|position|asset|expense|gain|loss)|"
-    r"change in fair value of derivative|gain on derivative|loss on derivative|hedge( of the net investment)?|"
-    r"designated as (a )?hedge(s)?|(instruments|contracts) are designated|(cash flow|fair value) hedge|"
-    r"ineffective portion|notional|(forward|futures) contract|(call|put)? option( contract)?|swap|swaption|(cap|lock) agreement)\b",
+    r"\b(derivative (contract|instrument|financial instrument|position|asset|liability|expense|gain|loss)"
+    r"|change in fair value of derivative"
+    r"|(gain|loss) on derivative"
+    r"|embedded derivative"
+    r"|(hedg(e|ing)|hedge(s|d)) (of|instrument|contract|derivative|relationship|accounting|program|transaction|activity)"
+    r"|designated as (a |an )?((cash flow|fair value|net investment) )?hedg(e|ing)(s)?"
+    r"|(instruments|contracts) are designated"
+    r"|(cash flow|fair value|net investment) hedg(e|ing)"
+    r"|ineffective portion"
+    r"|notional (amount|value|principal|contract|exposure)?"
+    r"|(forward|futures) contract"
+    r"|(call|put) (option|contract)"
+    r"|option contract"
+    r"|(interest rate |currency |commodity |equity |credit )?swap( contract| agreement| transaction)?"
+    r"|swaption"
+    r"|(cap|floor|collar|lock) agreement)\b",
     flags=re.IGNORECASE,
 )
+
 SPEC_REGEX = re.compile(
-    r"\b(financial derivative|may use derivatives|over[- ]the[- ]counter derivative|otc derivative|a\.s\.c 815|asc 815)\b",
+    r"\b(financial derivative|may use derivatives|over[- ]the[- ]counter derivative|otc derivative|a\.s\.c\.? 815|asc 815)\b",
     flags=re.IGNORECASE,
 )
 
