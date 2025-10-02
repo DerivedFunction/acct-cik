@@ -97,9 +97,40 @@ SEPARATOR_PATTERN = re.compile(r"[-=\s]+")
 CAPTION_PATTERN = re.compile(r"<CAPTION>", re.IGNORECASE)
 COLUMN_SPLIT_PATTERN = re.compile(r"\s{2,}")
 # Use more efficient split with compiled regex
-TABLE_SPLIT_PATTERN = re.compile(
-    r"(<TABLE>.*?</TABLE>)", re.DOTALL | re.IGNORECASE
+TABLE_SPLIT_PATTERN = re.compile(r"(<TABLE>.*?</TABLE>)", re.DOTALL | re.IGNORECASE)
+# Pre-compiled regex patterns for each category (mega-patterns)
+IR_REGEX = re.compile(
+    r"\binterest rate (contract|derivative|instrument|forward|future|collar|swap|option|cap|floor|lock)|zero coupon swap|single currency basis swap|swaption\b",
+    flags=re.IGNORECASE,
 )
+FX_REGEX = re.compile(
+    r"\b(forward rate (agreement|contract|option)|"
+    r"((foreign exchange|currency|cross-currency)( rate)? (contract|derivative|instrument|forward|future|swap|option|cap|floor|collar)))\b",
+    flags=re.IGNORECASE,
+)
+CP_REGEX = re.compile(
+    r"\bcommodity( price)? (contract|derivative|instrument|forward|future|option|cap|floor|collar|swap)\b",
+    flags=re.IGNORECASE,
+)
+GEN_REGEX = re.compile(
+    r"\b(derivative (contract|instrument|financial instrument|position|asset|expense|gain|loss)|"
+    r"change in fair value of derivative|gain on derivative|loss on derivative|hedge( of the net investment)?|"
+    r"designated as (a )?hedge(s)?|(instruments|contracts) are designated|(cash flow|fair value) hedge|"
+    r"ineffective portion|notional|(forward|futures) contract|(call|put)? option( contract)?|swap|swaption|(cap|lock) agreement)\b",
+    flags=re.IGNORECASE,
+)
+SPEC_REGEX = re.compile(
+    r"\b(financial derivative|may use derivatives|over[- ]the[- ]counter derivative|otc derivative|a\.s\.c 815|asc 815)\b",
+    flags=re.IGNORECASE,
+)
+
+CATEGORY_REGEX_ORDER = [
+    ("ir", IR_REGEX),
+    ("fx", FX_REGEX),
+    ("cp", CP_REGEX),
+    ("spec", SPEC_REGEX),
+    ("gen", GEN_REGEX),
+]
 ```
 ```{python}
 all_derivatives_df = pd.read_csv(filename)
@@ -108,22 +139,6 @@ with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
     keyword_data = json.load(f)
 
 id2label = {int(k): v for k, v in keyword_data["id2label"].items()}
-
-MATCHING_KEYWORDS = {int(k): v for k, v in keyword_data["MATCHING_KEYWORDS"].items()}
-IR_KEYWORDS = MATCHING_KEYWORDS[8]
-FX_KEYWORDS = MATCHING_KEYWORDS[10]
-CP_KEYWORDS = MATCHING_KEYWORDS[12]
-GEN_KEYWORDS = MATCHING_KEYWORDS[0]  # Last resort matching (gerneric usage)
-SPEC_KEYWORDS = MATCHING_KEYWORDS[2] # Last resort (speculative/policy)
-DL_KEYWORDS = MATCHING_KEYWORDS[4]
-ED_KEYWORDS = MATCHING_KEYWORDS[6]
-KEYWORDS = []
-KEYWORDS.extend(IR_KEYWORDS)
-KEYWORDS.extend(FX_KEYWORDS)
-KEYWORDS.extend(CP_KEYWORDS)
-KEYWORDS.extend(GEN_KEYWORDS)
-KEYWORDS.extend(DL_KEYWORDS)
-KEYWORDS.extend(ED_KEYWORDS)
 ```
 
 ## Predefined Functions
@@ -626,11 +641,6 @@ def filter_by_keywords(
     Extract and filter sentences based on keywords with simple context expansion.
     Optimized for speed with pre-cleaning and minimal keyword searches.
     (All lowercase)
-    IR_KEYWORDS = MATCHING_KEYWORDS[8]
-    FX_KEYWORDS = MATCHING_KEYWORDS[10]
-    CP_KEYWORDS = MATCHING_KEYWORDS[12]
-    GEN_KEYWORDS = MATCHING_KEYWORDS[0]  # Last resort matching (generic usage)
-    SPEC_KEYWORDS = MATCHING_KEYWORDS[2] # Last resort (speculative/policy)
     IGNORE_KEYWORDS # Do not match or add to context
     """
     ignore_keywords = [kw.lower() for kw in IGNORE_KEYWORDS]
@@ -638,20 +648,10 @@ def filter_by_keywords(
     debug_print("Generating sentences")
 
     def get_keyword_category(text: str) -> str:
-        """Determine which keyword category the text matches (priority order: IR > FX > CP > SPEC > GEN)"""
-        normalized = text.lower()
-
-        # Check in priority order: IR > FX > CP > SPEC > GEN (generic last)
-        if any(kw in normalized for kw in IR_KEYWORDS):
-            return "ir"
-        elif any(kw in normalized for kw in FX_KEYWORDS):
-            return "fx"
-        elif any(kw in normalized for kw in CP_KEYWORDS):
-            return "cp"
-        elif any(kw in normalized for kw in SPEC_KEYWORDS):
-            return "spec"
-        elif any(kw in normalized for kw in GEN_KEYWORDS):
-            return "gen"
+    """Determine which keyword category the text matches (priority order: IR > FX > CP > SPEC > GEN)"""
+        for category, regex in CATEGORY_REGEX_ORDER:
+            if regex.search(text):
+                return category
         return None
 
     def clean_sentence(sentence: str) -> str:

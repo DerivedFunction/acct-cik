@@ -4982,7 +4982,7 @@ def generate_accounting_noise_paragraph(
         all_sentences.append(sentence)
     if random.random() < 0.05:  # Generat of text and numbers
         noise = generate_sec_noise(company=company_name, currency_unit=money_units, month=random.choice(months), year=current_year)
-        all_sentences.extend(noise)
+        all_sentences = noise
 
     # Shuffle and select
     random.shuffle(all_sentences)
@@ -5027,8 +5027,8 @@ def generate_sec_noise(company, currency_unit, month, year):
 
     gibberish = ''.join(random.choices(string.ascii_lowercase + string.digits, k=random.randint(6,12))) + random.choice([".htm", ".txt"])
     
-    # Randomly choose 5–8 fragments
-    chunks = random.sample(headers + phrases + [gibberish] + [generate_toc_line()], k=random.randint(5, 8))
+    # Randomly choose 8–15 fragments
+    chunks = random.sample(headers + phrases + [gibberish] + [generate_toc_line()], k=random.randint(8, 15))
     return chunks
   
 ```

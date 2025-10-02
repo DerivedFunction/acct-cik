@@ -113,12 +113,11 @@ with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
     data = json.load(f)
 
 id2label = {int(k): v for k, v in data["id2label"].items()}  # Convert keys to int
-MATCHING_KEYWORDS = {int(k): v for k, v in data["MATCHING_KEYWORDS"].items()}
 
 ```
 
 ```{python}
-result_dict = getBatch(10, 0)  # Initial batch write
+result_dict = getBatch(100, 0)  # Initial batch write
 ```
 
 ## Our goal is to try to fix labeling errors using AI
