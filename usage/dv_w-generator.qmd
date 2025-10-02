@@ -354,24 +354,116 @@ embedded_no_longer_outstanding_templates = [
 
 # Hedging Activities
 ```{python}
-swap_types = [
-    "pay-fixed, receive-floating interest rate swaps",
-    "pay-floating, receive-fixed swaps",
-    "foreign currency forward contract",
-    "foreign exchange contract",
-    "futures contract",
-    "commodity forward contract",
-    "interest rate hedge",
-    "foreign currency purchased put option contracts",
-    "purchased put option contracts",
-    "forward starting interest rate swaps",
-    "treasury rate lock agreements",
-    "interest rate swaps",
-    "interest rate agreements",
-    "collar strategies",
-    "purchased call option contracts",
-]
-
+derivative_keywords = {
+    "IR": [
+        "interest rate contract",
+        "interest rate derivative",
+        "interest rate instrument",
+        "interest rate forward",
+        "interest rate collar",
+        "interest rate swap",
+        "zero coupon swap",
+        "single currency basis swap",
+        "interest rate future",
+        "interest rate option",
+        "interest rate cap",
+        "interest rate floor",
+        "interest rate lock",
+        "pay-fixed, receive-floating interest rate swaps",
+        "pay-floating, receive-fixed swaps",
+        "interest rate hedge",
+        "forward starting interest rate swaps",
+        "treasury rate lock agreements",
+        "interest rate swaps",
+        "interest rate agreements",
+    ],
+    "FX": [
+        "forward rate agreement",
+        "forward rate contract",
+        "forward rate option",
+        "foreign exchange contract",
+        "foreign exchange rate contract",
+        "currency contract",
+        "currency rate contract",
+        "foreign exchange derivative",
+        "foreign exchange rate derivative",
+        "currency derivative",
+        "currency rate derivative",
+        "foreign exchange instrument",
+        "foreign exchange rate instrument",
+        "currency instrument",
+        "currency rate instruments",
+        "foreign exchange forward",
+        "foreign exchange rate forward",
+        "currency forward",
+        "currency rate forward",
+        "forward foreign exchange",
+        "foreign exchange future",
+        "foreign exchange rate future",
+        "currency future",
+        "currency rate future",
+        "foreign exchange swap",
+        "foreign exchange rate swap",
+        "currency rate swap",
+        "currency swap",
+        "foreign exchange option",
+        "foreign exchange rate option",
+        "currency option",
+        "currency rate option",
+        "foreign exchange cap",
+        "foreign exchange rate cap",
+        "currency cap",
+        "currency rate cap",
+        "foreign exchange floor",
+        "foreign exchange rate floor",
+        "currency floor",
+        "currency rate floor",
+        "foreign exchange collar",
+        "foreign exchange rate collar",
+        "currency collar",
+        "currency rate collar",
+        "foreign currency forward contract",
+        "foreign currency purchased put option contracts",
+    ],
+    "CP": [
+        "commodity contract",
+        "commodity price contract",
+        "commodity derivative",
+        "commodity price derivative",
+        "commodity instrument",
+        "commodity price instrument",
+        "commodity forward",
+        "commodity price forward",
+        "commodity future",
+        "commodity price future",
+        "commodity option",
+        "commodity price option",
+        "commodity cap",
+        "commodity price cap",
+        "commodity floor",
+        "commodity price floor",
+        "commodity collar",
+        "commodity price collar",
+        "commodity swap",
+        "commodity price swap",
+        "commodity forward contract",
+    ],
+    "GENERIC": [
+        "futures contract",
+        "purchased put option contracts",
+        "collar strategies",
+        "purchased call option contracts",
+        "forward contract",
+        "call option",
+        "call contract",
+        "put option",
+        "put contract",
+        "option contract",
+        "swap",
+        "swaption",
+    ],
+}
+all_derivatives = list(dict.fromkeys(kw for kws in derivative_keywords.values() for kw in kws))
 money_unit_list = ["thousand", "million", "billion"]
 # Template arrays for event-based sentences (labels 0 and 1)
 past_event_templates = [
@@ -715,7 +807,7 @@ mitigation_templates = [
     "Currency swaps are utilized to convert borrowings into {major_currency} when strategically beneficial",
     "{swap_type} not designated as hedges, failing to be hedges or failing to continue as effective hedges are included in operations as {swap_type} gains or losses",
     "Discounts or premiums on {swap_type} designated and effective as hedges are amortized or accreted to expense using the straight-line method over the term of the related contract",
-    "Discounts or premiums on {swap_type} not designated or effective as hedges are included in the mark to market adjustment and recognized in income as {swap_type} gains or losses"
+    "Discounts or premiums on {swap_type} not designated or effective as hedges are included in the mark to market adjustment and recognized in income as {swap_type} gains or losses",
 ]
 
 mitigation_verbs = [
@@ -759,7 +851,7 @@ accounting_policy_templates = [
     "Gains and losses on derivative instruments are recognized currently in earnings",
     "The ultimate fair value of our derivative instruments is uncertain, and {company} believe that it is reasonably possible that a change in the estimated fair value could occur in the near future",
     "The accounting for the changes in the fair value of the derivative depends on the intended use of the derivative and the resulting designation",
-    "For a derivative that does not qualify as a {hedge_type} hedge, the change in {hedge_type} is recognized currently in net income"
+    "For a derivative that does not qualify as a {hedge_type} hedge, the change in {hedge_type} is recognized currently in net income",
 ]
 
 documentation_templates = [
@@ -2334,12 +2426,13 @@ def generate_derivative_liability_paragraph(
 
 def generate_labeled_hedge_paragraph(
     has_active_derivative,
+    swap_type=None,
     year_range=(1999, 2025),
     max_past_years=random.randint(1, 3),
     max_len=random.randint(4, 7),
     include_policy=None,
     company_name=None,
-):
+):  
     """
     Generate a synthetic hedge paragraph with known label.
 
@@ -2372,6 +2465,10 @@ def generate_labeled_hedge_paragraph(
             company_name = random.choice(company_names)
         else:
             company_name = random.choice(["The Company", "We"])
+    if swap_type is None:
+        swap_types = all_derivatives
+    else:
+        swap_types = derivative_keywords[swap_type]
     money_units = random.choice(money_unit_list)
     currency_code = random.choice(currency_codes)
     major_currency = random.choice(all_currencies)
@@ -4226,12 +4323,26 @@ company_names = [name.lower().title() for name in company_names]
 def generate(size_per_label=100):
     # Collect all generated samples
     all_samples = []
+    swap_types = ["IR", "FX", "CP", "GENERIC"]
+    for prefix in swap_types:
+        for _ in range(size_per_label):
+            paragraph, label = generate_labeled_hedge_paragraph(
+                has_active_derivative=True, swap_type=prefix
+            )
+            all_samples.append((paragraph, label))
+
+        for _ in range(size_per_label):
+            paragraph, label = generate_labeled_hedge_paragraph(
+                has_active_derivative=False, swap_type=prefix
+            )
+            all_samples.append((paragraph, label))
     for _ in range(size_per_label):
         paragraph, label = generate_labeled_hedge_paragraph(has_active_derivative=True)
         all_samples.append((paragraph, label))
     for _ in range(size_per_label):
         paragraph, label = generate_labeled_hedge_paragraph(has_active_derivative=False)
         all_samples.append((paragraph, label))
+
     for _ in range(size_per_label):
         paragraph, label = generate_labeled_hedge_paragraph(has_active_derivative=None)
         all_samples.append((paragraph, label))
@@ -4268,7 +4379,7 @@ def generate(size_per_label=100):
     except FileNotFoundError:
         # If file doesn't exist, create a new one
         df_new.to_excel(output_file, sheet_name="Generated_Data", index=False)
-    
+
     print(f"\n{len(all_samples)} samples written/appended to {output_file}")
 ```
 

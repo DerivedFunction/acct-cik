@@ -108,11 +108,16 @@ with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
     keyword_data = json.load(f)
 
 id2label = {int(k): v for k, v in keyword_data["id2label"].items()}
+
 MATCHING_KEYWORDS = {int(k): v for k, v in keyword_data["MATCHING_KEYWORDS"].items()}
-
-# Optional: flatten all keywords into a single set if needed for old functions
-KEYWORDS = {kw for kws in MATCHING_KEYWORDS.values() for kw in kws}
-
+# Flatten all keywords, handling nested dicts for label 0
+KEYWORDS = set()
+for kws in MATCHING_KEYWORDS.values():
+    if isinstance(kws, dict):  # nested types
+        for sublist in kws.values():
+            KEYWORDS.update(sublist)
+    else:
+        pass
 ```
 
 ## Predefined Functions
@@ -139,7 +144,16 @@ def create_db():
                 cik INTEGER,
                 year INTEGER,
                 url TEXT,
-                status INTEGER DEFAULT 0
+                FOREIGN KEY (cik) REFERENCES names (cik)
+            )
+        """
+        )
+        c.execute(
+            """
+            CREATE TABLE IF NOT EXISTS names (
+                cik INTEGER,
+                name TEXT
+                PRIMARY KEY (cik)
             )
         """
         )
@@ -185,13 +199,13 @@ def save_batch_report_urls(df):
     """
     with sqlite3.connect(DB_PATH) as conn:
         try:
-            df = df[["cik", "year", "url"]]
-            df["status"] = (
-                1 if "status" not in df.columns else df["status"]
-            )  # Default to 1 if not provided
-            df.to_sql("report_data", conn, if_exists="append", index=False)
+            name = df[["cik", "name"]].drop_duplicates()
+            name.to_sql("names", conn, if_exists="append", index=False)
+            report = df[["cik", "year", "url"]]
+            report.to_sql("report_data", conn, if_exists="append", index=False)
             return True
         except sqlite3.IntegrityError:
+            df = df[["cik", "year", "url"]]
             df["reason"] = "Error submitting batch"
             df.to_sql("fail_results", conn, if_exists="append", index=False)
             return False
@@ -753,12 +767,12 @@ def fetch_all_grouped(saveIteration: int = 10) -> pd.DataFrame:
         for fyear in years_to_fetch:
             year_filings = filter_by_fyear(filings, fyear)
             for filing in year_filings:
-                cik_records.append({"cik": cik, "year": fyear, **filing, "status": 1})
+                cik_records.append({"cik": cik, "year": fyear, **filing})
 
-        # If we don't have the fyears, we use dummy urls and set status to -1
+        # If we don't have the fyears, we use dummy urls
         for year in years:
             if (cik, year) not in already_done:
-                cik_records.append({"cik": cik, "year": year, "url": "", "status": -1})
+                cik_records.append({"cik": cik, "year": year, "url": ""})
 
         return cik_records
 
@@ -815,6 +829,7 @@ def process_all_reports_fully():
                 {
                     "url": url,
                     "matches": sentences["matches"],
+                    "name": report.name,
                 }
             )
             debug_print(f"Processed {result_row}")
