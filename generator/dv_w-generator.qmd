@@ -847,6 +847,11 @@ cp_strategy_templates = [
     "During the {quarter} quarter of {year}, {swap_type} were used to manage {commodity} price risk, with {currency_code}{amount} {money_unit} of mark-to-market adjustments",
     "{company} employed {swap_type} to mitigate fluctuations in {commodity} prices, recording {currency_code}{amount} {money_unit} in OCI",
     "In {month} {year}, {swap_type} were designated as hedges for forecasted {commodity} sales, with {currency_code}{amount} {money_unit} of unrealized gains/losses deferred in equity",
+    "{company} used {swap_type} in {year} to secure {commodity} prices, recognizing {currency_code}{amount} {money_unit} in hedge-related gains/losses",
+    "To manage {commodity} price exposure, {company} executed {swap_type} in {month} {year}, with {currency_code}{amount} {money_unit} in OCI adjustments",
+    "In {quarter} {year}, {company} implemented {swap_type} to stabilize {cost_type}, resulting in {currency_code}{amount} {money_unit} of fair value changes",
+    "{company}'s {swap_type} strategy for {commodity} in {month} {year} led to {currency_code}{amount} {money_unit} in deferred gains/losses in equity",
+    "{swap_type} were employed by {company} to hedge {commodity} costs, with {currency_code}{amount} {money_unit} recorded as mark-to-market adjustments in {year}"
 ]
 cp_position_templates = [
     "As of {month} {end_day}, {year}, {company} maintains {swap_type} with notional amounts totaling {currency_code}{notional} {money_unit} to hedge commodity price risk",
@@ -858,6 +863,11 @@ cp_position_templates = [
     "During {year}, {company} executed {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to hedge volatility in raw material costs",
     "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} are used to mitigate commodity price exposure",
     "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as hedges for commodity procurement",
+    "On {month} {end_day}, {year}, {company}’s {swap_type} portfolio includes notional amounts of {currency_code}{notional} {money_unit} to stabilize commodity costs",
+    "As of {month} {year}, {company} uses {swap_type} with a notional value of {currency_code}{notional} {money_unit} to manage {commodity} price volatility",
+    "{company} holds {swap_type} as of {month} {end_day}, {year}, with notional values of {currency_code}{notional} {money_unit} to hedge {commodity} exposures",
+    "At {month} {year}, {company}’s {swap_type} cover {currency_code}{notional} {money_unit} in notional value to mitigate risks from commodity price swings",
+    "During {year}, {company} maintained {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to protect against commodity market fluctuations"
 ]
 cp_specific_templates = [
     "{company} utilizes {swap_type} to hedge exposure to {commodity} price volatility affecting {cost_type}",
@@ -868,6 +878,11 @@ cp_specific_templates = [
     "{company} maintains {swap_type} to hedge {commodity} price exposure on production inputs",
     "The Company uses {swap_type} to stabilize {cost_type} by hedging approximately {pct}% of anticipated {commodity} requirements",
     "{swap_type} are designated as cash flow hedges of forecasted {commodity} purchases at fixed prices averaging {currency_code}{price} per {volume_unit}",
+    "{company} employs {swap_type} to mitigate {commodity} price risks impacting {cost_type} for {volume} {volume_unit}",
+    "To secure stable {cost_type}, {company} uses {swap_type} for {commodity} with maturities extending to {months} months",
+    "{company}'s {swap_type} cover {pct}% of {commodity} needs, reducing exposure to price swings in {cost_type}",
+    "In response to {commodity} market trends, {company} adjusts {swap_type} positions for {volume} {volume_unit} to manage {cost_type}",
+    "{company} hedges {commodity} price risk through {swap_type}, targeting {pct}% of projected {cost_type} over {months} months"
 ]
 cp_context_templates = [
     "{company} uses commodity contracts and derivatives to manage price exposure to raw materials",
@@ -875,6 +890,11 @@ cp_context_templates = [
     "To hedge commodity price fluctuations, {company} enters into forwards, futures, and swaps on key raw materials",
     "Volatility in commodity markets can influence the company's procurement costs and operational results",
     "{company} is exposed to changes in energy, metals, and agricultural prices that may impact financial performance",
+    "{company} employs commodity hedging strategies to stabilize input costs and protect profit margins",
+    "Fluctuations in raw material prices may lead to adjustments in {company}'s pricing strategies",
+    "{company}'s financial results are sensitive to global commodity market trends and supply chain disruptions",
+    "To mitigate risks, {company} monitors commodity price indices and adjusts derivative positions accordingly",
+    "{company} uses fixed-price contracts to lock in costs for critical commodities and reduce volatility"
 ]
 cp_impact_templates = [
     "Fluctuations in {commodity} prices {verb} the reported cost of goods sold and operating margins",
@@ -887,6 +907,11 @@ cp_impact_templates = [
     "{company}'s exposure to {commodity} prices {verb} operating costs and financial statements",
     "Price changes in key commodities {verb} the cost of raw materials and gross margins",
     "Volatility in {commodity} markets {verb} the translated value of procurement and derivative positions",
+    "Sudden {commodity} price swings {verb} {company}'s production costs and earnings stability",
+    "{commodity} market trends {verb} the valuation of {company}'s commodity-linked assets",
+    "Price volatility in {commodity} {verb} {company}'s cash flow projections and budgeting",
+    "Changes in {commodity} prices {verb} the cost of {cost_type} and overall profitability",
+    "{company}'s exposure to {commodity} market shifts {verb} reported earnings and shareholder equity"
 ]
 
 commodities = [
@@ -897,8 +922,13 @@ commodities = [
     "copper",
     "steel",
     "corn",
-    "soybeans" "wheat",
+    "soybeans",
+     "wheat",
+     "farm products",
+     "metals",
+     "titanium",
     "fuel",
+    "gasoline"
 ]
 cost_types = [
     "input costs",
@@ -2641,7 +2671,7 @@ def generate_labeled_hedge_paragraph(
     if has_active_derivative is None:
         label = 2
     elif has_active_derivative is True:
-        if swapType == "gen" or swapType == "mixed":
+        if swapType == "gen":
             label = 0
         elif swapType == "ir":
             label = 8
@@ -2649,10 +2679,8 @@ def generate_labeled_hedge_paragraph(
             label = 10
         elif swapType == "cp":
             label = 12
-        else:
-            label = 14
     else:
-        if swapType == "gen" or swapType == "mixed":
+        if swapType == "gen":
             label = 1
         elif swapType == "ir":
             label = 9
@@ -2660,8 +2688,6 @@ def generate_labeled_hedge_paragraph(
             label = 11
         elif swapType == "cp":
             label = 13
-        else:
-            label = 15
 
     # Label 2: Policy/disclosure only (no specific positions)
     if has_active_derivative is None:
@@ -2852,184 +2878,6 @@ def generate_labeled_hedge_paragraph(
             if random.random() < 0.5:
                 template = random.choice(hedge_no_trading_templates)
                 all_sentences.append(template.format(company=company_name))
-            # Determine which specific logic to apply
-        if swapType == "mixed":
-            # For mixed types, randomly pull from each type's templates
-            active_types = mixed_types
-
-            # Add context sentences based on active types
-            for active_type in active_types:
-                if random.random() < 0.4:  # Lower probability per type
-                    if active_type == "fx":
-                        template = random.choice(fx_context_templates)
-                        all_sentences.append(template.format(company=company_name))
-                    elif active_type == "ir":
-                        template = random.choice(fx_ir_context_templates)
-                        all_sentences.append(template.format(company=company_name))
-                    elif active_type == "cp":
-                        template = random.choice(cp_context_templates)
-                        all_sentences.append(template.format(company=company_name))
-
-            # Add impact sentences based on active types
-            for active_type in active_types:
-                if random.random() < 0.5:  # Lower probability per type
-                    if active_type == "fx":
-                        template = random.choice(fx_impact_templates)
-                        verb = random.choice(hedge_change_verbs)
-                        all_sentences.append(
-                            template.format(
-                                company=company_name,
-                                major_currency=major_currency,
-                                verb=verb,
-                            )
-                        )
-                    elif active_type == "cp":
-                        template = random.choice(cp_impact_templates)
-                        verb = random.choice(hedge_change_verbs)
-                        commodity = random.choice(commodities)
-                        all_sentences.append(
-                            template.format(
-                                company=company_name,
-                                commodity=commodity,
-                                verb=verb,
-                            )
-                        )
-
-            # Add mitigation sentences
-            for active_type in active_types:
-                if random.random() < 0.5:
-                    if active_type == "fx":
-                        template = random.choice(fx_mitigation_templates)
-                        verb = random.choice(hedge_mitigation_verbs)
-                        all_sentences.append(
-                            template.format(
-                                company=company_name,
-                                verb=verb,
-                                swap_type=random.choice(swap_types),
-                                major_currency=major_currency,
-                            )
-                        )
-                    elif active_type == "ir":
-                        template = random.choice(fx_ir_mitigation_templates)
-                        verb = random.choice(hedge_mitigation_verbs)
-                        all_sentences.append(
-                            template.format(
-                                company=company_name,
-                                verb=verb,
-                                swap_type=random.choice(swap_types),
-                            )
-                        )
-            # Add specific position sentences for each active type
-            for active_type in active_types:
-                # Label 0: Active derivative positions
-                if has_active_derivative:
-                    if active_type == "fx":
-                        # Add FX-specific sentences with lower probability
-                        if random.random() < 0.6:
-                            template = random.choice(hedge_active_position_template)
-                            swap_type_selected = random.choice(
-                                [
-                                    s
-                                    for s in swap_types
-                                    if s in derivative_keywords["fx"]
-                                ]
-                            )
-                            notional = random.randint(50, 1000)
-                            sentence = template.format(
-                                company=company_name,
-                                swap_type=swap_type_selected,
-                                month=random.choice(months),
-                                end_day=random.randint(28, 31),
-                                year=current_year,
-                                currency_code=currency_code,
-                                notional=notional,
-                                money_unit=money_units,
-                            )
-                            all_sentences.append(sentence)
-
-                    elif active_type == "ir":
-                        # Add IR-specific sentences with lower probability
-                        if random.random() < 0.6:
-                            template = random.choice(ir_active_position_template)
-                            swap_type_selected = random.choice(
-                                [
-                                    s
-                                    for s in swap_types
-                                    if s in derivative_keywords["ir"]
-                                ]
-                            )
-                            notional = random.randint(100, 1000)
-                            sentence = template.format(
-                                company=company_name,
-                                swap_type=swap_type_selected,
-                                month=random.choice(months),
-                                end_day=random.randint(28, 31),
-                                year=current_year,
-                                currency_code=currency_code,
-                                notional=notional,
-                                money_unit=money_units,
-                            )
-                            all_sentences.append(sentence)
-
-                    elif active_type == "cp":
-                        # Add CP-specific sentences with lower probability
-                        if random.random() < 0.6:
-                            template = random.choice(cp_strategy_templates)
-                            swap_type_selected = random.choice(
-                                [
-                                    s
-                                    for s in swap_types
-                                    if s in derivative_keywords["cp"]
-                                ]
-                            )
-                            commodity = random.choice(commodities)
-                            amount = random.randint(5, 50)
-                            notional = random.randint(50, 500)
-                            event_year = (
-                                random.choice(past_years)
-                                if past_years
-                                else current_year
-                            )
-                            sentence = template.format(
-                                company=company_name,
-                                swap_type=swap_type_selected,
-                                commodity=commodity,
-                                month=random.choice(months),
-                                year=event_year,
-                                quarter=random.choice(quarters),
-                                currency_code=currency_code,
-                                amount=amount,
-                                notional=notional,
-                                money_unit=money_units,
-                            )
-                            all_sentences.append(sentence)
-
-                # Label 1: Similar logic for inactive positions
-                else:
-                    if active_type in ["fx", "ir", "cp"]:
-                        if random.random() < 0.5:
-                            template = random.choice(hedge_termination_templates)
-                            swap_type_selected = random.choice(
-                                [
-                                    s
-                                    for s in swap_types
-                                    if s in derivative_keywords[active_type]
-                                ]
-                            )
-                            term_year = (
-                                random.choice(past_years)
-                                if past_years
-                                else current_year
-                            )
-                            sentence = template.format(
-                                company=company_name,
-                                swap_type=swap_type_selected,
-                                quarter=random.choice(quarters),
-                                month=random.choice(months),
-                                year=term_year,
-                                end_day=random.randint(28, 31),
-                            )
-                            all_sentences.append(sentence)
 
         # Foreign Exchange specific logic
         if swapType == "fx":
@@ -3364,6 +3212,7 @@ def generate_labeled_hedge_paragraph(
                     entry_year = (
                         random.choice(past_years) if past_years else current_year
                     )
+                    cost_type = random.choice(cost_types)
                     sentence = template.format(
                         company=company_name,
                         swap_type=swap_type,
@@ -3373,6 +3222,7 @@ def generate_labeled_hedge_paragraph(
                         currency_code=currency_code,
                         notional=notional,
                         money_unit=money_units,
+                        cost_type=cost_type,
                     )
                     all_sentences.append(sentence)
 
@@ -3545,11 +3395,13 @@ def generate_labeled_hedge_paragraph(
                 template = random.choice(cp_impact_templates)
                 verb = random.choice(hedge_change_verbs)
                 commodity = random.choice(commodities)
+                cost_type=random.choice(cost_types)
                 all_sentences.append(
                     template.format(
                         company=company_name,
                         commodity=commodity,
                         verb=verb,
+                        cost_type=cost_type,
                     )
                 )
 
@@ -3565,6 +3417,7 @@ def generate_labeled_hedge_paragraph(
                     event_year = (
                         random.choice(past_years) if past_years else current_year
                     )
+                    cost_type=random.choice(cost_types)
                     sentence = template.format(
                         company=company_name,
                         swap_type=swap_type,
@@ -3576,6 +3429,7 @@ def generate_labeled_hedge_paragraph(
                         amount=amount,
                         notional=notional,
                         money_unit=money_units,
+                        cost_type=cost_type,
                     )
                     all_sentences.append(sentence)
 
@@ -3585,6 +3439,7 @@ def generate_labeled_hedge_paragraph(
                 )  # Use position templates
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 500)
+                commodity = random.choice(commodities)
                 sentence = template.format(
                     company=company_name,
                     swap_type=swap_type,
@@ -3594,6 +3449,7 @@ def generate_labeled_hedge_paragraph(
                     currency_code=currency_code,
                     notional=notional,
                     money_unit=money_units,
+                    commodity=commodity,
                 )
                 all_sentences.append(sentence)
 
@@ -3790,7 +3646,7 @@ def generate_labeled_hedge_paragraph(
                     all_sentences.append(sentence)
     if len(all_sentences) < max_len:
         return generate_labeled_hedge_paragraph(
-            has_active_derivative=has_active_derivative, swapType=swapType
+            has_active_derivative=has_active_derivative, swapType=swapType, max_len = 3
         )
     # Shuffle and select sentences
     random.shuffle(all_sentences)
@@ -4897,7 +4753,7 @@ def generate_accounting_noise_paragraph(
 def generate(size_per_label=100):
     # Collect all generated samples
     all_samples = []
-    swap_types = ["ir", "fx", "cp", "gen", "mixed"]
+    swap_types = ["ir", "fx", "cp", "gen"]
     for prefix in swap_types:
         for _ in range(size_per_label):
             paragraph, label = generate_labeled_hedge_paragraph(
@@ -4952,7 +4808,7 @@ def generate(size_per_label=100):
 ```
 
 ```{python}
-generate(150)
+generate(300)
 ```
 
 ```{python}
