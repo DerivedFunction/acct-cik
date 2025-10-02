@@ -4999,7 +4999,7 @@ def generate_accounting_noise_paragraph(
     paragraph = re.sub(r"\s+", " ", paragraph)  # Remove extra whitespace
     paragraph = re.sub(r"\.\.", ".", paragraph)  # Remove double periods
     
-    if paragraph.find("{") != -1 or paragraph.find("[") != -1:
+    if paragraph.find("{") != -1:
         print("Error in format", paragraph)
     return paragraph, 3  
 
