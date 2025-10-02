@@ -1,54 +1,44 @@
 {
   "id2label": {
-    "0": "Confirmed Hedging Derivative Usage (Mixed)",
-    "1": "Likely Hedging Derivative Usage (Mixed)",
-    "2": "Mentions Derivatives, Speculative/Policy",
+    "0": "Gen/Unknown Hedge Der.",
+    "1": "Gen/Unknown Hedge Der. Historic",
+    "2": "Mentions Der., Speculative/Policy",
     "3": "Irrelevant / Unrelated Context",
-    "4": "Derivative Liabilities / Warrants",
-    "5": "Likely Derivative Liabilities / Warrants (Not Confirmed Year)",
-    "6": "Embedded Derivatives / Other",
-    "7": "Likely Embedded Derivatives / Other (Not Confirmed Year)",
-    "8": "Confirmed Hedging Derivative Usage (Interest Rate)",
-    "9": "Likely Hedging Derivative Usage (Interest Rate)",
-    "10": "Confirmed Hedging Derivative Usage (Foreign Exchange)",
-    "11": "Likely Hedging Derivative Usage (Foreign Exchange)",
-    "12": "Confirmed Hedging Derivative Usage (Commodity)",
-    "13": "Likely Hedging Derivative Usage (Commodity)",
-    "14": "Confirmed Hedging Derivative Usage (Generic/Unspecified)",
-    "15": "Likely Hedging Derivative Usage (Generic/Unspecified)"
+    "4": "Der. Liabilities / Warrants",
+    "5": "Der. Liabilities / Warrants Historic",
+    "6": "Embedded Der. / Other",
+    "7": "Embedded Der. / Other Historic",
+    "8": "IR Hedge",
+    "9": "IR Hedge Historic",
+    "10": "FX Hedge",
+    "11": "FX Hedge Historic",
+    "12": "CP Hedge",
+    "13": "CP Hedge Historic"
   },
   "MATCHING_KEYWORDS": {
     "0": [
-      "interest rate swap",
-      "interest rate hedge",
-      "swap agreement",
-      "cash flow hedge",
-      "fair value hedge",
-      "economic hedge",
-      "swaption",
-      "option contract",
-      "option agreement",
-      "purchased option",
-      "written option",
-      "commodity option",
-      "forward contract",
-      "foreign exchange contract",
-      "forward foreign",
-      "foreign currency forward",
-      "forward currency contract",
-      "foreign currency future",
-      "futures contract",
-      "commodity forward",
-      "commodity future",
       "notional",
       "designated as hedging",
-      "designated as a hedging"
+      "designated as a hedging",
+      "futures contract",
+      "purchased put option contracts",
+      "collar strategies",
+      "purchased call option contracts",
+      "forward contract",
+      "call option",
+      "call contract",
+      "put option",
+      "put contract",
+      "option contract",
+      "swap",
+      "swaption"
     ],
     "1": [],
     "2": [
       "derivative instrument",
       "financial derivative",
-      "may use derivatives",
+      "derivative financial",
+      "may use derivative",
       "over-the-counter derivative",
       "otc derivative"
     ],
@@ -80,6 +70,9 @@
       "interest rate swap agreement"
     ],
     "9": [
+    
+    ],
+    "10": [
       "forward rate agreement",
       "forward rate contract",
       "forward rate option",
@@ -113,7 +106,9 @@
       "foreign currency forward contract",
       "foreign currency purchased put option"
     ],
-    "10": [
+    "11": [
+    ],
+    "12":[
       "commodity forward",
       "commodity future",
       "commodity option",
@@ -123,19 +118,7 @@
       "commodity swap",
       "commodity price swap"
     ],
-    "11": [
-      "futures contract",
-      "purchased put option contracts",
-      "collar strategies",
-      "purchased call option contracts",
-      "forward contract",
-      "call option",
-      "call contract",
-      "put option",
-      "put contract",
-      "option contract",
-      "swap",
-      "swaption"
-    ]
+    "13": []
+
   }
 }
