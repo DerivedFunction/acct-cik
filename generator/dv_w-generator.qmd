@@ -752,71 +752,85 @@ hedge_standards = [
     "U.S. GAAP",
     "accounting standards",
 ]
-derivative_keywords = {
-    "cp": [
-        "commodity forward",
-        "commodity future",
-        "commodity option",
-        "commodity cap",
-        "commodity floor",
-        "commodity collar",
-        "commodity swap",
-        "commodity price swap",
+```
+```{python}
+derivative_template = {
+    "IR_PLACEHOLDER": [
+        "interest rate",
+        "single currency basis",
+        "pay-fixed, receive-floating interest rate",
+        "pay-floating, receive-fixed interest rate",
+        "forward starting interest rate",
     ],
-    "fx": [
+    "IR_STANDALONE": ["treasury rate lock agreement"],
+    "IR_TYPES": [
+        "swaps",
+        "forward",
+        "option",
+        "forward contract",
+        "agreement",
+        "forward agreement",
+        "swap agreement",
+        "swap contract",
+        "cap contract",
+        "floor contract",
+        "hedge agreement",
+        "hedge contract",
+        "future contract",
+    ],
+    "FX_STANDALONE": [
+        "forward contract",
+        "forward agreement",
         "forward rate agreement",
-        "forward rate contract",
-        "forward rate option",
-        "forward foreign exchange contract",
-        "forward foreign exchange rate contract",
-        "foreign exchange contract",
-        "foreign exchange rate contract",
-        "foreign exchange forward",
-        "foreign exchange forward contract",
-        "foreign exchange rate forward",
-        "foreign exchange future",
-        "foreign exchange swap",
-        "foreign exchange rate swap",
-        "foreign exchange option",
-        "foreign exchange cap",
-        "foreign exchange floor",
-        "foreign exchange collar",
-        "cross-currency swap",
-        "cross-currency forward",
-        "cross-currency option",
-        "cross currency swap",
-        "cross currency forward",
-        "cross currency option",
-        "currency swap",
-        "currency forward",
-        "currency option",
-        "currency cap",
-        "currency floor",
-        "currency collar",
+        "collar contract",
+        "dollar call option",
+        "foreign denominated short-term debt",
+        "foreign denominated long-term debt",
+    ],
+    "FX_PLACEHOLDER": [
+        "foreign exchange",
+        "foreign currency",
+        "currency",
+        "forward currency",
+        "cross-currency",
+        "cross currency",
         "foreign currency forward",
-        "foreign currency forward exchange contract",
-        "foreign currency exchange contract",
-        "foreign currency forward contract",
-        "foreign currency purchased put option",
     ],
-    "ir": [
-        "interest rate contract",
-        "interest rate swaps",
-        "interest rate forward contract",
-        "interest rate collar contract",
-        "interest rate swap contract",
-        "zero coupon swap contract",
-        "single currency basis swap contract",
-        "interest rate future contract",
-        "pay-fixed, receive-floating interest rate swap contract",
-        "pay-floating, receive-fixed interest rate swap contract",
-        "interest rate hedge contract",
-        "interest rate hedge agreement",
-        "forward starting interest rate swap contract",
-        "treasury rate lock agreement",
-        "interest rate swap agreement",
+    "FX_TYPES": [
+        "swap",
+        "forward",
+        "option",
+        "future",
+        "agreement",
+        "contract",
+        "cap",
+        "floor",
+        "call option",
+        "put option",
+        "put contract",
+        "option contract",
+        "futures contract",
+        "collar",
+        "collar agreement",
+        "collar contract",
     ],
-    "gen": [
+    "CP_PLACEHOLDER": ["commodity price"],
+    "CP_TYPES": [
+        "swap",
+        "forward",
+        "option",
+        "future",
+        "agreement",
+        "contract",
+        "cap",
+        "floor",
+        "call option",
+        "put option",
+        "put contract",
+        "option contract",
+        "futures contract",
+    ],
+    "GEN_STANDALONE": [
         "futures contract",
         "purchased put option contracts",
         "collar strategies",
@@ -831,8 +845,39 @@ derivative_keywords = {
         "swaption",
     ],
 }
-all_derivatives = list(derivative_keywords.values())
-all_derivatives = [item for sublist in all_derivatives for item in sublist]
+
+
+# Create a final output
+def expand_derivative_terms(placeholders, types, standalone):
+    """
+    Combine placeholders with types (if any) and add standalone terms.
+    Returns a flat list of derivative keyword strings.
+    """
+    results = []
+    for ph in placeholders:
+        for t in types:
+            results.append(f"{ph} {t}".strip())
+    results.extend(standalone)
+    return sorted(set(results))
+
+
+derivative_keywords = {
+    "ir": expand_derivative_terms(
+        derivative_template["IR_PLACEHOLDER"],
+        derivative_template["IR_TYPES"],
+        derivative_template["IR_STANDALONE"],
+    ),
+    "fx": expand_derivative_terms(
+        derivative_template["FX_PLACEHOLDER"],
+        derivative_template["FX_TYPES"],
+        derivative_template["FX_STANDALONE"],
+    ),
+    "cp": expand_derivative_terms(
+        derivative_template["CP_PLACEHOLDER"], derivative_template["CP_TYPES"], []
+    ),
+    "gen": expand_derivative_terms([], [], derivative_template["GEN_STANDALONE"]),
+}
+
 ```
 
 ## Commodities
@@ -854,7 +899,7 @@ cp_strategy_templates = [
     "To manage {commodity} price exposure, {company} executed {swap_type} in {month} {year}, with {currency_code}{amount} {money_unit} in OCI adjustments",
     "In {quarter} {year}, {company} implemented {swap_type} to stabilize {cost_type}, resulting in {currency_code}{amount} {money_unit} of fair value changes",
     "{company}'s {swap_type} strategy for {commodity} in {month} {year} led to {currency_code}{amount} {money_unit} in deferred gains/losses in equity",
-    "{swap_type} were employed by {company} to hedge {commodity} costs, with {currency_code}{amount} {money_unit} recorded as mark-to-market adjustments in {year}"
+    "{swap_type} were employed by {company} to hedge {commodity} costs, with {currency_code}{amount} {money_unit} recorded as mark-to-market adjustments in {year}",
 ]
 cp_position_templates = [
     "As of {month} {end_day}, {year}, {company} maintains {swap_type} with notional amounts totaling {currency_code}{notional} {money_unit} to hedge commodity price risk",
@@ -870,7 +915,7 @@ cp_position_templates = [
     "As of {month} {year}, {company} uses {swap_type} with a notional value of {currency_code}{notional} {money_unit} to manage {commodity} price volatility",
     "{company} holds {swap_type} as of {month} {end_day}, {year}, with notional values of {currency_code}{notional} {money_unit} to hedge {commodity} exposures",
     "At {month} {year}, {company}’s {swap_type} cover {currency_code}{notional} {money_unit} in notional value to mitigate risks from commodity price swings",
-    "During {year}, {company} maintained {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to protect against commodity market fluctuations"
+    "During {year}, {company} maintained {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to protect against commodity market fluctuations",
 ]
 cp_specific_templates = [
     "{company} utilizes {swap_type} to hedge exposure to {commodity} price volatility affecting {cost_type}",
@@ -885,36 +930,39 @@ cp_specific_templates = [
     "To secure stable {cost_type}, {company} uses {swap_type} for {commodity} with maturities extending to {months} months",
     "{company}'s {swap_type} cover {pct}% of {commodity} needs, reducing exposure to price swings in {cost_type}",
     "In response to {commodity} market trends, {company} adjusts {swap_type} positions for {volume} {volume_unit} to manage {cost_type}",
-    "{company} hedges {commodity} price risk through {swap_type}, targeting {pct}% of projected {cost_type} over {months} months"
+    "{company} hedges {commodity} price risk through {swap_type}, targeting {pct}% of projected {cost_type} over {months} months",
 ]
 cp_context_templates = [
-    "{company} uses commodity contracts and derivatives to manage price exposure to raw materials",
+    "{company} uses commodity contracts and derivatives to manage price exposure to {commodity}",
     "Changes in commodity prices affect {company}'s cost of goods sold and gross margins",
-    "To hedge commodity price fluctuations, {company} enters into forwards, futures, and swaps on key raw materials",
+    "To hedge commodity price fluctuations, {company} enters into forwards, futures, and swaps on key {commodity}",
     "Volatility in commodity markets can influence the company's procurement costs and operational results",
     "{company} is exposed to changes in energy, metals, and agricultural prices that may impact financial performance",
     "{company} employs commodity hedging strategies to stabilize input costs and protect profit margins",
     "Fluctuations in raw material prices may lead to adjustments in {company}'s pricing strategies",
     "{company}'s financial results are sensitive to global commodity market trends and supply chain disruptions",
     "To mitigate risks, {company} monitors commodity price indices and adjusts derivative positions accordingly",
-    "{company} uses fixed-price contracts to lock in costs for critical commodities and reduce volatility"
+    "{company} uses fixed-price contracts to lock in costs for critical commodities and reduce volatility",
 ]
 cp_impact_templates = [
     "Fluctuations in {commodity} prices {verb} the reported cost of goods sold and operating margins",
     "Changes in {commodity} market prices {verb} {company}'s financial performance and net asset values",
-    "Movements in commodity prices {verb} the company's cost structure and profitability",
+    "Movements in {commodity} prices {verb} the company's cost structure and profitability",
     "{commodity} price volatility {verb} the reported value of inventory and derivative positions",
     "Shifts in {commodity} market values {verb} the financial results of {company}'s operations",
     "Changes in {commodity} prices {verb} forecasted revenue and cash flow from operations",
-    "Commodity market fluctuations {verb} the valuation of inventory and derivative hedges",
+    "{commodity} market fluctuations {verb} the valuation of inventory and derivative hedges",
     "{company}'s exposure to {commodity} prices {verb} operating costs and financial statements",
-    "Price changes in key commodities {verb} the cost of raw materials and gross margins",
+    "Price changes in key commodities {verb} the cost of {cost_type} and gross margins",
+    "Price changes in key commodities such as {commodity} {verb} the cost of {cost_type} and gross margins",
+    "{company} purchase the majority of our {commodity} at prevailing market prices, and seek to manage market risk through execution of a documented hedging strategy and other means"
+    "{company} have market sensitive instruments in the form of fixed-rate debt instruments and financial derivative instruments used to hedge our exposure to {commodity} price increases",
     "Volatility in {commodity} markets {verb} the translated value of procurement and derivative positions",
     "Sudden {commodity} price swings {verb} {company}'s production costs and earnings stability",
     "{commodity} market trends {verb} the valuation of {company}'s commodity-linked assets",
     "Price volatility in {commodity} {verb} {company}'s cash flow projections and budgeting",
     "Changes in {commodity} prices {verb} the cost of {cost_type} and overall profitability",
-    "{company}'s exposure to {commodity} market shifts {verb} reported earnings and shareholder equity"
+    "{company}'s exposure to {commodity} market shifts {verb} reported earnings and shareholder equity",
 ]
 
 commodities = [
@@ -926,12 +974,14 @@ commodities = [
     "steel",
     "corn",
     "soybeans",
-     "wheat",
-     "farm products",
-     "metals",
-     "titanium",
+    "wheat",
+    "farm products",
+    "metals",
+    "titanium",
     "fuel",
-    "gasoline"
+    "gasoline",
+    "raw materials",
+    "commodity",
 ]
 cost_types = [
     "input costs",
@@ -2581,7 +2631,10 @@ def generate_derivative_liability_paragraph(
         + ". ".join(selected_sentences)
         + "."
     )
-    paragraph = re.sub("We's", "Our", paragraph)
+    # Clean up common formatting issues
+    paragraph = re.sub(r"We's", "Our", paragraph, flags=re.IGNORECASE)
+    paragraph = re.sub(r"\s+", " ", paragraph)  # Remove extra whitespace
+    paragraph = re.sub(r"\.\.", ".", paragraph)  # Remove double periods
 
     if paragraph.find("{") != -1 or paragraph.find("[") != -1:
         print("Error in format", paragraph)
@@ -2972,6 +3025,7 @@ def generate_labeled_hedge_paragraph(
                     quarter=random.choice(quarters),
                     month=random.choice(months),
                     year=collar_year,
+                    major_currency=major_currency,
                 )
                 all_sentences.append(sentence)
 
@@ -3395,7 +3449,10 @@ def generate_labeled_hedge_paragraph(
             # Context sentences
             if random.random() < 0.6:
                 template = random.choice(cp_context_templates)
-                all_sentences.append(template.format(company=company_name))
+                commodity = random.choice(commodities)
+                all_sentences.append(template.format(
+                    company=company_name, commodity=commodity)
+                )
 
             # Impact sentences
             if random.random() < 0.7:
@@ -4749,7 +4806,11 @@ def generate_accounting_noise_paragraph(
         + ". ".join(selected_sentences)
         + "."
     )
-    paragraph = re.sub("We's", "Our", paragraph)
+    # Clean up common formatting issues
+    paragraph = re.sub(r"We's", "Our", paragraph, flags=re.IGNORECASE)
+    paragraph = re.sub(r"\s+", " ", paragraph)  # Remove extra whitespace
+    paragraph = re.sub(r"\.\.", ".", paragraph)  # Remove double periods
+    
     if paragraph.find("{") != -1 or paragraph.find("[") != -1:
         print("Error in format", paragraph)
     return paragraph, 3    
@@ -4825,4 +4886,4 @@ company_names = set(company_name_df["name"])
 # Make each company name lowercase, then Capitlize on each word
 company_names = [name.lower().title() for name in company_names]
 
-```
+``` 
