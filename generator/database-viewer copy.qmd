@@ -91,7 +91,7 @@ ff.head()
 
 ```{python}
 
-ff = execute_sql("SELECT * FROM fail_results", fetch=True)
+ff = execute_sql("SELECT * FROM webpage_result", fetch=True)
 ff.head()
 ```
 

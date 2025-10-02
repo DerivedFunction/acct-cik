@@ -635,13 +635,6 @@ def filter_by_keywords(
     """
     ignore_keywords = [kw.lower() for kw in IGNORE_KEYWORDS]
 
-    # Prepare keyword sets for each category
-    ir_keywords = [kw.lower() for kw in MATCHING_KEYWORDS[8]]
-    fx_keywords = [kw.lower() for kw in MATCHING_KEYWORDS[10]]
-    cp_keywords = [kw.lower() for kw in MATCHING_KEYWORDS[12]]
-    gen_keywords = [kw.lower() for kw in MATCHING_KEYWORDS[0]]
-    spec_keywords = [kw.lower() for kw in MATCHING_KEYWORDS[2]]
-
     debug_print("Generating sentences")
 
     def get_keyword_category(text: str) -> str:
@@ -649,15 +642,15 @@ def filter_by_keywords(
         normalized = text.lower()
 
         # Check in priority order: IR > FX > CP > SPEC > GEN (generic last)
-        if any(kw in normalized for kw in ir_keywords):
+        if any(kw in normalized for kw in IR_KEYWORDS):
             return "ir"
-        elif any(kw in normalized for kw in fx_keywords):
+        elif any(kw in normalized for kw in FX_KEYWORDS):
             return "fx"
-        elif any(kw in normalized for kw in cp_keywords):
+        elif any(kw in normalized for kw in CP_KEYWORDS):
             return "cp"
-        elif any(kw in normalized for kw in spec_keywords):
+        elif any(kw in normalized for kw in SPEC_KEYWORDS):
             return "spec"
-        elif any(kw in normalized for kw in gen_keywords):
+        elif any(kw in normalized for kw in GEN_KEYWORDS):
             return "gen"
         return None
 
@@ -926,11 +919,11 @@ def process_all_reports_fully():
             result_row = pd.Series(
                 {
                     "url": url,
-                    "ir": sentences.ir,
-                    "fx": sentences.fx,
-                    "cp": sentences.cp,
-                    "gen": sentences.gen,
-                    "spec": sentences.spec,
+                    "ir": sentences["ir"],
+                    "fx": sentences["fx"],
+                    "cp": sentences["cp"],
+                    "gen": sentences["gen"],
+                    "spec": sentences["spec"],
                 }
             )
             debug_print(f"Processed {result_row}")

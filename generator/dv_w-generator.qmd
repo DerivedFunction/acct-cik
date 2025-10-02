@@ -585,6 +585,7 @@ hedge_policy_templates = [
     "The ultimate fair value of our derivative instruments is uncertain, and {company} believe that it is reasonably possible that a change in the estimated fair value could occur in the near future",
     "The accounting for the changes in the fair value of the derivative depends on the intended use of the derivative and the resulting designation",
     "For a derivative that does not qualify as a {hedge_type} hedge, the change in {hedge_type} is recognized currently in net income",
+    "To achieve its objectives, {company} may enter into derivative financial instruments, such as {swap_type}, in order to limit its exposure to market fluctuations",
 ]
 
 hedge_documentation_templates = [
@@ -1177,6 +1178,7 @@ ir_debt_optimization_templates = [
     "{company} optimizes its debt by using {swap_type} to balance fixed and floating rate obligations",
     "To stabilize interest expense, {company} applies {swap_type} to its debt portfolio, managing cash flow risk",
     "{company} manages interest rate risk on forecasted debt issuances using {swap_type} to adjust the effective interest profile",
+    "{company}'s objectives in interest rate risk management are to limit the negative impact of interest rates by using {swap_type}",
 ]
 
 hedge_methods = [
