@@ -1,254 +1,413 @@
----
-title: "Derivative Classification Using Post Training Stage"
-format: html
-editor: source
-jupyter: python3
----
-
-## Using Your Trained Model for Predictions
+```{python}
+# %%
+# Installing required libraries
+# %pip install pandas requests bs4 matplotlib
+```
 
 ```{python}
-import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import numpy as np
-import pandas as pd
+import pandas as pd  # Data processing
+import requests  # Synchronous HTTP requests
+from bs4 import BeautifulSoup  # Webpage extraction
+import json  # JSON parsing
+import sqlite3  # To store our data
+from typing import List
 import random
-import re
-import json
+import re  # Regex expressions
+import matplotlib.pyplot as plt  # For plotting
+from concurrent.futures import ThreadPoolExecutor, as_completed  # Concurrency
+from tqdm import tqdm
+from collections import Counter
+from openpyxl import load_workbook
+
+DB_PATH = "./webpage.db"
+REPORT_URLS_PATH = "../excel/report_data.csv"
+SERVER_EXCEL_PATH = "./server_results.xlsx"
+NUM_THREADS = 6
+SERVER_URL = "http://127.0.0.1:5000/predict"
+KEYWORDS_FILE = "./keywords_labels.json"
 ```
 
-# 1. Load the Fine-Tuned Model and Tokenizer
-
 ```{python}
-# This path should point to the directory where your best model was saved.
-MODEL_PATH = "DerivedFunction/finbert-derivative-type-classifier"
-
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
-```
-
-```{python}
-# Check if a GPU is available and move the model to the GPU
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model.to(device)
-print(f"Model loaded on: {device}")
-```
-
-# 2. Prepare Your Input Sentences
-
-```{python}
-UNLABELED_EXCEL_PATH = "../excel/training_data.xlsx"
-MODIFIED_LABELS_EXCEL_PATH = "../excel/modified_labels.xlsx"
-df = pd.read_excel(UNLABELED_EXCEL_PATH)
-new_sentences = df["sentence"].tolist()
-random.shuffle(new_sentences)
-```
-
-# 3. Make Predictions
-
-```{python}
-def getBatch(size=20, index=None):
-    result_dict = {}
-    if index is None:
-        index = random.randint(0, len(new_sentences) - size)
-    with open("../temp/temp.xml", "w", encoding="utf-8") as f:
-        f.write("<cases>\n")
-        for i in range(size):
-            if index + i < len(new_sentences):
-                # Get the model's prediction
-                inputs = tokenizer(
-                    new_sentences[index + i],
-                    return_tensors="pt",
-                    truncation=True,
-                    padding=True,
-                )
-                inputs = {name: tensor.to(device) for name, tensor in inputs.items()}
-                outputs = model(**inputs)
-
-                # Probabilities
-                probs = torch.nn.functional.softmax(outputs.logits, dim=-1)
-                probs = probs.cpu().detach().numpy()[0]
-
-                # Get all labels with probability > 0.5
-                high_prob_labels = [
-                    (j, id2label[j]) for j, p in enumerate(probs) if p > 0.5
-                ]
-
-                # Sentence string
-                sentence_string = new_sentences[index + i]
-                # Store in dictionary
-                result_dict[index + i] = {
-                    "sentence": sentence_string,
-                    "labels": [label for _, label in high_prob_labels],
-                }
-
-                # Write to file
-                f.write(f'<case num="{index + i}">\n')
-                f.write(f"  <sentence>{sentence_string}</sentence>\n")
-                f.write("  <labels>\n")
-                for label_id, label_name in high_prob_labels:
-                    f.write(f'    <label id="{label_id}">{label_name}</label>\n')
-                f.write("  </labels>\n")
-                f.write("</case>\n")
-        f.write("</cases>\n")
-    return result_dict
-
-
-def modify_dict(case_labels):
-    with open("../temp/modified_labels.txt", "a+", encoding="utf-8") as f:
-        for case_num, label_num in case_labels.items():
-            if case_num in result_dict:
-                # Strip double spaces, etc
-                sentence_string = result_dict[case_num].strip()
-                sentence_string = re.sub(r"\s+", " ", sentence_string)
-                f.write(f"{sentence_string}\t{label_num}\n")
-
-
-model.eval()  # Put the model in evaluation mode
-predictions = []
-# This is the mapping from the model's output index back to your original labels
-KEYWORDS_FILE = "../config/keywords_find.json"
-
+# Load data
+existing_report_df = pd.read_csv(REPORT_URLS_PATH)
+# Mapping IDs to labels
 with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
-    data = json.load(f)
+    keyword_data = json.load(f)
 
-id2label = {int(k): v for k, v in data["id2label"].items()}  # Convert keys to int
-
-```
-
-```{python}
-result_dict = getBatch(100, 0)  # Initial batch write
-```
-
-## Our goal is to try to fix labeling errors using AI
-
-```{python}
-
-case_labels = {
-}
-
-modify_dict(case_labels)
-
-```
-
-# Convert our modified file to a dataframe and save it
-
-```{python}
-modified_df = pd.read_csv("modified_labels.txt", sep="\t")
-MODIFIED_LABELS_EXCEL_PATH.to_excel(, index=False)
-```
-
-# Or we can load a small batch and verify it manually
-
-```{python}
-import pandas as pd
-import random
-import re
-
-SENTENCE_LABELS_EXCEL_PATH = "../excel/sentence_labels.xlsx"
-RANDOM_SAMPLE_EXCEL_PATH = "../excel/sentence_labels_sample.xlsx"
-TRAINING_EXCEL_PATH = "../excel/training_labels.xlsx"
-SAMPLE_XML_PATH="../temp/temp-sample.xml"
-
-def stratified_sample(df, stratify_col="label", frac=0.05, n=None, random_state=42):
-    """
-    Take a stratified sample from a DataFrame.
-    - df: input DataFrame
-    - stratify_col: column to stratify on (e.g., 'label')
-    - frac: fraction of each group to sample
-    - n: fixed number per group (overrides frac if set)
-    """
-    grouped = df.groupby(stratify_col, group_keys=False)
-
-    if n is not None:
-        return grouped.apply(
-            lambda x: x.sample(min(len(x), n), random_state=random_state),
-            include_groups=False,
-        ).reset_index(drop=True)
-    else:
-        return grouped.apply(
-            lambda x: x.sample(frac=frac, random_state=random_state),
-            include_groups=False,
-        ).reset_index(drop=True)
+id2label = {int(id): label for id, label in keyword_data["id2label"].items()}
+label2id = {label: int(id) for id, label in id2label.items()}
 
 
-def getBatchFromSample(df, size=20, index=None, output_path=SAMPLE_XML_PATH):
-    """
-    Write a batch of rows from df into an XML-like file.
-    Each row -> <case num="..."><sentence>...</sentence><label>...</label></case>
-    """
-    if index is None:
-        index = random.randint(0, len(df) - size)
+debug = False # Debug printing
+def debug_print(*args):
+    if debug:
+        print(*args)
 
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write("<cases>\n")
-        for i in range(size):
-            if index + i < len(df):
-                row = df.iloc[index + i]
-                sentence_string = str(row["sentence"])
-                sentence_string = (
-                    f"<reportYear>{row['year']}</reportYear>{sentence_string}"
-                )
-                label_string = row["label_id"]
-                case_string = f'<case num="{index + i}"><sentence>{sentence_string}</sentence><label>{label_string}</label></case>\n'
-                f.write(case_string)
-        f.write("</cases>\n")
-
-    print(f"Wrote {size} cases to {output_path} (starting at index {index})")
-    # Return the starting index and size of the batch
-    return [index, size]
-
-
-def append_xml_to_training(starting_index, size, new_labels={}):
-    sample_df.loc[starting_index : starting_index + size - 1, "label_id"] = sample_df.loc[
-        starting_index : starting_index + size - 1, "label_id"
-    ].apply(lambda x: new_labels.get(x, x))
-    # Append to current_df
+def create_db():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
     try:
-        current_df = pd.read_excel(TRAINING_EXCEL_PATH)
-    except FileNotFoundError:
-        current_df = pd.DataFrame(columns=sample_df.columns)
-        current_df.to_excel(TRAINING_EXCEL_PATH, index=False)
+        c.execute(
+            """
+            CREATE TABLE IF NOT EXISTS server_result (
+                cik INTEGER,
+                year INTEGER,
+                url TEXT PRIMARY KEY,
+                server_response TEXT,
+                FOREIGN KEY (url) REFERENCES report_data (url)
+            )
+        """
+        )
+        c.execute(
+            """
+            CREATE TABLE IF NOT EXISTS fail_results (
+                cik INTEGER,
+                year INTEGER,
+                url TEXT PRIMARY KEY
+            )
+        """
+        )
+        c.execute(
+            """
+            CREATE INDEX IF NOT EXISTS url_idx ON server_result (url)
+            """
+        )
+    except sqlite3.IntegrityError:
+        debug_print("Something went wrong creating the database")
     finally:
-        current_df = pd.concat([current_df, sample_df.loc[starting_index : starting_index + size - 1]], ignore_index=True)
-        current_df.to_excel(TRAINING_EXCEL_PATH, index=False)
+        conn.commit()
+        conn.close()
 
-label_df = pd.read_excel(SENTENCE_LABELS_EXCEL_PATH)
-sample_df = pd.read_excel(RANDOM_SAMPLE_EXCEL_PATH)
+
+def get_matches(url):
+    """
+    Fetch matches from webpage_result, which has
+    (url, matches).
+    Return: a list
+    """
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM webpage_result WHERE url=?", (url,))
+    columns = [col[0] for col in c.description]
+    result = c.fetchone()
+    conn.close()
+    if not result:
+        return []
+    data = pd.DataFrame([result], columns=columns)
+    matches = json.loads(data.matches.iloc[0])
+    return matches
+
+def fetch_server_results():
+    """
+    Fetch results from server_result
+    """
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM server_result")
+    columns = [col[0] for col in c.description]
+    rows = c.fetchall()
+    pre_data = pd.DataFrame(rows, columns=columns)
+    conn.close()
+    return pre_data
+
+
+def get_processed_server_urls() -> set[tuple]:
+    """
+    Return a set of (cik, year, url) that are already processed in `server_result`.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT cik, year, url FROM server_result")
+    rows = c.fetchall()
+    conn.close()
+    return set(rows)
+
+
+def save_process_result(df):
+    """
+    Inserts a new item into the server_result table
+    """
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    try:
+        c.execute(
+            "INSERT OR REPLACE INTO server_result (url, cik, year, server_response) VALUES (?, ?, ?, ?)",
+            (df.url, df.cik, df.year, json.dumps(df.server_response)),
+        )
+    except sqlite3.Error as e:
+        debug_print(f"DB error on {df.url}: {e}")
+        c.execute(
+            "INSERT OR IGNORE INTO fail_results (cik, year, url) VALUES (?, ?, ?)",
+            (df.cik, df.year, df.url),
+        )
+
+    conn.commit()
+    conn.close()
+
+create_db()
 ```
 
 ```{python}
+def get_result_from_server(sentences, batch_size=128):
+    predictions = []
+    headers = {"Content-Type": "application/json"}
 
-# Example 1: take 10% stratified sample
-sample_df = stratified_sample(label_df, stratify_col="label", frac=0.1)
+    for i in range(0, len(sentences), batch_size):
+        batch = sentences[i : i + batch_size]
+        payload = {"texts": batch}
+        try:
+            response = requests.post(
+                SERVER_URL, headers=headers, data=json.dumps(payload)
+            )
+            response.raise_for_status()
+            resp_json = response.json()
+            preds = resp_json.get("predictions")
+            if not isinstance(preds, list):
+                preds = []
+            if len(preds) != len(batch):
+                debug_print(
+                    f"Warning: batch size {len(batch)} vs response {len(preds)} mismatch"
+                )
+                return [-1] * len(batch)
+            predictions.extend(preds)
+        except requests.exceptions.RequestException as e:
+            print(f"Error communicating with server: {e}")
+            predictions.extend([-1] * len(batch))  # placeholder for failures
+    return predictions
 
-# Example 2: take 50 rows per label (if available)
-# sample_df = stratified_sample(sentence_label_df, stratify_col="label", n=50)
+def process_report_fully(report):
+    """
+    Processes a single report completely:
+    1. Loads content (from cache or web).
+    2. Gets analysis from the server for those sentences from `matches`.
+    3. Saves the result to the server_result table.
+    """
+    key = (report.cik, report.year, report.link)
+    if key in processed_set:
+        debug_print(f"Skipping already processed: {key}")
+        return None
 
-# Save to Excel
-sample_df.to_excel(RANDOM_SAMPLE_EXCEL_PATH, index=False)
+    # Get the report's `matches`
+    matches = get_matches(report.link)
+    server_predictions = []
+    # Prepend <reportYear> to each sentence
+    if matches:
+        matches_with_year = [
+            f"<reportYear>{report.year}</reportYear> {s}" for s in matches
+        ]
+        # Get sentence analysis from the server
+        server_predictions = get_result_from_server(matches_with_year)
+    else:
+        server_predictions = []
+
+    # Prepare the final result row for the database
+    result_row = pd.Series(
+        {
+            "url": report.link,
+            "cik": report.cik,
+            "year": report.year,
+            "server_response": server_predictions,  # This now correctly holds the server's predictions
+        }
+    )
+
+    # Save the complete result
+    save_process_result(result_row)
+    return result_row
+
 ```
 
 ```{python}
-# Take a random sample of sample_df and write to a temp.xml file
-smpl_idx, smpl_size = getBatchFromSample(sample_df)
+results = []
+processed_set = get_processed_server_urls()
+
+# Only process reports not already in webpage_result
+reports_to_process = [
+    r
+    for r in existing_report_df.itertuples(index=False)
+    if (r.cik, r.year, r.link) not in processed_set
+]
+
+with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+    # Use the new, consolidated function
+    future_to_report = {
+        executor.submit(process_report_fully, r): r for r in reports_to_process
+    }
+
+    for future in tqdm(as_completed(future_to_report), total=len(future_to_report)):
+        try:
+            res = future.result()
+            if res is not None:
+                results.append(res)
+        except Exception as e:
+            debug_print(f"Error processing {future_to_report[future].link}: {e}")
+
+print(f"Processed {len(results)} new reports in parallel.")
 ```
 
 ```{python}
-# new labels maps the index to the new label
-new_labels ={
-    885: 0,
-}
-append_xml_to_training(smpl_idx, smpl_size, new_labels)
+def parse_json(json_str):
+    """Helper function to parse JSON strings safely"""
+    try:
+        return json.loads(json_str) if isinstance(json_str, str) else json_str
+    except (json.JSONDecodeError, TypeError):
+        return []
+
+def get_final_results():
+    """Get all processed results from the database"""
+    wr = fetch_server_results()
+    if wr.empty:
+        print("No results found in server_result table")
+        return pd.DataFrame()
+
+    # Parse JSON columns
+    wr["server_response"] = wr["server_response"].apply(parse_json)
+
+    return wr
+
+def get_sentence_analysis():
+    """Get sentence analysis with server predictions and save to Excel."""
+    wr = get_final_results()
+    if wr.empty:
+        print("No processed results found for sentence analysis")
+        return pd.DataFrame()
+
+    # Expand server responses
+    analysis_data = []
+    for _, row in wr.iterrows():
+        predictions = row["server_response"]
+        if not isinstance(predictions, list):
+            continue
+
+        # Map IDs → labels
+        predicted_labels = [id2label.get(pid, "Unknown") for pid in predictions]
+        pred_counts = Counter(predicted_labels)
+
+        analysis_data.append(
+            {
+                "cik": row["cik"],
+                "year": row["year"],
+                "url": row["url"],
+                "total_sentences": len(predictions),
+                **pred_counts,
+            }
+        )
+
+    sa = pd.DataFrame(analysis_data)
+    # Fill missing numeric cols with 0
+    sa = sa.fillna({col: 0 for col in sa.select_dtypes("number").columns})
+
+    print(f"Sentence analysis for {len(sa)} reports:")
+
+    # Excel writer (overwrite if fresh, append otherwise)
+    with pd.ExcelWriter(SERVER_EXCEL_PATH, engine="openpyxl") as writer:
+        # --- Main sheet ---
+        sa.to_excel(writer, sheet_name="all_reports", index=False)
+        # --- Firms with label 0 ---
+        firms_hedges = sa.groupby("cik").filter(
+            lambda g: g[id2label[0]].sum() > 0)
+        firms_hedges.to_excel(writer, sheet_name="Current Hedging", index=False)
+
+        # --- Firms with label 1 but no label 0 ---
+        firms_label1_no0 = sa.groupby("cik").filter(
+            lambda g: g[id2label[1]].sum() > 0 and g[id2label[0]].sum() == 0
+        )
+        firms_label1_no0.to_excel(writer, sheet_name="Hedging Past Year", index=False)
+
+        # --- Firms with only speculative mentions (label 2) ---
+        exclude_cols = [id2label[i] for i in id2label if i != 2]
+        firms_label2_only = sa.groupby("cik").filter(
+            lambda g: g[id2label[2]].sum() > 0 and g[exclude_cols].sum().sum() < g[id2label[2]].sum()
+        )
+        firms_label2_only.to_excel(writer, sheet_name="Speculation Only", index=False)
+
+        # --- Firms with liabilities/warrants (labels 4 or 5) ---
+        firms_liabilities = sa.loc[(sa[id2label[4]] > 0) | (sa[id2label[5]] > 0)]
+        firms_liabilities.to_excel(writer, sheet_name="Derivative Liabilties or Warrants", index=False)
+
+        # --- Firms with Embedded Derivatives (labels 6 or 7) ---
+        embedded_derivatives = sa.loc[(sa[id2label[6]] > 0) | (sa[id2label[7]] > 0)]
+        embedded_derivatives.to_excel(writer, sheet_name="Embedded Derivatives", index=False)
+
+        # --- Unique firms per label/year ---
+        label_cols = [id2label[i] for i in id2label]
+        unique_counts = (
+            sa.melt(id_vars=["cik", "year"], value_vars=label_cols)
+            .query("value > 0")
+            .drop_duplicates(["cik", "year", "variable"])
+            .groupby(["year", "variable"])["cik"]
+            .nunique()
+            .reset_index(name="unique_firms")
+        )
+        unique_counts.to_excel(writer, sheet_name="unique_per_year", index=False)
+
+        # --- Label co-occurrence ---
+        cooc = sa[label_cols].gt(0).astype(int).T.dot(sa[label_cols].gt(0).astype(int))
+        cooc.to_excel(writer, sheet_name="label_cooccurrence")
+
+    print(f"Sentence analysis saved to: {SERVER_EXCEL_PATH}")
+    return sa
+
+# Generate sentence analysis
+sa = get_sentence_analysis()
+sa.head(10)
 ```
 
 ```{python}
-import re
-string = '''
+def build_sentence_label_excel(output_path="./sentence_labels.xlsx"):
+    # Load both DB tables
+    conn = sqlite3.connect(DB_PATH)
+    server_df = pd.read_sql("SELECT * FROM server_result", conn)
+    webpage_df = pd.read_sql("SELECT * FROM webpage_result", conn)
+    conn.close()
 
-'''
-string = " ".join(string.split("\n"))
-string = re.sub("<reportingYear>", "\n<reportingYear>", string)
+    all_rows = []
 
-print(string)
+    for _, srow in server_df.iterrows():
+        key = (srow["cik"], srow["year"], srow["url"])
+
+        # Find matching webpage_result row
+        wrow = webpage_df[
+            (webpage_df["cik"] == srow["cik"])
+            & (webpage_df["year"] == srow["year"])
+            & (webpage_df["url"] == srow["url"])
+        ]
+        if wrow.empty:
+            continue
+
+        # Parse arrays
+        matches = json.loads(wrow.iloc[0]["matches"])
+        predictions = json.loads(srow["server_response"])
+
+        # Defensive check: align lengths
+        min_len = min(len(matches), len(predictions))
+
+        for i in range(min_len):
+            sentence = matches[i]
+            pred = predictions[i]
+            label = id2label.get(pred, "Unknown")
+
+            all_rows.append(
+                {
+                    "cik": srow["cik"],
+                    "year": srow["year"],
+                    "url": srow["url"],
+                    "sentence": sentence,
+                    "label_id": pred,
+                    "label": label,
+                }
+            )
+
+    # Build final DataFrame
+    final_df = pd.DataFrame(all_rows)
+
+    # Save to Excel
+    final_df.to_excel(output_path, index=False)
+    print(f"Saved sentence-label mapping to {output_path}")
+
+    return final_df
+
+
+# Run it
+sentence_label_df = build_sentence_label_excel()
+sentence_label_df.head(10)
 ```
