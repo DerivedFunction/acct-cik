@@ -183,6 +183,12 @@ def create_db():
             CREATE INDEX IF NOT EXISTS url_idx ON webpage_result (url)
             """
         )
+        c.execute(
+            """
+            CREATE INDEX IF NOT EXISTS name_idx ON 
+            names (name)
+            """
+        )
     except sqlite3.IntegrityError:
         print("Something went wrong creating the database")
     finally:
