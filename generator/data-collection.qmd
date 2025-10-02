@@ -27,7 +27,7 @@ from tqdm import tqdm
 ```
 
 ```{python}
-filename = "derivatives_data.csv"
+filename = "../excel/derivatives_data.csv"
 DB_PATH = "../db/web_data.db"
 KEYWORDS_FILE = "../config/keywords_find.json"
 NUM_THREADS = 4
@@ -584,26 +584,17 @@ def process_url(url: str, cik: int, year: int):
     Saves the extracted content in the DB if not already cached.
     """
     debug_str = f"Processing {cik} for year {year}"
-    data = get_webpage_data(url)
-
-    if data.empty:  # fetch and process
-        debug_print(debug_str)
-        raw_text = fetch_url(url)
-        if not raw_text:
-            return ""
-
-        # Extract content
-        if url.endswith("htm"):
-            debug_print("Processing as html")
-            content = extract_content(raw_text, True)
-        else:
-            debug_print("Processing as text")
-            content = extract_content(raw_text, False)
-
-        save_data(content, url, cik, year)  # save extracted content
+    debug_print(debug_str)
+    raw_text = fetch_url(url)
+    if not raw_text:
+        return ""
+    # Extract content
+    if url.endswith("htm"):
+        debug_print("Processing as html")
+        content = extract_content(raw_text, True)
     else:
-        debug_print(debug_str + ": Already found a hit in cache.")
-        content = data.iloc[0]["raw_text"]  # this now stores extracted content
+        debug_print("Processing as text")
+        content = extract_content(raw_text, False)
     return content
 ```
 

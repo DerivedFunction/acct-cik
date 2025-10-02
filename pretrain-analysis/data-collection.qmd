@@ -28,7 +28,7 @@ from tqdm import tqdm
 ```
 
 ```{python}
-filename = "derivatives_data.csv"
+filename = "../excel/derivatives_data.csv"
 DB_PATH = "../db/webpage.db"
 REPORT_RESULTS_EXCEL_PATH = "../excel/cik_urls.xlsx"
 KEYWORDS_FILE = "../config/keywords_labels.json"
