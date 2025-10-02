@@ -5,10 +5,12 @@ from openpyxl import load_workbook
 import re
 ```
 
+# Common Variables
 ```{python}
-
 output_file = "../excel/training_data.xlsx"
 company_name_file = "../excel/names.xlsx"
+
+money_unit_list = ["thousand", "million", "billion"]
 months = [
     "January",
     "February",
@@ -34,7 +36,7 @@ months = [
     "Dec.",
 ]
 
-quarters = ["first", "second", "third", "fourth", "1st", "2nd", "3rd", "4th"]
+quarters = ["first", "second", "third", "fourth", "last", "1st", "2nd", "3rd", "4th"]
 # Currency codes for international flavor
 currency_codes = ["$", "€", "£", "¥", "CHF ", "SGD ", "CAD ", "AUD "]
 currency_pairs = [
@@ -97,6 +99,23 @@ all_currencies = (
     | set(americas_currencies)
 )
 all_currencies = list(all_currencies)
+frequencies = [
+    "quarterly",
+    "on a regular basis",
+    "at least quarterly",
+    "monthly",
+    "periodically",
+]
+volume_units = ["barrels", "MMBtu", "MWh", "metric tons", "bushels", "gallons"]
+assessment_verbs = [
+    "assessed",
+    "evaluated",
+    "tested",
+    "measured",
+    "analyzed",
+    "conducted",
+    "performed"
+]
 ```
 
 # Derivative liabilities and Warrants and Embedded Derivatives
@@ -132,7 +151,7 @@ warrant_fv_templates = [
     "Using a {model}, the warrant liabilities were fair valued at {currency_code}{amount} {money_unit} as of {date}",
     "The fair value of outstanding liability-classified warrants totaled {currency_code}{amount} {money_unit} at year-end {year}, {verb} using {model}",
     "The fair value of outstanding warrant liabilities totaled {currency_code}{amount} {money_unit} at year-end {year}, {verb} using {model}",
-    "The fair value of the warrants classified as liabilities is estimated using the , with the following inputs as of {month} {year}",
+    "The fair value of the warrants classified as liabilities is estimated using the {model}, with the following inputs as of {month} {year}",
     "The fair value of the warrant liabilities presented below were {verb} using {model}"
 ]
 
@@ -193,7 +212,7 @@ embedded_identification_templates = [
     "Certain {host_contract} contain embedded features that meet the definition of derivatives and are not clearly and closely related to the host contract",
     "{company}'s {host_contract} include embedded derivative features that have been bifurcated and recorded separately at fair value",
     "Embedded derivatives have been identified within {host_contract} and are accounted for separately from the host instrument",
-    "{company} evaluated {host_contract} and determined that certain embedded features require bifurcation under derivative accounting guidance",
+    "{company} {verb} {host_contract} and determined that certain embedded features require bifurcation under derivative accounting guidance",
     '{company} adopted SFAS 155, "Accounting for Certain Hybrid Instruments" to identify all embedded derivative features',
     "{company} measures a hybrid financial instrument in its entirety at fair value after having identified all embedded derivative features."
     "{company} identified and documented the embedded derivative features, and the irrevocably elected to measure and carry the {host_contract} at fair value" 
@@ -281,7 +300,7 @@ embedded_fv_change_templates = [
 ccr_analysis_templates = [
     "{company} performed an assessment of whether the embedded features were clearly and closely related to the economic characteristics of the host contract and concluded bifurcation was required",
     "The embedded features are not clearly and closely related to the debt host instrument, as the conversion feature is indexed to {company}'s own stock and includes down round protection",
-    "Management evaluated the economic characteristics and risks of the embedded features and determined they are not clearly and closely related to the host, requiring separate accounting",
+    "Management {verb} the economic characteristics and risks of the embedded features and determined they are not clearly and closely related to the host, requiring separate accounting",
     "The embedded derivative fails the clearly and closely related test due to its equity-linked characteristics and variable settlement provisions",
 ]
 
@@ -353,175 +372,52 @@ embedded_no_longer_outstanding_templates = [
 ```
 
 # Hedging Activities
+## Common Activities
 ```{python}
-derivative_keywords = {
-    "IR": [
-        "interest rate contract",
-        "interest rate forward contract",
-        "interest rate collar contract",
-        "interest rate swap contract",
-        "zero coupon swap contract",
-        "single currency basis swap contract",
-        "interest rate future contract",
-        "pay-fixed, receive-floating interest rate swap contract",
-        "pay-floating, receive-fixed interest rate swap contract",
-        "interest rate hedge contract",
-        "interest rate hedge agreement",
-        "forward starting interest rate swap contract",
-        "treasury rate lock agreement",
-        "interest rate swap agreement",
-    ],
-    "FX": [
-        "forward rate agreement",
-        "forward rate contract",
-        "forward rate option contract",
-        "foreign exchange contract",
-        "foreign exchange rate contract",
-        "cross-currency swap contract",
-        "cross-currency swap agreement",
-        "cross-currency rate contract",
-        "foreign exchange forward contract",
-        "foreign exchange rate forward contract",
-        "cross-currency forward contract",
-        "cross-currency rate forward contract",
-        "cross-currency option contract",
-        "forward foreign exchange contract",
-        "foreign exchange future contract",
-        "foreign exchange rate future contract",
-        "cross-currency future contract",
-        "foreign exchange swap contract",
-        "foreign exchange rate swap contract",
-        "cross-currency swap contract",
-        "foreign exchange option contract",
-        "foreign exchange rate option contract",
-        "cross-currency option contract",
-        "foreign exchange cap contract",
-        "foreign exchange rate cap contract",
-        "cross-currency cap contract",
-        "foreign exchange floor contract",
-        "foreign exchange rate floor contract",
-        "cross-currency floor contract",
-        "foreign exchange collar contract",
-        "foreign exchange rate collar contract",
-        "cross-currency collar contract",
-        "foreign currency forward contract",
-        "foreign currency purchased put option contract",
-    ],
-    "CP": [
-        "commodity contract",
-        "commodity price contract",
-        "commodity derivative contract",
-        "commodity price derivative contract",
-        "commodity instrument contract",
-        "commodity price instrument contract",
-        "commodity forward contract",
-        "commodity price forward contract",
-        "commodity future contract",
-        "commodity price future contract",
-        "commodity option contract",
-        "commodity price option contract",
-        "commodity cap contract",
-        "commodity price cap contract",
-        "commodity floor contract",
-        "commodity price floor contract",
-        "commodity collar contract",
-        "commodity price collar contract",
-        "commodity swap contract",
-        "commodity price swap contract",
-    ],
-    "GENERIC": [
-        "forward contract",
-        "futures contract",
-        "call option contract",
-        "put option contract",
-        "option contract",
-        "swap contract",
-        "swaption contract",
-        "purchased put option contract",
-        "purchased call option contract",
-        "collar contract",
-    ],
-}
-all_derivatives = list(
-    dict.fromkeys(kw for kws in derivative_keywords.values() for kw in kws)
-)
-money_unit_list = ["thousand", "million", "billion"]
-# Template arrays for event-based sentences (labels 0 and 1)
-past_event_templates = [
-    "During {month} {year}, {company} executed {swap_type} in anticipation of issuing fixed-rate notes, leaving {currency_code}{amount} {money_unit} of unrealized losses in OCI related to {swap_type} as of {month} {next_year}",
-    "In {month} {year}, {company} entered into {swap_type} with a notional value of {currency_code}{amount} {money_unit} to hedge forecasted debt issuances, resulting in deferred losses recorded in accumulated OCI",
-    "{company} designated {swap_type} in {month} {year} as {hedge_type} hedges against anticipated interest payments, with {currency_code}{amount} {money_unit} in fair value adjustments recorded in equity",
-    "During {year}, {swap_type} were executed to lock in favorable rates prior to debt refinancing, with {currency_code}{amount} {money_unit} of accumulated losses deferred in other comprehensive income",
-    "In {month} {year}, {company} entered into forward-starting {swap_type} in connection with planned debt offerings, recording {currency_code}{amount} {money_unit} of mark-to-market losses in OCI",
-    "In {month} {year}, {company} utilized {swap_type} to manage interest rate risk, recognizing {currency_code}{amount} {money_unit} in unrealized gains in OCI as of {month} {next_year}",
-    "During {year}, {company} executed {swap_type} to hedge against fluctuations in interest rates, with {currency_code}{amount} {money_unit} in deferred gains recorded in accumulated OCI",
+
+hedge_past_event_template = [
     "In {month} {year}, {company} entered into {swap_type} agreements with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
-    "{company} implemented {swap_type} in {month} {year} to stabilize borrowing costs, deferring {currency_code}{amount} {money_unit} of losses in other comprehensive income",
-    "in the {quarter} quarter of {year}, {company} executed forward-starting {swap_type} to secure rates for future debt issuances, with {currency_code}{amount} {money_unit} in mark-to-market adjustments in OCI",
     "During {month} {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
-    "In {year}, {company} entered into {swap_type} to mitigate interest rate exposure, with {currency_code}{amount} {money_unit} in fair value changes deferred in equity",
-    "In {month} {year}, {company} locked in rates using {swap_type}, recognizing {currency_code}{amount} {money_unit} in deferred losses within other comprehensive income",
-    "during the {quarter} quarter of {year}, {company} executed {swap_type} to hedge planned bond issuances, with {currency_code}{amount} {money_unit} in unrealized losses recorded in OCI",
-    "In {month} {year}, {swap_type} were used to manage exposure to interest rate volatility, resulting in {currency_code}{amount} {money_unit} of deferred gains in equity",
-    "{company} entered into {swap_type} in {month} {year} to hedge forecasted interest payments, with {currency_code}{amount} {money_unit} in mark-to-market adjustments in OCI",
-    "In {year}, {company} designated {swap_type} as hedges for anticipated debt, recording {currency_code}{amount} {money_unit} in fair value losses in accumulated OCI",
-    "During {month} {year}, {company} implemented {swap_type} to secure favorable rates, with {currency_code}{amount} {money_unit} in unrealized gains deferred in OCI",
-    "in the {quarter} quarter of {year}, {swap_type} were executed to manage interest rate risk on future borrowings, with {currency_code}{amount} {money_unit} in losses recorded in equity",
-    "{company} used {swap_type} in {month} {year} to hedge against rising interest rates, deferring {currency_code}{amount} {money_unit} in mark-to-market losses in OCI",
-    "In {month} {year}, {company} entered into {swap_type} with a notional value of {currency_code}{amount} {money_unit}, resulting in deferred gains recorded in accumulated OCI",
-    "During {year}, {company} executed {swap_type} to lock in rates for planned financings, with {currency_code}{amount} {money_unit} in fair value adjustments in OCI",
-    "In {month} {year}, {company} designated forward-starting {swap_type} as {hedge_type} hedges, recognizing {currency_code}{amount} {money_unit} in unrealized losses in equity",
-    "{company} implemented {swap_type} in the {quarter} quarter of {year} to stabilize interest costs, with {currency_code}{amount} {money_unit} in deferred losses recorded in OCI",
-    "In {month} {year}, {swap_type} were entered to hedge anticipated debt offerings, resulting in {currency_code}{amount} {money_unit} of mark-to-market gains in accumulated OCI",
 ]
 
-swap_entry_templates = [
-    "In {month} {year}, {swap_type} were entered into and designated as hedges of the notes with a notional amount of {currency_code}{notional} {money_unit}, effectively converting portions of fixed-rate debt to floating rates",
-    "During {month} {year}, {company} executed {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} to modify the interest rate characteristics of outstanding senior notes",
-    "{company} entered into {swap_type} in {month} {year} with a total notional amount of {currency_code}{notional} {money_unit}, designated as fair value hedges of fixed-rate obligations",
-    "In {month} {year}, {swap_type} totaling {currency_code}{notional} {money_unit} notional were designated as hedging instruments against changes in the fair value of fixed-rate debt",
-    "{company} executed {swap_type} in {month} {year} with notional amounts aggregating {currency_code}{notional} {money_unit} to hedge interest rate exposure on a portion of its debt portfolio",
-    "in the {quarter} quarter of {year}, {company} entered into {swap_type} with a notional value of {currency_code}{notional} {money_unit} to convert fixed-rate senior notes to variable rates",
-    "During {month} {year}, {swap_type} were executed with a total notional amount of {currency_code}{notional} {money_unit} to manage interest rate risk on long-term debt",
-    "In {month} {year}, {company} designated {swap_type} with a notional amount of {currency_code}{notional} {money_unit} as fair value hedges for its outstanding bonds",
-    "{company} initiated {swap_type} in {month} {year} with a notional value of {currency_code}{notional} {money_unit} to adjust the interest rate profile of its debt",
-    "in the {quarter} quarter of {year}, {swap_type} totaling {currency_code}{notional} {money_unit} were entered to hedge changes in the fair value of fixed-rate liabilities",
-    "During {month} {year}, {company} executed {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to manage exposure to interest rate fluctuations",
-    "In {month} {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} were designated to hedge fixed-rate debt obligations",
-    "{company} entered into {swap_type} in the {quarter} quarter of {year} with a notional amount of {currency_code}{notional} {money_unit} to modify the interest rate structure of its senior notes",
-    "In {month} {year}, {swap_type} were implemented with a total notional value of {currency_code}{notional} {money_unit} to hedge the fair value of outstanding debt",
-    "During {year}, {company} executed {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to convert portions of its fixed-rate debt to floating rates",
-    "In {month} {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} were designated as fair value hedges against changes in debt valuation",
-    "{company} entered into {swap_type} during the {quarter} quarter of {year} with a notional amount of {currency_code}{notional} {money_unit} to manage interest rate exposure on bonds",
-    "In {month} {year}, {swap_type} totaling {currency_code}{notional} {money_unit} were executed to adjust the interest rate characteristics of long-term liabilities",
-    "during the {quarter} quarter of {year}, {company} designated {swap_type} with a notional value of {currency_code}{notional} {money_unit} as hedges of fixed-rate note obligations",
-    "In {month} {year}, {swap_type} were entered with a total notional amount of {currency_code}{notional} {money_unit} to mitigate interest rate risk on debt issuances",
-]
 
-active_position_templates = [
-    "Outstanding swaps at year-end {year} effectively convert the hedged portion of debt to floating rates",
+hedge_active_position_template = [
     "As of {month} {end_day}, {year}, {company} maintains {swap_type} with notional amounts totaling {currency_code}{notional} {money_unit}",
     "At year-end {year}, {company} had {swap_type} outstanding with aggregate notional values of {currency_code}{notional} {money_unit} designated as hedges",
-    "As of {month} {year}, outstanding {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain in effect to hedge interest rate risk",
+    "As of {month} {year}, outstanding {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain in effect",
     "{company}'s derivative portfolio at {month} {end_day}, {year} consists of {swap_type} with combined notional values of {currency_code}{notional} {money_unit}",
-    "As of {month} {end_day}, {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are designated as fair value hedges",
-    "At year-end {year}, {company} holds {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to manage debt-related interest rate risk",
-    "As of {month} {year}, {company}’s outstanding {swap_type} have a notional value of {currency_code}{notional} {money_unit}, hedging fixed-rate obligations",
-    "{company} maintains {swap_type} with a notional amount of {currency_code}{notional} {money_unit} as of {month} {end_day}, {year}, designated as hedges",
     "At the end of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active in {company}’s derivative portfolio",
-    "As of {month} {end_day}, {year}, {company} has {swap_type} outstanding with a notional amount of {currency_code}{notional} {money_unit} to hedge interest rate exposure",
-    "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as fair value hedges",
-    "As of {month} {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are in place to convert fixed-rate debt to floating rates",
+    "As of {month} {end_day}, {year}, {company} has {swap_type} outstanding with a notional amount of {currency_code}{notional} {money_unit}",
     "At year-end {year}, {company}’s derivative portfolio includes {swap_type} with a notional value of {currency_code}{notional} {money_unit}",
-    "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} are used to manage interest rate risk",
+    "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} remain designated as hedges",
     "{company} holds {swap_type} with a notional amount of {currency_code}{notional} {money_unit} at {month} {end_day}, {year}, as part of its hedging strategy",
     "At the close of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain designated as hedges",
     "As of {month} {year}, {company}’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit}",
-    "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} are active to hedge fixed-rate debt obligations",
     "{company}’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}",
 ]
-
-termination_templates = [
+hedge_optional_templates = [
+    "{company} also have entered into {swap_type} to hedge forecasted revenue which were not part of a collar strategy. Such {swap_type} had a notional value of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {month} {end_day}, {prev_year}, respectively",
+    "{company} entered into {swap_type} with notional values of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year} compared to {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
+    "As of {month} {end_day}, {year}, {company} maintained {swap_type} with a notional value of {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} in the prior year",
+    "{company} utilized {swap_type} to hedge forecasted transactions, with notional amounts decreasing from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year} to {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were in place, down from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
+    "{company} maintained {swap_type} to hedge revenue streams, with notional amounts of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year} compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
+    "In {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were active, compared to {currency_code}{notional2} {money_unit} in {prev_year}",
+    "As of {month} {end_day}, {year}, {company}’s {swap_type} portfolio had a notional value of {currency_code}{notional1} {money_unit}, reduced from {currency_code}{notional2} {money_unit} in {prev_year}",
+    "{company}’s {swap_type} for hedging forecasted revenue had notional values of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {prev_year}, respectively",
+    "At year-end {year}, {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} were used to hedge transactions, compared to {currency_code}{notional2} {money_unit} in {prev_year}",
+    "{company} employed {swap_type} with a notional value of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, down from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
+    "As of {month} {end_day}, {year}, {swap_type} to hedge forecasted revenue totaled {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} in the prior year",
+    "{company}’s {swap_type} portfolio for revenue hedging had a notional value of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
+    "In {year}, {company} maintained {swap_type} with a notional amount of {currency_code}{notional1} {money_unit}, reduced from {currency_code}{notional2} {money_unit} in {prev_year}",
+    "As of {month} {end_day}, {year}, {swap_type} used for hedging had a notional value of {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
+    "{company}’s {swap_type} for transaction hedging totaled {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
+    "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were active, compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
+    "{company} utilized {swap_type} with notional amounts of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} in the prior year",
+    "As of {month} {end_day}, {year}, {company}’s {swap_type} for revenue hedging had a notional value of {currency_code}{notional1} {money_unit}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
+    "{company} maintained {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
+]
+hedge_termination_templates = [
     "In the {quarter} quarter of {year}, {company} terminated all remaining {swap_type} agreements. {company} has no outstanding derivative positions as of year-end {year}",
     "During the {quarter} quarter of {year}, all previously designated {swap_type} were settled or expired, resulting in no outstanding hedge positions as of {month} {end_day}, {year}",
     "{company} closed out all {swap_type} positions during the {quarter} quarter of {year}, with no derivative instruments remaining at period end",
@@ -544,7 +440,7 @@ termination_templates = [
     "All {swap_type} were terminated in {month} {year}, with no outstanding hedges as of {month} {end_day}, {year}",
 ]
 
-expiration_templates = [
+hedge_expiration_templates = [
     "All previously outstanding derivatives expired or were settled during {month} {year}, with no new positions entered into during the year",
     "{company}'s derivative portfolio was fully liquidated in {month} {year} with no replacement hedges executed during the remainder of the fiscal year",
     "Outstanding hedge positions matured throughout {year}, and {company} elected not to enter into new derivative contracts during the period",
@@ -567,7 +463,7 @@ expiration_templates = [
     "In {month} {year}, all derivative positions, including {swap_type}, expired, with no new contracts executed",
 ]
 
-quarterly_event_templates = [
+hedge_quarterly_event_templates = [
     "In the {quarter} quarter of {year}, {company} settled {currency_code}{notional} {money_unit} in {swap_type} agreements, resulting in cash proceeds of {currency_code}{settlement} {money_unit}",
     "During the {quarter} quarter of {year}, {swap_type} with notional amounts of {currency_code}{notional} {money_unit} were terminated, generating {currency_code}{settlement} {money_unit} in settlement payments to {company}",
     "{company} unwound {currency_code}{notional} {money_unit} notional of {swap_type} in the {quarter} quarter of {year}, recognizing {currency_code}{settlement} {money_unit} in cash settlements",
@@ -590,30 +486,7 @@ quarterly_event_templates = [
     "During {month} {year}, {company} terminated {currency_code}{notional} {money_unit} in {swap_type}, resulting in {currency_code}{settlement} {money_unit} in cash settlements",
 ]
 
-option_contract_templates = [
-    "{company} also have entered into {swap_type} to hedge forecasted revenue which were not part of a collar strategy. Such {swap_type} had a notional value of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {month} {end_day}, {prev_year}, respectively",
-    "{company} entered into {swap_type} with notional values of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year} compared to {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
-    "As of {month} {end_day}, {year}, {company} maintained {swap_type} with a notional value of {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} in the prior year",
-    "{company} utilized {swap_type} to hedge forecasted transactions, with notional amounts decreasing from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year} to {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}",
-    "As of {month} {end_day}, {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were in place, down from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
-    "{company} maintained {swap_type} to hedge revenue streams, with notional amounts of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year} compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
-    "In {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were active, compared to {currency_code}{notional2} {money_unit} in {prev_year}",
-    "As of {month} {end_day}, {year}, {company}’s {swap_type} portfolio had a notional value of {currency_code}{notional1} {money_unit}, reduced from {currency_code}{notional2} {money_unit} in {prev_year}",
-    "{company}’s {swap_type} for hedging forecasted revenue had notional values of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {prev_year}, respectively",
-    "At year-end {year}, {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} were used to hedge transactions, compared to {currency_code}{notional2} {money_unit} in {prev_year}",
-    "{company} employed {swap_type} with a notional value of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, down from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
-    "As of {month} {end_day}, {year}, {swap_type} to hedge forecasted revenue totaled {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} in the prior year",
-    "{company}’s {swap_type} portfolio for revenue hedging had a notional value of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
-    "In {year}, {company} maintained {swap_type} with a notional amount of {currency_code}{notional1} {money_unit}, reduced from {currency_code}{notional2} {money_unit} in {prev_year}",
-    "As of {month} {end_day}, {year}, {swap_type} used for hedging had a notional value of {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
-    "{company}’s {swap_type} for transaction hedging totaled {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
-    "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were active, compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
-    "{company} utilized {swap_type} with notional amounts of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} in the prior year",
-    "As of {month} {end_day}, {year}, {company}’s {swap_type} for revenue hedging had a notional value of {currency_code}{notional1} {money_unit}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
-    "{company} maintained {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
-]
-
-dedesignation_templates = [
+hedge_dedesignation_templates = [
     "{company} de-designated all of our {swap_type} prior to {month} {end_day}, {year}",
     "{company} de-designated {swap_type} during {year}, removing hedge accounting treatment for these instruments",
     "All {swap_type} were de-designated as hedging instruments prior to year-end {year}",
@@ -636,176 +509,55 @@ dedesignation_templates = [
     "In {month} {year}, {company} discontinued hedge accounting for its {swap_type} portfolio",
 ]
 
-forward_starting_templates = [
-    "In anticipation of issuing fixed-rate debt, {company} may use {swap_type} that are designated as {hedge_type} hedges to hedge against changes in interest rates that could impact expected future issuances of debt",
-    "{company} utilizes {swap_type} designated as {hedge_type} hedges to lock in favorable interest rates prior to anticipated debt issuances",
-    "To hedge interest rate exposure on forecasted debt offerings, {company} may enter into {swap_type} designated as {hedge_type} hedges",
-    "{swap_type} are employed to mitigate the risk of rising interest rates on planned fixed-rate debt issuances",
-    "{company} uses {swap_type} as {hedge_type} hedges to secure interest rates for future debt issuances",
-    "In preparation for debt offerings, {company} may designate {swap_type} as {hedge_type} hedges to manage interest rate risk",
-    "To protect against interest rate volatility, {company} employs {swap_type} for planned fixed-rate debt issuances",
-    "{swap_type} are utilized as {hedge_type} hedges to lock in rates for anticipated debt financings",
-    "{company} may enter into {swap_type} to hedge interest rate risk on forecasted debt issuances",
-    "In anticipation of bond issuances, {swap_type} are designated as {hedge_type} hedges to stabilize future interest costs",
-    "{company} uses {swap_type} to mitigate interest rate fluctuations on planned debt offerings",
-    "{swap_type} are designated as {hedge_type} hedges to secure rates for future fixed-rate debt",
-    "To manage interest rate exposure, {company} employs {swap_type} for anticipated debt issuances",
-    "{company} may utilize {swap_type} as {hedge_type} hedges to lock in rates prior to debt financings",
-    "{swap_type} are used to hedge against rising interest rates for planned debt issuances",
-    "In preparation for fixed-rate debt, {company} designates {swap_type} as {hedge_type} hedges",
-    "{company} employs {swap_type} to stabilize interest rates for forecasted bond issuances",
-    "{swap_type} are implemented as {hedge_type} hedges to manage risk on future debt offerings",
-    "To secure favorable rates, {company} may use {swap_type} for anticipated fixed-rate debt",
-    "{company} designates {swap_type} as {hedge_type} hedges to mitigate interest rate risk on planned financings",
-    "{company} manages its cash flow interest rate risk by using {swap_type}, where at quarterly intervals the difference between fixed contract rates and floating rate interest amounts calculated by reference to the agreed notional principal amounts are exchanged",
-    "{company} utilizes {swap_type} to manage cash flow interest rate exposure, with quarterly settlements based on the differential between fixed and floating rates on notional amounts",
-    "Cash flow interest rate risk is managed through {swap_type} with quarterly net settlements calculated on agreed notional principal amounts",
-    "{company} employs {swap_type} converting floating rate exposure to fixed rates, with quarterly exchange of payment differentials based on notional values",
-]
-
-collar_strategy_templates = [
-    "{company} entered into {swap_type} as part of a collar strategy to limit exposure to foreign currency fluctuations within a defined range",
-    "Collar strategies utilizing {swap_type} were implemented to provide downside protection while capping upside exposure to currency movements",
-    "{company} established collar positions through {swap_type} to manage foreign exchange risk on forecasted transactions",
-    "As part of its risk management program, {company} uses collar strategies combining {swap_type} to hedge currency exposure",
-    "In {month} {year}, {company} implemented {swap_type} within a collar strategy to limit foreign currency risk",
-    "{company} utilized {swap_type} in a collar structure to manage exposure to currency fluctuations",
-    "Collar strategies with {swap_type} were employed to hedge foreign exchange risk on international transactions",
-    "{company} entered into {swap_type} as part of a collar to cap currency exposure while retaining some upside potential",
-    "in the {quarter} quarter of {year}, {swap_type} were used in a collar strategy to mitigate foreign currency volatility",
-    "{company} implemented collar positions with {swap_type} to stabilize foreign exchange impacts",
-    "{swap_type} were utilized in a collar strategy to limit currency risk on forecasted revenue",
-    "{company} established {swap_type} within a collar framework to manage foreign exchange exposure",
-    "Collar strategies involving {swap_type} were used to hedge currency fluctuations in {year}",
-    "{company} employed {swap_type} in a collar structure to protect against adverse currency movements",
-    "In {month} {year}, {swap_type} were implemented as part of a collar to manage currency risk",
-    "{swap_type} within a collar strategy were used to limit exposure to foreign exchange volatility",
-    "{company} utilized collar positions with {swap_type} to hedge currency risk on international contracts",
-    "in the {quarter} quarter of {year}, {company} entered into {swap_type} as part of a collar to manage forex exposure",
-    "Collar strategies with {swap_type} were implemented to stabilize currency impacts on forecasted transactions",
-    "{company} used {swap_type} in a collar framework to cap foreign exchange risk while retaining flexibility",
-]
-
-context_templates = [
+hedge_context_templates = [
     "Our international operations are subject to government-imposed constraints, including laws on pricing, reimbursement, and access to our products",
+    "Our global presence exposes {company} to foreign exchange rate volatility and regulatory risks across multiple jurisdictions",
+    "{company}’s global footprint subjects it to currency exchange risks and market-specific regulatory challenges",
+    "{company}’s operations in international markets expose it to foreign currency risks and regulatory constraints",
+]
+
+
+fx_ir_context_templates = [
     "{company}'s global operations expose it to various market risks, including fluctuations in foreign currency exchange rates and interest rates",
-    "As a multinational corporation, {company} face exposure to changes in foreign currency values that can affect our financial position and operating results",
     "Our business operations in multiple countries result in exposure to foreign currency exchange rate movements and interest rate volatility",
     "{company} operates in numerous international markets, which subjects us to risks from changes in currency exchange rates and interest rates",
-    "Our global presence exposes {company} to foreign exchange rate volatility and regulatory risks across multiple jurisdictions",
-    "Operating internationally, {company} face risks from currency exchange rate fluctuations and changes in local economic conditions",
     "{company}’s multinational operations are impacted by foreign currency movements and interest rate changes in various markets",
-    "Our business is subject to risks from foreign currency fluctuations due to operations in diverse international markets",
     "As a global entity, {company} faces exposure to exchange rate volatility and interest rate risks in its operations",
-    "{company}’s international activities result in exposure to currency exchange risks and government regulations",
     "Our operations across multiple countries expose us to foreign exchange rate changes and interest rate variability",
-    "{company}’s global footprint subjects it to currency exchange risks and market-specific regulatory challenges",
     "Operating in various jurisdictions, {company} are exposed to fluctuations in foreign currencies and interest rate movements",
-    "{company}’s international operations face risks from currency exchange rate volatility and local market conditions",
     "Our global business model results in exposure to foreign exchange rate changes and interest rate fluctuations",
     "As a multinational company, {company} are subject to risks from currency movements and interest rate volatility across regions",
-    "{company}’s operations in international markets expose it to foreign currency risks and regulatory constraints",
     "Our global operations are impacted by changes in foreign exchange rates and varying interest rate environments",
     "{company} faces currency exchange and interest rate risks due to its operations in multiple international markets",
-    "Foreign currency transaction exposures arising on external and internal trade flows are selectively hedged",
 ]
 
-impact_templates = [
-    "Depending on the direction of change relative to {major_currency}, foreign currency values can {verb} the reported dollar value of our net assets and results of operations",
-    "Fluctuations in exchange rates {verb} our reported revenues, expenses, assets, and liabilities when translated into {major_currency}",
-    "Changes in foreign currency exchange rates relative to {major_currency} {verb} both our financial position and operating performance",
-    "Currency movements {verb} the dollar value of our international cash flows and balance sheet items denominated in foreign currencies",
-    "Foreign exchange rate fluctuations {verb} the reported value of our international assets and liabilities in {major_currency}",
-    "Changes in currency exchange rates {verb} the financial results and net asset values reported in {major_currency}",
-    "Movements in foreign currency values {verb} our consolidated financial statements when translated into {major_currency}",
-    "Exchange rate volatility {verb} the reported dollar value of our international revenues and expenses",
-    "Foreign currency fluctuations {verb} the translated value of our assets, liabilities, and operating results",
-    "Changes in exchange rates relative to {major_currency} {verb} our financial position and reported earnings",
-    "Currency exchange rate movements {verb} the dollar value of our international operations and balance sheet",
-    "Fluctuations in foreign currencies {verb} our reported financial performance and net asset values",
-    "Exchange rate changes {verb} {major_currency} value of our international cash flows and financial position",
-    "Foreign currency movements {verb} the reported value of our global revenues and balance sheet items",
-    "Changes in foreign exchange rates {verb} the dollar-denominated value of our international operations",
-    "Currency fluctuations {verb} our consolidated financial results and net asset positions",
-    "Movements in exchange rates {verb} the reported value of our international assets and operating results",
-    "Foreign currency changes {verb} {major_currency} value of our global financial statements",
-    "Exchange rate volatility {verb} the translated financial results of our international subsidiaries",
-    "Changes in currency values {verb} the reported dollar value of our global operations and financial position",
-]
-
-impact_verbs = [
-    "increase or decrease",
-    "affect",
-    "impact",
-    "influence",
-    "alter",
-    "modify",
-    "change",
-    "adjust",
-    "impact positively or negatively",
-    "shift",
-]
-
-mitigation_templates = [
-    "While {company} cannot predict with certainty future changes in foreign exchange rates or the effect they will have, {company} {verb} to mitigate their impact through operational means and by using foreign currency derivative instruments",
-    "{company} {verb} to manage these exposures through a combination of operational strategies and derivative financial instruments",
-    "{company} selectively hedges foreign exchange exposures resulting from cross-border trade flows and intercompany transactions",
-    "Transaction exposures from external trade and internal group transactions are managed through selective hedging programs",
-    "{company} hedges foreign currency transaction risk arising from both third-party and intercompany commercial activities",
+fx_ir_mitigation_templates = [
     "{company} {verb} to reduce the impact of currency and interest rate movements through natural hedging strategies and the use of derivative contracts",
     "To mitigate these risks, {company} {verb} various hedging strategies including the use of derivative instruments",
     "{company} {verb} to minimize exposure to adverse movements in exchange rates and interest rates through both operational measures and financial derivatives",
     "{company} {verb} to limit currency and interest rate risks through operational adjustments and derivative contracts",
     "{company} {verb} to offset the impact of foreign exchange volatility using derivatives and operational hedging strategies",
     "To manage currency and interest rate risks, {company} {verb} a combination of financial instruments and operational tactics",
-    "{company} {verb} to reduce exposure to exchange rate fluctuations through derivative instruments and natural hedges",
     "{company} {verb} to protect against adverse currency and interest rate movements with derivatives and strategic operations",
-    "{company} {verb} to mitigate foreign exchange risk through the use of derivative contracts and operational strategies",
-    "{company} {verb} to manage currency volatility by employing derivative instruments and operational risk management",
-    "To address exchange rate and interest rate risks, {company} {verb} hedging strategies and financial derivatives",
-    "{company} {verb} to minimize the impact of currency fluctuations through derivatives and operational measures",
-    "{company} {verb} to limit the effects of foreign exchange and interest rate volatility using derivative instruments",
     "{company} {verb} to stabilize financial results by using derivatives and operational hedging techniques",
     "{company} {verb} to reduce currency and interest rate exposure through strategic operations and derivative contracts",
-    "To mitigate market risks, {company} {verb} a combination of derivatives and operational risk management",
     "{company} {verb} to manage foreign currency and interest rate risks through hedging and operational strategies",
     "{company} {verb} to offset currency and interest rate volatility with derivative instruments and operational adjustments",
-    "{company}'s objective is to minimise the exposure of overseas operating subsidiaries to transaction risk by matching local currency income with local currency costs where possible",
-    "{company}'s objective is to minimize transaction risk exposure by aligning local currency revenues with local currency expenses in its foreign operations",
-    "{company} {verb} to reduce foreign currency transaction exposure by matching currency inflows and outflows at the subsidiary level",
-    "To mitigate transaction risk, {company} {verb} natural hedging strategies by matching local currency revenues with local currency costs",
-    "{company}'s internal trading transactions are matched centrally and inter-company payment terms are managed to reduce foreign currency risk",
-    "Intercompany transactions are centrally netted and payment terms are optimized to minimize foreign exchange exposure",
-    "{company} operates a central matching system for internal trade flows to reduce gross foreign currency exposures",
-    "{company} centrally manages intercompany trading positions and payment schedules to mitigate currency risk",
-    "Where possible, {company} manages the cash surpluses or borrowing requirements of subsidiary companies centrally using {swap_type} to hedge future repayments back into the originating currency",
-    "{company} centrally manages subsidiary liquidity and uses {swap_type} to hedge foreign exchange exposure on intercompany funding arrangements",
-    "Subsidiary cash positions are managed centrally with {swap_type} hedging the repatriation of funds to originating currencies",
-    "{company} employs {swap_type} to hedge foreign currency risk on centrally managed subsidiary funding and cash movements",
-    "Borrowings can be swapped into other currencies as required",
-    "{company} may use currency swaps to adjust the currency profile of its debt portfolio as needed",
-    "{company} employs cross-currency swaps to modify the currency composition of borrowings based on operational needs",
-    "Currency swaps are utilized to convert borrowings into {major_currency} when strategically beneficial",
-    "{swap_type} not designated as hedges, failing to be hedges or failing to continue as effective hedges are included in operations as {swap_type} gains or losses",
-    "Discounts or premiums on {swap_type} designated and effective as hedges are amortized or accreted to expense using the straight-line method over the term of the related contract",
-    "Discounts or premiums on {swap_type} not designated or effective as hedges are included in the mark to market adjustment and recognized in income as {swap_type} gains or losses",
+]
+hedge_mitigation_templates = [
+    "To mitigate market risks, {company} {verb} a combination of derivatives and operational risk management",
+    "{company} {verb} to manage overall financial market exposures, including currency, interest rate, and other price risks, through a balanced hedging approach",
+    "Our risk management strategy includes the selective use of derivative instruments to reduce exposure to various market risks",
+    "{company} {verb} to minimize the effect of adverse financial market movements on earnings and cash flows through operational and financial measures",
+    "{company} employs a risk management framework that combines natural hedging techniques with the use of derivative contracts",
+    "To manage financial risks, {company} {verb} both centralized treasury operations and selective hedging strategies",
+    "{company} {verb} to offset market risk exposures using a combination of operational practices and financial instruments",
+    "Our market risk management approach is designed to reduce the volatility of earnings and cash flows caused by fluctuations in financial variables",
+    "{company} {verb} to align its market risk exposure with its overall risk tolerance through the use of derivatives and other risk management practices",
+    "To mitigate exposure to unpredictable financial markets, {company} {verb} a mix of natural hedging, diversification, and derivative usage",
 ]
 
-mitigation_verbs = [
-    "attempt",
-    "seek",
-    "endeavor",
-    "strive",
-    "work",
-    "aim",
-    "pursue",
-    "undertake",
-    "engage",
-    "commit",
-    "implement",
-]
-
-accounting_policy_templates = [
+hedge_policy_templates = [
     "Changes in the fair value of derivative instruments are recorded each period in current earnings or other comprehensive income (loss), depending on whether a derivative instrument is designated as part of a hedging transaction and, if it is, the type of hedging transaction",
     "Derivative instruments are measured at fair value with gains and losses recorded in earnings or accumulated other comprehensive income based on hedge designation",
     "{company} accounts for derivatives at fair value, with changes in fair value recognized in either net income or other comprehensive income depending on the nature of the hedging relationship",
@@ -835,7 +587,7 @@ accounting_policy_templates = [
     "For a derivative that does not qualify as a {hedge_type} hedge, the change in {hedge_type} is recognized currently in net income",
 ]
 
-documentation_templates = [
+hedge_documentation_templates = [
     "For a derivative to qualify as a hedge at inception and throughout the hedged period, {company} formally document the nature and relationships between the hedging instruments and hedged item",
     "For a derivative designated as a {hedge_type} hedge, the gain or loss is recognized in earnings in the period of change together with the offsetting loss or gain on the risk being hedged",
     "{company} maintains formal documentation of all hedging relationships, including the risk management objective and strategy for undertaking the hedge",
@@ -859,72 +611,387 @@ documentation_templates = [
     "{company} document all hedging relationships at inception, including the risk management strategy and hedge objectives",
 ]
 
-effectiveness_templates = [
-    "{company} assess, both at inception and on an on-going basis, whether the derivative instruments that are used in {hedge_type} hedging transactions are highly effective in offsetting the {metric} of hedged items",
-    "{company} evaluates hedge effectiveness {frequency} to ensure derivatives continue to meet the criteria for hedge accounting",
+hedge_effectiveness_templates = [
+    "{company} {verb}, both at inception and on an on-going basis, whether the derivative instruments that are used in {hedge_type} hedging transactions are highly effective in offsetting the {metric} of hedged items",
+    "{company} {verb} hedge effectiveness {frequency} to ensure derivatives continue to meet the criteria for hedge accounting",
     "Hedge effectiveness is {verb} {frequency} using {method} in accordance with {standard}",
-    "{company} perform {frequency} assessments of hedge effectiveness to determine whether hedging relationships remain highly effective",
+    "{company} {verb} {frequency} assessments of hedge effectiveness to determine whether hedging relationships remain highly effective",
     "{company} {verb} hedge effectiveness {frequency} in accordance with {standard}",
-    "Hedge effectiveness is evaluated {frequency} to confirm that {swap_type} remain highly effective in offsetting {metric}",
-    "{company} assess hedge effectiveness {frequency} using {method} to ensure compliance with {standard}",
-    "{company} performs {frequency} tests of hedge effectiveness for {swap_type} to offset changes in {metric}",
+    "Hedge effectiveness is {verb} {frequency} to confirm that {swap_type} remain highly effective in offsetting {metric}",
+    "{company} {verb} hedge effectiveness {frequency} using {method} to ensure compliance with {standard}",
+    "{company} {verb} {frequency} tests of hedge effectiveness for {swap_type} to offset changes in {metric}",
     "Hedge effectiveness is {verb} {frequency} to verify that derivatives qualify for hedge accounting under {standard}",
     "{company} evaluate {swap_type} effectiveness {frequency} to ensure they offset {metric} as intended",
     "{company} {verb} effectiveness of {swap_type} {frequency} using {method} per {standard}",
-    "Hedge effectiveness for {swap_type} is assessed {frequency} to confirm alignment with {metric}",
-    "{company} perform {frequency} hedge effectiveness tests using {method} to comply with {standard}",
-    "{company} evaluates {swap_type} {frequency} to ensure they effectively hedge {metric}",
+    "Hedge effectiveness for {swap_type} is {verb} {frequency} to confirm alignment with {metric}",
+    "{company} {verb} {frequency} hedge effectiveness tests using {method} to comply with {standard}",
+    "{company} {verb} {swap_type} {frequency} to ensure they effectively hedge {metric}",
     "Hedge effectiveness is {verb} {frequency} for {swap_type} to meet {standard} requirements",
-    "{company} assess the effectiveness of {swap_type} {frequency} to offset changes in {metric} per {standard}",
-    "{company} conducts {frequency} assessments of {swap_type} effectiveness using {method}",
-    "Hedge effectiveness is evaluated {frequency} to ensure {swap_type} offset {metric} as required",
+    "{company} {verb} the effectiveness of {swap_type} {frequency} to offset changes in {metric} per {standard}",
+    "{company} {verb} {frequency} assessments of {swap_type} effectiveness using {method}",
+    "Hedge effectiveness is {verb} {frequency} to ensure {swap_type} offset {metric} as required",
     "{company} {verb} hedge effectiveness {frequency} for {swap_type} in accordance with {standard}",
-    "{company} assesses {swap_type} effectiveness {frequency} to confirm compliance with {standard}",
+    "{company} {verb} {swap_type} effectiveness {frequency} to confirm compliance with {standard}",
 ]
+hedge_ineffectiveness_templates = [
+    "{company} assess hedge ineffectiveness {frequency} and record the gain or loss related to the ineffective portion of derivative instruments, if any, to current earnings",
+    "Any hedge ineffectiveness is recognized immediately in earnings in the period identified",
+    "Ineffectiveness, if present, is measured {frequency} and recorded in the consolidated statements of operations",
+    "{company} recognizes any ineffective portion of hedging instruments in current period earnings",
+    "Gains or losses from the ineffective portion of derivative instruments are recognized in earnings {frequency}",
+    "{company} evaluates hedge effectiveness and records any ineffectiveness in the statement of operations for the relevant period",
+    "Ineffective amounts arising from hedging relationships are reported in earnings as part of the assessment {frequency}",
+    "{company} monitors hedge effectiveness and immediately recognizes any ineffectiveness in income",
+    "Hedge ineffectiveness, when identified, is reflected in earnings for the reporting period in which it occurs",
+    "The ineffective portion of designated hedges is calculated and recognized in current earnings {frequency}",
+]
+
+hedge_discontinuation_templates = [
+    "If {company} determine that a forecasted transaction is no longer probable of occurring, {company} discontinue hedge accounting and any related unrealized gain or loss on the derivative instrument is recognized in current earnings",
+    "Hedge accounting is discontinued if the hedged forecasted transaction is no longer expected to occur, with accumulated gains or losses reclassified to earnings",
+    "When a hedged forecasted transaction becomes improbable, {company} dedesignates the hedging relationship and recognizes deferred gains or losses immediately",
+    "If a forecasted transaction fails to occur, amounts previously deferred in other comprehensive income are reclassified to current period earnings",
+    "{company} ceases hedge accounting for derivatives when the hedged item is no longer expected to occur, with any accumulated gains or losses recorded in earnings",
+    "Deferred gains or losses on discontinued hedges are recognized immediately in the consolidated statements of operations",
+    "Upon dedesignation of a hedge, the ineffective and deferred portions of derivative instruments are recorded in current period earnings",
+    "Hedge discontinuation is applied when the underlying forecasted transaction is no longer probable, reclassifying previously deferred amounts to income",
+    "If the hedged item does not materialize, accumulated OCI amounts for the hedge are transferred to current earnings",
+    "{company} derecognizes hedge accounting when criteria are no longer met, and any associated gains or losses are recognized in the period of discontinuation",
+]
+
 
 hedge_types = [
     "cash flow",
     "fair value",
     "net investment",
 ]
-metrics = ["changes in cash flows", "changes in fair value", "variability", "exposure"]
-frequencies = [
-    "quarterly",
-    "on a regular basis",
-    "at least quarterly",
-    "monthly",
-    "periodically",
+hedge_metrics = [
+    "changes in cash flows",
+    "changes in fair value",
+    "variability",
+    "exposure",
 ]
-assessment_verbs = ["assessed", "evaluated", "tested", "measured", "analyzed"]
-methods = [
-    "regression analysis and dollar-offset methods",
-    "quantitative analysis",
-    "statistical methods",
-    "the dollar-offset method",
-    "prospective and retrospective testing",
+
+
+hedge_mitigation_verbs = [
+    "attempt",
+    "seek",
+    "pursue",
+    "undertake",
+    "engage",
+    "commit",
+    "implement",
 ]
-standards = [
+
+hedge_impact_verbs = [
+    "entered into",
+    "executed",
+    "utilized",
+    "employed",
+    "has used",
+    "may enter into",
+    "may utilize",
+    "may employ",
+]
+
+hedge_change_verbs = ["increase", "decrease", "affect", "impact"]
+hedge_counterparty_templates = [
+    "Most of the counterparties to the derivatives are major banks and {company} is monitoring the associated inherent credit risks",
+    "{company} enters into derivative contracts with major financial institutions and monitors counterparty credit risk on an ongoing basis",
+    "Derivative counterparties are limited to major banking institutions with strong credit ratings to minimize counterparty risk",
+    "Credit risk from derivatives is mitigated by transacting only with highly-rated financial institution counterparties",
+    "{company} manages counterparty credit exposure by diversifying its derivative contracts among multiple major banks",
+]
+
+hedge_no_trading_templates = [
+    "{company} does not enter into derivative transactions for trading purposes",
+    "{company}'s policy prohibits the use of derivatives for speculative or trading purposes",
+    "Derivatives are used solely for hedging and risk management, not for speculative trading",
+    "{company} does not engage in derivative transactions for speculative purposes",
+    "All derivative transactions are entered into for hedging purposes and not for trading or speculation",
+]
+
+hedge_fv_position_templates = [
+    'As of {month} {end_day}, {year}, the fair value of the swaps was a {position_type} of {currency_code}{amount} {money_unit}, the opposite entry for {currency_code}{oci_amount} {money_unit} of which was {oci_action} to "Other comprehensive income" under the cost of hedging accounting treatment',
+    'As of {month} {end_day}, {year}, the fair value of these {swap_type} represented a {position_type} of {currency_code}{amount} {money_unit}; the opposite entry was recognized in "Other comprehensive income", with the impact on financial income and expense being immaterial',
+    "The fair value of {swap_type} as of {month} {end_day}, {year} was a {position_type} of {currency_code}{amount} {money_unit}, with {currency_code}{oci_amount} {money_unit} {oci_action} to other comprehensive income",
+    "As of year-end {year}, outstanding {swap_type} had a fair value {position_type} of {currency_code}{amount} {money_unit}, the offsetting entry being recorded in accumulated other comprehensive income",
+]
+hedge_impact_templates = [
+    "Fluctuations in market conditions {verb} the reported value of our financial instruments and operating results",
+    "Changes in market prices {verb} {company}'s financial performance and net asset values",
+    "Movements in market rates {verb} the company's cost structure and profitability",
+    "Market volatility {verb} the reported value of derivative positions",
+    "Shifts in market values {verb} the financial results of {company}'s operations",
+    "Changes in market conditions {verb} forecasted cash flows and financial position",
+    "Market fluctuations {verb} the valuation of financial instruments",
+    "{company}'s exposure to market risks {verb} operating costs and financial statements",
+    "Price changes in key markets {verb} the cost structure and margins",
+    "Volatility in financial markets {verb} the reported value of positions",
+]
+
+# Generic Debt Optimization Templates
+ir_fx_debt_optimization_templates = [
+    "{company} uses {swap_type} to optimize the cost and risk profile of its debt portfolio, adjusting both interest rate and currency exposures",
+    "To manage borrowing costs and currency risk, {company} employs {swap_type} to modify the effective interest rate and currency mix of outstanding debt",
+    "{company} implements {swap_type} to reduce volatility from interest rate fluctuations and foreign exchange movements on its borrowings",
+    "As part of its debt strategy, {company} utilizes {swap_type} to transform debt characteristics, including both fixed/floating rate and currency composition",
+    "To hedge against interest rate and foreign exchange risks, {company} applies {swap_type} to optimize its debt obligations",
+    "{company} uses {swap_type} to manage exposure to both interest rate changes and currency fluctuations across its debt portfolio",
+    "The company employs {swap_type} to balance interest rate and currency risk, converting portions of debt as needed",
+    "{company} optimizes its borrowings by using {swap_type} to adjust interest rate terms and currency allocations simultaneously",
+    "To stabilize debt costs, {company} applies {swap_type} to manage both cash flow interest rate risk and foreign exchange risk",
+    "{company} manages risk on forecasted and existing borrowings using {swap_type} to optimize interest rate and currency profiles",
+]
+
+
+hedge_standards = [
     "ASC 815",
     "applicable accounting guidance",
     "U.S. GAAP",
     "accounting standards",
 ]
+derivative_keywords = {
+    "cp": [
+        "commodity forward",
+        "commodity future",
+        "commodity option",
+        "commodity cap",
+        "commodity floor",
+        "commodity collar",
+        "commodity swap",
+        "commodity price swap",
+    ],
+    "fx": [
+        "forward rate agreement",
+        "forward rate contract",
+        "forward rate option",
+        "forward foreign exchange contract",
+        "forward foreign exchange rate contract",
+        "foreign exchange contract",
+        "foreign exchange rate contract",
+        "foreign exchange forward",
+        "foreign exchange forward contract",
+        "foreign exchange rate forward",
+        "foreign exchange future",
+        "foreign exchange swap",
+        "foreign exchange rate swap",
+        "foreign exchange option",
+        "foreign exchange cap",
+        "foreign exchange floor",
+        "foreign exchange collar",
+        "cross-currency swap",
+        "cross-currency forward",
+        "cross-currency option",
+        "cross currency swap",
+        "cross currency forward",
+        "cross currency option",
+        "currency swap",
+        "currency forward",
+        "currency option",
+        "currency cap",
+        "currency floor",
+        "currency collar",
+        "foreign currency forward",
+        "foreign currency forward contract",
+        "foreign currency purchased put option",
+    ],
+    "ir": [
+        "interest rate contract",
+        "interest rate swaps",
+        "interest rate forward contract",
+        "interest rate collar contract",
+        "interest rate swap contract",
+        "zero coupon swap contract",
+        "single currency basis swap contract",
+        "interest rate future contract",
+        "pay-fixed, receive-floating interest rate swap contract",
+        "pay-floating, receive-fixed interest rate swap contract",
+        "interest rate hedge contract",
+        "interest rate hedge agreement",
+        "forward starting interest rate swap contract",
+        "treasury rate lock agreement",
+        "interest rate swap agreement",
+    ],
+    "gen": [
+        "futures contract",
+        "purchased put option contracts",
+        "collar strategies",
+        "purchased call option contracts",
+        "forward contract",
+        "call option",
+        "call contract",
+        "put option",
+        "put contract",
+        "option contract",
+        "swap",
+        "swaption",
+    ],
+}
+all_derivatives = list(derivative_keywords.values())
+all_derivatives = [item for sublist in all_derivatives for item in sublist]
+```
 
-ineffectiveness_templates = [
-    "{company} assess hedge ineffectiveness {frequency} and record the gain or loss related to the ineffective portion of derivative instruments, if any, to current earnings",
-    "Any hedge ineffectiveness is recognized immediately in earnings in the period identified",
-    "Ineffectiveness, if present, is measured {frequency} and recorded in the consolidated statements of operations",
-    "{company} recognizes any ineffective portion of hedging instruments in current period earnings",
+## Commodities
+```{python}
+
+
+cp_strategy_templates = [
+    "{company} entered into {swap_type} to hedge anticipated changes in {commodity} prices, resulting in {currency_code}{amount} {money_unit} of unrealized gains/losses recorded in OCI",
+    "During {month} {year}, {company} executed {swap_type} to stabilize {commodity} costs for forecasted production, with {currency_code}{amount} {money_unit} in deferred fair value adjustments",
+    "{company} utilized {swap_type} to manage commodity price risk on forecasted inventory, recognizing {currency_code}{amount} {money_unit} in mark-to-market gains/losses",
+    "As part of its risk management program, {company} implemented {swap_type} to hedge {commodity} exposure, resulting in {currency_code}{amount} {money_unit} recorded in OCI",
+    "{swap_type} were executed by {company} in {month} {year} to protect against adverse price movements in {commodity}, with {currency_code}{amount} {money_unit} of unrealized gains/losses",
+    "In {month} {year}, {company} entered into {swap_type} to offset commodity price volatility, recognizing {currency_code}{amount} {money_unit} in fair value adjustments",
+    "{company} maintained {swap_type} to hedge production cost exposure for {commodity}, resulting in {currency_code}{amount} {money_unit} recorded in other comprehensive income",
+    "During the {quarter} quarter of {year}, {swap_type} were used to manage {commodity} price risk, with {currency_code}{amount} {money_unit} of mark-to-market adjustments",
+    "{company} employed {swap_type} to mitigate fluctuations in {commodity} prices, recording {currency_code}{amount} {money_unit} in OCI",
+    "In {month} {year}, {swap_type} were designated as hedges for forecasted {commodity} sales, with {currency_code}{amount} {money_unit} of unrealized gains/losses deferred in equity",
+]
+cp_position_templates = [
+    "As of {month} {end_day}, {year}, {company} maintains {swap_type} with notional amounts totaling {currency_code}{notional} {money_unit} to hedge commodity price risk",
+    "At year-end {year}, {company} had {swap_type} outstanding with aggregate notional values of {currency_code}{notional} {money_unit} designated to manage commodity exposures",
+    "{company}'s commodity derivative portfolio at {month} {end_day}, {year} consists of {swap_type} with combined notional values of {currency_code}{notional} {money_unit}",
+    "As of {month} {year}, {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain active to hedge forecasted commodity purchases or sales",
+    "At year-end {year}, {company} holds {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to manage fluctuations in commodity prices",
+    "{company} maintains {swap_type} with a notional amount of {currency_code}{notional} {money_unit} at {month} {end_day}, {year}, designated for commodity risk management",
+    "During {year}, {company} executed {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to hedge volatility in raw material costs",
+    "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} are used to mitigate commodity price exposure",
+    "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as hedges for commodity procurement",
+]
+cp_specific_templates = [
+    "{company} utilizes {swap_type} to hedge exposure to {commodity} price volatility affecting {cost_type}",
+    "The Company enters into {swap_type} to manage the financial impact of fluctuations in {commodity} prices",
+    "{swap_type} are used to hedge anticipated {commodity} purchases totaling {volume} {volume_unit} over the next {months} months",
+    "In {month} {year}, {company} executed {swap_type} to lock in {commodity} prices for {volume} {volume_unit} of forecasted consumption",
+    "Commodity price risk related to {commodity} is managed through {swap_type} with notional volumes of {volume} {volume_unit}",
+    "{company} maintains {swap_type} to hedge {commodity} price exposure on production inputs",
+    "The Company uses {swap_type} to stabilize {cost_type} by hedging approximately {pct}% of anticipated {commodity} requirements",
+    "{swap_type} are designated as cash flow hedges of forecasted {commodity} purchases at fixed prices averaging {currency_code}{price} per {volume_unit}",
+]
+cp_context_templates = [
+    "{company} uses commodity contracts and derivatives to manage price exposure to raw materials",
+    "Changes in commodity prices affect {company}'s cost of goods sold and gross margins",
+    "To hedge commodity price fluctuations, {company} enters into forwards, futures, and swaps on key raw materials",
+    "Volatility in commodity markets can influence the company's procurement costs and operational results",
+    "{company} is exposed to changes in energy, metals, and agricultural prices that may impact financial performance",
+]
+cp_impact_templates = [
+    "Fluctuations in {commodity} prices {verb} the reported cost of goods sold and operating margins",
+    "Changes in {commodity} market prices {verb} {company}'s financial performance and net asset values",
+    "Movements in commodity prices {verb} the company's cost structure and profitability",
+    "{commodity} price volatility {verb} the reported value of inventory and derivative positions",
+    "Shifts in {commodity} market values {verb} the financial results of {company}'s operations",
+    "Changes in {commodity} prices {verb} forecasted revenue and cash flow from operations",
+    "Commodity market fluctuations {verb} the valuation of inventory and derivative hedges",
+    "{company}'s exposure to {commodity} prices {verb} operating costs and financial statements",
+    "Price changes in key commodities {verb} the cost of raw materials and gross margins",
+    "Volatility in {commodity} markets {verb} the translated value of procurement and derivative positions",
 ]
 
-discontinuation_templates = [
-    "If {company} determine that a forecasted transaction is no longer probable of occurring, {company} discontinue hedge accounting and any related unrealized gain or loss on the derivative instrument is recognized in current earnings",
-    "Hedge accounting is discontinued if the hedged forecasted transaction is no longer expected to occur, with accumulated gains or losses reclassified to earnings",
-    "When a hedged forecasted transaction becomes improbable, {company} dedesignates the hedging relationship and recognizes deferred gains or losses immediately",
-    "If a forecasted transaction fails to occur, amounts previously deferred in other comprehensive income are reclassified to current period earnings",
+commodities = [
+    "crude oil",
+    "natural gas",
+    "electricity",
+    "aluminum",
+    "copper",
+    "steel",
+    "corn",
+    "soybeans" "wheat",
+    "fuel",
+]
+cost_types = [
+    "input costs",
+    "energy costs",
+    "fuel costs",
+    "raw material costs",
+    "production costs",
+]
+```
+
+## Foreign Exchange
+```{python}
+
+fx_strategy_templates = [
+    "{company} entered into {swap_type} as part of a collar strategy to limit exposure to foreign currency fluctuations within a defined range",
+    "Collar strategies utilizing {swap_type} were implemented to provide downside protection while capping upside exposure to currency movements",
+    "{company} established collar positions through {swap_type} to manage foreign exchange risk on forecasted transactions",
+    "As part of its risk management program, {company} uses collar strategies combining {swap_type} to hedge currency exposure",
+    "In {month} {year}, {company} implemented {swap_type} within a collar strategy to limit foreign currency risk",
+    "{company} utilized {swap_type} in a collar structure to manage exposure to currency fluctuations",
+    "Collar strategies with {swap_type} were employed to hedge foreign exchange risk on international transactions",
+    "{company} entered into {swap_type} as part of a collar to cap currency exposure while retaining some upside potential",
+    "in the {quarter} quarter of {year}, {swap_type} were used in a collar strategy to mitigate foreign currency volatility",
+    "{company} implemented collar positions with {swap_type} to stabilize foreign exchange impacts",
+    "{swap_type} were utilized in a collar strategy to limit currency risk on forecasted revenue",
+    "{company} established {swap_type} within a collar framework to manage foreign exchange exposure",
+    "Collar strategies involving {swap_type} were used to hedge currency fluctuations in {year}",
+    "{company} employed {swap_type} in a collar structure to protect against adverse currency movements",
+    "In {month} {year}, {swap_type} were implemented as part of a collar to manage currency risk",
+    "{swap_type} within a collar strategy were used to limit exposure to foreign exchange volatility",
+    "{company} utilized collar positions with {swap_type} to hedge currency risk on international contracts",
+    "in the {quarter} quarter of {year}, {company} entered into {swap_type} as part of a collar to manage forex exposure",
+    "Collar strategies with {swap_type} were implemented to stabilize currency impacts on forecasted transactions",
+    "{company} used {swap_type} in a collar framework to cap foreign exchange risk while retaining flexibility",
 ]
 
-currency_templates = [
+fx_context_templates = [
+    "As a multinational corporation, {company} face exposure to changes in foreign currency values that can affect our financial position and operating results",
+    "Our business is subject to risks from foreign currency fluctuations due to operations in diverse international markets",
+    "{company}’s international activities result in exposure to currency exchange risks and government regulations",
+    "{company}’s international operations face risks from currency exchange rate volatility and local market conditions",
+    "Foreign currency transaction exposures arising on external and internal trade flows are selectively hedged",
+]
+
+fx_impact_templates = [
+    "Depending on the direction of change relative to {major_currency}, foreign currency values can {verb} the reported dollar value of our net assets and results of operations",
+    "Fluctuations in exchange rates {verb} our reported revenues, expenses, assets, and liabilities when translated into {major_currency}",
+    "Changes in foreign currency exchange rates relative to {major_currency} {verb} both our financial position and operating performance",
+    "Currency movements {verb} the dollar value of our international cash flows and balance sheet items denominated in foreign currencies",
+    "Foreign exchange rate fluctuations {verb} the reported value of our international assets and liabilities in {major_currency}",
+    "Changes in currency exchange rates {verb} the financial results and net asset values reported in {major_currency}",
+    "Movements in foreign currency values {verb} our consolidated financial statements when translated into {major_currency}",
+    "Exchange rate volatility {verb} the reported dollar value of our international revenues and expenses",
+    "Foreign currency fluctuations {verb} the translated value of our assets, liabilities, and operating results",
+    "Changes in exchange rates relative to {major_currency} {verb} our financial position and reported earnings",
+    "Currency exchange rate movements {verb} the dollar value of our international operations and balance sheet",
+    "Fluctuations in foreign currencies {verb} our reported financial performance and net asset values",
+    "Exchange rate changes {verb} {major_currency} value of our international cash flows and financial position",
+    "Foreign currency movements {verb} the reported value of our global revenues and balance sheet items",
+    "Changes in foreign exchange rates {verb} the dollar-denominated value of our international operations",
+    "Currency fluctuations {verb} our consolidated financial results and net asset positions",
+    "Movements in exchange rates {verb} the reported value of our international assets and operating results",
+    "Foreign currency changes {verb} {major_currency} value of our global financial statements",
+    "Exchange rate volatility {verb} the translated financial results of our international subsidiaries",
+    "Changes in currency values {verb} the reported dollar value of our global operations and financial position",
+]
+
+fx_mitigation_templates = [
+    "{company} selectively hedges foreign exchange exposures resulting from cross-border trade flows and intercompany transactions",
+    "Transaction exposures from external trade and internal group transactions are managed through selective hedging programs",
+    "{company} hedges foreign currency transaction risk arising from both third-party and intercompany commercial activities",
+    "{company} {verb} to reduce foreign currency transaction exposure by matching currency inflows and outflows at the subsidiary level",
+    "To mitigate transaction risk, {company} {verb} natural hedging strategies by matching local currency revenues with local currency costs",
+    "{company}'s objective is to minimise the exposure of overseas operating subsidiaries to transaction risk by matching local currency income with local currency costs where possible",
+    "{company}'s objective is to minimize transaction risk exposure by aligning local currency revenues with local currency expenses in its foreign operations",
+    "{company}'s internal trading transactions are matched centrally and inter-company payment terms are managed to reduce foreign currency risk",
+    "Intercompany transactions are centrally netted and payment terms are optimized to minimize foreign exchange exposure",
+    "{company} operates a central matching system for internal trade flows to reduce gross foreign currency exposures",
+    "{company} centrally manages intercompany trading positions and payment schedules to mitigate currency risk",
+    "Where possible, {company} manages the cash surpluses or borrowing requirements of subsidiary companies centrally using {swap_type} to hedge future repayments back into the originating currency",
+    "{company} centrally manages subsidiary liquidity and uses {swap_type} to hedge foreign exchange exposure on intercompany funding arrangements",
+    "Subsidiary cash positions are managed centrally with {swap_type} hedging the repatriation of funds to originating currencies",
+    "{company} employs {swap_type} to hedge foreign currency risk on centrally managed subsidiary funding and cash movements",
+    "{company} may use {swap_type} to adjust the currency profile of its debt portfolio as needed",
+    "{company} employs {swap_type} to modify the currency composition of borrowings based on operational needs",
+    "{swap_type} are utilized to convert borrowings into {major_currency} when strategically beneficial",
+    "{swap_type} not designated as hedges, failing to be hedges or failing to continue as effective hedges are included in operations as {swap_type} gains or losses",
+    "Discounts or premiums on {swap_type} designated and effective as hedges are amortized or accreted to expense using the straight-line method over the term of the related contract",
+    "Discounts or premiums on {swap_type} not designated or effective as hedges are included in the mark to market adjustment and recognized in income as {swap_type} gains or losses",
+]
+
+
+fx_currency_templates = [
     "The currency hedged items are usually denominated in the following main currencies: {currencies}",
     "{company}'s primary currency exposures include {currencies}",
     "Foreign currency risk primarily relates to exposures in {currencies}",
@@ -936,74 +1003,158 @@ currency_templates = [
     "{company} matches debt currency denomination to the currencies of its key operating assets to mitigate translation exposure, focusing on {currencies}",
 ]
 
-alternative_management_templates = [
+fx_alternative_management_templates = [
     "Depending on market conditions, foreign currency risk is also managed through the use of foreign currency debt",
     "{company} may use foreign currency-denominated debt as a natural hedge against foreign currency exposure",
     "In certain circumstances, {company} utilize foreign currency borrowings to offset translation exposure",
     "Foreign currency debt may be used strategically to create natural hedging relationships",
 ]
 
-net_investment_templates = [
-    '{company} may choose to hedge against possible fluctuations in foreign subsidiaries net assets ("{hedge_type} hedge") and {verb} {swap_type} and forward contracts in the past in order to hedge such an exposure',
+fx_generic_hedge_templates = [
+    '{company} may choose to hedge against possible fluctuations in foreign subsidiaries net assets ("{hedge_type} hedge") and {verb} {swap_type} and {swap_type2} in the past in order to hedge such an exposure',
     "From time to time, {company} {verb} {swap_type} to hedge {hedge_type} in foreign operations",
-    "{hedge_type} hedges {verb} to protect the value of {company}'s investments in foreign subsidiaries from adverse currency movements",
+    "{hedge_type} hedges protect the value of {company}'s investments in foreign subsidiaries from adverse currency movements",
     "{company} {verb} derivative instruments designated as {hedge_type} hedges to mitigate currency translation risk on foreign operations",
 ]
 
-net_investment_verbs = [
-    "entered into",
-    "executed",
-    "utilized",
-    "employed",
-    "has used",
-    "may enter into",
-    "may utilize",
-    "may employ",
-]
-
-counterparty_templates = [
-    "Most of the counterparties to the derivatives are major banks and {company} is monitoring the associated inherent credit risks",
-    "{company} enters into derivative contracts with major financial institutions and monitors counterparty credit risk on an ongoing basis",
-    "Derivative counterparties are limited to major banking institutions with strong credit ratings to minimize counterparty risk",
-    "Credit risk from derivatives is mitigated by transacting only with highly-rated financial institution counterparties",
-    "{company} manages counterparty credit exposure by diversifying its derivative contracts among multiple major banks",
-]
-
-no_trading_templates = [
-    "{company} does not enter into derivative transactions for trading purposes",
-    "{company}'s policy prohibits the use of derivatives for speculative or trading purposes",
-    "Derivatives are used solely for hedging and risk management, not for speculative trading",
-    "{company} does not engage in derivative transactions for speculative purposes",
-    "All derivative transactions are entered into for hedging purposes and not for trading or speculation",
-]
-fair_value_position_templates = [
-    'As of {month} {end_day}, {year}, the fair value of the swaps was a {position_type} of {currency_code}{amount} {money_unit}, the opposite entry for {currency_code}{oci_amount} {money_unit} of which was {oci_action} to "Other comprehensive income" under the cost of hedging accounting treatment',
-    'As of {month} {end_day}, {year}, the fair value of these {swap_type} represented a {position_type} of {currency_code}{amount} {money_unit}; the opposite entry was recognized in "Other comprehensive income", with the impact on financial income and expense being immaterial',
-    "The fair value of {swap_type} as of {month} {end_day}, {year} was a {position_type} of {currency_code}{amount} {money_unit}, with {currency_code}{oci_amount} {money_unit} {oci_action} to other comprehensive income",
-    "As of year-end {year}, outstanding {swap_type} had a fair value {position_type} of {currency_code}{amount} {money_unit}, the offsetting entry being recorded in accumulated other comprehensive income",
-]
-
-# Specific hedge designation templates with currency pairs
-specific_hedge_templates = [
+fx_specific_hedge_templates = [
     "Includes forward purchases with a notional amount of {notional_currency} {notional_amount} {money_unit} expiring in {expiry_year}, designated as a fair value hedge of the exposure of an equivalent amount of {hedged_item} to fluctuations in the {currency_pair} spot rate",
     "{company} designated {swap_type} with a notional value of {notional_currency} {notional_amount} {money_unit} expiring in {expiry_year} as fair value hedges against exposure to {currency_pair} exchange rate movements on {hedged_item}",
     "Forward contracts totaling {notional_currency} {notional_amount} {money_unit} and expiring in {expiry_year} were designated as hedges of {notional_currency} {notional_amount} {money_unit} of {hedged_item} against {currency_pair} fluctuations",
     "{swap_type} with notional amounts of {notional_currency} {notional_amount} {money_unit} maturing in {expiry_year} hedge the {currency_pair} exposure on {hedged_item}",
 ]
 
-# Cash pooling and debt management templates
-cash_pooling_templates = [
+fx_cash_pooling_templates = [
     "{company} also operates cash pooling arrangements to manage the surplus cash and short-term liquidity needs of foreign subsidiaries located outside {major_currency} zone",
     "{company} operates cash pooling arrangements to optimize liquidity management across foreign subsidiaries and reduce external borrowing costs",
     "Cash pooling structures are utilized to centralize cash management and provide efficient funding to international operations",
     "{company} maintains centralized cash pooling facilities to manage working capital needs of subsidiaries in various currencies",
 ]
 
-debt_optimization_templates = [
-    "To optimize the cost of debt or reduce the volatility of debt and manage its exposure to financial foreign exchange risk, {company} uses derivative instruments ({instrument_list}) that alter the fixed/floating rate split and the currency split of its net debt",
-    "{company} utilizes {instrument_list} to modify the interest rate and currency composition of its debt portfolio, thereby optimizing borrowing costs and managing foreign exchange exposure",
-    "{company} employs derivative instruments including {instrument_list} to adjust the effective interest rate profile and currency mix of outstanding borrowings",
-    "To manage the cost and risk profile of its debt, {company} uses {instrument_list} to transform the characteristics of its borrowings",
+# Foreign Exchange (foreign exchange) Debt Optimization Templates
+fx_debt_optimization_templates = [
+    "{company} employs {swap_types} to adjust the currency composition of its debt portfolio, managing exposure to {currency_code} fluctuations",
+    "To hedge foreign exchange risk, {company} uses {swap_types} to convert borrowings from {currency_code} into its functional currency",
+    "{company} applies {swap_types} to manage foreign exchange exposure on international debt, mitigating translation and transaction risk",
+    "Foreign currency borrowings are optimized using {swap_type} to reduce volatility from {currency_code} exchange rate movements",
+    "To manage currency risk, {company} utilizes {swap_types} to modify the currency mix of its debt obligations",
+    "{company} uses {swap_types} to convert debt from {currency_code} into other currencies as part of its foreign exchange risk management strategy",
+    "The company employs {swap_types} to hedge foreign currency exposure on its international debt portfolio",
+    "To stabilize the currency profile of debt, {company} applies {swap_types} converting obligations into {currency_code} where beneficial",
+    "{company} manages foreign exchange risk on long-term borrowings by using {swap_type} to adjust the currency allocation",
+    "To reduce foreign exchange volatility, {company} utilizes {swap_types} to optimize the composition of multi-currency debt",
+]
+```
+
+## Interest Rate
+```{python}
+
+ir_entry_templates = [
+    "In {month} {year}, {swap_type} were entered into and designated as hedges of the notes with a notional amount of {currency_code}{notional} {money_unit}, effectively converting portions of fixed-rate debt to floating rates",
+    "During {month} {year}, {company} executed {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} to modify the interest rate characteristics of outstanding senior notes",
+    "{company} entered into {swap_type} in {month} {year} with a total notional amount of {currency_code}{notional} {money_unit}, designated as fair value hedges of fixed-rate obligations",
+    "In {month} {year}, {swap_type} totaling {currency_code}{notional} {money_unit} notional were designated as hedging instruments against changes in the fair value of fixed-rate debt",
+    "{company} executed {swap_type} in {month} {year} with notional amounts aggregating {currency_code}{notional} {money_unit} to hedge interest rate exposure on a portion of its debt portfolio",
+    "in the {quarter} quarter of {year}, {company} entered into {swap_type} with a notional value of {currency_code}{notional} {money_unit} to convert fixed-rate senior notes to variable rates",
+    "During {month} {year}, {swap_type} were executed with a total notional amount of {currency_code}{notional} {money_unit} to manage interest rate risk on long-term debt",
+    "In {month} {year}, {company} designated {swap_type} with a notional amount of {currency_code}{notional} {money_unit} as fair value hedges for its outstanding bonds",
+    "{company} initiated {swap_type} in {month} {year} with a notional value of {currency_code}{notional} {money_unit} to adjust the interest rate profile of its debt",
+    "in the {quarter} quarter of {year}, {swap_type} totaling {currency_code}{notional} {money_unit} were entered to hedge changes in the fair value of fixed-rate liabilities",
+    "During {month} {year}, {company} executed {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to manage exposure to interest rate fluctuations",
+    "In {month} {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} were designated to hedge fixed-rate debt obligations",
+    "{company} entered into {swap_type} in the {quarter} quarter of {year} with a notional amount of {currency_code}{notional} {money_unit} to modify the interest rate structure of its senior notes",
+    "In {month} {year}, {swap_type} were implemented with a total notional value of {currency_code}{notional} {money_unit} to hedge the fair value of outstanding debt",
+    "During {year}, {company} executed {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to convert portions of its fixed-rate debt to floating rates",
+    "In {month} {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} were designated as fair value hedges against changes in debt valuation",
+    "{company} entered into {swap_type} during the {quarter} quarter of {year} with a notional amount of {currency_code}{notional} {money_unit} to manage interest rate exposure on bonds",
+    "In {month} {year}, {swap_type} totaling {currency_code}{notional} {money_unit} were executed to adjust the interest rate characteristics of long-term liabilities",
+    "during the {quarter} quarter of {year}, {company} designated {swap_type} with a notional value of {currency_code}{notional} {money_unit} as hedges of fixed-rate note obligations",
+    "In {month} {year}, {swap_type} were entered with a total notional amount of {currency_code}{notional} {money_unit} to mitigate interest rate risk on debt issuances",
+]
+
+ir_past_event_templates = [
+    "During {month} {year}, {company} executed {swap_type} in anticipation of issuing fixed-rate notes, leaving {currency_code}{amount} {money_unit} of unrealized losses in OCI related to {swap_type} as of {month} {next_year}",
+    "In {month} {year}, {company} entered into {swap_type} with a notional value of {currency_code}{amount} {money_unit} to hedge forecasted debt issuances, resulting in deferred losses recorded in accumulated OCI",
+    "{company} designated {swap_type} in {month} {year} as {hedge_type} hedges against anticipated interest payments, with {currency_code}{amount} {money_unit} in fair value adjustments recorded in equity",
+    "During {year}, {swap_type} were executed to lock in favorable rates prior to debt refinancing, with {currency_code}{amount} {money_unit} of accumulated losses deferred in other comprehensive income",
+    "In {month} {year}, {company} entered into forward-starting {swap_type} in connection with planned debt offerings, recording {currency_code}{amount} {money_unit} of mark-to-market losses in OCI",
+    "In {month} {year}, {company} utilized {swap_type} to manage interest rate risk, recognizing {currency_code}{amount} {money_unit} in unrealized gains in OCI as of {month} {next_year}",
+    "During {year}, {company} executed {swap_type} to hedge against fluctuations in interest rates, with {currency_code}{amount} {money_unit} in deferred gains recorded in accumulated OCI",
+    "{company} implemented {swap_type} in {month} {year} to stabilize borrowing costs, deferring {currency_code}{amount} {money_unit} of losses in other comprehensive income",
+    "in the {quarter} quarter of {year}, {company} executed forward-starting {swap_type} to secure rates for future debt issuances, with {currency_code}{amount} {money_unit} in mark-to-market adjustments in OCI",
+    "In {year}, {company} entered into {swap_type} to mitigate interest rate exposure, with {currency_code}{amount} {money_unit} in fair value changes deferred in equity",
+    "In {month} {year}, {company} locked in rates using {swap_type}, recognizing {currency_code}{amount} {money_unit} in deferred losses within other comprehensive income",
+    "during the {quarter} quarter of {year}, {company} executed {swap_type} to hedge planned bond issuances, with {currency_code}{amount} {money_unit} in unrealized losses recorded in OCI",
+    "In {month} {year}, {swap_type} were used to manage exposure to interest rate volatility, resulting in {currency_code}{amount} {money_unit} of deferred gains in equity",
+    "{company} entered into {swap_type} in {month} {year} to hedge forecasted interest payments, with {currency_code}{amount} {money_unit} in mark-to-market adjustments in OCI",
+    "In {year}, {company} designated {swap_type} as hedges for anticipated debt, recording {currency_code}{amount} {money_unit} in fair value losses in accumulated OCI",
+    "During {month} {year}, {company} implemented {swap_type} to secure favorable rates, with {currency_code}{amount} {money_unit} in unrealized gains deferred in OCI",
+    "in the {quarter} quarter of {year}, {swap_type} were executed to manage interest rate risk on future borrowings, with {currency_code}{amount} {money_unit} in losses recorded in equity",
+    "{company} used {swap_type} in {month} {year} to hedge against rising interest rates, deferring {currency_code}{amount} {money_unit} in mark-to-market losses in OCI",
+    "In {month} {year}, {company} entered into {swap_type} with a notional value of {currency_code}{amount} {money_unit}, resulting in deferred gains recorded in accumulated OCI",
+    "During {year}, {company} executed {swap_type} to lock in rates for planned financings, with {currency_code}{amount} {money_unit} in fair value adjustments in OCI",
+    "In {month} {year}, {company} designated forward-starting {swap_type} as {hedge_type} hedges, recognizing {currency_code}{amount} {money_unit} in unrealized losses in equity",
+    "{company} implemented {swap_type} in the {quarter} quarter of {year} to stabilize interest costs, with {currency_code}{amount} {money_unit} in deferred losses recorded in OCI",
+    "In {month} {year}, {swap_type} were entered to hedge anticipated debt offerings, resulting in {currency_code}{amount} {money_unit} of mark-to-market gains in accumulated OCI",
+]
+
+ir_active_position_template = [
+    "Outstanding swaps at year-end {year} effectively convert the hedged portion of debt to floating rates",
+    "As of {month} {end_day}, {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are designated as fair value hedges",
+    "At year-end {year}, {company} holds {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to manage debt-related interest rate risk",
+    "As of {month} {year}, {company}’s outstanding {swap_type} have a notional value of {currency_code}{notional} {money_unit}, hedging fixed-rate obligations",
+    "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as fair value hedges",
+    "As of {month} {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are in place to convert fixed-rate debt to floating rates",
+    "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} are active to hedge fixed-rate debt obligations",
+]
+
+ir_optional_templates = [
+    "In anticipation of issuing fixed-rate debt, {company} may use {swap_type} that are designated as {hedge_type} hedges to hedge against changes in interest rates that could impact expected future issuances of debt",
+    "{company} utilizes {swap_type} designated as {hedge_type} hedges to lock in favorable interest rates prior to anticipated debt issuances",
+    "To hedge interest rate exposure on forecasted debt offerings, {company} may enter into {swap_type} designated as {hedge_type} hedges",
+    "{swap_type} are employed to mitigate the risk of rising interest rates on planned fixed-rate debt issuances",
+    "{company} uses {swap_type} as {hedge_type} hedges to secure interest rates for future debt issuances",
+    "In preparation for debt offerings, {company} may designate {swap_type} as {hedge_type} hedges to manage interest rate risk",
+    "To protect against interest rate volatility, {company} employs {swap_type} for planned fixed-rate debt issuances",
+    "{swap_type} are utilized as {hedge_type} hedges to lock in rates for anticipated debt financings",
+    "{company} may enter into {swap_type} to hedge interest rate risk on forecasted debt issuances",
+    "In anticipation of bond issuances, {swap_type} are designated as {hedge_type} hedges to stabilize future interest costs",
+    "{company} uses {swap_type} to mitigate interest rate fluctuations on planned debt offerings",
+    "{swap_type} are designated as {hedge_type} hedges to secure rates for future fixed-rate debt",
+    "To manage interest rate exposure, {company} employs {swap_type} for anticipated debt issuances",
+    "{company} may utilize {swap_type} as {hedge_type} hedges to lock in rates prior to debt financings",
+    "{swap_type} are used to hedge against rising interest rates for planned debt issuances",
+    "In preparation for fixed-rate debt, {company} designates {swap_type} as {hedge_type} hedges",
+    "{company} employs {swap_type} to stabilize interest rates for forecasted bond issuances",
+    "{swap_type} are implemented as {hedge_type} hedges to manage risk on future debt offerings",
+    "To secure favorable rates, {company} may use {swap_type} for anticipated fixed-rate debt",
+    "{company} designates {swap_type} as {hedge_type} hedges to mitigate interest rate risk on planned financings",
+    "{company} manages its cash flow interest rate risk by using {swap_type}, where at quarterly intervals the difference between fixed contract rates and floating rate interest amounts calculated by reference to the agreed notional principal amounts are exchanged",
+    "{company} utilizes {swap_type} to manage cash flow interest rate exposure, with quarterly settlements based on the differential between fixed and floating rates on notional amounts",
+    "Cash flow interest rate risk is managed through {swap_type} with quarterly net settlements calculated on agreed notional principal amounts",
+    "{company} employs {swap_type} converting floating rate exposure to fixed rates, with quarterly exchange of payment differentials based on notional values",
+]
+
+# Interest Rate (IR) Debt Optimization Templates
+ir_debt_optimization_templates = [
+    "{company} uses {swap_type} to optimize the interest rate profile of its debt portfolio, converting portions of fixed-rate debt to floating-rate instruments",
+    "To manage borrowing costs, {company} employs {swap_type} to adjust the effective interest rate composition of outstanding debt",
+    "{company} implements {swap_type} to reduce interest rate volatility on its debt obligations",
+    "As part of its debt strategy, {company} utilizes {swap_type} to transform fixed-rate debt into variable-rate debt where appropriate",
+    "To hedge against rising interest rates, {company} applies {swap_type} to modify the interest rate characteristics of its borrowings",
+    "{company} uses {swap_type} to manage the interest rate exposure of its long-term debt portfolio",
+    "The company employs {swap_type} to convert portions of debt into instruments with more favorable interest rate terms",
+    "{company} optimizes its debt by using {swap_type} to balance fixed and floating rate obligations",
+    "To stabilize interest expense, {company} applies {swap_type} to its debt portfolio, managing cash flow risk",
+    "{company} manages interest rate risk on forecasted debt issuances using {swap_type} to adjust the effective interest profile",
+]
+
+hedge_methods = [
+    "regression analysis and dollar-offset methods",
+    "quantitative analysis",
+    "statistical methods",
+    "the dollar-offset method",
+    "prospective and retrospective testing",
 ]
 
 # Position types and OCI actions
@@ -1018,14 +1169,6 @@ hedged_items = [
     "intercompany loans",
     "senior notes",
     "commercial paper",
-]
-
-# Derivative instrument lists for debt management
-instrument_lists = [
-    "interest rate swaps, currency swaps, foreign exchange swaps and forward contracts",
-    "cross-currency swaps and interest rate swaps",
-    "foreign exchange forwards and interest rate derivatives",
-    "currency derivatives and interest rate hedges",
 ]
 ```
 
@@ -1057,7 +1200,7 @@ litigation_assessment_templates = [
     "{company} believes it has meritorious defenses and intends to vigorously defend against these claims",
     "{company} intend to vigorously defend against these claims. At this time, {company} cannot predict the outcome, or provide a reasonable estimate or range of estimates of the possible outcome or loss, if any, in this matter"
     "Based on currently available information, management does not expect these matters to result in a material loss",
-    "{company} has assessed the likelihood of loss as remote and has not recorded any provisions related to these contingencies",
+    "{company} has {verb} the likelihood of loss as remote and has not recorded any provisions related to these contingencies",
 ]
 
 specific_lawsuit_templates = [
@@ -1240,7 +1383,7 @@ goodwill_templates = [
     "Goodwill totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}, and is not amortized but tested for impairment annually",
     "{company} performs its annual goodwill impairment test in the {quarter} quarter of each year",
     "No goodwill impairment was recorded during {year} as the fair value of reporting units exceeded their carrying values",
-    "Goodwill is allocated to reporting units and evaluated for impairment at least annually or when indicators of impairment exist",
+    "Goodwill is allocated to reporting units and {verb} for impairment at least annually or when indicators of impairment exist",
 ]
 
 intangible_templates = [
@@ -1758,6 +1901,7 @@ clawback_templates = [
 ```
 
 # Main functions
+## Derivative Liabilties/Warrants
 ```{python}
 def generate_derivative_liability_paragraph(
     label_type,
@@ -2013,7 +2157,7 @@ def generate_derivative_liability_paragraph(
         # Add embedded derivative identification (1)
         template = random.choice(embedded_identification_templates)
         host_contract = random.choice(host_contracts)
-        sentence = template.format(host_contract=host_contract, company=company_name)
+        sentence = template.format(host_contract=host_contract, company=company_name, verb=random.choice(assessment_verbs))
         all_sentences.append(sentence)
 
         # Add embedded derivative types (0-1)
@@ -2137,7 +2281,9 @@ def generate_derivative_liability_paragraph(
         # Add clearly and closely related analysis (0-1) - only for label 6
         if not is_past and random.random() < 0.4:
             sentence = random.choice(ccr_analysis_templates)
-            all_sentences.append(sentence.format(company=company_name))
+            verb=random.choice(assessment_verbs)
+            sentence = sentence.format(verb=verb, company=company_name)
+            all_sentences.append(sentence)
 
         # Add settlement activity (0-1)
         if random.random() < 0.3:
@@ -2400,20 +2546,22 @@ def generate_derivative_liability_paragraph(
     )
     paragraph = re.sub("We's", "Our", paragraph)
 
-    if paragraph.find("{") != -1 or paragraph.find("}") != -1:
+    if paragraph.find("{") != -1 or paragraph.find("[") != -1:
         print("Error in format", paragraph)
     return paragraph, label
+```
 
-
+## Hedges
+```{python}
 def generate_labeled_hedge_paragraph(
     has_active_derivative,
-    swap_type=None,
+    swapType=None,  # Added parameter
     year_range=(1999, 2025),
-    max_past_years=random.randint(1, 3),
-    max_len=random.randint(4, 7),
+    max_past_years=3,
+    max_len=None,
     include_policy=None,
     company_name=None,
-):  
+):
     """
     Generate a synthetic hedge paragraph with known label.
 
@@ -2422,15 +2570,21 @@ def generate_labeled_hedge_paragraph(
             - True: firm has active derivative in reporting year (label=0)
             - False: firm does not have active derivative (label=1)
             - None: policy/disclosure only, no specific positions (label=2)
+        swap_type (str): Type of derivative ('ir', 'fx', 'cp', 'gen')
         year_range (tuple): (min_year, max_year) for the reporting year
         max_past_years (int): Max number of prior years to include
         max_len (int): Maximum number of sentences
         include_policy (bool): Whether to include policy sentences with labels 0/1
                               If None, randomly decides (70% chance)
+        company_name (str): Company name to use
 
     Returns:
         tuple: (paragraph_text, label) where label is 0, 1, or 2
     """
+
+    # Set max_len if not provided
+    if max_len is None:
+        max_len = random.randint(4, 7)
 
     # Decide whether to include policy statements for labels 0 and 1
     if include_policy is None:
@@ -2446,13 +2600,18 @@ def generate_labeled_hedge_paragraph(
             company_name = random.choice(company_names)
         else:
             company_name = random.choice(["The Company", "We"])
-    if swap_type is None:
-        swap_types = all_derivatives
-    else:
-        swap_types = derivative_keywords[swap_type]
+
+    # Determine swap type if not provided
+    if swapType is None:
+        swapType = random.choice(["ir", "fx", "cp", "gen"])
+
+    swap_types = (
+        all_derivatives if swapType == "gen" else derivative_keywords[swapType]
+    )
     money_units = random.choice(money_unit_list)
     currency_code = random.choice(currency_codes)
     major_currency = random.choice(all_currencies)
+
     # Set up years
     current_year = random.randint(year_range[0], year_range[1])
     reporting_year = current_year
@@ -2463,680 +2622,268 @@ def generate_labeled_hedge_paragraph(
 
     all_sentences = []
 
+    # Determine label
+    if has_active_derivative is None:
+        label = 2
+    elif has_active_derivative is True:
+        if swapType == "ir":
+            label = 8
+        elif swapType == "fx":
+            label = 10
+        elif swapType == "cp":
+            label = 12
+        else:
+            label = 14
+    else:
+        if swapType == "ir":
+            label = 9
+        elif swapType == "fx":
+            label = 11
+        elif swapType == "cp":
+            label = 13
+        else:
+            label = 15
+
     # Label 2: Policy/disclosure only (no specific positions)
     if has_active_derivative is None:
         # Context (0-1)
         if random.random() < 0.6:
-            template = random.choice(context_templates)
+            template = random.choice(hedge_context_templates)
+            end_day = random.randint(28, 31)
             all_sentences.append(
                 template.format(
                     company=company_name,
                     currency_code=currency_code,
                     major_currency=major_currency,
                     money_unit=money_units,
-                    end_day=random.randint(28, 31),
+                    end_day=end_day,
                 )
             )
 
         # Impact (0-1)
         if random.random() < 0.7:
-            template = random.choice(impact_templates)
-            verb = random.choice(impact_verbs)
+            template = random.choice(hedge_impact_templates)
+            verb = random.choice(hedge_impact_verbs)
+            end_day = random.randint(28, 31)
+            month = random.choice(months)
             all_sentences.append(
                 template.format(
                     company=company_name,
                     currency_code=currency_code,
                     major_currency=major_currency,
                     money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=random.choice(months),
+                    end_day=end_day,
+                    month=month,
                     verb=verb,
                 )
             )
 
         # Mitigation (0-1)
         if random.random() < 0.8:
-            template = random.choice(mitigation_templates)
-            verb = random.choice(mitigation_verbs)
+            template = random.choice(hedge_mitigation_templates)
+            verb = random.choice(hedge_mitigation_verbs)
+            end_day = random.randint(28, 31)
+            month = random.choice(months)
+            swap_type = random.choice(swap_types)
             all_sentences.append(
                 template.format(
                     company=company_name,
                     currency_code=currency_code,
                     major_currency=major_currency,
                     money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=random.choice(months),
+                    end_day=end_day,
+                    month=month,
                     verb=verb,
-                    swap_type=random.choice(swap_types),
+                    swap_type=swap_type,
                 )
             )
 
         # Accounting policy (always)
-        act_template = random.choice(accounting_policy_templates)
+        act_template = random.choice(hedge_policy_templates)
+        end_day = random.randint(28, 31)
+        swap_type = random.choice(swap_types)
+        hedge_type = random.choice(hedge_types)
         all_sentences.append(
             act_template.format(
                 company=company_name,
                 currency_code=currency_code,
                 major_currency=major_currency,
                 money_unit=money_units,
-                end_day=random.randint(28, 31),
-                swap_type=random.choice(swap_types),
-                hedge_type=random.choice(hedge_types),
+                end_day=end_day,
+                swap_type=swap_type,
+                hedge_type=hedge_type,
             )
         )
 
         # Documentation (0-1)
         if random.random() < 0.6:
-            template = random.choice(documentation_templates)
+            template = random.choice(hedge_documentation_templates)
+            end_day = random.randint(28, 31)
+            hedge_type = random.choice(hedge_types)
             all_sentences.append(
                 template.format(
                     company=company_name,
                     currency_code=currency_code,
                     major_currency=major_currency,
                     money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    hedge_type=random.choice(hedge_types),
+                    end_day=end_day,
+                    hedge_type=hedge_type,
                 )
             )
 
         # Effectiveness (0-1)
         if random.random() < 0.7:
-            template = random.choice(effectiveness_templates)
+            template = random.choice(hedge_effectiveness_templates)
+            end_day = random.randint(28, 31)
+            month = random.choice(months)
+            hedge_type = random.choice(hedge_types)
+            swap_type = random.choice(swap_types)
+            metric = random.choice(hedge_metrics)
+            frequency = random.choice(frequencies)
+            verb = random.choice(assessment_verbs)
+            method = random.choice(hedge_methods)
+            standard = random.choice(hedge_standards)
             sentence = template.format(
                 company=company_name,
                 currency_code=currency_code,
                 major_currency=major_currency,
                 money_unit=money_units,
-                end_day=random.randint(28, 31),
-                month=random.choice(months),
-                hedge_type=random.choice(hedge_types),
-                swap_type=random.choice(swap_types),
-                metric=random.choice(metrics),
-                frequency=random.choice(frequencies),
-                verb=random.choice(assessment_verbs),
-                method=random.choice(methods),
-                standard=random.choice(standards),
+                end_day=end_day,
+                month=month,
+                hedge_type=hedge_type,
+                swap_type=swap_type,
+                metric=metric,
+                frequency=frequency,
+                verb=verb,
+                method=method,
+                standard=standard,
             )
             all_sentences.append(sentence)
 
         # Ineffectiveness (0-1)
         if random.random() < 0.5:
-            template = random.choice(ineffectiveness_templates)
+            template = random.choice(hedge_ineffectiveness_templates)
+            end_day = random.randint(28, 31)
+            month = random.choice(months)
+            frequency = random.choice(frequencies)
             all_sentences.append(
                 template.format(
                     company=company_name,
                     currency_code=currency_code,
                     major_currency=major_currency,
                     money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=random.choice(months),
-                    frequency=random.choice(frequencies),
+                    end_day=end_day,
+                    month=month,
+                    frequency=frequency,
                 )
             )
 
         # Discontinuation (0-1)
         if random.random() < 0.5:
-            template = random.choice(discontinuation_templates)
+            template = random.choice(hedge_discontinuation_templates)
+            end_day = random.randint(28, 31)
             all_sentences.append(
                 template.format(
                     company=company_name,
                     currency_code=currency_code,
                     major_currency=major_currency,
                     money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                )
-            )
-
-        # Currency description (0-1)
-        if random.random() < 0.6:
-            selected_currencies = []
-            selected_currencies.extend(
-                random.sample(major_currencies, random.randint(2, 4))
-            )
-            if random.random() < 0.5:
-                selected_currencies.extend(
-                    random.sample(european_currencies, random.randint(1, 2))
-                )
-            if random.random() < 0.4:
-                selected_currencies.extend(
-                    random.sample(asian_currencies, random.randint(1, 2))
-                )
-            if random.random() < 0.3:
-                selected_currencies.extend(
-                    random.sample(americas_currencies, random.randint(1, 2))
-                )
-
-            selected_currencies = list(dict.fromkeys(selected_currencies))
-            currency_list = (
-                ", ".join(selected_currencies[:-1]) + " and " + selected_currencies[-1]
-            )
-            if random.random() < 0.3:
-                currency_list += " and other European and Latin American currencies"
-            template = random.choice(currency_templates)
-            all_sentences.append(
-                template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=random.choice(months),
-                    currencies=currency_list,
-                )
-            )
-
-        # Alternative management (0-1)
-        if random.random() < 0.4:
-            template = random.choice(alternative_management_templates)
-            all_sentences.append(
-                template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                )
-            )
-
-        # {hedge_type} hedge (0-1)
-        if random.random() < 0.5:
-            template = random.choice(net_investment_templates)
-            verb = random.choice(net_investment_verbs)
-            all_sentences.append(
-                template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=random.choice(months),
-                    verb=verb,
-                    hedge_type=random.choice(hedge_types),
-                    swap_type=random.choice(swap_types),
+                    end_day=end_day,
                 )
             )
 
         # Counterparty risk (0-1)
         if random.random() < 0.6:
-            template = random.choice(counterparty_templates)
+            template = random.choice(hedge_counterparty_templates)
+            all_sentences.append(template.format(company=company_name))
+        
+        # Debt optimization (0-1)
+        if random.random() < 0.5:
+            template = random.choice(ir_fx_debt_optimization_templates)
+            end_day = random.randint(28, 31)
             all_sentences.append(
                 template.format(
                     company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
+                    swap_type=random.choice(swap_types),
                 )
             )
 
         # No trading policy (always)
-        nt_template = random.choice(no_trading_templates)
-        all_sentences.append(
-            nt_template.format(
-                company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-                month=random.choice(months),
-                swap_type=random.choice(swap_types),
-            )
-        )
+        nt_template = random.choice(hedge_no_trading_templates)
+        all_sentences.append(nt_template.format(company=company_name))
 
-        label = 2
-
-    # Labels 0 and 1: Event-based with optional policy statements
+    # Labels 0 and 1: Specific positions
     else:
-        # Generate past year sentences
-        past_sentences = []
-        for y in past_years:
-            template = random.choice(past_event_templates)
-            loss_amt = round(random.uniform(20, 35), 1)
-            swap_type = random.choice(swap_types)
-            month = random.choice(months)
-            sentence = template.format(
-                company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-                month=month,
-                year=y,
-                next_year=y + 1,
-                hedge_type=random.choice(hedge_types),
-                amount=loss_amt,
-                swap_type=swap_type,
-                quarter=random.choice(quarters),
-            )
-            past_sentences.append(sentence)
-
-        # Sentences about entering swaps
-        swap_entry_sentences = []
-
-        if has_active_derivative:
-            # Label 0: Active derivatives
-            for _ in range(random.randint(1, 2)):
-                template = random.choice(swap_entry_templates)
-                notional = round(random.uniform(200, 550), 0)
+        # Add policy statements if needed
+        if include_policy:
+            # Accounting policy (0-1)
+            if random.random() < 0.6:
+                template = random.choice(hedge_policy_templates)
                 swap_type = random.choice(swap_types)
-                month = random.choice(months)
-                sentence = template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=month,
-                    year=current_year,
-                    swap_type=swap_type,
-                    notional=notional,
-                    quarter=random.choice(quarters),
-                )
-                swap_entry_sentences.append(sentence)
-
-            # Add ongoing position indicators
-            for _ in range(random.randint(1, 2)):
-                template = random.choice(active_position_templates)
-                notional = round(random.uniform(300, 800), 0)
-                swap_type = random.choice(swap_types)
-                sentence = template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=month,
-                    year=current_year,
-                    swap_type=swap_type,
-                    notional=notional,
-                )
-                swap_entry_sentences.append(sentence)
-        else:
-            # Label 1: No active derivatives
-            for y in past_years:
-                if random.random() < 0.6:
-                    template = random.choice(swap_entry_templates)
-                    notional = round(random.uniform(200, 550), 0)
-                    swap_type = random.choice(swap_types)
-                    month = random.choice(months)
-                    sentence = template.format(
-                        company=company_name,
-                        currency_code=currency_code,
-                        major_currency=major_currency,
-                        money_unit=money_units,
-                        end_day=random.randint(28, 31),
-                        month=month,
-                        year=y,
-                        quarter=random.choice(quarters),
-                        swap_type=swap_type,
-                        notional=notional,
-                    )
-                    swap_entry_sentences.append(sentence)
-
-            # Add termination sentences
-            if random.random() < 0.7:
-                template = random.choice(termination_templates)
-                q = random.choice(quarters)
-                swap_type = random.choice(swap_types)
-                sentence = template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    quarter=q,
-                    month=random.choice(months),
-                    year=current_year,
-                    swap_type=swap_type,
-                )
-                swap_entry_sentences.append(sentence)
-
-            if random.random() < 0.5:
-                template = random.choice(expiration_templates)
-                month = random.choice(months)
-                swap_type = random.choice(swap_types)
-                quarter = random.choice(quarters)
-                sentence = template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=month,
-                    year=current_year,
-                    swap_type=swap_type,
-                    quarter=quarter,
-                )
-                swap_entry_sentences.append(sentence)
-
-        # Quarterly events
-        quarter_sentences = []
-        num_events = random.randint(0, 2)
-
-        for _ in range(num_events):
-            template = random.choice(quarterly_event_templates)
-            q = random.choice(quarters)
-
-            if has_active_derivative:
-                year_event = random.choice(past_years + [current_year])
-            else:
-                year_event = random.choice(past_years)
-
-            notional = round(random.uniform(200, 800), 0)
-            settlement = round(random.uniform(50, 200), 0)
-            swap_type = random.choice(swap_types)
-
-            sentence = template.format(
-                company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-                quarter=q,
-                year=year_event,
-                notional=notional,
-                settlement=settlement,
-                swap_type=swap_type,
-                month=random.choice(months),
-            )
-            quarter_sentences.append(sentence)
-
-        # Add event-based sentences
-        all_sentences.extend(past_sentences)
-        all_sentences.extend(swap_entry_sentences)
-        all_sentences.extend(quarter_sentences)
-
-        # Option contract sentences (0-1)
-        if random.random() < 0.3:
-            template = random.choice(option_contract_templates)
-            swap_type = random.choice(
-                [
-                    "foreign currency purchased put option contracts",
-                    "purchased put option contracts",
-                    "purchased call option contracts",
-                ]
-            )
-
-            notional1 = round(random.uniform(0, 300), 0)  # Can be 0 for current year
-            notional2 = round(random.uniform(100, 400), 0)
-            sentence = template.format(
-                company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-                month=random.choice(months),
-                swap_type=swap_type,
-                notional1=notional1,
-                notional2=notional2,
-                year=current_year,
-                prev_year=current_year - 1,
-            )
-            all_sentences.append(sentence)
-
-        # Dedesignation sentences (0-1) - more common for Label 1
-        dedesignation_chance = 0.2 if has_active_derivative else 0.5
-        if random.random() < dedesignation_chance:
-            template = random.choice(dedesignation_templates)
-            swap_type = random.choice(swap_types)
-            q = random.choice(quarters)
-            sentence = template.format(
-                company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-                swap_type=swap_type,
-                year=current_year,
-                quarter=q,
-                month=random.choice(months),
-            )
-            all_sentences.append(sentence)
-
-        # Forward starting/treasury lock sentences (0-1)
-        if random.random() < 0.3:
-            template = random.choice(forward_starting_templates)
-            swap_type = random.choice(
-                [
-                    "forward starting interest rate swaps",
-                    "treasury rate lock agreements",
-                    "forward starting swaps or treasury rate lock agreements",
-                ]
-            )
-            sentence = template.format(
-                company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-                month=random.choice(months),
-                swap_type=swap_type,
-                hedge_type=random.choice(hedge_types),
-            )
-            all_sentences.append(sentence)
-
-        # Collar strategy sentences (0-1)
-        if random.random() < 0.2:
-            template = random.choice(collar_strategy_templates)
-            swap_type = random.choice(
-                [
-                    "purchased put and call options",
-                    "foreign currency options",
-                    "option contracts",
-                ]
-            )
-            collar_year = random.choice(past_years)
-            if has_active_derivative:
-                collar_year = current_year
-            sentence = template.format(
-                company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-                swap_type=swap_type,
-                quarter=random.choice(quarters),
-                month=random.choice(months),
-                year=collar_year,
-            )
-            all_sentences.append(sentence)
-        # Fair value position statements (0-1) - mainly for Label 0 (active derivatives)
-
-        if has_active_derivative is True or has_active_derivative is None:
-            if random.random() < 0.3:
-                template = random.choice(fair_value_position_templates)
-                swap_type = random.choice(swap_types)
-                amount = round(random.uniform(2, 50), 1)
-                oci_amount = round(
-                    amount * random.uniform(0.05, 0.15), 1
-                )  # OCI is typically smaller
-                position_type = random.choice(position_types)
-                oci_action = random.choice(oci_actions)
-
-                sentence = template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=random.choice(months),
-                    year=current_year,
-                    swap_type=swap_type,
-                    position_type=position_type,
-                    amount=amount,
-                    oci_amount=oci_amount,
-                    oci_action=oci_action,
-                )
-                all_sentences.append(sentence)
-
-        # Specific hedge designation with currency pairs (0-1) - mainly for Label 0
-
-        if has_active_derivative is True:
-            if random.random() < 0.25:
-                template = random.choice(specific_hedge_templates)
-                swap_type = random.choice(
-                    [
-                        "forward purchases",
-                        "forward contracts",
-                        "currency forwards",
-                        "foreign exchange forwards",
-                    ]
-                )
-                notional_currency = random.choice(currency_codes)
-                notional_amount = random.randint(100, 500)
-                expiry_year = current_year + 1
-                currency_pair = random.choice(currency_pairs)
-                hedged_item = random.choice(hedged_items)
-
-                sentence = template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=random.choice(months),
-                    swap_type=swap_type,
-                    notional_currency=notional_currency,
-                    notional_amount=notional_amount,
-                    expiry_year=expiry_year,
-                    currency_pair=currency_pair,
-                    hedged_item=hedged_item,
-                )
-                all_sentences.append(sentence)
-            # Cash pooling arrangements (0-1) - can appear in any label
-            if random.random() < 0.15:
-                template = random.choice(cash_pooling_templates)
+                hedge_type = random.choice(hedge_types)
                 all_sentences.append(
                     template.format(
                         company=company_name,
-                        currency_code=currency_code,
-                        major_currency=major_currency,
-                        money_unit=money_units,
-                        end_day=random.randint(28, 31),
+                        swap_type=swap_type,
+                        hedge_type=hedge_type,
                     )
                 )
 
-            # Debt optimization strategies (0-1) - can appear in any label
-            if random.random() < 0.2:
-                template = random.choice(debt_optimization_templates)
-                instrument_list = random.choice(instrument_lists)
-                sentence = template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=random.choice(months),
-                    instrument_list=instrument_list,
-                )
-                all_sentences.append(sentence)
-        # Optionally add policy statements to prevent overfitting
-        if include_policy:
-            policy_sentences = []
-
-            # Context (0-1)
-            if random.random() < 0.3:
-                template = random.choice(context_templates)
-                policy_sentences.append(
-                    template.format(
-                        company=company_name,
-                        currency_code=currency_code,
-                        major_currency=major_currency,
-                        money_unit=money_units,
-                        end_day=random.randint(28, 31),
-                    )
-                )
-
-            # Impact (0-1)
-            if random.random() < 0.3:
-                template = random.choice(impact_templates)
-                verb = random.choice(impact_verbs)
-                policy_sentences.append(
-                    template.format(
-                        company=company_name,
-                        currency_code=currency_code,
-                        major_currency=major_currency,
-                        money_unit=money_units,
-                        end_day=random.randint(28, 31),
-                        month=random.choice(months),
-                        verb=verb,
-                    )
-                )
-
-            # Mitigation (0-1)
-            if random.random() < 0.4:
-                template = random.choice(mitigation_templates)
-                verb = random.choice(mitigation_verbs)
-                policy_sentences.append(
-                    template.format(
-                        company=company_name,
-                        currency_code=currency_code,
-                        major_currency=major_currency,
-                        money_unit=money_units,
-                        end_day=random.randint(28, 31),
-                        month=random.choice(months),
-                        verb=verb,
-                        swap_type=random.choice(swap_types),
-                    )
-                )
-
-            # Accounting policy (0-1)
+            # No trading policy (0-1)
             if random.random() < 0.5:
-                template = random.choice(accounting_policy_templates)
-                policy_sentences.append(
+                template = random.choice(hedge_no_trading_templates)
+                all_sentences.append(template.format(company=company_name))
+
+        # Foreign Exchange specific logic
+        if swapType == "fx":
+            # Context sentences
+            if random.random() < 0.6:
+                template = random.choice(fx_context_templates)
+                all_sentences.append(template.format(company=company_name))
+
+            # Impact sentences
+            if random.random() < 0.7:
+                template = random.choice(fx_impact_templates)
+                verb = random.choice(hedge_change_verbs)
+                all_sentences.append(
                     template.format(
                         company=company_name,
-                        currency_code=currency_code,
                         major_currency=major_currency,
-                        money_unit=money_units,
-                        hedge_type=random.choice(hedge_types),
-                        swap_type=random.choice(swap_types),
+                        verb=verb,
                     )
                 )
 
-            # Documentation (0-1)
-            if random.random() < 0.3:
-                template = random.choice(documentation_templates)
-                policy_sentences.append(
+            # Mitigation sentences
+            if random.random() < 0.7:
+                template = random.choice(fx_mitigation_templates)
+                verb = random.choice(hedge_mitigation_verbs)
+                swap_type = random.choice(swap_types)
+                all_sentences.append(
                     template.format(
                         company=company_name,
-                        currency_code=currency_code,
+                        verb=verb,
+                        swap_type=swap_type,
                         major_currency=major_currency,
-                        money_unit=money_units,
-                        hedge_type=random.choice(hedge_types),
                     )
                 )
-
-            # Effectiveness (0-1)
-            if random.random() < 0.4:
-                template = random.choice(effectiveness_templates)
-                # Provide all possible placeholders
-                sentence = template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=random.choice(months),
-                    hedge_type=random.choice(hedge_types),
-                    metric=random.choice(metrics),
-                    frequency=random.choice(frequencies),
-                    verb=random.choice(assessment_verbs),
-                    method=random.choice(methods),
-                    standard=random.choice(standards),
-                    swap_type=random.choice(swap_types),
-                )
-                policy_sentences.append(sentence)
 
             # Currency description (0-1)
-            if random.random() < 0.3:
+            if random.random() < 0.6:
                 selected_currencies = []
                 selected_currencies.extend(
-                    random.sample(major_currencies, random.randint(2, 3))
+                    random.sample(major_currencies, random.randint(2, 4))
                 )
-                if random.random() < 0.4:
+                if random.random() < 0.5:
                     selected_currencies.extend(
                         random.sample(european_currencies, random.randint(1, 2))
+                    )
+                if random.random() < 0.4:
+                    selected_currencies.extend(
+                        random.sample(asian_currencies, random.randint(1, 2))
+                    )
+                if random.random() < 0.3:
+                    selected_currencies.extend(
+                        random.sample(americas_currencies, random.randint(1, 2))
                     )
 
                 selected_currencies = list(dict.fromkeys(selected_currencies))
@@ -3145,8 +2892,10 @@ def generate_labeled_hedge_paragraph(
                     + " and "
                     + selected_currencies[-1]
                 )
-                template = random.choice(currency_templates)
-                policy_sentences.append(
+                if random.random() < 0.3:
+                    currency_list += " and other European and Latin American currencies"
+                template = random.choice(fx_currency_templates)
+                all_sentences.append(
                     template.format(
                         company=company_name,
                         currency_code=currency_code,
@@ -3158,69 +2907,721 @@ def generate_labeled_hedge_paragraph(
                     )
                 )
 
-            # Counterparty risk (0-1)
-            if random.random() < 0.3:
-                template = random.choice(counterparty_templates)
-                policy_sentences.append(template.format(company=company_name))
+            # Collar strategy sentences (0-1)
+            if random.random() < 0.2:
+                template = random.choice(fx_strategy_templates)
+                swap_type = random.choice(swap_types)
+                collar_year = random.choice(past_years) if past_years else current_year
+                if has_active_derivative:
+                    collar_year = current_year
+                sentence = template.format(
+                    company=company_name,
+                    swap_type=swap_type,
+                    quarter=random.choice(quarters),
+                    month=random.choice(months),
+                    year=collar_year,
+                )
+                all_sentences.append(sentence)
 
-            # No trading policy (0-1)
+            # Alternative management (0-1)
             if random.random() < 0.4:
-                tempate = random.choice(no_trading_templates)
-                policy_sentences.append(
+                template = random.choice(fx_alternative_management_templates)
+                all_sentences.append(
                     template.format(
                         company=company_name,
                         currency_code=currency_code,
                         major_currency=major_currency,
                         money_unit=money_units,
                         end_day=random.randint(28, 31),
-                        notional1=round(random.uniform(200, 550), 0),
-                        notional2=round(random.uniform(200, 550), 0),
-                        instrument_list=random.choice(instrument_lists),
-                        position_type=random.choice(position_types),
-                        metric=random.choice(metrics),
-                        year=current_year,
-                        hedge_type=random.choice(hedge_types),
-                        standard=random.choice(standards),
-                        verb=random.choice(impact_verbs),
-                        method=random.choice(methods),
-                        frequency=random.choice(frequencies),
-                        currencies=random.choice(major_currencies),
-                        swap_type=random.choice(swap_types),
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        prev_year=random.choice(past_years),
-                        notional_currency=random.choice(currency_codes),
-                        notional_amount=round(random.uniform(100, 400), 0),
-                        notional=round(random.uniform(100, 400), 0),
-                        expiry_year=random.choice(past_years),
-                        currency_pair=random.choice(currency_pairs),
-                        hedged_item=random.choice(hedged_items),
-                        settlement=round(random.uniform(50, 200), 0),
-                        amount=round(random.uniform(2, 50), 1),
-                        oci_amount=round(random.uniform(0.05, 0.15)),
-                        oci_action=random.choice(oci_actions),
                     )
                 )
 
-            all_sentences.extend(policy_sentences)
+            # Generic hedge (0-1)
+            if random.random() < 0.5:
+                template = random.choice(fx_generic_hedge_templates)
+                verb = random.choice(hedge_impact_verbs)
+                hedge_type = random.choice(hedge_types)
+                all_sentences.append(
+                    template.format(
+                        company=company_name,
+                        verb=verb,
+                        hedge_type=hedge_type,
+                        swap_type=random.choice(swap_types),
+                        swap_type2=random.choice(swap_types),
+                    )
+                )
 
-        label = 0 if has_active_derivative else 1
+            # Specific hedge (0-1)
+            if random.random() < 0.25:
+                template = random.choice(fx_specific_hedge_templates)
+                swap_type = random.choice(swap_types)
+                notional_currency = random.choice(currency_codes)
+                notional_amount = random.randint(100, 500)
+                expiry_year = current_year + 1
+                currency_pair = random.choice(currency_pairs)
+                hedged_item = random.choice(hedged_items)
+                sentence = template.format(
+                    company=company_name,
+                    swap_type=swap_type,
+                    notional_currency=notional_currency,
+                    notional_amount=notional_amount,
+                    money_unit=money_units,
+                    expiry_year=expiry_year,
+                    currency_pair=currency_pair,
+                    hedged_item=hedged_item,
+                )
+                all_sentences.append(sentence)
 
-    # Shuffle and select
+            # Cash pooling arrangements (0-1)
+            if random.random() < 0.15:
+                template = random.choice(fx_cash_pooling_templates)
+                all_sentences.append(
+                    template.format(
+                        company=company_name,
+                        major_currency=major_currency,
+                    )
+                )
+
+            # Debt optimization strategies (0-1)
+            if random.random() < 0.2:
+                selected_fx = []
+                for _ in range(3):
+                    selected_fx.append(random.choice(swap_types))
+                    if random.random() < 0.5:
+                        break
+                selected_fx_list = (
+                    ", ".join(selected_fx[:-1]) + " and " + selected_fx[-1]
+                    if len(selected_fx) > 1
+                    else selected_fx[0]
+                )
+                template = random.choice(fx_debt_optimization_templates)
+                sentence = template.format(
+                    company=company_name,
+                    currency_code=currency_code,
+                    major_currency=major_currency,
+                    money_unit=money_units,
+                    end_day=random.randint(28, 31),
+                    month=random.choice(months),
+                    swap_type=random.choice(swap_types),
+                    swap_types=selected_fx_list,
+                )
+                all_sentences.append(sentence)
+
+            # Label 0: Active derivative positions
+            if has_active_derivative:
+                # Active position (always for label 0)
+                template = random.choice(hedge_active_position_template)
+                swap_type = random.choice(swap_types)
+                notional = random.randint(50, 1000)
+                sentence = template.format(
+                    company=company_name,
+                    swap_type=swap_type,
+                    month=random.choice(months),
+                    end_day=random.randint(28, 31),
+                    year=current_year,
+                    currency_code=currency_code,
+                    notional=notional,
+                    money_unit=money_units,
+                )
+                all_sentences.append(sentence)
+
+                # Optional comparative (0-1)
+                if random.random() < 0.5 and len(past_years) > 0:
+                    template = random.choice(hedge_optional_templates)
+                    swap_type = random.choice(swap_types)
+                    notional1 = random.randint(50, 1000)
+                    notional2 = random.randint(50, 1000)
+                    prev_year = past_years[-1]
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        month=random.choice(months),
+                        end_day=random.randint(28, 31),
+                        year=current_year,
+                        prev_year=prev_year,
+                        currency_code=currency_code,
+                        notional1=notional1,
+                        notional2=notional2,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+                # Fair value position (0-1)
+                if random.random() < 0.4:
+                    template = random.choice(hedge_fv_position_templates)
+                    swap_type = random.choice(swap_types)
+                    position_type = random.choice(position_types)
+                    amount = random.randint(5, 50)
+                    oci_amount = random.randint(5, 50)
+                    oci_action = random.choice(oci_actions)
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        month=random.choice(months),
+                        end_day=random.randint(28, 31),
+                        year=current_year,
+                        currency_code=currency_code,
+                        amount=amount,
+                        oci_amount=oci_amount,
+                        oci_action=oci_action,
+                        position_type=position_type,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+            # Label 1: No active derivative
+            else:
+                # Termination (0-1)
+                if random.random() < 0.6:
+                    template = random.choice(hedge_termination_templates)
+                    swap_type = random.choice(swap_types)
+                    term_year = (
+                        random.choice(past_years) if past_years else current_year
+                    )
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=term_year,
+                        end_day=random.randint(28, 31),
+                    )
+                    all_sentences.append(sentence)
+
+                # Expiration (0-1)
+                elif random.random() < 0.5:
+                    template = random.choice(hedge_expiration_templates)
+                    swap_type = random.choice(swap_types)
+                    exp_year = random.choice(past_years) if past_years else current_year
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=exp_year,
+                    )
+                    all_sentences.append(sentence)
+
+                # Dedesignation (0-1)
+                if random.random() < 0.4:
+                    template = random.choice(hedge_dedesignation_templates)
+                    swap_type = random.choice(swap_types)
+                    dedes_year = (
+                        random.choice(past_years) if past_years else current_year
+                    )
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=dedes_year,
+                        end_day=random.randint(28, 31),
+                    )
+                    all_sentences.append(sentence)
+
+                # Past event with settlement (0-1)
+                if random.random() < 0.5 and len(past_years) > 0:
+                    template = random.choice(hedge_quarterly_event_templates)
+                    swap_type = random.choice(swap_types)
+                    past_year = random.choice(past_years)
+                    notional = random.randint(50, 500)
+                    settlement = random.randint(5, 50)
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=past_year,
+                        currency_code=currency_code,
+                        notional=notional,
+                        settlement=settlement,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+        # Interest Rate specific logic
+        elif swapType == "ir":
+            # Context sentences
+            if random.random() < 0.6:
+                template = random.choice(fx_ir_context_templates)
+                all_sentences.append(template.format(company=company_name))
+
+            # Mitigation sentences
+            if random.random() < 0.7:
+                template = random.choice(fx_ir_mitigation_templates)
+                verb = random.choice(hedge_mitigation_verbs)
+                all_sentences.append(
+                    template.format(
+                        company=company_name,
+                        verb=verb,
+                    )
+                )
+
+            # Label 0: Active derivative positions
+            if has_active_derivative:
+                # Entry sentence (0-1)
+                if random.random() < 0.7:
+                    template = random.choice(ir_entry_templates)
+                    swap_type = random.choice(swap_types)
+                    notional = random.randint(100, 1000)
+                    entry_year = (
+                        random.choice(past_years) if past_years else current_year
+                    )
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        month=random.choice(months),
+                        year=entry_year,
+                        quarter=random.choice(quarters),
+                        currency_code=currency_code,
+                        notional=notional,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+                # Active position (always for label 0)
+                template = random.choice(ir_active_position_template)
+                swap_type = random.choice(swap_types)
+                notional = random.randint(100, 1000)
+                sentence = template.format(
+                    company=company_name,
+                    swap_type=swap_type,
+                    month=random.choice(months),
+                    end_day=random.randint(28, 31),
+                    year=current_year,
+                    currency_code=currency_code,
+                    notional=notional,
+                    money_unit=money_units,
+                )
+                all_sentences.append(sentence)
+
+                # Optional comparative (0-1)
+                if random.random() < 0.5 and len(past_years) > 0:
+                    template = random.choice(hedge_optional_templates)
+                    swap_type = random.choice(swap_types)
+                    notional1 = random.randint(100, 1000)
+                    notional2 = random.randint(100, 1000)
+                    prev_year = past_years[-1]
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        month=random.choice(months),
+                        end_day=random.randint(28, 31),
+                        year=current_year,
+                        prev_year=prev_year,
+                        currency_code=currency_code,
+                        notional1=notional1,
+                        notional2=notional2,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+                # Fair value position (0-1)
+                if random.random() < 0.4:
+                    template = random.choice(hedge_fv_position_templates)
+                    swap_type = random.choice(swap_types)
+                    position_type = random.choice(position_types)
+                    amount = random.randint(5, 50)
+                    oci_amount = random.randint(5, 50)
+                    oci_action = random.choice(oci_actions)
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        month=random.choice(months),
+                        end_day=random.randint(28, 31),
+                        year=current_year,
+                        currency_code=currency_code,
+                        amount=amount,
+                        oci_amount=oci_amount,
+                        oci_action=oci_action,
+                        position_type=position_type,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+                # Optional hedging template (0-1)
+                if random.random() < 0.5:
+                    template = random.choice(ir_optional_templates)
+                    swap_type = random.choice(swap_types)
+                    hedge_type = random.choice(hedge_types)
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        hedge_type=hedge_type,
+                    )
+                    all_sentences.append(sentence)
+
+                # Debt optimization (0-1)
+                if random.random() < 0.3:
+                    template = random.choice(ir_debt_optimization_templates)
+                    swap_type = random.choice(swap_types)
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                    )
+                    all_sentences.append(sentence)
+
+            # Label 1: No active derivative
+            else:
+                # Past event (0-1)
+                if random.random() < 0.6 and len(past_years) > 0:
+                    template = random.choice(ir_past_event_templates)
+                    swap_type = random.choice(swap_types)
+                    past_year = random.choice(past_years)
+                    next_year = past_year + 1
+                    amount = random.randint(10, 100)
+                    hedge_type = random.choice(hedge_types)
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        month=random.choice(months),
+                        year=past_year,
+                        next_year=next_year,
+                        quarter=random.choice(quarters),
+                        currency_code=currency_code,
+                        amount=amount,
+                        money_unit=money_units,
+                        hedge_type=hedge_type,
+                    )
+                    all_sentences.append(sentence)
+
+                # Termination (0-1)
+                if random.random() < 0.6:
+                    template = random.choice(hedge_termination_templates)
+                    swap_type = random.choice(swap_types)
+                    term_year = (
+                        random.choice(past_years) if past_years else current_year
+                    )
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=term_year,
+                        end_day=random.randint(28, 31),
+                    )
+                    all_sentences.append(sentence)
+
+                # Expiration (0-1)
+                elif random.random() < 0.5:
+                    template = random.choice(hedge_expiration_templates)
+                    swap_type = random.choice(swap_types)
+                    exp_year = random.choice(past_years) if past_years else current_year
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=exp_year,
+                    )
+                    all_sentences.append(sentence)
+
+                # Settlement event (0-1)
+                if random.random() < 0.5 and len(past_years) > 0:
+                    template = random.choice(hedge_quarterly_event_templates)
+                    swap_type = random.choice(swap_types)
+                    past_year = random.choice(past_years)
+                    notional = random.randint(100, 500)
+                    settlement = random.randint(10, 50)
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=past_year,
+                        currency_code=currency_code,
+                        notional=notional,
+                        settlement=settlement,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+        # Commodity Price specific logic
+        elif swapType == "cp":
+            # Context sentences
+            if random.random() < 0.6:
+                template = random.choice(cp_context_templates)
+                all_sentences.append(template.format(company=company_name))
+
+            # Impact sentences
+            if random.random() < 0.7:
+                template = random.choice(cp_impact_templates)
+                verb = random.choice(hedge_change_verbs)
+                commodity = random.choice(commodities)
+                all_sentences.append(
+                    template.format(
+                        company=company_name,
+                        commodity=commodity,
+                        verb=verb,
+                    )
+                )
+
+            # Label 0: Active derivative positions
+            if has_active_derivative:
+                # Commodity event (0-1)
+                if random.random() < 0.7:
+                    template = random.choice(cp_strategy_templates)
+                    swap_type = random.choice(swap_types)
+                    commodity = random.choice(commodities)
+                    amount = random.randint(5, 50)
+                    notional = random.randint(50, 500)
+                    event_year = (
+                        random.choice(past_years) if past_years else current_year
+                    )
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        commodity=commodity,
+                        month=random.choice(months),
+                        year=event_year,
+                        quarter=random.choice(quarters),
+                        currency_code=currency_code,
+                        amount=amount,
+                        notional=notional,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+                # Active position (always for label 0)
+                template = random.choice(
+                    cp_position_templates
+                )  # Use position templates
+                swap_type = random.choice(swap_types)
+                notional = random.randint(50, 500)
+                sentence = template.format(
+                    company=company_name,
+                    swap_type=swap_type,
+                    month=random.choice(months),
+                    end_day=random.randint(28, 31),
+                    year=current_year,
+                    currency_code=currency_code,
+                    notional=notional,
+                    money_unit=money_units,
+                )
+                all_sentences.append(sentence)
+
+                # CP specific template (0-1)
+                if random.random() < 0.6:
+                    template = random.choice(cp_specific_templates)
+                    swap_type = random.choice(swap_types)
+                    commodity = random.choice(commodities)
+                    cost_type = random.choice(cost_types)
+                    volume = random.randint(100, 10000)
+                    volume_unit = random.choice(volume_units)
+                    months_ahead = random.randint(6, 24)
+                    price = random.randint(20, 200)
+                    pct = random.randint(40, 90)
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        commodity=commodity,
+                        cost_type=cost_type,
+                        volume=volume,
+                        volume_unit=volume_unit,
+                        months=months_ahead,
+                        month=random.choice(months),
+                        year=current_year,
+                        currency_code=currency_code,
+                        price=price,
+                        pct=pct,
+                    )
+                    all_sentences.append(sentence)
+
+                # Fair value position (0-1)
+                if random.random() < 0.4:
+                    template = random.choice(hedge_fv_position_templates)
+                    swap_type = random.choice(swap_types)
+                    position_type = random.choice(position_types)
+                    amount = random.randint(5, 50)
+                    oci_amount = random.randint(5, 50)
+                    oci_action = random.choice(oci_actions)
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        month=random.choice(months),
+                        end_day=random.randint(28, 31),
+                        year=current_year,
+                        currency_code=currency_code,
+                        amount=amount,
+                        oci_amount=oci_amount,
+                        oci_action=oci_action,
+                        position_type=position_type,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+            # Label 1: No active derivative
+            else:
+                # Past event (0-1)
+                if random.random() < 0.6:
+                    template = random.choice(
+                        cp_position_templates
+                    )  # Use event templates
+                    swap_type = random.choice(swap_types)
+                    commodity = random.choice(commodities)
+                    notional = random.randint(5, 50)
+                    past_year = (
+                        random.choice(past_years) if past_years else current_year
+                    )
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        commodity=commodity,
+                        month=random.choice(months),
+                        end_day=random.randint(28, 31),
+                        year=past_year,
+                        currency_code=currency_code,
+                        notional=notional,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+                # Termination (0-1)
+                if random.random() < 0.6:
+                    template = random.choice(hedge_termination_templates)
+                    swap_type = random.choice(swap_types)
+                    term_year = (
+                        random.choice(past_years) if past_years else current_year
+                    )
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=term_year,
+                        end_day=random.randint(28, 31),
+                    )
+                    all_sentences.append(sentence)
+
+                # Expiration (0-1)
+                elif random.random() < 0.5:
+                    template = random.choice(hedge_expiration_templates)
+                    swap_type = random.choice(swap_types)
+                    exp_year = random.choice(past_years) if past_years else current_year
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=exp_year,
+                    )
+                    all_sentences.append(sentence)
+
+        # Generic derivative logic (for 'gen' type or fallback)
+        else:
+            # Add generic context
+            if random.random() < 0.6:
+                template = random.choice(hedge_context_templates)
+                all_sentences.append(template.format(company=company_name))
+
+            # Add generic mitigation
+            if random.random() < 0.7:
+                template = random.choice(hedge_mitigation_templates)
+                verb = random.choice(hedge_mitigation_verbs)
+                all_sentences.append(template.format(company=company_name, verb=verb))
+
+            # Label 0: Active derivative positions
+            if has_active_derivative:
+                # Active position (always for label 0)
+                template = random.choice(hedge_active_position_template)
+                swap_type = random.choice(swap_types)
+                notional = random.randint(50, 1000)
+                sentence = template.format(
+                    company=company_name,
+                    swap_type=swap_type,
+                    month=random.choice(months),
+                    end_day=random.randint(28, 31),
+                    year=current_year,
+                    currency_code=currency_code,
+                    notional=notional,
+                    money_unit=money_units,
+                )
+                all_sentences.append(sentence)
+
+                # Optional comparative (0-1)
+                if random.random() < 0.5 and len(past_years) > 0:
+                    template = random.choice(hedge_optional_templates)
+                    swap_type = random.choice(swap_types)
+                    notional1 = random.randint(50, 1000)
+                    notional2 = random.randint(50, 1000)
+                    prev_year = past_years[-1]
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        month=random.choice(months),
+                        end_day=random.randint(28, 31),
+                        year=current_year,
+                        prev_year=prev_year,
+                        currency_code=currency_code,
+                        notional1=notional1,
+                        notional2=notional2,
+                        money_unit=money_units,
+                    )
+                    all_sentences.append(sentence)
+
+            # Label 1: No active derivative
+            else:
+                # Termination (0-1)
+                if random.random() < 0.6:
+                    template = random.choice(hedge_termination_templates)
+                    swap_type = random.choice(swap_types)
+                    term_year = (
+                        random.choice(past_years) if past_years else current_year
+                    )
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=term_year,
+                        end_day=random.randint(28, 31),
+                    )
+                    all_sentences.append(sentence)
+
+                # Expiration (0-1)
+                elif random.random() < 0.5:
+                    template = random.choice(hedge_expiration_templates)
+                    swap_type = random.choice(swap_types)
+                    exp_year = random.choice(past_years) if past_years else current_year
+                    sentence = template.format(
+                        company=company_name,
+                        swap_type=swap_type,
+                        quarter=random.choice(quarters),
+                        month=random.choice(months),
+                        year=exp_year,
+                    )
+                    all_sentences.append(sentence)
+
+    # Shuffle and select sentences
     random.shuffle(all_sentences)
     selected_sentences = all_sentences[:max_len]
-    selected_sentences = [s[0].upper() + s[1:] if s else "" for s in all_sentences]
+
+    # Capitalize first letter of each sentence
+    selected_sentences = [
+        s[0].upper() + s[1:] if s and len(s) > 0 else "" for s in selected_sentences
+    ]
+
     # Create paragraph
     paragraph = (
         f"<reportingYear>{reporting_year}</reportingYear> "
         + ". ".join(selected_sentences)
         + "."
     )
-    paragraph = re.sub("We's", "Our", paragraph)
-    if paragraph.find("{") != -1 or paragraph.find("}") != -1:
-        print("Error in format", paragraph)
-    return paragraph, label
 
+    # Clean up common formatting issues
+    paragraph = re.sub(r"We's", "Our", paragraph)
+    paragraph = re.sub(r"\s+", " ", paragraph)  # Remove extra whitespace
+    paragraph = re.sub(r"\.\.", ".", paragraph)  # Remove double periods
+
+    # Error checking for unformatted placeholders
+    if "{" in paragraph or "}" in paragraph:
+        print(f"Error in format: {paragraph}")
+
+    return paragraph, label
+```
+
+## Accounting Noise
+```{python}
 
 def generate_accounting_noise_paragraph(
     year_range=(1999, 2025), max_len=random.randint(4, 7), company_name=None
@@ -3273,7 +3674,8 @@ def generate_accounting_noise_paragraph(
             )
         elif random.random() < 0.6:
             template = random.choice(litigation_assessment_templates)
-            sentence = template.format(company=company_name)
+            verb = random.choice(assessment_verbs)
+            sentence = template.format(company=company_name, verb=verb)
         else:
             template = random.choice(guarantee_templates)
             amount = round(random.uniform(10, 100), 1)
@@ -3608,6 +4010,7 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
                 month=random.choice(months),
                 end_day=random.randint(28, 31),
+                verb=random.choice(assessment_verbs)
             )
         else:
             template = random.choice(intangible_templates)
@@ -4285,18 +4688,9 @@ def generate_accounting_noise_paragraph(
         + "."
     )
     paragraph = re.sub("We's", "Our", paragraph)
-    if paragraph.find("{") != -1 or paragraph.find("}") != -1:
+    if paragraph.find("{") != -1 or paragraph.find("[") != -1:
         print("Error in format", paragraph)
     return paragraph, 3    
-```
-
-```{python}
-company_name_df = pd.read_excel(company_name_file)
-company_names = set(company_name_df["name"])
-
-# Make each company name lowercase, then Capitlize on each word
-company_names = [name.lower().title() for name in company_names]
-
 ```
 
 
@@ -4304,25 +4698,19 @@ company_names = [name.lower().title() for name in company_names]
 def generate(size_per_label=100):
     # Collect all generated samples
     all_samples = []
-    swap_types = ["IR", "FX", "CP", "GENERIC"]
+    swap_types = ["ir", "fx", "cp", "gen"]
     for prefix in swap_types:
         for _ in range(size_per_label):
-            paragraph, _ = generate_labeled_hedge_paragraph(
-                has_active_derivative=True, swap_type=prefix
+            paragraph, label = generate_labeled_hedge_paragraph(
+                has_active_derivative=True, swapType=prefix
             )
             all_samples.append((paragraph, label))
 
         for _ in range(size_per_label):
             paragraph, _ = generate_labeled_hedge_paragraph(
-                has_active_derivative=False, swap_type=prefix
+                has_active_derivative=False, swapType=prefix
             )
             all_samples.append((paragraph, label))
-    for _ in range(size_per_label):
-        paragraph, label = generate_labeled_hedge_paragraph(has_active_derivative=True)
-        all_samples.append((paragraph, label))
-    for _ in range(size_per_label):
-        paragraph, label = generate_labeled_hedge_paragraph(has_active_derivative=False)
-        all_samples.append((paragraph, label))
 
     for _ in range(size_per_label):
         paragraph, label = generate_labeled_hedge_paragraph(has_active_derivative=None)
@@ -4366,4 +4754,13 @@ def generate(size_per_label=100):
 
 ```{python}
 generate(150)
+```
+
+```{python}
+company_name_df = pd.read_excel(company_name_file)
+company_names = set(company_name_df["name"])
+
+# Make each company name lowercase, then Capitlize on each word
+company_names = [name.lower().title() for name in company_names]
+
 ```
