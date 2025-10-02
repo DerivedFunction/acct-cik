@@ -99,7 +99,7 @@ ff.head()
 
 ```{python}
 
-dd = execute_sql("DELETE FROM report_data WHERE url=''", fetch=False)
+dd = execute_sql("DELETE FROM webpage_result", fetch=False)
 print(dd)
 ```
 

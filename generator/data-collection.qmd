@@ -648,7 +648,7 @@ def filter_by_keywords(
     debug_print("Generating sentences")
 
     def get_keyword_category(text: str) -> str:
-    """Determine which keyword category the text matches (priority order: IR > FX > CP > SPEC > GEN)"""
+        """Determine which keyword category the text matches (priority order: IR > FX > CP > SPEC > GEN)"""
         for category, regex in CATEGORY_REGEX_ORDER:
             if regex.search(text):
                 return category
