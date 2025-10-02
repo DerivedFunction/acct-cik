@@ -106,8 +106,9 @@ print(dd)
 ## Save a dataframe as an Excel file
 
 ```{python}
-wf.groupby()
-wf.to_excel("../excel/cik_urls.xlsx", index=False)
+ff = execute_sql("SELECT * FROM names", fetch=True)
+ff[["name"]].to_excel("../excel/names.xlsx", index=False)
+ff.head()
 ```
 
 ```{python}
