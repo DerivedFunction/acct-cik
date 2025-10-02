@@ -83,7 +83,7 @@ len(wf)
 
 ```{python}
 
-ff = execute_sql("SELECT * FROM webpage_result", fetch=True)
+ff = execute_sql("SELECT * FROM names", fetch=True)
 ff.head()
 ```
 
@@ -91,7 +91,7 @@ ff.head()
 
 ```{python}
 
-ff = execute_sql("SELECT * FROM server_result", fetch=True)
+ff = execute_sql("SELECT * FROM fail_results", fetch=True)
 ff.head()
 ```
 

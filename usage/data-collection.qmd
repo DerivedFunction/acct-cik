@@ -143,8 +143,7 @@ def create_db():
             CREATE TABLE IF NOT EXISTS report_data (
                 cik INTEGER,
                 year INTEGER,
-                url TEXT,
-                FOREIGN KEY (cik) REFERENCES names (cik)
+                url TEXT
             )
         """
         )
@@ -152,17 +151,15 @@ def create_db():
             """
             CREATE TABLE IF NOT EXISTS names (
                 cik INTEGER,
-                name TEXT,
-                PRIMARY KEY (cik)
+                name TEXT
             )
         """
         )
         c.execute(
             """
             CREATE TABLE IF NOT EXISTS webpage_result (
-                url TEXT PRIMARY KEY,
-                matches TEXT,
-                FOREIGN KEY (url) REFERENCES report_data (url)
+                url TEXT,
+                matches TEXT
             )
         """
         )
@@ -200,11 +197,14 @@ def save_batch_report_urls(df):
     with sqlite3.connect(DB_PATH) as conn:
         try:
             name = df[["cik", "name"]].drop_duplicates()
+            name = name.dropna()
+            name["name"] = name["name"].str.title()
             name.to_sql("names", conn, if_exists="append", index=False)
             report = df[["cik", "year", "url"]]
             report.to_sql("report_data", conn, if_exists="append", index=False)
             return True
         except sqlite3.IntegrityError:
+            debug_print(df.head())
             df = df[["cik", "year", "url"]]
             df["reason"] = "Error submitting batch"
             df.to_sql("fail_results", conn, if_exists="append", index=False)
