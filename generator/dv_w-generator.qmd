@@ -1270,7 +1270,7 @@ litigation_templates = [
     "Various legal actions, proceedings, and claims are pending or may be instituted against {company}, including {case_types}",
     "As of {month} {end_day}, {year}, {company} is a defending against several derivative lawsuits related to {case_types}",
     'All securities holders of {company} are hereby notified that a settlement (the "Settlement") has been reached as to claims asserted in the above-captioned consolidated shareholder derivative action pending in a {court} (the "Derivative Action") on behalf of {company} against certain of its current or former directors and officers',
-    'On {month} {end_day}, {year}, a shareholder derivative suit was filed in the {court} for the against {company}',
+    "On {month} {end_day}, {year}, a shareholder derivative suit was filed in the {court} for the against {company}",
 ]
 
 case_types = [
@@ -1303,8 +1303,21 @@ courts = [
     "United States District Court for the Southern District of New York",
     "Court of Chancery of the State of Delaware",
     "United States District Court for the Northern District of California",
-    "Federal Court of Conneticut"
+    "Federal Court of Connecticut",
+    "United States Court of Appeals for the Ninth Circuit",
+    "United States Supreme Court",
+    "Superior Court of the State of New Jersey",
+    "Circuit Court of Cook County, Illinois",
+    "New York State Supreme Court, Commercial Division",
+    "Massachusetts Superior Court, Business Litigation Session",
+    "Texas District Court, Harris County",
+    "Florida Circuit Court for Miami-Dade County",
+    "United States District Court for the District of Massachusetts",
+    "United States District Court for the Western District of Texas",
+    "United States District Court for the Eastern District of Virginia",
+    "Court of Appeals of the State of California, Second Appellate District",
 ]
+
 
 allegations = [
     "breach of contract and misappropriation of trade secrets",
@@ -1314,8 +1327,20 @@ allegations = [
     "breach of fiduciary duty and corporate waste",
     "antitrust violations and unfair competition",
     "failure to adequately warn of product risks",
+    "fraudulent misrepresentation and concealment",
+    "negligence in product design and manufacturing",
+    "copyright infringement of proprietary materials",
+    "violations of the Fair Labor Standards Act",
+    "insider trading and market manipulation",
+    "unlawful retaliation against whistleblowers",
+    "environmental violations under the Clean Air Act",
+    "consumer protection law violations",
+    "unjust enrichment and conversion of assets",
+    "false advertising and deceptive trade practices",
+    "invasion of privacy and data security breaches",
+    "violation of antidiscrimination provisions under Title VII",
+    "failure to comply with OSHA workplace safety regulations",
 ]
-
 # ============ EQUITY WARRANTS (NON-DERIVATIVE) ============
 
 equity_warrant_templates = [
@@ -1329,7 +1354,7 @@ equity_warrant_templates = [
     "As part of {event}, {company} granted warrants for {shares} shares with a strike price of {currency_code}{price}, expiring in {expiry_year}",
     "{company} issued {shares} common stock warrants at an exercise price of {currency_code}{price} per share as consideration for {event}",
     "In {month} {year}, warrants to acquire {shares} shares at {currency_code}{price} per share were issued in connection with {event}",
-    'In connection with the {event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{price} per share, provision states the warrants meet the criteria for equity treatment',
+    "In connection with the {event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{price} per share, provision states the warrants meet the criteria for equity treatment",
     "{company} issued {shares} shares of common stock valued at {currency_code}{value} in connection with {event} during {year}",
     "During {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{value}) as part of {event}",
 ]
@@ -1346,9 +1371,9 @@ equity_warrant_activity_templates = [
     "{company} repurchased and cancelled warrants for {shares} shares during {month} {year} for cash consideration of {currency_code}{amount} {money_unit}",
     "In {month} {year}, warrant holders exercised their rights to acquire {shares} shares, resulting in gross proceeds of {currency_code}{amount} {money_unit}",
     "The additional cost of the warrants of {currency_code}{amount} was recorded as a debit and a credit to additional paid in capital",
-    "Any issuance of common stock by {company} may result in a reduction in the book value per share" 
+    "Any issuance of common stock by {company} may result in a reduction in the book value per share"
     "The reduction on market price per share of {company}'s outstanding shares of common stock will reduce the proportionate ownership and voting power of such shares",
-    "In addition, {company} has reserved {shares} shares of the common stock for issuance upon the exercise of outstanding warrants"
+    "In addition, {company} has reserved {shares} shares of the common stock for issuance upon the exercise of outstanding warrants",
 ]
 # Warrant events/reasons
 warrant_events = [
@@ -1362,6 +1387,22 @@ warrant_events = [
     "the acquisition financing",
     "vendor financing arrangements",
     "financing",
+    "the initial public offering (IPO)",
+    "a merger or acquisition transaction",
+    "a joint venture agreement",
+    "the issuance of senior secured notes",
+    "bridge financing arrangements",
+    "a restructuring or recapitalization",
+    "a collaboration agreement with a strategic partner",
+    "the issuance of subordinated debt securities",
+    "a technology licensing agreement",
+    "the spin-off of a subsidiary",
+    "equity line financing arrangements",
+    "the settlement of outstanding litigation",
+    "an employee retention or incentive program",
+    "royalty financing arrangements",
+    "a PIPE (private investment in public equity) transaction",
+    "mezzanine financing agreements",
 ]
 
 # ============ REVENUE RECOGNITION ============
@@ -1371,13 +1412,33 @@ revenue_recognition_templates = [
     "Revenue from product sales is recognized at a point in time when the customer obtains control, typically upon shipment or delivery",
     "{company} applies the five-step model under ASC 606 to determine when and how revenue is recognized",
     "Performance obligations are satisfied over time for service contracts and at a point in time for product sales",
+    "Revenue from subscription services is recognized ratably over the contract period as services are provided",
+    "For contracts that include multiple performance obligations, {company} allocates the transaction price based on relative standalone selling prices",
+    "Variable consideration, including rebates, discounts, and performance incentives, is estimated and included in the transaction price when it is probable that a significant reversal will not occur",
+    "Revenue related to licenses of intellectual property is recognized either at a point in time or over time, depending on the nature of the rights granted",
+    "For long-term construction and engineering contracts, revenue is recognized over time using an input method such as costs incurred relative to total expected costs",
+    "In arrangements where {company} acts as an agent rather than the principal, revenue is recorded net of amounts owed to third-party suppliers",
+    "Revenue from milestone payments under collaboration agreements is recognized when the underlying performance obligations are achieved",
+    "Shipping and handling activities performed after the transfer of control are accounted for as fulfillment costs rather than separate performance obligations",
+    "Advance payments received from customers are recorded as contract liabilities until the performance obligation is satisfied",
+    "When a right of return exists, {company} recognizes revenue net of estimated returns based on historical experience and current expectations",
+    "For software arrangements, revenue from perpetual licenses is recognized at delivery, while revenue from SaaS arrangements is recognized over the subscription term",
 ]
+
 
 deferred_revenue_templates = [
     "Deferred revenue as of {month} {end_day}, {year} was {currency_code}{amount} {money_unit}, compared to {currency_code}{prev_amount} {money_unit} in the prior year",
     "{company} recorded deferred revenue of {currency_code}{amount} {money_unit} related to advance payments from customers for future deliverables",
     "Contract liabilities increased to {currency_code}{amount} {money_unit} at year-end {year} due to timing of customer payments and performance obligations",
     "As of {month} {end_day}, {year}, {company} had {currency_code}{amount} {money_unit} in deferred revenue related to service and maintenance contracts",
+    "Deferred revenue primarily consists of advance billings for subscription and support services to be recognized over future periods",
+    "{company} expects to recognize approximately {currency_code}{amount} {money_unit} of deferred revenue over the next twelve months and the remainder thereafter",
+    "The increase in deferred revenue from {currency_code}{prev_amount} {money_unit} to {currency_code}{amount} {money_unit} reflects growth in multi-year customer contracts",
+    "Deferred revenue includes amounts invoiced in advance for software licenses, cloud services, and professional support not yet recognized as revenue",
+    "Changes in deferred revenue during {year} were driven by new billings offset by revenue recognized as performance obligations were satisfied",
+    "Deferred revenue classified as current liabilities was {currency_code}{amount} {money_unit}, with the non-current portion recorded as {currency_code}{prev_amount} {money_unit}",
+    "{company} recognized revenue of {currency_code}{prev_amount} {money_unit} during {year} that was included in deferred revenue at the beginning of the period",
+    "Deferred revenue balances are expected to be recognized as revenue consistent with the satisfaction of contractual obligations over time",
 ]
 
 # ============ INVENTORY ============
@@ -1387,14 +1448,23 @@ inventory_templates = [
     "{company} values inventory using the {method} cost method and regularly reviews for obsolescence",
     "Inventory consists of raw materials, work in process, and finished goods, valued at the lower of cost (determined by {method}) or net realizable value",
     "As of {month} {end_day}, {year}, inventory totaled {currency_code}{amount} {money_unit}, net of obsolescence reserves of {currency_code}{reserve} {money_unit}",
+    "Inventories are reviewed periodically for slow-moving or obsolete items, with reserves recorded when necessary to reduce carrying values",
+    "Finished goods and work in progress are stated at standard cost (approximating actual cost) under the {method} method, adjusted to net realizable value if necessary",
+    "Raw materials are valued at purchase cost while manufactured inventories include labor and overhead allocated using the {method} method",
+    "Inventory is written down to market value when estimated selling prices are less than cost",
+    "As of {month} {end_day}, {year}, {company} maintained obsolescence reserves of {currency_code}{reserve} {money_unit} against total inventories of {currency_code}{amount} {money_unit}",
+    "Inventories include supplies and components valued at the lower of cost (determined by {method}) or net realizable value",
+    "The company records provisions for excess and obsolete inventories based on expected future demand, market conditions, and product life cycles",
 ]
 
 inventory_methods = [
     "first-in, first-out (FIFO)",
-    "weighted-average cost",
     "last-in, first-out (LIFO)",
-    "straight-line method",
+    "weighted-average cost",
     "specific identification",
+    "standard cost",
+    "moving average cost",
+    "retail inventory method",
 ]
 
 inventory_writedown_templates = [
@@ -1402,6 +1472,15 @@ inventory_writedown_templates = [
     "Inventory reserves increased by {currency_code}{amount} {money_unit} in {year} to reflect lower of cost or market adjustments",
     "{company} recognized {currency_code}{amount} {money_unit} in charges related to slow-moving and obsolete inventory during {year}",
     "Inventory obsolescence charges totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, {company} maintained reserves of {currency_code}{amount} {money_unit} for excess and obsolete inventories",
+    "Write-downs of {currency_code}{amount} {money_unit} were recorded in {year} primarily related to discontinued product lines",
+    "The company recorded {currency_code}{amount} {money_unit} in inventory write-downs due to declining market demand during {year}",
+    "Charges for inventory valuation adjustments were {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in the prior year",
+    "{company} recorded inventory write-downs associated with aging components and spare parts totaling {currency_code}{amount} {money_unit} during {year}",
+    "Inventory reserves increased to {currency_code}{amount} {money_unit} at year-end {year}, reflecting adjustments for lower selling prices and product obsolescence",
+    "Total charges of {currency_code}{amount} {money_unit} were recognized in cost of goods sold for inventory write-downs in {year}",
+    "Inventory write-downs of {currency_code}{amount} {money_unit} were partially offset by recoveries of {currency_code}{prev_amount} {money_unit} related to previously reserved items",
+    "{company} established new reserves of {currency_code}{amount} {money_unit} in {year} for excess quantities, reflecting updated demand forecasts",
 ]
 
 # ============ PROPERTY, PLANT & EQUIPMENT ============
@@ -1411,13 +1490,24 @@ ppe_templates = [
     "Depreciation expense was {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
     "{company} capitalizes costs related to construction in progress and commences depreciation when assets are placed in service",
     "As of {month} {end_day}, {year}, property, plant and equipment, net totaled {currency_code}{amount} {money_unit}",
+    "Repairs and maintenance costs are expensed as incurred, while major improvements are capitalized and depreciated over the remaining useful life",
+    "Leasehold improvements are amortized over the shorter of the lease term or the estimated useful life of the asset",
+    "Depreciation methods and useful lives are reviewed periodically to ensure they reflect current estimates of asset utility",
+    "Gains or losses on the disposal of property, plant and equipment are recognized in earnings when assets are retired or sold",
+    "Construction in progress primarily relates to {purpose} and is not depreciated until placed into service",
+    "As of {month} {end_day}, {year}, accumulated depreciation was {currency_code}{amount} {money_unit}",
 ]
+
 
 capex_templates = [
     "Capital expenditures during {year} were {currency_code}{amount} {money_unit}, primarily related to {purpose}",
     "{company} invested {currency_code}{amount} {money_unit} in {purpose} during {year}",
     "Cash outlays for property, plant and equipment totaled {currency_code}{amount} {money_unit} in {year}, focused on {purpose}",
     "Capital investments of {currency_code}{amount} {money_unit} were made during {year} to support {purpose}",
+    "During {year}, {company} incurred capital expenditures of {currency_code}{amount} {money_unit}, reflecting continued investment in {purpose}",
+    "Capex in {year} amounted to {currency_code}{amount} {money_unit}, directed primarily toward {purpose}",
+    "{company} allocated {currency_code}{amount} {money_unit} to property and equipment purchases during {year}, with a focus on {purpose}",
+    "Capital spending was {currency_code}{amount} {money_unit} in {year}, driven by {purpose}",
 ]
 
 capex_purposes = [
@@ -1426,6 +1516,13 @@ capex_purposes = [
     "facility improvements and equipment upgrades",
     "research and development laboratories",
     "distribution center automation",
+    "renewable energy and sustainability projects",
+    "expansion of global office facilities",
+    "enhancement of customer service centers",
+    "data center construction and modernization",
+    "supply chain and logistics optimization",
+    "product development and testing facilities",
+    "safety and regulatory compliance upgrades",
 ]
 
 impairment_templates = [
@@ -1433,6 +1530,13 @@ impairment_templates = [
     "An impairment loss of {currency_code}{amount} {money_unit} was recognized in {year} for {asset_type} due to changes in market conditions",
     "During {quarter} quarter {year}, {company} identified indicators of impairment and recorded a {currency_code}{amount} {money_unit} charge for {asset_type}",
     "{company} recognized {currency_code}{amount} {money_unit} in impairment charges related to {asset_type} during {year}",
+    "As a result of revised cash flow projections, {company} recorded {currency_code}{amount} {money_unit} of impairment charges for {asset_type} in {year}",
+    "Impairment testing performed in {year} resulted in a {currency_code}{amount} {money_unit} write-down of {asset_type}",
+    "A non-cash impairment charge of {currency_code}{amount} {money_unit} was recognized during {year} for {asset_type}",
+    "Impairment charges of {currency_code}{amount} {money_unit} were recorded in {year} primarily related to {asset_type}",
+    "The company assessed recoverability of {asset_type} and recognized an impairment loss of {currency_code}{amount} {money_unit} in {year}",
+    "During {year}, {company} recorded impairment losses totaling {currency_code}{amount} {money_unit}, including {asset_type}",
+    "An interim impairment assessment conducted in {quarter} {year} resulted in a charge of {currency_code}{amount} {money_unit} for {asset_type}",
 ]
 
 asset_types = [
@@ -1446,6 +1550,14 @@ asset_types = [
     "software development costs",
     "property and equipment",
     "qualifying assets",
+    "indefinite-lived intangible assets",
+    "leased right-of-use assets",
+    "retail store assets in specific locations",
+    "capitalized film and television production costs",
+    "mining and exploration assets",
+    "customer relationship intangibles",
+    "brand and trademark assets",
+    "renewable energy facilities",
 ]
 
 # ============ LEASES ============
@@ -1453,15 +1565,25 @@ asset_types = [
 lease_templates = [
     "{company} leases office space, manufacturing facilities, and equipment under operating and finance leases with terms ranging from {min_term} to {max_term} years",
     "As of {month} {end_day}, {year}, {company} had operating lease right-of-use assets of {currency_code}{amount} {money_unit} and lease liabilities of {currency_code}{liability} {money_unit}",
-    "{company} adopted ASC 842 effective January 1, {adoption_year}, recognizing right-of-use assets and lease liabilities for operating leases",
+    "{company} adopted ASC 842 effective {month} {adoption_year}, recognizing right-of-use assets and lease liabilities for operating leases",
     "Total lease expense for {year} was {currency_code}{amount} {money_unit}, including both operating and finance lease costs",
+    "Lease liabilities are measured at the present value of future lease payments, discounted using {company}'s incremental borrowing rate",
+    "Short-term leases and variable lease payments are excluded from right-of-use assets and liabilities under ASC 842",
+    "{company} recognized {currency_code}{amount} {money_unit} of lease expense related to short-term and variable leases during {year}",
+    "As of {month} {end_day}, {year}, finance lease assets totaled {currency_code}{amount} {money_unit}, included in property, plant and equipment",
+    "Lease agreements do not contain significant residual value guarantees or restrictive covenants",
 ]
+
 
 lease_commitment_templates = [
     "Future minimum lease payments under non-cancellable operating leases total {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "The weighted-average remaining lease term for operating leases is {years} years as of {month} {end_day}, {year}",
     "The weighted-average discount rate used to measure lease liabilities was {rate}% as of {month} {end_day}, {year}",
     "Operating lease payments are expected to total {currency_code}{amount} {money_unit} over the next five years",
+    "Maturities of lease liabilities are {currency_code}{amount} {money_unit} in {next_year}, {currency_code}{amount2} {money_unit} in {next2_year}, and {currency_code}{amount3} {money_unit} thereafter",
+    "As of {month} {end_day}, {year}, undiscounted future lease payments totaled {currency_code}{amount} {money_unit}, with a present value of {currency_code}{pv_amount} {money_unit}",
+    "Future finance lease obligations amounted to {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
+    "Lease commitments include renewal options reasonably certain to be exercised, totaling {currency_code}{amount} {money_unit}",
 ]
 
 # ============ GOODWILL AND INTANGIBLES ============
@@ -1641,7 +1763,7 @@ stock_debt_issuance_templates = [
     "During {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{value}) as part of {financing_type}, with the value recorded as a debt issue cost",
     "In {month} {year}, {company} completed {financing_type} and issued {shares} shares of common stock valued at {currency_code}{value} as consideration, which was capitalized as debt issuance costs",
     "Upon closing of the {financing_type} in {month} {year}, {shares} shares were issued as transaction costs and recorded in additional paid-in capital",
-    "{company} capitalized {shares} shares of common stock valued at {currency_code}{value} as debt issuance costs related to the {financing_type}"
+    "{company} capitalized {shares} shares of common stock valued at {currency_code}{value} as debt issuance costs related to the {financing_type}",
 ]
 
 # Registration statement and resale concerns
@@ -1650,7 +1772,7 @@ registration_statement_templates = [
     "{company} filed a registration statement on Form S-3 in {month} {year} to register {shares} shares of common stock underlying convertible securities for resale by holders",
     "In {month} {year}, {company} registered {shares} shares of common stock issuable upon conversion of notes and exercise of warrants pursuant to registration rights agreements",
     "The registration statement filed in {year} covers {shares} shares issuable upon conversion and exercise of outstanding securities, permitting resale by security holders",
-    "{company} is obligated to file a registration statement within {days} days following {month} {year} covering shares issuable upon conversion of notes and warrants"
+    "{company} is obligated to file a registration statement within {days} days following {month} {year} covering shares issuable upon conversion of notes and warrants",
 ]
 
 # Market impact of registered shares
@@ -1660,7 +1782,7 @@ market_impact_templates = [
     "The resale of {shares} shares registered under the registration statement could adversely affect the market price of {company}'s common stock",
     "Upon effectiveness of the registration statement, holders may resell {shares} shares, potentially causing downward pressure on the stock price",
     "The registration of {shares} shares for resale by holders could result in substantial dilution and negatively impact the trading price of the common stock",
-    "Sales of substantial amounts of common stock in the public market following effectiveness of the registration statement could adversely affect prevailing market prices"
+    "Sales of substantial amounts of common stock in the public market following effectiveness of the registration statement could adversely affect prevailing market prices",
 ]
 
 # Warrant and option adjustment templates
@@ -1669,7 +1791,7 @@ warrant_adjustment_templates = [
     "Anti-dilution provisions resulted in adjustment of warrant exercise price from {currency_code}{price} to {currency_code}{price2} and shares from {shares} to {shares1} following the {year} financing",
     "Pursuant to anti-dilution protection, {shares} warrants at {currency_code}{price} per share were adjusted to {shares1} warrants at {currency_code}{price2} per share effective {month} {year}",
     "The {month} {year} down-round financing triggered adjustments to outstanding warrants, changing the exercise price from {currency_code}{price} to {currency_code}{price2}",
-    "Weighted-average anti-dilution adjustments modified warrant terms to {shares1} shares at {currency_code}{price2} from {shares} shares at {currency_code}{price}"
+    "Weighted-average anti-dilution adjustments modified warrant terms to {shares1} shares at {currency_code}{price2} from {shares} shares at {currency_code}{price}",
 ]
 
 # Fair value measurement templates
@@ -1678,7 +1800,7 @@ fair_value_snapshot_templates = [
     "As of {month} {end_day}, {year}, the fair value of shares underlying convertible instruments was {currency_code}{value}",
     "Fair value of shares reserved for issuance totaled {currency_code}{value} at {month} {end_day}, {year}",
     "The {shares} shares reserved for conversion and exercise had an aggregate fair value of {currency_code}{value} as of {month} {year}",
-    "{company} valued the {shares} shares underlying convertible securities at {currency_code}{value} based on the closing stock price on {month} {end_day}, {year}"
+    "{company} valued the {shares} shares underlying convertible securities at {currency_code}{value} based on the closing stock price on {month} {end_day}, {year}",
 ]
 
 # Share reservation templates
@@ -1687,7 +1809,7 @@ share_reservation_templates = [
     "{company} has reserved a total of {shares} shares for issuance under equity incentive plans and upon exercise of warrants and convertible securities",
     "As of {month} {end_day}, {year}, {shares1} shares were reserved for warrant exercises and {shares2} shares for option exercises under equity plans",
     "The Company maintains a reserve of {shares} shares for potential issuance upon conversion, exercise, or settlement of outstanding equity instruments",
-    "{shares} shares of authorized common stock are reserved for issuance pursuant to outstanding equity awards, warrants, and convertible instruments as of {year}"
+    "{shares} shares of authorized common stock are reserved for issuance pursuant to outstanding equity awards, warrants, and convertible instruments as of {year}",
 ]
 
 # Outstanding options disclosure
@@ -1696,7 +1818,7 @@ outstanding_options_templates = [
     "Outstanding stock options totaled {shares} as of {month} {end_day}, {year}, with a weighted-average exercise price of {currency_code}{price}",
     "As of {year} year-end, {shares} stock options were outstanding and exercisable, representing potential dilution to existing shareholders",
     "{company} had {shares} options outstanding at {month} {end_day}, {year}, of which {shares1} were vested and exercisable",
-    "Stock options to purchase {shares} shares were outstanding as of {month} {end_day}, {year}, with expiration dates ranging from {year} to {end_year}"
+    "Stock options to purchase {shares} shares were outstanding as of {month} {end_day}, {year}, with expiration dates ranging from {year} to {end_year}",
 ]
 
 # Dilution concern templates
@@ -1706,7 +1828,7 @@ dilution_concern_templates = [
     "The potential issuance of {shares} shares upon exercise of warrants and conversion of notes could dilute current shareholders by approximately {pct}%",
     "Substantial dilution may occur if holders exercise warrants for {shares} shares and convert notes into {shares1} shares of common stock",
     "Current stockholders face potential dilution from {shares} shares underlying warrants, options, and convertible securities as of {month} {end_day}, {year}",
-    "If all outstanding warrants and options were exercised, {shares} additional shares would be issued, representing {pct}% dilution to current shareholders"
+    "If all outstanding warrants and options were exercised, {shares} additional shares would be issued, representing {pct}% dilution to current shareholders",
 ]
 
 # Capital raising impact templates
@@ -1714,7 +1836,7 @@ capital_raising_impact_templates = [
     "The overhang of {shares} shares underlying convertible securities may impair {company}'s ability to raise capital through future equity offerings",
     "Potential dilution from outstanding warrants and options could adversely affect the terms of future financings or {company}'s ability to access capital markets",
     "The existence of {shares} shares reserved for issuance may make it more difficult for {company} to obtain financing on favorable terms",
-    "Future equity financings may be more difficult to complete due to the dilutive effect of {shares} shares underlying outstanding securities"
+    "Future equity financings may be more difficult to complete due to the dilutive effect of {shares} shares underlying outstanding securities",
 ]
 
 warrant_debt_issuance_templates = [
@@ -4011,6 +4133,7 @@ def generate_accounting_noise_paragraph(
         else:
             template = random.choice(inventory_writedown_templates)
             amount = round(random.uniform(2, 20), 1)
+            prev_amount =  round(random.uniform(amount, amount + 20), 1)
             sentence = template.format(
                 year=current_year,
                 amount=amount,
@@ -4020,6 +4143,7 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
                 month=random.choice(months),
                 end_day=random.randint(28, 31),
+                prev_amount=prev_amount
             )
         all_sentences.append(sentence)
 
@@ -4028,6 +4152,7 @@ def generate_accounting_noise_paragraph(
         if random.random() < 0.5:
             template = random.choice(ppe_templates)
             amount = round(random.uniform(100, 500), 1)
+            purpose = random.choice(capex_purposes)
             sentence = template.format(
                 month=random.choice(months),
                 end_day=random.randint(28, 31),
@@ -4037,6 +4162,7 @@ def generate_accounting_noise_paragraph(
                 currency_code=currency_code,
                 major_currency=major_currency,
                 money_unit=money_units,
+                purpose=purpose,
             )
         elif random.random() < 0.7:
             template = random.choice(capex_templates)
@@ -4097,6 +4223,7 @@ def generate_accounting_noise_paragraph(
         else:
             template = random.choice(lease_commitment_templates)
             amount = round(random.uniform(100, 400), 1)
+            pv_amount = round(random.uniform(100, 900), 1)
             years = round(random.uniform(3, 8), 1)
             rate = round(random.uniform(3.0, 7.0), 1)
             sentence = template.format(
@@ -4110,6 +4237,7 @@ def generate_accounting_noise_paragraph(
                 major_currency=major_currency,
                 money_unit=money_units,
                 end_day=random.randint(28, 31),
+                pv_amount=pv_amount
             )
         all_sentences.append(sentence)
 
@@ -4876,7 +5004,7 @@ def generate(size_per_label=100):
 ```
 
 ```{python}
-generate(300)
+generate(1000)
 ```
 
 ```{python}
