@@ -2916,7 +2916,7 @@ def generate_labeled_hedge_paragraph(
                             template.format(
                                 company=company_name,
                                 verb=verb,
-                                swap_type=random.choice(swap_types)
+                                swap_type=random.choice(swap_types),
                             )
                         )
             # Add specific position sentences for each active type
@@ -2928,7 +2928,11 @@ def generate_labeled_hedge_paragraph(
                         if random.random() < 0.6:
                             template = random.choice(hedge_active_position_template)
                             swap_type_selected = random.choice(
-                                [s for s in swap_types if s in derivative_keywords["fx"]]
+                                [
+                                    s
+                                    for s in swap_types
+                                    if s in derivative_keywords["fx"]
+                                ]
                             )
                             notional = random.randint(50, 1000)
                             sentence = template.format(
@@ -2948,7 +2952,11 @@ def generate_labeled_hedge_paragraph(
                         if random.random() < 0.6:
                             template = random.choice(ir_active_position_template)
                             swap_type_selected = random.choice(
-                                [s for s in swap_types if s in derivative_keywords["ir"]]
+                                [
+                                    s
+                                    for s in swap_types
+                                    if s in derivative_keywords["ir"]
+                                ]
                             )
                             notional = random.randint(100, 1000)
                             sentence = template.format(
@@ -2968,13 +2976,19 @@ def generate_labeled_hedge_paragraph(
                         if random.random() < 0.6:
                             template = random.choice(cp_strategy_templates)
                             swap_type_selected = random.choice(
-                                [s for s in swap_types if s in derivative_keywords["cp"]]
+                                [
+                                    s
+                                    for s in swap_types
+                                    if s in derivative_keywords["cp"]
+                                ]
                             )
                             commodity = random.choice(commodities)
                             amount = random.randint(5, 50)
                             notional = random.randint(50, 500)
                             event_year = (
-                                random.choice(past_years) if past_years else current_year
+                                random.choice(past_years)
+                                if past_years
+                                else current_year
                             )
                             sentence = template.format(
                                 company=company_name,
@@ -3003,7 +3017,9 @@ def generate_labeled_hedge_paragraph(
                                 ]
                             )
                             term_year = (
-                                random.choice(past_years) if past_years else current_year
+                                random.choice(past_years)
+                                if past_years
+                                else current_year
                             )
                             sentence = template.format(
                                 company=company_name,
@@ -3772,11 +3788,14 @@ def generate_labeled_hedge_paragraph(
                         year=exp_year,
                     )
                     all_sentences.append(sentence)
-
+    if len(all_sentences) < max_len:
+        print("Too short, regenerating")
+        return generate_labeled_hedge_paragraph(
+            has_active_derivative=has_active_derivative, swapType=swapType
+        )
     # Shuffle and select sentences
     random.shuffle(all_sentences)
     selected_sentences = all_sentences[:max_len]
-
     # Capitalize first letter of each sentence
     selected_sentences = [
         s[0].upper() + s[1:] if s and len(s) > 0 else "" for s in selected_sentences
