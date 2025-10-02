@@ -5027,8 +5027,8 @@ def generate_sec_noise(company, currency_unit, month, year):
 
     gibberish = ''.join(random.choices(string.ascii_lowercase + string.digits, k=random.randint(6,12))) + random.choice([".htm", ".txt"])
     
-    # Randomly choose 3–5 fragments
-    chunks = random.sample(headers + phrases + [gibberish] + [generate_toc_line()], k=random.randint(3,5))
+    # Randomly choose 5–8 fragments
+    chunks = random.sample(headers + phrases + [gibberish] + [generate_toc_line()], k=random.randint(5, 8))
     return chunks
   
 ```
