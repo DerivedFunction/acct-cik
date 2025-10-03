@@ -12,7 +12,7 @@ import sqlite3
 import pandas as pd
 import json
 from typing import Union
-db_path = "../db/web_data.db"
+db_path = "./web_data.db"
 def execute_sql(sql: str, fetch: bool = True) -> Union[pd.DataFrame, int]:
     """
     Execute a SQL statement on a SQLite database.
