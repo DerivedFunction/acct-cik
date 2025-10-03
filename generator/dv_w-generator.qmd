@@ -2320,7 +2320,7 @@ def generate_derivative_liability_paragraph(
             month=month,
             end_day=end_day,
             year=current_year,
-            money_unit=money_units
+            money_unit=money_units,
         )
         all_sentences.append(sentence)
 
@@ -2607,11 +2607,13 @@ def generate_derivative_liability_paragraph(
             for _ in range(random.randint(1, 2)):
                 template = random.choice(embedded_past_templates)
                 host_contract = random.choice(host_contracts)
+                verb = random.choice(hedge_use_verbs)
                 month = random.choice(months)
                 end_day = random.randint(28, 31)
                 year = random.choice(past_years)
                 sentence = template.format(
                     host_contract=host_contract,
+                    verb=verb,
                     year=year,
                     settlement_year=settlement_year,
                     month=month,
@@ -2852,8 +2854,8 @@ def generate_derivative_liability_paragraph(
     # Clean up common formatting issues
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
-    paragraph = pattern_spaces.sub(" ", paragraph)   # Remove extra whitespace
-    paragraph = pattern_dots.sub(".", paragraph)     # Remove double periods
+    paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
+    paragraph = pattern_dots.sub(".", paragraph)  # Remove double periods
 
     if paragraph.find("{") != -1 or paragraph.find("[") != -1:
         print("Error in format", paragraph)
