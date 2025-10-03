@@ -386,7 +386,7 @@ embedded_no_longer_outstanding_templates = [
 ```{python}
 
 hedge_past_event_template = [
-    "In {month} {year}, {company} entered into {swap_type} agreements with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
+    "In {month} {year}, {company} {hedge_use_verb} {swap_type} agreements with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
     "During {month} {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
 ]
 
@@ -406,24 +406,24 @@ hedge_active_position_template = [
     "{company}’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}",
 ]
 hedge_optional_templates = [
-    "{company} also have entered into {swap_type} to hedge forecasted revenue which were not part of a collar strategy. Such {swap_type} had a notional value of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {month} {end_day}, {prev_year}, respectively",
-    "{company} entered into {swap_type} with notional values of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year} compared to {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
+    "{company} also have {hedge_use_verb} {swap_type} to hedge forecasted revenue which were not part of a collar strategy. Such {swap_type} had a notional value of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {month} {end_day}, {prev_year}, respectively",
+    "{company} {hedge_use_verb} {swap_type} with notional values of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year} compared to {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
     "As of {month} {end_day}, {year}, {company} maintained {swap_type} with a notional value of {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} in the prior year",
-    "{company} utilized {swap_type} to hedge forecasted transactions, with notional amounts decreasing from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year} to {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}",
+    "{company} {hedge_use_verb} {swap_type} to hedge forecasted transactions, with notional amounts decreasing from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year} to {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}",
     "As of {month} {end_day}, {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were in place, down from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
     "{company} maintained {swap_type} to hedge revenue streams, with notional amounts of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year} compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
     "In {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were active, compared to {currency_code}{notional2} {money_unit} in {prev_year}",
     "As of {month} {end_day}, {year}, {company}’s {swap_type} portfolio had a notional value of {currency_code}{notional1} {money_unit}, reduced from {currency_code}{notional2} {money_unit} in {prev_year}",
     "{company}’s {swap_type} for hedging forecasted revenue had notional values of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {prev_year}, respectively",
-    "At year-end {year}, {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} were used to hedge transactions, compared to {currency_code}{notional2} {money_unit} in {prev_year}",
-    "{company} employed {swap_type} with a notional value of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, down from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
+    "At year-end {year}, {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} were {hedge_use_verb} to hedge transactions, compared to {currency_code}{notional2} {money_unit} in {prev_year}",
+    "{company} {hedge_use_verb} {swap_type} with a notional value of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, down from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
     "As of {month} {end_day}, {year}, {swap_type} to hedge forecasted revenue totaled {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} in the prior year",
     "{company}’s {swap_type} portfolio for revenue hedging had a notional value of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
     "In {year}, {company} maintained {swap_type} with a notional amount of {currency_code}{notional1} {money_unit}, reduced from {currency_code}{notional2} {money_unit} in {prev_year}",
-    "As of {month} {end_day}, {year}, {swap_type} used for hedging had a notional value of {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
+    "As of {month} {end_day}, {year}, {swap_type} {hedge_use_verb} for hedging had a notional value of {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
     "{company}’s {swap_type} for transaction hedging totaled {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
     "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were active, compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
-    "{company} utilized {swap_type} with notional amounts of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} in the prior year",
+    "{company} {hedge_use_verb} {swap_type} with notional amounts of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} in the prior year",
     "As of {month} {end_day}, {year}, {company}’s {swap_type} for revenue hedging had a notional value of {currency_code}{notional1} {money_unit}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
     "{company} maintained {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
 ]
@@ -451,7 +451,7 @@ hedge_termination_templates = [
 ]
 
 hedge_expiration_templates = [
-    "All previously outstanding derivatives expired or were settled during {month} {year}, with no new positions entered into during the year",
+    "All previously outstanding derivatives expired or were settled during {month} {year}, with no new positions {hedge_use_verb} during the year",
     "{company}'s derivative portfolio was fully liquidated in {month} {year} with no replacement hedges executed during the remainder of the fiscal year",
     "Outstanding hedge positions matured throughout {year}, and {company} elected not to enter into new derivative contracts during the period",
     "During {month} {year}, all existing {swap_type} reached maturity, and no new hedging instruments were established for the fiscal year",
@@ -459,7 +459,7 @@ hedge_expiration_templates = [
     "{company}’s {swap_type} portfolio fully expired in {month} {year}, with no new hedges entered during the year",
     "During {year}, all outstanding {swap_type} reached maturity, and {company} did not execute new derivative contracts",
     "In {month} {year}, {company}’s {swap_type} positions expired, with no replacement hedges established",
-    "All {swap_type} matured in the {quarter} quarter of {year}, and no new derivative instruments were entered into during the fiscal year",
+    "All {swap_type} matured in the {quarter} quarter of {year}, and no new derivative instruments were {hedge_use_verb} during the fiscal year",
     "During {month} {year}, {company}’s derivative portfolio of {swap_type} was fully settled, with no new positions taken",
     "In {year}, all {swap_type} contracts reached maturity, and {company} chose not to initiate new hedges",
     "{company}’s {swap_type} portfolio expired in {month} {year}, with no new derivative contracts executed",
@@ -623,7 +623,7 @@ hedge_documentation_templates = [
 ]
 
 hedge_effectiveness_templates = [
-    "{company} {verb}, both at inception and on an on-going basis, whether the derivative instruments that are used in {hedge_type} hedging transactions are highly effective in offsetting the {metric} of hedged items",
+    "{company} {verb}, both at inception and on an on-going basis, whether the derivative instruments that are {hedge_use_verb} in {hedge_type} hedging transactions are highly effective in offsetting the {metric} of hedged items",
     "{company} {verb} hedge effectiveness {frequency} to ensure derivatives continue to meet the criteria for hedge accounting",
     "Hedge effectiveness is {verb} {frequency} using {method} in accordance with {standard}",
     "{company} {verb} {frequency} assessments of hedge effectiveness to determine whether hedging relationships remain highly effective",
@@ -694,16 +694,19 @@ hedge_mitigation_verbs = [
     "implement",
 ]
 
-hedge_impact_verbs = [
+hedge_use_verbs = {
     "entered into",
     "executed",
     "utilized",
     "employed",
-    "has used",
+    "used",
+}
+hedge_impact_verbs = hedge_use_verbs | {
     "may enter into",
     "may utilize",
     "may employ",
-]
+    "may use"
+}
 
 hedge_change_verbs = ["increase", "decrease", "affect", "impact"]
 hedge_counterparty_templates = [
@@ -717,9 +720,9 @@ hedge_counterparty_templates = [
 hedge_no_trading_templates = [
     "{company} does not enter into derivative transactions for trading purposes",
     "{company}'s policy prohibits the use of derivatives for speculative or trading purposes",
-    "Derivatives are used solely for hedging and risk management, not for speculative trading",
+    "Derivatives are {hedge_use_verb} solely for hedging and risk management, not for speculative trading",
     "{company} does not engage in derivative transactions for speculative purposes",
-    "All derivative transactions are entered into for hedging purposes and not for trading or speculation",
+    "All derivative transactions are {hedge_use_verb} for hedging purposes and not for trading or speculation",
 ]
 
 hedge_fv_position_templates = [
@@ -895,21 +898,21 @@ derivative_keywords = {
 ## Commodities
 ```{python}
 cp_strategy_templates = [
-    "{company} entered into {swap_type} to hedge anticipated changes in {commodity} prices, resulting in {currency_code}{amount} {money_unit} of unrealized gains/losses recorded in OCI",
-    "During {month} {year}, {company} executed {swap_type} to stabilize {commodity} costs for forecasted production, with {currency_code}{amount} {money_unit} in deferred fair value adjustments",
-    "{company} utilized {swap_type} to manage commodity price risk on forecasted inventory, recognizing {currency_code}{amount} {money_unit} in mark-to-market gains/losses",
+    "{company} {hedge_use_verb} {swap_type} to hedge anticipated changes in {commodity} prices, resulting in {currency_code}{amount} {money_unit} of unrealized gains/losses recorded in OCI",
+    "During {month} {year}, {company} {hedge_use_verb} {swap_type} to stabilize {commodity} costs for forecasted production, with {currency_code}{amount} {money_unit} in deferred fair value adjustments",
+    "{company} {hedge_use_verb} {swap_type} to manage commodity price risk on forecasted inventory, recognizing {currency_code}{amount} {money_unit} in mark-to-market gains/losses",
     "As part of its risk management program, {company} implemented {swap_type} to hedge {commodity} exposure, resulting in {currency_code}{amount} {money_unit} recorded in OCI",
-    "{swap_type} were executed by {company} in {month} {year} to protect against adverse price movements in {commodity}, with {currency_code}{amount} {money_unit} of unrealized gains/losses",
-    "In {month} {year}, {company} entered into {swap_type} to offset commodity price volatility, recognizing {currency_code}{amount} {money_unit} in fair value adjustments",
+    "{swap_type} were {hedge_use_verb} by {company} in {month} {year} to protect against adverse price movements in {commodity}, with {currency_code}{amount} {money_unit} of unrealized gains/losses",
+    "In {month} {year}, {company} {hedge_use_verb} {swap_type} to offset commodity price volatility, recognizing {currency_code}{amount} {money_unit} in fair value adjustments",
     "{company} maintained {swap_type} to hedge production cost exposure for {commodity}, resulting in {currency_code}{amount} {money_unit} recorded in other comprehensive income",
-    "During the {quarter} quarter of {year}, {swap_type} were used to manage {commodity} price risk, with {currency_code}{amount} {money_unit} of mark-to-market adjustments",
-    "{company} employed {swap_type} to mitigate fluctuations in {commodity} prices, recording {currency_code}{amount} {money_unit} in OCI",
+    "During the {quarter} quarter of {year}, {swap_type} were {hedge_use_verb} to manage {commodity} price risk, with {currency_code}{amount} {money_unit} of mark-to-market adjustments",
+    "{company} {hedge_use_verb} {swap_type} to mitigate fluctuations in {commodity} prices, recording {currency_code}{amount} {money_unit} in OCI",
     "In {month} {year}, {swap_type} were designated as hedges for forecasted {commodity} sales, with {currency_code}{amount} {money_unit} of unrealized gains/losses deferred in equity",
-    "{company} used {swap_type} in {year} to secure {commodity} prices, recognizing {currency_code}{amount} {money_unit} in hedge-related gains/losses",
-    "To manage {commodity} price exposure, {company} executed {swap_type} in {month} {year}, with {currency_code}{amount} {money_unit} in OCI adjustments",
+    "{company} {hedge_use_verb} {swap_type} in {year} to secure {commodity} prices, recognizing {currency_code}{amount} {money_unit} in hedge-related gains/losses",
+    "To manage {commodity} price exposure, {company} {hedge_use_verb} {swap_type} in {month} {year}, with {currency_code}{amount} {money_unit} in OCI adjustments",
     "In {quarter} {year}, {company} implemented {swap_type} to stabilize {cost_type}, resulting in {currency_code}{amount} {money_unit} of fair value changes",
     "{company}'s {swap_type} strategy for {commodity} in {month} {year} led to {currency_code}{amount} {money_unit} in deferred gains/losses in equity",
-    "{swap_type} were employed by {company} to hedge {commodity} costs, with {currency_code}{amount} {money_unit} recorded as mark-to-market adjustments in {year}",
+    "{swap_type} were {hedge_use_verb} by {company} to hedge {commodity} costs, with {currency_code}{amount} {money_unit} recorded as mark-to-market adjustments in {year}",
 ]
 cp_position_templates = [
     "As of {month} {end_day}, {year}, {company} maintains {swap_type} with notional amounts totaling {currency_code}{notional} {money_unit} to hedge commodity price risk",
@@ -918,8 +921,8 @@ cp_position_templates = [
     "As of {month} {year}, {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain active to hedge forecasted commodity purchases or sales",
     "At year-end {year}, {company} holds {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to manage fluctuations in commodity prices",
     "{company} maintains {swap_type} with a notional amount of {currency_code}{notional} {money_unit} at {month} {end_day}, {year}, designated for commodity risk management",
-    "During {year}, {company} executed {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to hedge volatility in raw material costs",
-    "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} are used to mitigate commodity price exposure",
+    "During {year}, {company} {hedge_use_verb} {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to hedge volatility in raw material costs",
+    "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} are {hedge_use_verb} to mitigate commodity price exposure",
     "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as hedges for commodity procurement",
     "On {month} {end_day}, {year}, {company}’s {swap_type} portfolio includes notional amounts of {currency_code}{notional} {money_unit} to stabilize commodity costs",
     "As of {month} {year}, {company} uses {swap_type} with a notional value of {currency_code}{notional} {money_unit} to manage {commodity} price volatility",
@@ -930,8 +933,8 @@ cp_position_templates = [
 cp_specific_templates = [
     "{company} utilizes {swap_type} to hedge exposure to {commodity} price volatility affecting {cost_type}",
     "The Company enters into {swap_type} to manage the financial impact of fluctuations in {commodity} prices",
-    "{swap_type} are used to hedge anticipated {commodity} purchases totaling {volume} {volume_unit} over the next {months} months",
-    "In {month} {year}, {company} executed {swap_type} to lock in {commodity} prices for {volume} {volume_unit} of forecasted consumption",
+    "{swap_type} are {hedge_use_verb} to hedge anticipated {commodity} purchases totaling {volume} {volume_unit} over the next {months} months",
+    "In {month} {year}, {company} {hedge_use_verb} {swap_type} to lock in {commodity} prices for {volume} {volume_unit} of forecasted consumption",
     "Commodity price risk related to {commodity} is managed through {swap_type} with notional volumes of {volume} {volume_unit}",
     "{company} maintains {swap_type} to hedge {commodity} price exposure on production inputs",
     "The Company uses {swap_type} to stabilize {cost_type} by hedging approximately {pct}% of anticipated {commodity} requirements",
@@ -966,7 +969,7 @@ cp_impact_templates = [
     "Price changes in key commodities {verb} the cost of {cost_type} and gross margins",
     "Price changes in key commodities such as {commodity} {verb} the cost of {cost_type} and gross margins",
     "{company} purchase the majority of our {commodity} at prevailing market prices, and seek to manage market risk through execution of a documented hedging strategy and other means"
-    "{company} have market sensitive instruments in the form of fixed-rate debt instruments and financial derivative instruments used to hedge our exposure to {commodity} price increases",
+    "{company} have market sensitive instruments in the form of fixed-rate debt instruments and financial derivative instruments {hedge_use_verb} to hedge our exposure to {commodity} price increases",
     "Volatility in {commodity} markets {verb} the translated value of procurement and derivative positions",
     "Sudden {commodity} price swings {verb} {company}'s production costs and earnings stability",
     "{commodity} market trends {verb} the valuation of {company}'s commodity-linked assets",
@@ -1006,26 +1009,26 @@ cost_types = [
 ```{python}
 
 fx_strategy_templates = [
-    "{company} entered into {swap_type} as part of a collar strategy to limit exposure to foreign currency fluctuations within a defined range",
+    "{company} {hedge_use_verb} {swap_type} as part of a collar strategy to limit exposure to foreign currency fluctuations within a defined range",
     "Collar strategies utilizing {swap_type} were implemented to provide downside protection while capping upside exposure to currency movements",
     "{company} established collar positions through {swap_type} to manage foreign exchange risk on forecasted transactions",
     "As part of its risk management program, {company} uses collar strategies combining {swap_type} to hedge currency exposure",
     "In {month} {year}, {company} implemented {swap_type} within a collar strategy to limit foreign currency risk",
-    "{company} utilized {swap_type} in a collar structure to manage exposure to currency fluctuations",
-    "Collar strategies with {swap_type} were employed to hedge foreign exchange risk on international transactions",
-    "{company} entered into {swap_type} as part of a collar to cap currency exposure while retaining some upside potential",
-    "in the {quarter} quarter of {year}, {swap_type} were used in a collar strategy to mitigate foreign currency volatility",
+    "{company} {hedge_use_verb} {swap_type} in a collar structure to manage exposure to currency fluctuations",
+    "Collar strategies with {swap_type} were {hedge_use_verb} to hedge foreign exchange risk on international transactions",
+    "{company} {hedge_use_verb} {swap_type} as part of a collar to cap currency exposure while retaining some upside potential",
+    "in the {quarter} quarter of {year}, {swap_type} were {hedge_use_verb} in a collar strategy to mitigate foreign currency volatility",
     "{company} implemented collar positions with {swap_type} to stabilize foreign exchange impacts",
-    "{swap_type} were utilized in a collar strategy to limit currency risk on forecasted revenue",
+    "{swap_type} were {hedge_use_verb} in a collar strategy to limit currency risk on forecasted revenue",
     "{company} established {swap_type} within a collar framework to manage foreign exchange exposure",
-    "Collar strategies involving {swap_type} were used to hedge currency fluctuations in {year}",
-    "{company} employed {swap_type} in a collar structure to protect against adverse currency movements",
+    "Collar strategies involving {swap_type} were {hedge_use_verb} to hedge currency fluctuations in {year}",
+    "{company} {hedge_use_verb} {swap_type} in a collar structure to protect against adverse currency movements",
     "In {month} {year}, {swap_type} were implemented as part of a collar to manage currency risk",
-    "{swap_type} within a collar strategy were used to limit exposure to foreign exchange volatility",
-    "{company} utilized collar positions with {swap_type} to hedge currency risk on international contracts",
-    "in the {quarter} quarter of {year}, {company} entered into {swap_type} as part of a collar to manage forex exposure",
+    "{swap_type} within a collar strategy were {hedge_use_verb} to limit exposure to foreign exchange volatility",
+    "{company} {hedge_use_verb} collar positions with {swap_type} to hedge currency risk on international contracts",
+    "in the {quarter} quarter of {year}, {company} {hedge_use_verb} {swap_type} as part of a collar to manage forex exposure",
     "Collar strategies with {swap_type} were implemented to stabilize currency impacts on forecasted transactions",
-    "{company} used {swap_type} in a collar framework to cap foreign exchange risk while retaining flexibility",
+    "{company} {hedge_use_verb} {swap_type} in a collar framework to cap foreign exchange risk while retaining flexibility",
     "{company} enter into {swap_type} to manage exposures to changes in foreign exchange rates for anticipated intercompany purchases by those subsidiaries whose functional currencies are not the {major_currency}",
 ]
 
@@ -1078,7 +1081,7 @@ fx_mitigation_templates = [
     "{company} employs {swap_type} to hedge foreign currency risk on centrally managed subsidiary funding and cash movements",
     "{company} may use {swap_type} to adjust the currency profile of its debt portfolio as needed",
     "{company} employs {swap_type} to modify the currency composition of borrowings based on operational needs",
-    "{swap_type} are utilized to convert borrowings into {major_currency} when strategically beneficial",
+    "{swap_type} are {hedge_use_verb} to convert borrowings into {major_currency} when strategically beneficial",
     "{swap_type} not designated as hedges, failing to be hedges or failing to continue as effective hedges are included in operations as {swap_type} gains or losses",
     "Discounts or premiums on {swap_type} designated and effective as hedges are amortized or accreted to expense using the straight-line method over the term of the related contract",
     "Discounts or premiums on {swap_type} not designated or effective as hedges are included in the mark to market adjustment and recognized in income as {swap_type} gains or losses",
@@ -1102,7 +1105,7 @@ fx_alternative_management_templates = [
     "Depending on market conditions, foreign currency risk is also managed through the use of foreign currency debt",
     "{company} may use foreign currency-denominated debt as a natural hedge against foreign currency exposure",
     "In certain circumstances, {company} utilize foreign currency borrowings to offset translation exposure",
-    "Foreign currency debt may be used strategically to create natural hedging relationships",
+    "Foreign currency debt may be {hedge_use_verb} strategically to create natural hedging relationships",
 ]
 
 fx_generic_hedge_templates = [
@@ -1123,7 +1126,7 @@ fx_specific_hedge_templates = [
 fx_cash_pooling_templates = [
     "{company} also operates cash pooling arrangements to manage the surplus cash and short-term liquidity needs of foreign subsidiaries located outside {major_currency} zone",
     "{company} operates cash pooling arrangements to optimize liquidity management across foreign subsidiaries and reduce external borrowing costs",
-    "Cash pooling structures are utilized to centralize cash management and provide efficient funding to international operations",
+    "Cash pooling structures are {hedge_use_verb} to centralize cash management and provide efficient funding to international operations",
     "{company} maintains centralized cash pooling facilities to manage working capital needs of subsidiaries in various currencies",
 ]
 
@@ -1146,49 +1149,49 @@ fx_debt_optimization_templates = [
 ```{python}
 
 ir_entry_templates = [
-    "In {month} {year}, {swap_type} were entered into and designated as hedges of the notes with a notional amount of {currency_code}{notional} {money_unit}, effectively converting portions of fixed-rate debt to floating rates",
-    "During {month} {year}, {company} executed {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} to modify the interest rate characteristics of outstanding senior notes",
-    "{company} entered into {swap_type} in {month} {year} with a total notional amount of {currency_code}{notional} {money_unit}, designated as fair value hedges of fixed-rate obligations",
+    "In {month} {year}, {swap_type} were {hedge_use_verb} and designated as hedges of the notes with a notional amount of {currency_code}{notional} {money_unit}, effectively converting portions of fixed-rate debt to floating rates",
+    "During {month} {year}, {company} {hedge_use_verb} {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} to modify the interest rate characteristics of outstanding senior notes",
+    "{company} {hedge_use_verb} {swap_type} in {month} {year} with a total notional amount of {currency_code}{notional} {money_unit}, designated as fair value hedges of fixed-rate obligations",
     "In {month} {year}, {swap_type} totaling {currency_code}{notional} {money_unit} notional were designated as hedging instruments against changes in the fair value of fixed-rate debt",
-    "{company} executed {swap_type} in {month} {year} with notional amounts aggregating {currency_code}{notional} {money_unit} to hedge interest rate exposure on a portion of its debt portfolio",
-    "in the {quarter} quarter of {year}, {company} entered into {swap_type} with a notional value of {currency_code}{notional} {money_unit} to convert fixed-rate senior notes to variable rates",
-    "During {month} {year}, {swap_type} were executed with a total notional amount of {currency_code}{notional} {money_unit} to manage interest rate risk on long-term debt",
+    "{company} {hedge_use_verb} {swap_type} in {month} {year} with notional amounts aggregating {currency_code}{notional} {money_unit} to hedge interest rate exposure on a portion of its debt portfolio",
+    "in the {quarter} quarter of {year}, {company} {hedge_use_verb} {swap_type} with a notional value of {currency_code}{notional} {money_unit} to convert fixed-rate senior notes to variable rates",
+    "During {month} {year}, {swap_type} were {hedge_use_verb} with a total notional amount of {currency_code}{notional} {money_unit} to manage interest rate risk on long-term debt",
     "In {month} {year}, {company} designated {swap_type} with a notional amount of {currency_code}{notional} {money_unit} as fair value hedges for its outstanding bonds",
     "{company} initiated {swap_type} in {month} {year} with a notional value of {currency_code}{notional} {money_unit} to adjust the interest rate profile of its debt",
     "in the {quarter} quarter of {year}, {swap_type} totaling {currency_code}{notional} {money_unit} were entered to hedge changes in the fair value of fixed-rate liabilities",
-    "During {month} {year}, {company} executed {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to manage exposure to interest rate fluctuations",
+    "During {month} {year}, {company} {hedge_use_verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to manage exposure to interest rate fluctuations",
     "In {month} {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} were designated to hedge fixed-rate debt obligations",
-    "{company} entered into {swap_type} in the {quarter} quarter of {year} with a notional amount of {currency_code}{notional} {money_unit} to modify the interest rate structure of its senior notes",
+    "{company} {hedge_use_verb} {swap_type} in the {quarter} quarter of {year} with a notional amount of {currency_code}{notional} {money_unit} to modify the interest rate structure of its senior notes",
     "In {month} {year}, {swap_type} were implemented with a total notional value of {currency_code}{notional} {money_unit} to hedge the fair value of outstanding debt",
-    "During {year}, {company} executed {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to convert portions of its fixed-rate debt to floating rates",
+    "During {year}, {company} {hedge_use_verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to convert portions of its fixed-rate debt to floating rates",
     "In {month} {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} were designated as fair value hedges against changes in debt valuation",
-    "{company} entered into {swap_type} during the {quarter} quarter of {year} with a notional amount of {currency_code}{notional} {money_unit} to manage interest rate exposure on bonds",
-    "In {month} {year}, {swap_type} totaling {currency_code}{notional} {money_unit} were executed to adjust the interest rate characteristics of long-term liabilities",
+    "{company} {hedge_use_verb} {swap_type} during the {quarter} quarter of {year} with a notional amount of {currency_code}{notional} {money_unit} to manage interest rate exposure on bonds",
+    "In {month} {year}, {swap_type} totaling {currency_code}{notional} {money_unit} were {hedge_use_verb} to adjust the interest rate characteristics of long-term liabilities",
     "during the {quarter} quarter of {year}, {company} designated {swap_type} with a notional value of {currency_code}{notional} {money_unit} as hedges of fixed-rate note obligations",
     "In {month} {year}, {swap_type} were entered with a total notional amount of {currency_code}{notional} {money_unit} to mitigate interest rate risk on debt issuances",
 ]
 
 ir_past_event_templates = [
-    "During {month} {year}, {company} executed {swap_type} in anticipation of issuing fixed-rate notes, leaving {currency_code}{amount} {money_unit} of unrealized losses in OCI related to {swap_type} as of {month} {next_year}",
-    "In {month} {year}, {company} entered into {swap_type} with a notional value of {currency_code}{amount} {money_unit} to hedge forecasted debt issuances, resulting in deferred losses recorded in accumulated OCI",
+    "During {month} {year}, {company} {hedge_use_verb} {swap_type} in anticipation of issuing fixed-rate notes, leaving {currency_code}{amount} {money_unit} of unrealized losses in OCI related to {swap_type} as of {month} {next_year}",
+    "In {month} {year}, {company} {hedge_use_verb} {swap_type} with a notional value of {currency_code}{amount} {money_unit} to hedge forecasted debt issuances, resulting in deferred losses recorded in accumulated OCI",
     "{company} designated {swap_type} in {month} {year} as {hedge_type} hedges against anticipated interest payments, with {currency_code}{amount} {money_unit} in fair value adjustments recorded in equity",
-    "During {year}, {swap_type} were executed to lock in favorable rates prior to debt refinancing, with {currency_code}{amount} {money_unit} of accumulated losses deferred in other comprehensive income",
-    "In {month} {year}, {company} entered into forward-starting {swap_type} in connection with planned debt offerings, recording {currency_code}{amount} {money_unit} of mark-to-market losses in OCI",
-    "In {month} {year}, {company} utilized {swap_type} to manage interest rate risk, recognizing {currency_code}{amount} {money_unit} in unrealized gains in OCI as of {month} {next_year}",
-    "During {year}, {company} executed {swap_type} to hedge against fluctuations in interest rates, with {currency_code}{amount} {money_unit} in deferred gains recorded in accumulated OCI",
+    "During {year}, {swap_type} were {hedge_use_verb} to lock in favorable rates prior to debt refinancing, with {currency_code}{amount} {money_unit} of accumulated losses deferred in other comprehensive income",
+    "In {month} {year}, {company} {hedge_use_verb} forward-starting {swap_type} in connection with planned debt offerings, recording {currency_code}{amount} {money_unit} of mark-to-market losses in OCI",
+    "In {month} {year}, {company} {hedge_use_verb} {swap_type} to manage interest rate risk, recognizing {currency_code}{amount} {money_unit} in unrealized gains in OCI as of {month} {next_year}",
+    "During {year}, {company} {hedge_use_verb} {swap_type} to hedge against fluctuations in interest rates, with {currency_code}{amount} {money_unit} in deferred gains recorded in accumulated OCI",
     "{company} implemented {swap_type} in {month} {year} to stabilize borrowing costs, deferring {currency_code}{amount} {money_unit} of losses in other comprehensive income",
-    "in the {quarter} quarter of {year}, {company} executed forward-starting {swap_type} to secure rates for future debt issuances, with {currency_code}{amount} {money_unit} in mark-to-market adjustments in OCI",
-    "In {year}, {company} entered into {swap_type} to mitigate interest rate exposure, with {currency_code}{amount} {money_unit} in fair value changes deferred in equity",
+    "in the {quarter} quarter of {year}, {company} {hedge_use_verb} forward-starting {swap_type} to secure rates for future debt issuances, with {currency_code}{amount} {money_unit} in mark-to-market adjustments in OCI",
+    "In {year}, {company} {hedge_use_verb} {swap_type} to mitigate interest rate exposure, with {currency_code}{amount} {money_unit} in fair value changes deferred in equity",
     "In {month} {year}, {company} locked in rates using {swap_type}, recognizing {currency_code}{amount} {money_unit} in deferred losses within other comprehensive income",
-    "during the {quarter} quarter of {year}, {company} executed {swap_type} to hedge planned bond issuances, with {currency_code}{amount} {money_unit} in unrealized losses recorded in OCI",
-    "In {month} {year}, {swap_type} were used to manage exposure to interest rate volatility, resulting in {currency_code}{amount} {money_unit} of deferred gains in equity",
-    "{company} entered into {swap_type} in {month} {year} to hedge forecasted interest payments, with {currency_code}{amount} {money_unit} in mark-to-market adjustments in OCI",
+    "during the {quarter} quarter of {year}, {company} {hedge_use_verb} {swap_type} to hedge planned bond issuances, with {currency_code}{amount} {money_unit} in unrealized losses recorded in OCI",
+    "In {month} {year}, {swap_type} were {hedge_use_verb} to manage exposure to interest rate volatility, resulting in {currency_code}{amount} {money_unit} of deferred gains in equity",
+    "{company} {hedge_use_verb} {swap_type} in {month} {year} to hedge forecasted interest payments, with {currency_code}{amount} {money_unit} in mark-to-market adjustments in OCI",
     "In {year}, {company} designated {swap_type} as hedges for anticipated debt, recording {currency_code}{amount} {money_unit} in fair value losses in accumulated OCI",
     "During {month} {year}, {company} implemented {swap_type} to secure favorable rates, with {currency_code}{amount} {money_unit} in unrealized gains deferred in OCI",
-    "in the {quarter} quarter of {year}, {swap_type} were executed to manage interest rate risk on future borrowings, with {currency_code}{amount} {money_unit} in losses recorded in equity",
-    "{company} used {swap_type} in {month} {year} to hedge against rising interest rates, deferring {currency_code}{amount} {money_unit} in mark-to-market losses in OCI",
-    "In {month} {year}, {company} entered into {swap_type} with a notional value of {currency_code}{amount} {money_unit}, resulting in deferred gains recorded in accumulated OCI",
-    "During {year}, {company} executed {swap_type} to lock in rates for planned financings, with {currency_code}{amount} {money_unit} in fair value adjustments in OCI",
+    "in the {quarter} quarter of {year}, {swap_type} were {hedge_use_verb} to manage interest rate risk on future borrowings, with {currency_code}{amount} {money_unit} in losses recorded in equity",
+    "{company} {hedge_use_verb} {swap_type} in {month} {year} to hedge against rising interest rates, deferring {currency_code}{amount} {money_unit} in mark-to-market losses in OCI",
+    "In {month} {year}, {company} {hedge_use_verb} {swap_type} with a notional value of {currency_code}{amount} {money_unit}, resulting in deferred gains recorded in accumulated OCI",
+    "During {year}, {company} {hedge_use_verb} {swap_type} to lock in rates for planned financings, with {currency_code}{amount} {money_unit} in fair value adjustments in OCI",
     "In {month} {year}, {company} designated forward-starting {swap_type} as {hedge_type} hedges, recognizing {currency_code}{amount} {money_unit} in unrealized losses in equity",
     "{company} implemented {swap_type} in the {quarter} quarter of {year} to stabilize interest costs, with {currency_code}{amount} {money_unit} in deferred losses recorded in OCI",
     "In {month} {year}, {swap_type} were entered to hedge anticipated debt offerings, resulting in {currency_code}{amount} {money_unit} of mark-to-market gains in accumulated OCI",
@@ -1208,18 +1211,18 @@ ir_optional_templates = [
     "In anticipation of issuing fixed-rate debt, {company} may use {swap_type} that are designated as {hedge_type} hedges to hedge against changes in interest rates that could impact expected future issuances of debt",
     "{company} utilizes {swap_type} designated as {hedge_type} hedges to lock in favorable interest rates prior to anticipated debt issuances",
     "To hedge interest rate exposure on forecasted debt offerings, {company} may enter into {swap_type} designated as {hedge_type} hedges",
-    "{swap_type} are employed to mitigate the risk of rising interest rates on planned fixed-rate debt issuances",
+    "{swap_type} are {hedge_use_verb} to mitigate the risk of rising interest rates on planned fixed-rate debt issuances",
     "{company} uses {swap_type} as {hedge_type} hedges to secure interest rates for future debt issuances",
     "In preparation for debt offerings, {company} may designate {swap_type} as {hedge_type} hedges to manage interest rate risk",
     "To protect against interest rate volatility, {company} employs {swap_type} for planned fixed-rate debt issuances",
-    "{swap_type} are utilized as {hedge_type} hedges to lock in rates for anticipated debt financings",
+    "{swap_type} are {hedge_use_verb} as {hedge_type} hedges to lock in rates for anticipated debt financings",
     "{company} may enter into {swap_type} to hedge interest rate risk on forecasted debt issuances",
     "In anticipation of bond issuances, {swap_type} are designated as {hedge_type} hedges to stabilize future interest costs",
     "{company} uses {swap_type} to mitigate interest rate fluctuations on planned debt offerings",
     "{swap_type} are designated as {hedge_type} hedges to secure rates for future fixed-rate debt",
     "To manage interest rate exposure, {company} employs {swap_type} for anticipated debt issuances",
     "{company} may utilize {swap_type} as {hedge_type} hedges to lock in rates prior to debt financings",
-    "{swap_type} are used to hedge against rising interest rates for planned debt issuances",
+    "{swap_type} are {hedge_use_verb} to hedge against rising interest rates for planned debt issuances",
     "In preparation for fixed-rate debt, {company} designates {swap_type} as {hedge_type} hedges",
     "{company} employs {swap_type} to stabilize interest rates for forecasted bond issuances",
     "{swap_type} are implemented as {hedge_type} hedges to manage risk on future debt offerings",
@@ -1235,7 +1238,10 @@ ir_context_templates = [
     "{company}'s objectives in interest rate risk management are to limit the impact of interest rate changes on earnings and cash flows, and to lower overall borrowing costs",
     "To achieve its objectives, the {company} borrows at fixed rates when it believes it is in its best interests to do so, and may enter into derivative financial instruments, such as {swap_types}, in order to limit its exposure to interest rate fluctuations",
     "{company} utilize derivative financial instruments to manage our variable interest rate exposure over a medium- to long-term period",
-    "{company} is exposed to interest rate risk associated with fluctuations in interest rates on our variable rate debt.",
+    "{company} is exposed to interest rate risk associated with fluctuations in interest rates on our variable rate debt",
+    "{company} recognize the gains and losses on our derivative instruments as an adjustment to interest expense in the period the hedged interest payment affects earnings",
+    "{company} manage interest costs by using a mix of fixed- and floating-rate debt",
+    "{company} {hedge_use_verb} two derivative financial instruments to manage our variable interest rate exposure.",
 ]
 # Interest Rate (IR) Debt Optimization Templates
 ir_debt_optimization_templates = [
