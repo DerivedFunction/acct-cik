@@ -3005,7 +3005,7 @@ def generate_labeled_hedge_paragraph(
         )
 
         may_use_template = random.choice(hedge_may_use_mitigation_templates)
-        verb = random.choice(hedge_verbs)
+        verb = random.choice(hedge_use_verbs)
         swap_type = random.choice(swap_types)
         all_sentences.append(
             may_use_template.format(
@@ -3075,7 +3075,7 @@ def generate_labeled_hedge_paragraph(
         # Debt optimization (0-1)
         if random.random() < 0.5:
             template = random.choice(fx_ir_debt_optimization_templates)
-            verb = random.choice(hedge_verbs)
+            verb = random.choice(hedge_use_verbs)
             all_sentences.append(
                 template.format(
                     company=company_name,
@@ -3086,7 +3086,11 @@ def generate_labeled_hedge_paragraph(
 
         # No trading policy (always)
         nt_template = random.choice(hedge_no_trading_templates)
-        all_sentences.append(nt_template.format(company=company_name))
+        all_sentences.append(nt_template.format(
+            company=company_name, 
+            verb=random.choice(hedge_use_verbs)
+            )
+        )
 
     # Labels 0 and 1: Specific positions
     else:
@@ -3107,7 +3111,7 @@ def generate_labeled_hedge_paragraph(
             # May use hedge
             if random.random() < 0.5:
                 template = random.choice(hedge_may_use_templates)
-                verb = random.choice(hedge_verbs)
+                verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
                 all_sentences.append(
                     template.format(
@@ -3119,7 +3123,11 @@ def generate_labeled_hedge_paragraph(
             # No trading policy (0-1)
             if random.random() < 0.5:
                 template = random.choice(hedge_no_trading_templates)
-                all_sentences.append(template.format(company=company_name))
+                all_sentences.append(template.format(
+                    company=company_name,
+                    verb=random.choice(hedge_use_verbs)
+                    )
+                )
         if not has_active_derivative:
             # Past event (0-1)
             if random.random() < 0.6 and len(past_years) > 0:
@@ -3179,7 +3187,7 @@ def generate_labeled_hedge_paragraph(
             # May use hedge
             if random.random() < 0.5:
                 template = random.choice(fx_may_use_templates)
-                verb = random.choice(hedge_verbs)
+                verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
                 all_sentences.append(
                     template.format(
@@ -3484,7 +3492,7 @@ def generate_labeled_hedge_paragraph(
             # May use hedge
             if random.random() < 0.5:
                 template = random.choice(ir_may_use_templates)
-                verb = random.choice(hedge_verbs)
+                verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
                 all_sentences.append(
                     template.format(
@@ -3719,7 +3727,7 @@ def generate_labeled_hedge_paragraph(
             # May use hedge
             if random.random() < 0.5:
                 template = random.choice(cp_may_use_templates)
-                verb = random.choice(hedge_verbs)
+                verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
                 commodity = random.choice(commodities)
                 if random.random() < 0.3:  # Chance to replace with actual commodity
