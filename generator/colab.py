@@ -26,7 +26,7 @@ ALL_FIRMS_DATA = "derivatives_data.csv"
 REPORT_CSV_PATH = "report_data_to_process.csv"
 DB_PATH = "web_data.db"
 SEC_RATE_LIMIT = 1 / 5  # requests per second
-CHUNK_SIZE = 1000
+CHUNK_SIZE = 500
 
 # =============================================================================
 # COLAB CONFIGURATION
