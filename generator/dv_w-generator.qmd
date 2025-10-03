@@ -1586,7 +1586,7 @@ inventory_writedown_templates = [
     "Inventory reserves increased by {currency_code}{amount} {money_unit} in {year} to reflect lower of cost or market adjustments",
     "{company} recognized {currency_code}{amount} {money_unit} in charges related to slow-moving and obsolete inventory during {year}",
     "Inventory obsolescence charges totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
-    "As of {month} {end_day}, {year}, {company} {verb} reserves of {currency_code}{amount} {money_unit} for excess and obsolete inventories",
+    "As of {month} {end_day}, {year}, {company} maintained reserves of {currency_code}{amount} {money_unit} for excess and obsolete inventories",
     "Write-downs of {currency_code}{amount} {money_unit} were recorded in {year} primarily related to discontinued product lines",
     "The company recorded {currency_code}{amount} {money_unit} in inventory write-downs due to declining market demand during {year}",
     "Charges for inventory valuation adjustments were {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in the prior year",
