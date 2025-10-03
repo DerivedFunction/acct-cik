@@ -3143,10 +3143,6 @@ def generate_labeled_hedge_paragraph(
                 all_sentences.append(
                     template.format(
                         company=company_name,
-                        currency_code=currency_code,
-                        major_currency=major_currency,
-                        money_unit=money_units,
-                        end_day=random.randint(28, 31),
                     )
                 )
 
@@ -3212,10 +3208,6 @@ def generate_labeled_hedge_paragraph(
                 sentence = template.format(
                     company=company_name,
                     currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                    month=random.choice(months),
                     swap_type=random.choice(swap_types),
                     swap_types=selected_fx_list,
                 )
