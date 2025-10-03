@@ -1566,7 +1566,7 @@ inventory_templates = [
     "Finished goods and work in progress are stated at standard cost (approximating actual cost) under the {method} method, adjusted to net realizable value if necessary",
     "Raw materials are valued at purchase cost while manufactured inventories include labor and overhead allocated using the {method} method",
     "Inventory is written down to market value when estimated selling prices are less than cost",
-    "As of {month} {end_day}, {year}, {company} {verb} obsolescence reserves of {currency_code}{reserve} {money_unit} against total inventories of {currency_code}{amount} {money_unit}",
+    "As of {month} {end_day}, {year}, {company} maintained obsolescence reserves of {currency_code}{reserve} {money_unit} against total inventories of {currency_code}{amount} {money_unit}",
     "Inventories include supplies and components valued at the lower of cost (determined by {method}) or net realizable value",
     "The company records provisions for excess and obsolete inventories based on expected future demand, market conditions, and product life cycles",
 ]
