@@ -26,7 +26,7 @@ ALL_FIRMS_DATA = "derivatives_data.csv"
 REPORT_CSV_PATH = "report_data_to_process.csv"
 DB_PATH = "web_data.db"
 SEC_RATE_LIMIT = 1 / 5  # requests per second
-CHUNK_SIZE = 100
+CHUNK_SIZE = 1000
 
 # =============================================================================
 # COLAB CONFIGURATION
@@ -42,7 +42,7 @@ def get_system_config():
     return {
         "num_fetchers": total_fetchers,
         "num_parsers": total_cores,
-        "chunk_size": CHUNK_SIZE * (1 if not IS_COLAB and total_cores >= 6 else 20),
+        "chunk_size": CHUNK_SIZE * (5 if IS_COLAB else 1),
     }
 
 
