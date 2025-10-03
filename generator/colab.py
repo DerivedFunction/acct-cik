@@ -37,7 +37,7 @@ def get_system_config():
     return {
         "num_fetchers": total_fetchers,  # Reduced from 3 to be safer
         "num_parsers": total_cores,  # Reduced from 12 to avoid memory issues
-        "chunk_size": CHUNK_SIZE * (1 if not IS_COLAB and total_cores >= 6 else 500),
+        "chunk_size": CHUNK_SIZE * (1 if not IS_COLAB and total_cores >= 6 else 100),
     }
 
 
