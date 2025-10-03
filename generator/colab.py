@@ -921,15 +921,20 @@ def parse_content_only(data):
         return None
 
 
-def process_all_reports_fully():
-    """
-    AUTO-CONFIGURED: Adapts to local (16 cores) or cloud (44 cores).
+def format_time(seconds):
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    if hours > 0:
+        return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+    elif minutes > 0:
+        return f"{int(minutes)}m {int(seconds)}s"
+    else:
+        return f"{int(seconds)}s"
 
-    LOCAL: 3 fetchers, 12 parsers, 100 reports/chunk
-    CLOUD: 5 fetchers, 35 parsers, 500 reports/chunk
-    """
+
+def process_all_reports_fully():
     global SEC_RATE_LIMIT
-    
+
     processed_set = get_processed_urls()
 
     reports_to_process = [
@@ -942,7 +947,6 @@ def process_all_reports_fully():
     print(f"Processing {total_reports:,} new reports")
     print(f"Already processed: {len(processed_set):,} reports")
 
-    # Use auto-detected config
     CHUNK_SIZE = CONFIG["chunk_size"]
     NUM_FETCHERS = CONFIG["num_fetchers"]
     NUM_PARSERS = CONFIG["num_parsers"]
@@ -950,7 +954,6 @@ def process_all_reports_fully():
     total_results = 0
     total_empty = 0
 
-    # Split into chunks
     chunks = [
         reports_to_process[i : i + CHUNK_SIZE]
         for i in range(0, total_reports, CHUNK_SIZE)
@@ -959,7 +962,11 @@ def process_all_reports_fully():
     print(f"\nProcessing in {len(chunks)} chunks of {CHUNK_SIZE} reports each")
     print("=" * 70)
 
+    chunk_times = []
+    total_time = 0
+
     for chunk_idx, chunk in enumerate(chunks, 1):
+        current_time = time.time()
         print(f"\n📦 Chunk {chunk_idx}/{len(chunks)} ({len(chunk)} reports)")
 
         # Stage 1: Fetch this chunk
@@ -985,13 +992,23 @@ def process_all_reports_fully():
                 except Exception as e:
                     print(f"Fetch error: {e}")
 
-        print(f"  ✓ Fetched {len(fetched_data)} reports")
+        chunk_time = time.time() - current_time
+        chunk_times.append(chunk_time)
+        total_time += chunk_time
+        avg_chunk_time = sum(chunk_times) / len(chunk_times)
+        remaining_chunks = len(chunks) - chunk_idx
+        est_time_remaining = avg_chunk_time * remaining_chunks
+
+        print(f"  ✓ Fetched {len(fetched_data)} reports.")
+        print(f"  Time taken: {format_time(chunk_time)}")
+        print(f"  Avg chunk time: {format_time(avg_chunk_time)}")
+        print(f"  Est. time remaining: {format_time(est_time_remaining)}")
+        print(f"  Total time: {format_time(total_time)}")
 
         # Stage 2: Parse this chunk
         print(f"  → Parsing with {NUM_PARSERS} workers...")
         chunk_results = 0
         chunk_empty = 0
-        # execute shell commands
 
         with ProcessPoolExecutor(max_workers=NUM_PARSERS) as parse_executor:
             parse_futures = [
@@ -1010,7 +1027,6 @@ def process_all_reports_fully():
                         chunk_results += 1
                     else:
                         chunk_empty += 1
-                        # Sleep for a bit to cool off before the next one
                         time.sleep(SEC_RATE_LIMIT)
                 except Exception as e:
                     print(f"Parse error: {e}")
@@ -1021,7 +1037,7 @@ def process_all_reports_fully():
 
         print(f"  ✓ Parsed {chunk_results} reports successfully")
 
-        # Clear memory (important for local machines)
+        # Clear memory
         del fetched_data
         import gc
 
@@ -1029,6 +1045,7 @@ def process_all_reports_fully():
         if IS_COLAB:
             subprocess.Popen(SHELL_CMD, shell=True)
             print(f"  → Saving to database.")
+
         # Progress summary
         processed_so_far = chunk_idx * CHUNK_SIZE
         percent_complete = (processed_so_far / total_reports) * 100
