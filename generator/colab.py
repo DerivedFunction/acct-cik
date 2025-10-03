@@ -32,11 +32,11 @@ IS_COLAB = True
 
 # Auto-detect system capabilities
 def get_system_config():
-    total_cores = mp.cpu_count() - 2
-    total_fetchers = 5
+    total_cores = min(mp.cpu_count() - 1, 1)
+    total_fetchers = min(5, total_cores)
     return {
-        "num_fetchers": total_fetchers,  # Reduced from 3 to be safer
-        "num_parsers": total_cores,  # Reduced from 12 to avoid memory issues
+        "num_fetchers": total_fetchers,  
+        "num_parsers": total_cores,
         "chunk_size": CHUNK_SIZE * (1 if not IS_COLAB and total_cores >= 6 else 100),
     }
 
@@ -1068,7 +1068,7 @@ if __name__ == "__main__":
     # fetch_all_grouped()
 
     print("\n" + "=" * 70)
-    print("STEP 2: Perform keyword extraction in parallel (44 cores)")
+    print(f"STEP 2: Perform keyword extraction in parallel")
     print("=" * 70)
     # Uncomment to run:
     process_all_reports_fully()
