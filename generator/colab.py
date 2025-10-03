@@ -27,6 +27,7 @@ DB_PATH = "web_data.db"
 SEC_RATE_LIMIT = 1 / 5  # requests per second
 DRIVE_PATH = "./drive/MyDrive/db"
 SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/{DB_PATH} "
+CHUNK_SIZE = 10
 IS_COLAB = True
 
 
@@ -34,18 +35,11 @@ IS_COLAB = True
 def get_system_config():
     total_cores = mp.cpu_count() - 2
     total_fetchers = 5
-    if total_cores >= 20:  # Cloud/Colab
-        return {
-            "num_fetchers": total_fetchers,
-            "num_parsers": total_cores,
-            "chunk_size": 100,
-        }
-    else:  # Local machine
-        return {
-            "num_fetchers": total_fetchers,  # Reduced from 3 to be safer
-            "num_parsers": total_cores,  # Reduced from 12 to avoid memory issues
-            "chunk_size": 10,
-        }
+    return {
+        "num_fetchers": total_fetchers,  # Reduced from 3 to be safer
+        "num_parsers": total_cores,  # Reduced from 12 to avoid memory issues
+        "chunk_size": CHUNK_SIZE * (1 if not IS_COLAB and total_cores >= 6 else 100),
+    }
 
 
 CONFIG = get_system_config()
