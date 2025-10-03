@@ -577,6 +577,7 @@ def fetch_url(url: str, timeout: int = 10) -> str | None:
 def process_url(url: str):
     raw_text = fetch_url(url)
     if not raw_text:
+        debug_print(f"Error fetching {url}: No text found")
         return ""
 
     if url.endswith("htm"):
