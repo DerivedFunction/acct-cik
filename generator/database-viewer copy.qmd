@@ -75,7 +75,7 @@ def update_result(result, url, cik, year):
 
 ```{python}
 
-wf = execute_sql("SELECT * FROM report_data WHERE NOT url=''", fetch=True)
+wf = execute_sql("SELECT * FROM report_data WHERE url LIKE '%0001.htm'", fetch=True)
 len(wf)
 ```
 
@@ -160,4 +160,24 @@ with open("raw_text.txt", "w", encoding="utf-8") as f:
 
 ```{python}
 wd.to_sql("webpage_data", conn2, if_exists="replace", index=False)
+```
+
+```{python}
+for idx, row in wf.iterrows():
+    # We are replacing 0001.htm with .txt
+    url = row["url"]
+
+    # Accession number from second-to-last part of the path
+    accession = url.split("/")[-2].replace("-", "")
+
+    # Replace filename with the new .txt format
+    base_url = url.rsplit("/", 1)[0] + "/"
+    doc = f"{accession[:10]}-{accession[10:12]}-{accession[12:]}.txt"
+
+    # Update DataFrame
+    wf.at[idx, "url"] = base_url + doc
+
+    print(wf.at[idx, "url"])
+    execute_sql(f"UPDATE report_data SET url='{wf.at[idx, 'url']}' WHERE url='{row['url']}'", fetch=False)
+
 ```
