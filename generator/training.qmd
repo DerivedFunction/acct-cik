@@ -27,9 +27,11 @@ import json
 ## Global variables
 
 ```{python}
-EXCEL_PATH = "../excel/training_data.xlsx"
-MODEL_CHECKPOINT = "DerivedFunction/finbert-derivative-usage-classifier"
-KEYWORDS_FILE = "../config/keywords_find.json"
+EXCEL_PATH = "./training_data.xlsx"
+MODEL_PATH = "finbert-derivative-type-classifier"
+MODEL_USER = "DerivedFunction"
+MODEL_NAME = f"{MODEL_USER}/{MODEL_PATH}"
+KEYWORDS_FILE = "./keywords_find.json"
 ```
 
 # Data Preparation
@@ -68,11 +70,10 @@ val_dataset = Dataset.from_pandas(val_df)
 We'll load the FinBERT tokenizer to convert sentences into a format the model understands.
 
 ```{python}
-tokenizer = AutoTokenizer.from_pretrained(MODEL_CHECKPOINT)
-
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 # Replace your old tokenize_function with this one
 def tokenize_function(examples):
-    return tokenizer(examples['sentence'], truncation=True, max_length=512)
+    return tokenizer(examples["sentence"], truncation=True, max_length=512)
 
 tokenized_train_dataset = train_dataset.map(tokenize_function, batched=True)
 tokenized_val_dataset = val_dataset.map(tokenize_function, batched=True)
@@ -108,7 +109,7 @@ id2label = {int(k): v for k, v in keyword_data["id2label"].items()}
 label2id = {v: int(k) for k, v in keyword_data["id2label"].items()}
 
 model = AutoModelForSequenceClassification.from_pretrained(
-    MODEL_CHECKPOINT,
+    MODEL_NAME,
     num_labels=len(id2label),
     id2label=id2label,
     label2id=label2id,
@@ -118,12 +119,15 @@ model = AutoModelForSequenceClassification.from_pretrained(
     # randomly initialized for the mismatched entries.
     ignore_mismatched_sizes=True,
 )
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+model.to(device)
+print(f"Model loaded to {device}")
 
 collator = DataCollatorWithPadding(tokenizer=tokenizer)
 # Define Training Arguments
 training_args = TrainingArguments(
-    output_dir="./finbert-derivative-usage-classifier",  # Directory to save the model
-    num_train_epochs=3,  # Total number of training epochs
+    output_dir=MODEL_PATH,  # Directory to save the model
+    num_train_epochs=1,  # Total number of training epochs
     per_device_train_batch_size=8,  # Batch size for training
     per_device_eval_batch_size=8,  # Batch size for evaluation
     warmup_steps=500,  # Number of warmup steps for learning rate scheduler
