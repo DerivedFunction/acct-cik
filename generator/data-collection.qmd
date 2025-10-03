@@ -25,7 +25,6 @@ import multiprocessing as mp
 ```{python}
 filename = "../excel/derivatives_data.csv"
 DB_PATH = "../db/web_data.db"
-KEYWORDS_FILE = "../config/keywords_find.json"
 
 # OPTIMIZED FOR N CORES
 NUM_PROCESSES = mp.cpu_count() - 1  # Leave 1 core for system
@@ -145,15 +144,6 @@ CATEGORY_REGEX_ORDER = [
     ("spec", SPEC_REGEX),
     ("gen", GEN_REGEX),
 ]
-```
-
-
-# LOAD DATA
-```{python}
-all_derivatives_df = pd.read_csv(filename)
-with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
-    keyword_data = json.load(f)
-id2label = {int(k): v for k, v in keyword_data["id2label"].items()}
 ```
 
 # DEBUG UTILITIES
@@ -786,7 +776,7 @@ def process_keywords_for_report_standalone(url: str, cik: int, year: int):
 def process_all_reports_fully():
     """
     OPTIMIZED VERSION: Uses ProcessPoolExecutor for true parallelism.
-    Takes advantage of all 44 CPU cores.
+    Takes advantage of all CPU cores.
     """
     processed_set = get_processed_urls()
 
