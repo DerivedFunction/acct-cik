@@ -3004,7 +3004,8 @@ def generate_labeled_hedge_paragraph(
             )
         )
 
-        may_use_template = random.choice(hedge_may_use_mitigation_templates)
+        # May use hedge
+        may_use_template = random.choice(hedge_may_use_templates)
         verb = random.choice(hedge_use_verbs)
         swap_type = random.choice(swap_types)
         all_sentences.append(
@@ -3256,10 +3257,12 @@ def generate_labeled_hedge_paragraph(
                 template = random.choice(fx_alternative_management_templates)
                 may_verb=random.choice(hedge_may_use_verbs)
                 use_verb=random.choice(hedge_use_verbs)
+                swap_type=random.choice(swap_types)
                 all_sentences.append(
                     template.format(
                         may_verb=may_verb,
                         use_verb=use_verb,
+                        swap_type=swap_type,
                         company=company_name,
                     )
                 )
@@ -3328,6 +3331,7 @@ def generate_labeled_hedge_paragraph(
                 verb=random.choice(hedge_may_use_verbs)
                 sentence = template.format(
                     company=company_name,
+                    verb=verb,
                     currency_code=currency_code,
                     swap_type=random.choice(swap_types),
                     swap_types=selected_fx_list,
@@ -3737,7 +3741,7 @@ def generate_labeled_hedge_paragraph(
                         company=company_name,
                         verb=verb,
                         swap_type=swap_type,
-                        commodity=commidity,
+                        commodity=commodity,
                     )
                 )
 
