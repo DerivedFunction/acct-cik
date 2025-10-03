@@ -2960,7 +2960,7 @@ def generate_labeled_hedge_paragraph(
 
         # Documentation (0-1)
         if random.random() < 0.6:
-            template = random.choice(hedge_documentation_templates))
+            template = random.choice(hedge_documentation_templates)
             hedge_type = random.choice(hedge_types)
             all_sentences.append(
                 template.format(
@@ -5035,8 +5035,4 @@ generate(1000)
 ```{python}
 company_name_df = pd.read_excel(company_name_file)
 company_names = set(company_name_df["name"])
-
-# Make each company name lowercase, then Capitlize on each word
-company_names = [name.lower().title() for name in company_names]
-
 ``` 
