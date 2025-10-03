@@ -569,6 +569,14 @@ hedge_mitigation_templates = [
     "To mitigate exposure to unpredictable financial markets, {company} {verb} a mix of natural hedging, diversification, and derivative usage",
 ]
 
+hedge_may_use_mitigation_templates = [
+    "{company} {may_use_verb} {swap_type} to protect against unfavorable changes in market conditions",
+    "{company} {may_use_verb} {swap_type} to offset risks associated with forecasted transactions",
+    "{company} {may_use_verb} {swap_type} to reduce overall earnings volatility",
+    "{company} {may_use_verb} {swap_type} to enhance stability of financial performance",
+    "{company} {may_use_verb} {swap_type} to manage risk exposure across multiple markets",
+]
+
 hedge_policy_templates = [
     "Changes in the fair value of derivative instruments are recorded each period in current earnings or other comprehensive income (loss), depending on whether a derivative instrument is designated as part of a hedging transaction and, if it is, the type of hedging transaction",
     "Derivative instruments are measured at fair value with gains and losses recorded in earnings or accumulated other comprehensive income based on hedge designation",
@@ -597,23 +605,22 @@ hedge_policy_templates = [
     "The ultimate fair value of our derivative instruments is uncertain, and {company} believe that it is reasonably possible that a change in the estimated fair value could occur in the near future",
     "The accounting for the changes in the fair value of the derivative depends on the intended use of the derivative and the resulting designation",
     "For a derivative that does not qualify as a {hedge_type} hedge, the change in {hedge_type} is recognized currently in net income",
-    "To achieve its objectives, {company} may enter into derivative financial instruments, such as {swap_type}, in order to limit its exposure to market fluctuations",
 ]
 
 hedge_documentation_templates = [
     "For a derivative to qualify as a hedge at inception and throughout the hedged period, {company} formally document the nature and relationships between the hedging instruments and hedged item",
     "For a derivative designated as a {hedge_type} hedge, the gain or loss is recognized in earnings in the period of change together with the offsetting loss or gain on the risk being hedged",
-    "{company} {verb} formal documentation of all hedging relationships, including the risk management objective and strategy for undertaking the hedge",
+    "{company} maintains formal documentation of all hedging relationships, including the risk management objective and strategy for undertaking the hedge",
     "Hedge accounting requires formal documentation at inception describing the hedging relationship and {company}'s risk management objectives",
     "{company} document our hedging relationships and risk management strategies at inception in accordance with applicable accounting standards",
     "{company} prepares formal documentation for all hedges, detailing the hedging instrument, hedged item, and risk management strategy",
     "At hedge inception, {company} document the relationship between the derivative and the hedged item, including the risk management objective",
-    "{company} {verb} detailed documentation of hedging relationships to comply with hedge accounting requirements",
+    "{company} maintains detailed documentation of hedging relationships to comply with hedge accounting requirements",
     "{company} formally document all hedging relationships at inception, including the strategy and objectives for risk management",
     "Hedge documentation includes the risk management objective, hedging instrument, and hedged item, prepared at inception",
     "{company} records formal documentation for hedges, outlining the relationship and risk management strategy",
     "{company} document the hedging relationship and risk management objectives at the start of each hedge in line with accounting standards",
-    "{company} {verb} documentation for all derivative hedges, including the hedged item and risk management strategy",
+    "{company} maintains documentation for all derivative hedges, including the hedged item and risk management strategy",
     "Formal documentation of hedging relationships is prepared at inception to support hedge accounting treatment",
     "{company} document the nature of hedging relationships and risk management objectives at the outset of each hedge",
     "{company} ensures formal documentation of all hedges, including the hedged item and risk management strategy",
@@ -625,7 +632,7 @@ hedge_documentation_templates = [
 ]
 
 hedge_effectiveness_templates = [
-    "{company} {verb}, both at inception and on an on-going basis, whether the derivative instruments that are {verb} in {hedge_type} hedging transactions are highly effective in offsetting the {metric} of hedged items",
+    "{company} {verb}, both at inception and on an on-going basis, whether the derivative instruments that are utilized in {hedge_type} hedging transactions are highly effective in offsetting the {metric} of hedged items",
     "{company} {verb} hedge effectiveness {frequency} to ensure derivatives continue to meet the criteria for hedge accounting",
     "Hedge effectiveness is {verb} {frequency} using {method} in accordance with {standard}",
     "{company} {verb} {frequency} assessments of hedge effectiveness to determine whether hedging relationships remain highly effective",
@@ -707,7 +714,7 @@ hedge_use_verbs = {
     "utilizes",
     "employs",
     "uses",
-    "maintains"
+    "maintains",
 }
 hedge_may_use_verbs = {
     "may engage in",
@@ -758,12 +765,12 @@ hedge_impact_templates = [
 # Generic Debt Optimization Templates
 fx_ir_debt_optimization_templates = [
     "{company} {verb} {swap_type} to optimize the cost and risk profile of its debt portfolio, adjusting both interest rate and currency exposures",
-    "To manage borrowing costs and currency risk, {company} employs {swap_type} to modify the effective interest rate and currency mix of outstanding debt",
+    "To manage borrowing costs and currency risk, {company} {verb} {swap_type} to modify the effective interest rate and currency mix of outstanding debt",
     "{company} implements {swap_type} to reduce volatility from interest rate fluctuations and foreign exchange movements on its borrowings",
     "As part of its debt strategy, {company} {verb} {swap_type} to transform debt characteristics, including both fixed/floating rate and currency composition",
     "To hedge against interest rate and foreign exchange risks, {company} applies {swap_type} to optimize its debt obligations",
     "{company} {verb} {swap_type} to manage exposure to both interest rate changes and currency fluctuations across its debt portfolio",
-    "The company employs {swap_type} to balance interest rate and currency risk, converting portions of debt as needed",
+    "The company {verb} {swap_type} to balance interest rate and currency risk, converting portions of debt as needed",
     "{company} optimizes its borrowings by using {swap_type} to adjust interest rate terms and currency allocations simultaneously",
     "To stabilize debt costs, {company} applies {swap_type} to manage both cash flow interest rate risk and foreign exchange risk",
     "{company} manages risk on forecasted and existing borrowings using {swap_type} to optimize interest rate and currency profiles",
@@ -950,7 +957,7 @@ cp_specific_templates = [
     "{company} {verb} {swap_type} to hedge {commodity} price exposure on production inputs",
     "The Company {verb} {swap_type} to stabilize {cost_type} by hedging approximately {pct}% of anticipated {commodity} requirements",
     "{swap_type} are designated as cash flow hedges of forecasted {commodity} purchases at fixed prices averaging {currency_code}{price} per {volume_unit}",
-    "{company} employs {swap_type} to mitigate {commodity} price risks impacting {cost_type} for {volume} {volume_unit}",
+    "{company} {verb} {swap_type} to mitigate {commodity} price risks impacting {cost_type} for {volume} {volume_unit}",
     "To secure stable {cost_type}, {company} {verb} {swap_type} for {commodity} with maturities extending to {months} months",
     "{company}'s {swap_type} cover {pct}% of {commodity} needs, reducing exposure to price swings in {cost_type}",
     "In response to {commodity} market trends, {company} adjusts {swap_type} positions for {volume} {volume_unit} to manage {cost_type}",
@@ -962,7 +969,7 @@ cp_context_templates = [
     "To hedge commodity price fluctuations, {company} enters into forwards, futures, and swaps on key {commodity}",
     "Volatility in commodity markets can influence the company's procurement costs and operational results",
     "{company} is exposed to changes in energy, metals, and agricultural prices that may impact financial performance",
-    "{company} employs commodity hedging strategies to stabilize input costs and protect profit margins",
+    "{company} {verb} commodity hedging strategies to stabilize input costs and protect profit margins",
     "Fluctuations in raw material prices may lead to adjustments in {company}'s pricing strategies",
     "{company}'s financial results are sensitive to global commodity market trends and supply chain disruptions",
     "To mitigate risks, {company} monitors commodity price indices and adjusts derivative positions accordingly",
@@ -987,6 +994,15 @@ cp_impact_templates = [
     "Price volatility in {commodity} {verb} {company}'s cash flow projections and budgeting",
     "Changes in {commodity} prices {verb} the cost of {cost_type} and overall profitability",
     "{company}'s exposure to {commodity} market shifts {verb} reported earnings and shareholder equity",
+]
+
+# Commodity Hedge Templates
+cp_hedge_may_use_templates = [
+    "{company} {may_use_verb} {swap_type} to manage the volatility of commodity prices",
+    "{company} {may_use_verb} {swap_type} to reduce the risk of fluctuations in raw material costs",
+    "{company} {may_use_verb} {swap_type} to stabilize operating costs tied to commodity inputs",
+    "{company} {may_use_verb} {swap_type} to protect margins from unexpected commodity price movements",
+    "{company} {may_use_verb} {swap_type} to lock in pricing for forecasted commodity purchases",
 ]
 
 commodities = [
@@ -1089,9 +1105,9 @@ fx_mitigation_templates = [
     "Where possible, {company} manages the cash surpluses or borrowing requirements of subsidiary companies centrally using {swap_type} to hedge future repayments back into the originating currency",
     "{company} centrally manages subsidiary liquidity and {verb} {swap_type} to hedge foreign exchange exposure on intercompany funding arrangements",
     "Subsidiary cash positions are managed centrally with {swap_type} hedging the repatriation of funds to originating currencies",
-    "{company} employs {swap_type} to hedge foreign currency risk on centrally managed subsidiary funding and cash movements",
+    "{company} {verb} {swap_type} to hedge foreign currency risk on centrally managed subsidiary funding and cash movements",
     "{company} may use {swap_type} to adjust the currency profile of its debt portfolio as needed",
-    "{company} employs {swap_type} to modify the currency composition of borrowings based on operational needs",
+    "{company} {verb} {swap_type} to modify the currency composition of borrowings based on operational needs",
     "{swap_type} are {verb} to convert borrowings into {major_currency} when strategically beneficial",
     "{swap_type} not designated as hedges, failing to be hedges or failing to continue as effective hedges are included in operations as {swap_type} gains or losses",
     "Discounts or premiums on {swap_type} designated and effective as hedges are amortized or accreted to expense using the straight-line method over the term of the related contract",
@@ -1143,16 +1159,25 @@ fx_cash_pooling_templates = [
 
 # Foreign Exchange (foreign exchange) Debt Optimization Templates
 fx_debt_optimization_templates = [
-    "{company} employs {swap_types} to adjust the currency composition of its debt portfolio, managing exposure to {currency_code} fluctuations",
+    "{company} {verb} {swap_types} to adjust the currency composition of its debt portfolio, managing exposure to {currency_code} fluctuations",
     "To hedge foreign exchange risk, {company} {verb} {swap_types} to convert borrowings from {currency_code} into its functional currency",
     "{company} applies {swap_types} to manage foreign exchange exposure on international debt, mitigating translation and transaction risk",
     "Foreign currency borrowings are optimized using {swap_type} to reduce volatility from {currency_code} exchange rate movements",
     "To manage currency risk, {company} {verb} {swap_types} to modify the currency mix of its debt obligations",
     "{company} {verb} {swap_types} to convert debt from {currency_code} into other currencies as part of its foreign exchange risk management strategy",
-    "The company employs {swap_types} to hedge foreign currency exposure on its international debt portfolio",
+    "The company {verb} {swap_types} to hedge foreign currency exposure on its international debt portfolio",
     "To stabilize the currency profile of debt, {company} applies {swap_types} converting obligations into {currency_code} where beneficial",
     "{company} manages foreign exchange risk on long-term borrowings by using {swap_type} to adjust the currency allocation",
     "To reduce foreign exchange volatility, {company} {verb} {swap_types} to optimize the composition of multi-currency debt",
+]
+
+# Foreign Exchange Hedge Templates
+fx_hedge_may_use_templates = [
+    "{company} {may_use_verb} {swap_type} to mitigate exposure to foreign currency movements",
+    "{company} {may_use_verb} {swap_type} to manage risks related to forecasted foreign transactions",
+    "{company} {may_use_verb} {swap_type} to offset volatility from translating foreign subsidiaries’ results",
+    "{company} {may_use_verb} {swap_type} to reduce the impact of exchange rate fluctuations on cash flows",
+    "{company} {may_use_verb} {swap_type} to protect against adverse changes in cross-border financing costs",
 ]
 ```
 
@@ -1225,24 +1250,24 @@ ir_optional_templates = [
     "{swap_type} are {verb} to mitigate the risk of rising interest rates on planned fixed-rate debt issuances",
     "{company} {verb} {swap_type} as {hedge_type} hedges to secure interest rates for future debt issuances",
     "In preparation for debt offerings, {company} may designate {swap_type} as {hedge_type} hedges to manage interest rate risk",
-    "To protect against interest rate volatility, {company} employs {swap_type} for planned fixed-rate debt issuances",
+    "To protect against interest rate volatility, {company} {verb} {swap_type} for planned fixed-rate debt issuances",
     "{swap_type} are {verb} as {hedge_type} hedges to lock in rates for anticipated debt financings",
     "{company} may enter into {swap_type} to hedge interest rate risk on forecasted debt issuances",
     "In anticipation of bond issuances, {swap_type} are designated as {hedge_type} hedges to stabilize future interest costs",
     "{company} {verb} {swap_type} to mitigate interest rate fluctuations on planned debt offerings",
     "{swap_type} are designated as {hedge_type} hedges to secure rates for future fixed-rate debt",
-    "To manage interest rate exposure, {company} employs {swap_type} for anticipated debt issuances",
+    "To manage interest rate exposure, {company} {verb} {swap_type} for anticipated debt issuances",
     "{company} may utilize {swap_type} as {hedge_type} hedges to lock in rates prior to debt financings",
     "{swap_type} are {verb} to hedge against rising interest rates for planned debt issuances",
     "In preparation for fixed-rate debt, {company} designates {swap_type} as {hedge_type} hedges",
-    "{company} employs {swap_type} to stabilize interest rates for forecasted bond issuances",
+    "{company} {verb} {swap_type} to stabilize interest rates for forecasted bond issuances",
     "{swap_type} are implemented as {hedge_type} hedges to manage risk on future debt offerings",
     "To secure favorable rates, {company} may use {swap_type} for anticipated fixed-rate debt",
     "{company} designates {swap_type} as {hedge_type} hedges to mitigate interest rate risk on planned financings",
     "{company} manages its cash flow interest rate risk by using {swap_type}, where at quarterly intervals the difference between fixed contract rates and floating rate interest amounts calculated by reference to the agreed notional principal amounts are exchanged",
     "{company} {verb} {swap_type} to manage cash flow interest rate exposure, with quarterly settlements based on the differential between fixed and floating rates on notional amounts",
     "Cash flow interest rate risk is managed through {swap_type} with quarterly net settlements calculated on agreed notional principal amounts",
-    "{company} employs {swap_type} converting floating rate exposure to fixed rates, with quarterly exchange of payment differentials based on notional values",
+    "{company} {verb} {swap_type} converting floating rate exposure to fixed rates, with quarterly exchange of payment differentials based on notional values",
 ]
 
 ir_context_templates = [
@@ -1257,16 +1282,24 @@ ir_context_templates = [
 # Interest Rate (IR) Debt Optimization Templates
 ir_debt_optimization_templates = [
     "{company} {verb} {swap_type} to optimize the interest rate profile of its debt portfolio, converting portions of fixed-rate debt to floating-rate instruments",
-    "To manage borrowing costs, {company} employs {swap_type} to adjust the effective interest rate composition of outstanding debt",
+    "To manage borrowing costs, {company} {verb} {swap_type} to adjust the effective interest rate composition of outstanding debt",
     "{company} implements {swap_type} to reduce interest rate volatility on its debt obligations",
     "As part of its debt strategy, {company} {verb} {swap_type} to transform fixed-rate debt into variable-rate debt where appropriate",
     "To hedge against rising interest rates, {company} applies {swap_type} to modify the interest rate characteristics of its borrowings",
     "{company} {verb} {swap_type} to manage the interest rate exposure of its long-term debt portfolio",
-    "The company employs {swap_type} to convert portions of debt into instruments with more favorable interest rate terms",
+    "The company {verb} {swap_type} to convert portions of debt into instruments with more favorable interest rate terms",
     "{company} optimizes its debt by using {swap_type} to balance fixed and floating rate obligations",
     "To stabilize interest expense, {company} applies {swap_type} to its debt portfolio, managing cash flow risk",
     "{company} manages interest rate risk on forecasted debt issuances using {swap_type} to adjust the effective interest profile",
     "{company}'s objectives in interest rate risk management are to limit the negative impact of interest rates by using {swap_type}",
+]
+
+ir_hedge_may_use_templates = [
+    "{company} {may_use_verb} {swap_type} to hedge against fluctuations in interest rates",
+    "{company} {may_use_verb} {swap_type} to manage exposure to changes in benchmark interest rates",
+    "{company} {may_use_verb} {swap_type} to reduce cash flow variability from interest-bearing debt",
+    "{company} {may_use_verb} {swap_type} to stabilize the cost of borrowing",
+    "{company} {may_use_verb} {swap_type} to protect against unfavorable changes in long-term debt obligations",
 ]
 
 hedge_methods = [
@@ -3026,9 +3059,11 @@ def generate_labeled_hedge_paragraph(
         # Debt optimization (0-1)
         if random.random() < 0.5:
             template = random.choice(fx_ir_debt_optimization_templates)
+            verb = random.choice(hedge_use_verbs)
             all_sentences.append(
                 template.format(
                     company=company_name,
+                    verb=verb,
                     swap_type=random.choice(swap_types),
                 )
             )
