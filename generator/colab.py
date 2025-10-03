@@ -1,5 +1,5 @@
 # =============================================================================
-# COMPLETE OPTIMIZED CODE FOR 44-CORE GOOGLE COLAB TPU VM
+# COMPLETE OPTIMIZED CODE
 # =============================================================================
 
 import pandas as pd
@@ -30,7 +30,6 @@ SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/{DB_PATH} "
 CHUNK_SIZE = 10
 IS_COLAB = True
 
-
 # Auto-detect system capabilities
 def get_system_config():
     total_cores = mp.cpu_count() - 2
@@ -38,7 +37,7 @@ def get_system_config():
     return {
         "num_fetchers": total_fetchers,  # Reduced from 3 to be safer
         "num_parsers": total_cores,  # Reduced from 12 to avoid memory issues
-        "chunk_size": CHUNK_SIZE * (1 if not IS_COLAB and total_cores >= 6 else 100),
+        "chunk_size": CHUNK_SIZE * (1 if not IS_COLAB and total_cores >= 6 else 500),
     }
 
 
@@ -182,12 +181,9 @@ all_derivatives_df = pd.read_csv(filename)
 # =============================================================================
 
 debug = False
-
-
 def debug_print(*args):
     if debug:
         print(*args)
-
 
 # =============================================================================
 # DATABASE FUNCTIONS
@@ -780,8 +776,6 @@ def fetch_all_grouped(saveIteration: int = 100):
                 cik_records.append({"cik": cik, "year": year, "url": ""})
 
         return cik_records
-
-    total_ciks = len(cik_groups)
 
     # Use fewer workers for SEC API to avoid rate limiting
     with ProcessPoolExecutor(max_workers=5) as executor:
