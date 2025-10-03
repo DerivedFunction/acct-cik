@@ -19,16 +19,21 @@ import multiprocessing as mp
 import subprocess
 
 # =============================================================================
-# CONFIGURATION - AUTO-DETECTS LOCAL VS CLOUD
+# CONFIGURATION - DEFAULT
 # =============================================================================
 
-filename = "derivatives_data.csv"
+ALL_FIRMS_DATA = "derivatives_data.csv"
+REPORT_CSV_PATH = "report_data_to_process.csv"
 DB_PATH = "web_data.db"
 SEC_RATE_LIMIT = 1 / 5  # requests per second
+CHUNK_SIZE = 100
+
+# =============================================================================
+# COLAB CONFIGURATION
+# =============================================================================
 DRIVE_PATH = "./drive/MyDrive/db"
 SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/{DB_PATH} "
-CHUNK_SIZE = 10
-IS_COLAB = True
+IS_COLAB = False
 
 # Auto-detect system capabilities
 def get_system_config():
@@ -37,7 +42,7 @@ def get_system_config():
     return {
         "num_fetchers": total_fetchers,
         "num_parsers": total_cores,
-        "chunk_size": CHUNK_SIZE * (1 if not IS_COLAB and total_cores >= 6 else 100),
+        "chunk_size": CHUNK_SIZE * (1 if not IS_COLAB and total_cores >= 6 else 20),
     }
 
 
@@ -174,7 +179,7 @@ CATEGORY_REGEX_ORDER = [
 # LOAD DATA
 # =============================================================================
 
-all_derivatives_df = pd.read_csv(filename)
+all_derivatives_df = pd.read_csv(ALL_FIRMS_DATA)
 
 # =============================================================================
 # DEBUG UTILITIES
@@ -262,17 +267,20 @@ def save_batch_report_urls(df):
 
 
 def fetch_report_data(valid=True):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    if valid:
-        c.execute("SELECT * FROM report_data WHERE NOT url =''")
-    else:
-        c.execute("SELECT * FROM report_data WHERE url =''")
-    columns = [col[0] for col in c.description]
-    rows = c.fetchall()
-    pre_data = pd.DataFrame(rows, columns=columns)
-    conn.close()
-    return pre_data
+    try:
+        return pd.read_csv(REPORT_CSV_PATH)
+    except:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        if valid:
+            c.execute("SELECT * FROM report_data WHERE NOT url =''")
+        else:
+            c.execute("SELECT * FROM report_data WHERE url =''")
+        columns = [col[0] for col in c.description]
+        rows = c.fetchall()
+        pre_data = pd.DataFrame(rows, columns=columns)
+        conn.close()
+        return pre_data
 
 
 def fetch_webpage_results():
@@ -561,9 +569,7 @@ def fetch_url(url: str, timeout: int = 10) -> str | None:
         return None
 
 
-def process_url(url: str, cik: int, year: int):
-    debug_str = f"Processing {cik} for year {year}"
-    debug_print(debug_str)
+def process_url(url: str):
     raw_text = fetch_url(url)
     if not raw_text:
         return ""
@@ -583,7 +589,7 @@ def process_url(url: str, cik: int, year: int):
 
 
 def filter_by_keywords(
-    content: str, year: int, min_char_length: int = 400, max_char_length=2000
+    content: str, min_char_length: int = 400, max_char_length=2000
 ) -> dict:
     """
     OPTIMIZED: Pre-filter sentences by category before expansion.
@@ -609,7 +615,7 @@ def filter_by_keywords(
     def expand_context(
         all_sentences: list, target_idx: int, target_category: str
     ) -> str:
-        random.seed(year + target_idx)
+        random.seed(target_idx)
         dynamic_min = random.randint(
             int(min_char_length * 0.75), int(min_char_length * 1.25)
         )
@@ -689,8 +695,6 @@ def filter_by_keywords(
     categorized_matches = {"ir": [], "fx": [], "cp": [], "spec": [], "gen": []}
     seen_matches = {"ir": set(), "fx": set(), "cp": set(), "spec": set(), "gen": set()}
     seen_sentences_global = set()
-    random.seed(year)
-
     # First pass: specific categories
     for i, category in sentence_categories:
         if category and category != "gen":
@@ -812,51 +816,7 @@ def fetch_all_grouped(saveIteration: int = 100):
     return fetch_report_data()
 
 
-def process_keywords_for_report_standalone(url: str, cik: int, year: int):
-    """
-    Standalone function for ProcessPoolExecutor (must be picklable).
-    This version queries the DB within each worker process.
-    """
-    # Add small random delay to stagger requests across workers
-    time.sleep(random.uniform(0.1, 0.3))
-
-    # Check if already processed
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT 1 FROM webpage_result WHERE url = ?", (url,))
-    exists = c.fetchone()
-    conn.close()
-
-    if exists:
-        debug_print(f"Skipping already processed: {url}")
-        return None
-
-    try:
-        content = process_url(url, cik, year)
-        if not content:
-            debug_print(f"Failed to process {url}: No content.")
-            return None
-
-        sentences = filter_by_keywords(content, year)
-        matches = []
-        matches.extend(sentences["ir"])
-        matches.extend(sentences["fx"])
-        matches.extend(sentences["cp"])
-        matches.extend(sentences["spec"])
-        matches.extend(sentences["gen"])
-
-        result_row = pd.Series({"url": url, "matches": matches})
-
-        debug_print(f"Processed {url}")
-        save_process_result(result_row)
-
-        return True
-    except Exception as e:
-        print(f"Error processing {url}: {e}")
-        return None
-
-
-def fetch_content_only(url: str, cik: int, year: int):
+def fetch_content_only(url: str):
     """
     Fetch and extract content only (I/O bound).
     Runs in fetcher pool with 5 workers.
@@ -886,7 +846,7 @@ def fetch_content_only(url: str, cik: int, year: int):
         else:
             content = extract_content(raw_text, False)
 
-        return (url, cik, year, content) if content else None
+        return (url, content) if content else None
     except Exception as e:
         print(f"Fetch error for {url}: {e}")
         return None
@@ -900,11 +860,11 @@ def parse_content_only(data):
     if data is None:
         return None
 
-    url, cik, year, content = data
+    url, content = data
 
     try:
         # CPU-intensive parsing
-        sentences = filter_by_keywords(content, year)
+        sentences = filter_by_keywords(content, 2000)
         matches = []
         matches.extend(sentences["ir"])
         matches.extend(sentences["fx"])
@@ -938,9 +898,9 @@ def process_all_reports_fully():
     processed_set = get_processed_urls()
 
     reports_to_process = [
-        (r.url, r.cik, r.year)
+        (r.url)
         for r in existing_report_df.itertuples(index=False)
-        if (r.url,) not in processed_set and r.url
+        if (r.url) not in processed_set and r.url
     ]
 
     total_reports = len(reports_to_process)
@@ -975,8 +935,8 @@ def process_all_reports_fully():
 
         with ProcessPoolExecutor(max_workers=NUM_FETCHERS) as fetch_executor:
             fetch_futures = [
-                fetch_executor.submit(fetch_content_only, url, cik, year)
-                for url, cik, year in chunk
+                fetch_executor.submit(fetch_content_only, url)
+                for url in chunk
             ]
 
             for future in tqdm(
@@ -1071,8 +1031,6 @@ def process_all_reports_fully():
 create_db()
 existing_report_df = fetch_report_data()
 print(f"Found {len(existing_report_df)} reports in database")
-print(f"Found {len(fetch_report_data(False))} invalid/failed reports in database")
-
 
 # =============================================================================
 # MAIN EXECUTION
