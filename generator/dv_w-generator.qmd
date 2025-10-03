@@ -223,7 +223,7 @@ embedded_identification_templates = [
     "Embedded derivatives have been identified within {host_contract} and are accounted for separately from the host instrument",
     "{company} {verb} {host_contract} and determined that certain embedded features require bifurcation under derivative accounting guidance",
     '{company} adopted SFAS 155, "Accounting for Certain Hybrid Instruments" to identify all embedded derivative features',
-    "{company} measures a hybrid financial instrument in its entirety at fair value after having identified all embedded derivative features."
+    "{company} measures a hybrid financial instrument in its entirety at fair value after having identified all embedded derivative features"
     "{company} identified and documented the embedded derivative features, and the irrevocably elected to measure and carry the {host_contract} at fair value",
     "This standard requires the conversion feature of {host_contract} be separated from the host contract and presented as a derivative instrument if certain conditions are met",
 ]
@@ -393,7 +393,7 @@ hedge_past_event_template = [
 ]
 
 
-hedge_active_position_template = [
+hedge_position_template = [
     "As of {month} {end_day}, {year}, {company} {verb} {swap_type} with notional amounts totaling {currency_code}{notional} {money_unit}",
     "At year-end {year}, {company} had {swap_type} outstanding with aggregate notional values of {currency_code}{notional} {money_unit} designated as hedges",
     "As of {month} {year}, outstanding {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain in effect",
@@ -406,6 +406,10 @@ hedge_active_position_template = [
     "At the close of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain designated as hedges",
     "As of {month} {year}, {company}’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit}",
     "{company}’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}",
+    "{company}’s {swap_type} contracted in {prev_year} remain outstanding as of {year}, with a notional balance of {currency_code}{notional} {money_unit}, scheduled to mature in {future_year}",
+    "To manage exposure, {company} {verb} {swap_type} in {prev_year}, with an inception notional of {currency_code}{notional} {money_unit} and a stated maturity in {future_year}",
+    "In {month} {prev_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}, which are set to expire in {month} {future_year}",
+    "As of {month} {year}, {company} maintains {swap_type} {verb} in {prev_year}, with total notional of {currency_code}{notional} {money_unit}, expiring in {future_year}",
 ]
 hedge_optional_templates = [
     "{company} also have {verb} {swap_type} to hedge forecasted revenue which were not part of a collar strategy. Such {swap_type} had a notional value of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {month} {end_day}, {prev_year}, respectively",
@@ -933,7 +937,7 @@ cp_strategy_templates = [
     "{company}'s {swap_type} strategy for {commodity} in {month} {year} led to {currency_code}{amount} {money_unit} in deferred gains/losses in equity",
     "{swap_type} were {verb} by {company} to hedge {commodity} costs, with {currency_code}{amount} {money_unit} recorded as mark-to-market adjustments in {year}",
 ]
-cp_position_templates = [
+cp_position_template = [
     "As of {month} {end_day}, {year}, {company} {verb} {swap_type} with notional amounts totaling {currency_code}{notional} {money_unit} to hedge commodity price risk",
     "At year-end {year}, {company} had {swap_type} outstanding with aggregate notional values of {currency_code}{notional} {money_unit} designated to manage commodity exposures",
     "{company}'s commodity derivative portfolio at {month} {end_day}, {year} consists of {swap_type} with combined notional values of {currency_code}{notional} {money_unit}",
@@ -948,6 +952,10 @@ cp_position_templates = [
     "{company} holds {swap_type} as of {month} {end_day}, {year}, with notional values of {currency_code}{notional} {money_unit} to hedge {commodity} exposures",
     "At {month} {year}, {company}’s {swap_type} cover {currency_code}{notional} {money_unit} in notional value to mitigate risks from commodity price swings",
     "During {year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to protect against commodity market fluctuations",
+    "In {prev_year}, {company} {verb} {swap_type} with a notional volume equivalent of {currency_code}{notional} {money_unit}, set to expire in {future_year}",
+    "During {prev_year}, {company} {verb} {swap_type} to manage raw material exposure, with a notional of {currency_code}{notional} {money_unit}, terminating in {future_year}",
+    "{company} {verb} {swap_type} in {month} {prev_year} to lock in pricing, covering {currency_code}{notional} {money_unit}, expiring in {month} {future_year}",
+    "At year-end {year}, {company} held {swap_type} initiated in {prev_year}, with outstanding notional amounts of {currency_code}{notional} {money_unit}, maturing in {future_year}",
 ]
 cp_specific_templates = [
     "{company} {verb} {swap_type} to hedge exposure to {commodity} price volatility affecting {cost_type}",
@@ -1046,18 +1054,18 @@ fx_strategy_templates = [
     "Collar strategies with {swap_type} were {verb} to hedge foreign exchange risk on international transactions",
     "{company} {verb} {swap_type} as part of a collar to cap currency exposure while retaining some upside potential",
     "in the {quarter} quarter of {year}, {swap_type} were {verb} in a collar strategy to mitigate foreign currency volatility",
-    "{company} implemented collar positions with {swap_type} to stabilize foreign exchange impacts",
+    "{company} {verb} collar positions with {swap_type} to stabilize foreign exchange impacts",
     "{swap_type} were {verb} in a collar strategy to limit currency risk on forecasted revenue",
     "{company} established {swap_type} within a collar framework to manage foreign exchange exposure",
     "Collar strategies involving {swap_type} were {verb} to hedge currency fluctuations in {year}",
     "{company} {verb} {swap_type} in a collar structure to protect against adverse currency movements",
-    "In {month} {year}, {swap_type} were implemented as part of a collar to manage currency risk",
+    "In {month} {year}, {swap_type} were {verb} as part of a collar to manage currency risk",
     "{swap_type} within a collar strategy were {verb} to limit exposure to foreign exchange volatility",
     "{company} {verb} collar positions with {swap_type} to hedge currency risk on international contracts",
     "in the {quarter} quarter of {year}, {company} {verb} {swap_type} as part of a collar to manage forex exposure",
-    "Collar strategies with {swap_type} were implemented to stabilize currency impacts on forecasted transactions",
+    "Collar strategies with {swap_type} were {verb} to stabilize currency impacts on forecasted transactions",
     "{company} {verb} {swap_type} in a collar framework to cap foreign exchange risk while retaining flexibility",
-    "{company} enter into {swap_type} to manage exposures to changes in foreign exchange rates for anticipated intercompany purchases by those subsidiaries whose functional currencies are not the {major_currency}",
+    "{company} {verb} {swap_type} to manage exposures to changes in foreign exchange rates for anticipated intercompany purchases by those subsidiaries whose functional currencies are not the {major_currency}",
 ]
 
 fx_context_templates = [
@@ -1066,6 +1074,24 @@ fx_context_templates = [
     "{company}’s international activities result in exposure to currency exchange risks and government regulations",
     "{company}’s international operations face risks from currency exchange rate volatility and local market conditions",
     "Foreign currency transaction exposures arising on external and internal trade flows are selectively hedged",
+]
+
+fx_position_template = [
+    "In {month} {prev_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}, maturing in {month} {future_year}",
+    "During {prev_year}, {company} {verb} {swap_type} to manage translation exposure, with an inception notional of {currency_code}{notional} {money_unit}, set to expire in {future_year}",
+    "{company} {verb} {swap_type} in {prev_year}, designed to hedge foreign borrowings with notional values of {currency_code}{notional} {money_unit}, terminating in {future_year}",
+    "As of {year}, {company} continues to hold {swap_type} contracted in {prev_year}, with outstanding notional balances of {currency_code}{notional} {money_unit}, expiring in {future_year}",
+    "Outstanding {swap_type} at year-end {year} hedge {company}’s exposure to foreign currency fluctuations on cross-border transactions",
+    "As of {month} {end_day}, {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are designated as cash flow hedges of forecasted foreign currency revenues",
+    "At year-end {year}, {company} holds {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to manage translation risk of foreign subsidiaries",
+    "As of {month} {year}, {company}’s outstanding {swap_type} have a notional value of {currency_code}{notional} {money_unit}, hedging intercompany loans denominated in foreign currencies",
+    "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated to hedge anticipated foreign currency purchases",
+    "As of {month} {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are in place to protect against volatility in foreign currency receivables",
+    "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} are active to hedge forecasted foreign currency cash flows",
+    "In {month} {prev_year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit}, scheduled to expire in {month} {future_year} to manage currency risk",
+    "During {prev_year}, {company} {verb} {swap_type} to hedge forecasted foreign currency expenditures, with an initial notional of {currency_code}{notional} {money_unit}, maturing in {future_year}",
+    "As part of its treasury risk management program, {company} {verb} {swap_type} in {prev_year}, which carry notional amounts of {currency_code}{notional} {money_unit} and terminate in {future_year}, mitigating exposure to foreign currency fluctuations",
+    "In {month} {prev_year}, {company} {verb} {swap_type} with a starting notional of {currency_code}{notional} {money_unit}, reducing over time until expiration in {month} {future_year}, designated as hedges of currency-denominated obligations",
 ]
 
 fx_impact_templates = [
@@ -1139,7 +1165,7 @@ fx_alternative_management_templates = [
     "To manage foreign exchange risk, {company} {may_verb} {swap_type} to align debt currency with underlying cash flow exposures",
     "{company} may borrow in currencies that match expected revenues to reduce volatility in reported earnings",
     "Foreign currency liabilities may be {use_verb} to provide a natural hedge against balance sheet exposures",
-    "As part of its risk management strategy, {company} {may_verb} {swap_type} to fund operations with foreign-denominated debt to mitigate translation risk"
+    "As part of its risk management strategy, {company} {may_verb} {swap_type} to fund operations with foreign-denominated debt to mitigate translation risk",
 ]
 
 fx_generic_hedge_templates = [
@@ -1240,7 +1266,7 @@ ir_past_event_templates = [
     "In {month} {year}, {swap_type} were entered to hedge anticipated debt offerings, resulting in {currency_code}{amount} {money_unit} of mark-to-market gains in accumulated OCI",
 ]
 
-ir_active_position_template = [
+ir_position_template = [
     "Outstanding swaps at year-end {year} effectively convert the hedged portion of debt to floating rates",
     "As of {month} {end_day}, {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are designated as fair value hedges",
     "At year-end {year}, {company} holds {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to manage debt-related interest rate risk",
@@ -1248,6 +1274,10 @@ ir_active_position_template = [
     "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as fair value hedges",
     "As of {month} {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are in place to convert fixed-rate debt to floating rates",
     "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} are active to hedge fixed-rate debt obligations",
+    "In {month} {prev_year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit}, scheduled to expire in {month} {future_year}",
+    "During {prev_year}, {company} {verb} {swap_type} to hedge debt obligations, with an initial notional of {currency_code}{notional} {money_unit}, maturing in {future_year}",
+    "As part of its bond financing strategy, {company} {verb} {swap_type} in {prev_year}, which carry notional amounts of {currency_code}{notional} {money_unit} and terminate in {future_year}",
+    "In {month} {prev_year}, {company} {verb} {swap_type} with a starting notional of {currency_code}{notional} {money_unit}, declining annually until expiration in {month} {future_year}",
 ]
 
 ir_optional_templates = [
@@ -1283,7 +1313,7 @@ ir_context_templates = [
     "{company} is exposed to interest rate risk associated with fluctuations in interest rates on our variable rate debt",
     "{company} recognize the gains and losses on our derivative instruments as an adjustment to interest expense in the period the hedged interest payment affects earnings",
     "{company} manage interest costs by using a mix of fixed- and floating-rate debt",
-    "{company} {verb} two derivative financial instruments to manage our variable interest rate exposure.",
+    "{company} {verb} two derivative financial instruments to manage our variable interest rate exposure",
 ]
 # Interest Rate (IR) Debt Optimization Templates
 ir_debt_optimization_templates = [
@@ -2948,7 +2978,6 @@ def generate_labeled_hedge_paragraph(
     )
 
     all_sentences = []
-    required_sentences = []
 
     # Determine label
     if has_active_derivative is None:
@@ -3345,10 +3374,12 @@ def generate_labeled_hedge_paragraph(
             # Label 0: Active derivative positions
             if has_active_derivative:
                 # Active position (always for label 0)
-                template = random.choice(hedge_active_position_template)
+                template = random.choice(fx_position_template)
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 1000)
                 verb = random.choice(hedge_use_verbs)
+                prev_year = random.choice(past_years) if past_years else current_year
+                future_year = random.randint(current_year + 1, current_year + 5)
                 sentence = template.format(
                     company=company_name,
                     verb=verb,
@@ -3356,11 +3387,13 @@ def generate_labeled_hedge_paragraph(
                     month=random.choice(months),
                     end_day=random.randint(28, 31),
                     year=current_year,
+                    prev_year=prev_year,
+                    future_year=future_year,
                     currency_code=currency_code,
                     notional=notional,
                     money_unit=money_units,
                 )
-                required_sentences.append(sentence)
+                all_sentences.append(sentence)
 
                 # Optional comparative (0-1)
                 if random.random() < 0.5 and len(past_years) > 0:
@@ -3410,6 +3443,27 @@ def generate_labeled_hedge_paragraph(
 
             # Label 1: No active derivative
             else:
+                # Past position (always for label 1)
+                template = random.choice(fx_position_template)
+                swap_type = random.choice(swap_types)
+                notional = random.randint(50, 1000)
+                verb = random.choice(hedge_use_verbs)
+                prev_year = random.choice(past_years) - 1 if past_years else current_year - 1
+                future_year = random.randint(prev_year, current_year - 1)
+                sentence = template.format(
+                    company=company_name,
+                    verb=verb,
+                    swap_type=swap_type,
+                    month=random.choice(months),
+                    end_day=random.randint(28, 31),
+                    year=current_year,
+                    prev_year=prev_year,
+                    future_year=future_year,
+                    currency_code=currency_code,
+                    notional=notional,
+                    money_unit=money_units,
+                )
+                all_sentences.append(sentence)
                 # Termination (0-1)
                 if random.random() < 0.6:
                     template = random.choice(hedge_termination_templates)
@@ -3537,15 +3591,21 @@ def generate_labeled_hedge_paragraph(
                     all_sentences.append(sentence)
 
                 # Active position (always for label 0)
-                template = random.choice(ir_active_position_template)
+                template = random.choice(ir_position_template)
+                verb = random.choice(hedge_use_verbs)
+                prev_year = random.choice(past_years) if past_years else current_year
+                future_year = random.randint(current_year + 1, current_year + 5)
                 swap_type = random.choice(swap_types)
                 notional = random.randint(100, 1000)
                 sentence = template.format(
                     company=company_name,
+                    verb=verb,
                     swap_type=swap_type,
                     month=random.choice(months),
                     end_day=random.randint(28, 31),
                     year=current_year,
+                    prev_year=prev_year,
+                    future_year=future_year,
                     currency_code=currency_code,
                     notional=notional,
                     money_unit=money_units,
@@ -3649,7 +3709,27 @@ def generate_labeled_hedge_paragraph(
                         hedge_type=hedge_type,
                     )
                     all_sentences.append(sentence)
-
+                # Past position
+                template = random.choice(ir_position_template)
+                verb = random.choice(hedge_use_verbs)
+                prev_year = random.choice(past_years) - 1 if past_years else current_year - 1
+                future_year = random.randint(prev_year, current_year - 1)
+                swap_type = random.choice(swap_types)
+                notional = random.randint(100, 1000)
+                sentence = template.format(
+                    company=company_name,
+                    verb=verb,
+                    swap_type=swap_type,
+                    month=random.choice(months),
+                    end_day=random.randint(28, 31),
+                    year=current_year,
+                    prev_year=prev_year,
+                    future_year=future_year,
+                    currency_code=currency_code,
+                    notional=notional,
+                    money_unit=money_units,
+                )
+                all_sentences.append(sentence)
                 # Termination (0-1)
                 if random.random() < 0.6:
                     template = random.choice(hedge_termination_templates)
@@ -3783,12 +3863,14 @@ def generate_labeled_hedge_paragraph(
 
                 # Active position (always for label 0)
                 template = random.choice(
-                    cp_position_templates
+                    cp_position_template
                 )  # Use position templates
                 verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 500)
                 commodity = random.choice(commodities)
+                prev_year = random.choice(past_years) if past_years else current_year
+                future_year = random.randint(current_year + 1, current_year + 5)
                 if random.random() < 0.3:  # Chance to replace with actual commodity
                     swap_type = re.sub("commodity", commodity, swap_type)
                 sentence = template.format(
@@ -3798,6 +3880,8 @@ def generate_labeled_hedge_paragraph(
                     month=random.choice(months),
                     end_day=random.randint(28, 31),
                     year=current_year,
+                    prev_year=prev_year,
+                    future_year=future_year,
                     currency_code=currency_code,
                     notional=notional,
                     money_unit=money_units,
@@ -3864,11 +3948,13 @@ def generate_labeled_hedge_paragraph(
                 # Past event (0-1)
                 if random.random() < 0.6:
                     template = random.choice(
-                        cp_position_templates
+                        cp_position_template
                     )  # Use event templates
                     verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
                     commodity = random.choice(commodities)
+                    prev_year = random.choice(past_years) - 1 if past_years else current_year - 1
+                    future_year = random.randint(prev_year, current_year - 1)
                     if random.random() < 0.3:  # Chance to replace with actual commodity
                         swap_type = re.sub("commodity", commodity, swap_type)
                     notional = random.randint(5, 50)
@@ -3883,6 +3969,8 @@ def generate_labeled_hedge_paragraph(
                         month=random.choice(months),
                         end_day=random.randint(28, 31),
                         year=past_year,
+                        prev_year=prev_year,
+                        future_year=future_year,
                         currency_code=currency_code,
                         notional=notional,
                         money_unit=money_units,
@@ -3938,10 +4026,12 @@ def generate_labeled_hedge_paragraph(
             # Label 0: Active derivative positions
             if has_active_derivative:
                 # Active position (always for label 0)
-                template = random.choice(hedge_active_position_template)
+                template = random.choice(hedge_position_template)
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 1000)
                 verb = random.choice(hedge_use_verbs)
+                prev_year = random.choice(past_years) if past_years else current_year
+                future_year = random.randint(current_year + 1, current_year + 5)
                 sentence = template.format(
                     company=company_name,
                     verb=verb,
@@ -3949,6 +4039,8 @@ def generate_labeled_hedge_paragraph(
                     month=random.choice(months),
                     end_day=random.randint(28, 31),
                     year=current_year,
+                    prev_year=prev_year,
+                    future_year=future_year,
                     currency_code=currency_code,
                     notional=notional,
                     money_unit=money_units,
@@ -3980,6 +4072,27 @@ def generate_labeled_hedge_paragraph(
 
             # Label 1: No active derivative
             else:
+                # Past position
+                template = random.choice(hedge_position_template)
+                swap_type = random.choice(swap_types)
+                notional = random.randint(50, 1000)
+                verb = random.choice(hedge_use_verbs)
+                prev_year = random.choice(past_years) - 1 if past_years else current_year - 1
+                future_year = random.randint(prev_year, current_year - 1)
+                sentence = template.format(
+                    company=company_name,
+                    verb=verb,
+                    swap_type=swap_type,
+                    month=random.choice(months),
+                    end_day=random.randint(28, 31),
+                    year=current_year,
+                    prev_year=prev_year,
+                    future_year=future_year,
+                    currency_code=currency_code,
+                    notional=notional,
+                    money_unit=money_units,
+                )
+                all_sentences.append(sentence)
                 # Termination (0-1)
                 if random.random() < 0.6:
                     template = random.choice(hedge_termination_templates)
