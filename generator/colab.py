@@ -25,18 +25,18 @@ SEC_RATE_LIMIT = 1 / 5  # requests per second
 
 # Auto-detect system capabilities
 def get_system_config():
-    total_cores = mp.cpu_count()
-    
-    if total_cores >= 40:  # Cloud/Colab
+    total_cores = mp.cpu_count() - 2
+    total_fetchers = 5
+    if total_cores >= 20:  # Cloud/Colab
         return {
-            'num_fetchers': 5,
-            'num_parsers': 35,
+            'num_fetchers': total_fetchers,
+            'num_parsers': total_cores - total_fetchers,
             'chunk_size': 500,
         }
     else:  # Local machine
         return {
-            'num_fetchers': 2,     # Reduced from 3 to be safer
-            'num_parsers': 8,      # Reduced from 12 to avoid memory issues
+            'num_fetchers': total_fetchers,     # Reduced from 3 to be safer
+            'num_parsers': total_cores,      # Reduced from 12 to avoid memory issues
             'chunk_size': 50,      # Reduced from 100 to be safer
         }
 
@@ -167,7 +167,6 @@ CATEGORY_REGEX_ORDER = [
 # =============================================================================
 
 all_derivatives_df = pd.read_csv(filename)
-
 
 # =============================================================================
 # DEBUG UTILITIES
@@ -335,7 +334,7 @@ def extract_filings(data: dict, cik: str, name: str, ticker: str) -> List[dict]:
     return links
 
 
-def get_cik_filings(cik: str) -> List[dict] | None:
+def get_cik_filings(cik: str) -> List[dict]:
     cik = str(cik).zfill(10)
     url_main = f"https://data.sec.gov/submissions/CIK{cik}.json"
 
@@ -555,7 +554,7 @@ def filter_by_keywords(
     """
     ignore_keywords = [kw.lower() for kw in IGNORE_KEYWORDS]
 
-    def get_keyword_category(text: str):
+    def get_keyword_category(text: str) -> str:
         for category, regex in CATEGORY_REGEX_ORDER:
             if regex.search(text):
                 return category
@@ -819,7 +818,7 @@ def process_keywords_for_report_standalone(url: str, cik: int, year: int):
         return None
 
 
-def fetch_content_only(url, cik, year):
+def fetch_content_only(url: str, cik: int, year: int):
     """
     Fetch and extract content only (I/O bound).
     Runs in fetcher pool with 5 workers.
@@ -1021,7 +1020,7 @@ if __name__ == "__main__":
     print("STEP 2: Perform keyword extraction in parallel (44 cores)")
     print("=" * 70)
     # Uncomment to run:
-    # process_all_reports_fully()
+    process_all_reports_fully()
 
     print("\n" + "=" * 70)
     print("Setup complete! Uncomment the function calls above to execute.")
