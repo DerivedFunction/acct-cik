@@ -876,6 +876,7 @@ derivative_template = {
         "swap",
         "swaption",
         "OTC Convertible Note hedges",
+        "equity swap",
     ],
 }
 
@@ -2947,6 +2948,7 @@ def generate_labeled_hedge_paragraph(
     )
 
     all_sentences = []
+    required_sentences = []
 
     # Determine label
     if has_active_derivative is None:
@@ -3358,7 +3360,7 @@ def generate_labeled_hedge_paragraph(
                     notional=notional,
                     money_unit=money_units,
                 )
-                all_sentences.append(sentence)
+                required_sentences.append(sentence)
 
                 # Optional comparative (0-1)
                 if random.random() < 0.5 and len(past_years) > 0:
