@@ -8,8 +8,8 @@ import string
 
 # Init
 ```{python}
-output_file = "../excel/training_data.xlsx"
-company_name_file = "../excel/names.xlsx"
+output_file = "./training_data.xlsx"
+company_name_file = "./names.xlsx"
 # Precompile regex patterns
 pattern_we_s = re.compile(r"We's", flags=re.IGNORECASE)
 pattern_we_is = re.compile(r"We is", flags=re.IGNORECASE)
