@@ -31,8 +31,8 @@ import multiprocessing as mp
 filename = "../excel/derivatives_data.csv"
 DB_PATH = "../db/web_data.db"
 KEYWORDS_FILE = "../config/keywords_find.json"
-NUM_THREADS = 1
-NUM_PROCESSES = (mp.cpu_count() - 2)/NUM_THREADS
+NUM_THREADS = 4
+NUM_PROCESSES = (mp.cpu_count() - 2)
 SEC_RATE_LIMIT = 1 / 5 # requests per second
 ```
 
@@ -464,7 +464,7 @@ def extract_content(data: str, asHTML=True, max_len=2000) -> str:
         chunks = [paragraphs[i:i + chunk_size] for i in range(0, len(paragraphs), chunk_size)]
 
         with ProcessPoolExecutor(max_workers=NUM_PROCESSES) as executor:
-            merged_chunks = list(tqdm(executor.map(merge_paragraphs_chunk, chunks), total=len(chunks), desc="Merging paragraphs"))
+            merged_chunks = executor.map(merge_paragraphs_chunk, chunks)
 
         merged_paragraphs = [para for chunk in merged_chunks for para in chunk]
 
@@ -502,7 +502,7 @@ def extract_content(data: str, asHTML=True, max_len=2000) -> str:
 
     # Parallel cleaning
     with ProcessPoolExecutor(max_workers=NUM_PROCESSES) as executor:
-        cleaned = list(tqdm(executor.map(clean_paragraph, paragraphs), total=len(paragraphs), desc="Cleaning paragraphs"))
+        cleaned = executor.map(clean_paragraph, paragraphs)
 
     # Merge short paragraphs
     final_output = []
@@ -751,6 +751,7 @@ def filter_by_keywords(
         for i, s in enumerate(all_sentences)
     ]
 
+    # First pass
     with ProcessPoolExecutor(max_workers=NUM_PROCESSES) as executor:
         for result in executor.map(process_sentence, args_list):
             if result:
@@ -761,31 +762,34 @@ def filter_by_keywords(
                     seen_sentences_global.add(i)
 
     # Second pass: GEN
+    gen_args_list = []
     for i, sentence in enumerate(all_sentences):
         if len(sentence.split()) < 6 or i in seen_sentences_global:
             continue
-        category = None
         for cat, regex in CATEGORY_REGEX_ORDER:
             if regex.search(sentence):
-                category = cat
+                if cat == "gen":
+                    gen_args_list.append(
+                        (
+                            i,
+                            sentence,
+                            all_sentences,
+                            year,
+                            min_char_length,
+                            max_char_length,
+                            ignore_keywords,
+                        )
+                    )
                 break
-        if category == "gen":
-            final_sentence = process_sentence(
-                (
-                    i,
-                    sentence,
-                    all_sentences,
-                    year,
-                    min_char_length,
-                    max_char_length,
-                    ignore_keywords,
-                )
-            )
-            if final_sentence:
-                _, normalized, final_text, _ = final_sentence
+
+    with ProcessPoolExecutor(max_workers=NUM_PROCESSES) as executor:
+        for result in executor.map(process_sentence, gen_args_list):
+            if result:
+                _, normalized, final_text, _ = result
                 if normalized not in seen_matches["gen"]:
                     seen_matches["gen"].add(normalized)
                     categorized_matches["gen"].append(final_text)
+
 
     debug_print(
         "Done generating sentences", sum(len(v) for v in categorized_matches.values())
@@ -970,6 +974,5 @@ fetch_all_grouped()
 And then save the results to the database
 
 ```{python}
-debug=True
 process_all_reports_fully()
 ```
