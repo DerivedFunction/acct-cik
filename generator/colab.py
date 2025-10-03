@@ -32,13 +32,18 @@ CHUNK_SIZE = 1000
 # COLAB CONFIGURATION
 # =============================================================================
 DRIVE_PATH = "./drive/MyDrive/db"
-SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/{DB_PATH} "
+LOAD_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/{DB_PATH} ."
+SAVE_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/."
 IS_COLAB = False
 
 # Auto-detect system capabilities
 def get_system_config():
     total_cores = max(mp.cpu_count() - 1, 1)
     total_fetchers = min(5, total_cores)
+    if IS_COLAB:
+        print("Loading database from Google Drive")
+        subprocess.run(LOAD_SHELL_CMD, shell=True)
+        time.sleep(5)
     return {
         "num_fetchers": total_fetchers,
         "num_parsers": total_cores,
@@ -949,6 +954,7 @@ def process_all_reports_fully():
                     result = future.result()
                     if result:
                         fetched_data.append(result)
+                        debug_print(result)
                 except Exception as e:
                     print(f"Fetch error: {e}")
 
@@ -980,9 +986,11 @@ def process_all_reports_fully():
                 try:
                     result = future.result()
                     if result:
+                        debug_print("Parse successful")
                         chunk_results += 1
                     else:
                         chunk_empty += 1
+                        debug_print("Error with processing")
                         time.sleep(SEC_RATE_LIMIT)
                 except Exception as e:
                     print(f"Parse error: {e}")
@@ -1003,7 +1011,7 @@ def process_all_reports_fully():
 
         gc.collect()
         if IS_COLAB:
-            subprocess.Popen(SHELL_CMD, shell=True)
+            subprocess.Popen(SAVE_SHELL_CMD, shell=True)
             print(f"  → Saving to database.")
 
         # Progress summary
