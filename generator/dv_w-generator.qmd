@@ -146,7 +146,7 @@ warrant_events = [
 
 # Warrant fair value measurement templates
 warrant_fv_templates = [
-    "The fair value of the warrants classifed as liabilities was determined to be {currency_code}{amount} {money_unit} using the  as of {date}",
+    "The fair value of the warrants classifed as liabilities was determined to be {currency_code}{amount} {money_unit} using the  as of {month} {end_day}, {year}",
     "At issuance, the warrant liabilities were valued at {currency_code}{amount} {money_unit} using a ",
     "{company} estimated the fair value of the warrants at {currency_code}{amount} {money_unit} as of {month} {end_day}, {year} using the {model} methodology",
     "Using a {model}, the warrant liabilities were fair valued at {currency_code}{amount} {money_unit} as of {date}",
@@ -2220,13 +2220,9 @@ def generate_derivative_liability_paragraph(
 
             event = random.choice(warrant_events)
             expiry_year = year + random.randint(3, 7)
-
             sentence = template.format(
                 company=company_name,
                 currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
                 shares=f"{shares:,}",
                 price=price,
                 month=month,
@@ -2236,59 +2232,23 @@ def generate_derivative_liability_paragraph(
             )
             all_sentences.append(sentence)
 
-        # Add fair value measurement (0-1) - only for label 4
-        if not is_past and random.random() < 0.7:
-            template = random.choice(warrant_fv_templates)
-            amount = round(random.uniform(0.5, 15.0), 1)
-            end_day = random.randint(28, 31)
-            month=random.choice(months)
-            date = f"{month} {end_day}, {current_year}"
-            model=random.choice(valuation_models)
-            verb=random.choice(assessment_verbs)
-            sentence = template.format(
-                amount=amount,
-                date=date,
-                year=current_year,
-                company=company_name,
-                model=model,
-                verb=verb,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                month=random.choice(months),
-                end_day=random.randint(28, 31),
-            )
-            all_sentences.append(sentence)
-
-        # Add liability classification (0-1) - only for label 4
-        if not is_past and random.random() < 0.6:
-            template = random.choice(warrant_liability_templates)
-            location = random.choice(fv_change_locations)
-            event=random.choice(warrant_events)
-            sentence = template.format(location=location, company=company_name, event=event)
-            all_sentences.append(sentence)
 
         # Add fair value measurement (0-1)
         template = random.choice(warrant_fv_templates)
         amount = round(random.uniform(0.5, 15.0), 1)
+        end_day = random.randint(28, 31)
+        month=random.choice(months)
         model=random.choice(valuation_models)
         verb=random.choice(assessment_verbs)
         sentence = template.format(
-            amount=amount,
-            date="{month} {end_day}, {current_year}".format(
-                current_year=current_year,
-                end_day=random.randint(28, 31),
-                month=random.choice(months),
-            ),
-            year=current_year,
+            amount=amount,        
             company=company_name,
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            month=random.choice(months),
-            end_day=random.randint(28, 31),
             model=model,
-            verb=verb
+            verb=verb,
+            currency_code=currency_code,
+            month=month,
+            end_day=end_day,
+            year=current_year,
         )
         all_sentences.append(sentence)
 
