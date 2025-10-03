@@ -35,7 +35,7 @@ def get_system_config():
     total_cores = max(mp.cpu_count() - 1, 1)
     total_fetchers = min(5, total_cores)
     return {
-        "num_fetchers": total_fetchers,  
+        "num_fetchers": total_fetchers,
         "num_parsers": total_cores,
         "chunk_size": CHUNK_SIZE * (1 if not IS_COLAB and total_cores >= 6 else 100),
     }
@@ -1000,10 +1000,6 @@ def process_all_reports_fully():
         est_time_remaining = avg_chunk_time * remaining_chunks
 
         print(f"  ✓ Fetched {len(fetched_data)} reports.")
-        print(f"  Time taken: {format_time(chunk_time)}")
-        print(f"  Avg chunk time: {format_time(avg_chunk_time)}")
-        print(f"  Est. time remaining: {format_time(est_time_remaining)}")
-        print(f"  Total time: {format_time(total_time)}")
 
         # Stage 2: Parse this chunk
         print(f"  → Parsing with {NUM_PARSERS} workers...")
@@ -1036,6 +1032,10 @@ def process_all_reports_fully():
         total_empty += chunk_empty
 
         print(f"  ✓ Parsed {chunk_results} reports successfully")
+        print(f"  Time taken: {format_time(chunk_time)}")
+        print(f"  Avg chunk time: {format_time(avg_chunk_time)}")
+        print(f"  Est. time remaining: {format_time(est_time_remaining)}")
+        print(f"  Total time: {format_time(total_time)}")
 
         # Clear memory
         del fetched_data
