@@ -128,7 +128,7 @@ warrant_issuance_templates = [
     "As part of {event}, {company} granted liability-classified warrants for {shares} shares with a strike price of {currency_code}{price}, expiring in {expiry_year}",
     "{company} issued {shares} warrants at an exercise price of {currency_code}{price} per share, are classified as liabilities the guidence of ASC 815, as consideration for {event}",
     "In {month} {year}, warrants to acquire {shares} shares at {currency_code}{price} per share were issued in connection with {event}, and are derivative liabilities",
-    "Under the guidance in ASC 815-40, certain warrants issued at {year} do not meet the criteria for equity treatment"
+    "Under the guidance in ASC 815-40, certain warrants issued at {year} do not meet the criteria for equity treatment",
 ]
 
 # Warrant events/reasons
@@ -149,11 +149,11 @@ warrant_fv_templates = [
     "The fair value of the warrants classifed as liabilities was determined to be {currency_code}{amount} {money_unit} using the  as of {month} {end_day}, {year}",
     "At issuance, the warrant liabilities were valued at {currency_code}{amount} {money_unit} using a ",
     "{company} estimated the fair value of the warrants at {currency_code}{amount} {money_unit} as of {month} {end_day}, {year} using the {model} methodology",
-    "Using a {model}, the warrant liabilities were fair valued at {currency_code}{amount} {money_unit} as of {date}",
+    "Using a {model}, the warrant liabilities were fair valued at {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "The fair value of outstanding liability-classified warrants totaled {currency_code}{amount} {money_unit} at year-end {year}, {verb} using {model}",
     "The fair value of outstanding warrant liabilities totaled {currency_code}{amount} {money_unit} at year-end {year}, {verb} using {model}",
     "The fair value of the warrants classified as liabilities is estimated using the {model}, with the following inputs as of {month} {year}",
-    "The fair value of the warrant liabilities presented below were {verb} using {model}"
+    "The fair value of the warrant liabilities presented below were {verb} using {model}",
 ]
 
 
@@ -177,7 +177,7 @@ fv_change_locations = [
     "other comprehensive income",
     "earnings",
     "the consolidated statements of operations",
-    "statement of operations"
+    "statement of operations",
 ]
 
 # Derivative liability general templates
@@ -188,7 +188,7 @@ deriv_liability_general_templates = [
     "Changes in the fair value of derivative liabilities during {year} resulted in a {gain_loss} of {currency_code}{amount} {money_unit}",
     "{company} recognized derivative liabilities of {currency_code}{amount} {money_unit} related to warrants issued in connection with financing transactions during {year}",
     "{company}’s warrant liability is based on  utilizing management judgment and pricing inputs from observable and unobservable markets with less volume and transaction frequency than active markets",
-    "The following table presents information about {company}'s warrant liabilities that are measured at fair value on a recurring basis at {month} {end_day}, {year} and indicates the fair value hierarchy of the valuation inputs"
+    "The following table presents information about {company}'s warrant liabilities that are measured at fair value on a recurring basis at {month} {end_day}, {year} and indicates the fair value hierarchy of the valuation inputs",
 ]
 
 # Down round feature templates
@@ -216,7 +216,7 @@ embedded_identification_templates = [
     "{company} {verb} {host_contract} and determined that certain embedded features require bifurcation under derivative accounting guidance",
     '{company} adopted SFAS 155, "Accounting for Certain Hybrid Instruments" to identify all embedded derivative features',
     "{company} measures a hybrid financial instrument in its entirety at fair value after having identified all embedded derivative features."
-    "{company} identified and documented the embedded derivative features, and the irrevocably elected to measure and carry the {host_contract} at fair value" 
+    "{company} identified and documented the embedded derivative features, and the irrevocably elected to measure and carry the {host_contract} at fair value",
 ]
 
 host_contracts = [
@@ -2248,6 +2248,7 @@ def generate_derivative_liability_paragraph(
             month=month,
             end_day=end_day,
             year=current_year,
+            money_unit=money_units
         )
         all_sentences.append(sentence)
 
