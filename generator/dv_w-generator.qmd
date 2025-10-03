@@ -700,7 +700,7 @@ hedge_mitigation_verbs = [
     "undertake",
 ]
 
-hedge_use_verbs = {
+hedge_use_verbs = [
     "entered into",
     "executed",
     "utilized",
@@ -715,8 +715,8 @@ hedge_use_verbs = {
     "employs",
     "uses",
     "maintains",
-}
-hedge_may_use_verbs = {
+]
+hedge_may_use_verbs = [
     "may engage in",
     "may commit in",
     "may implement",
@@ -724,7 +724,7 @@ hedge_may_use_verbs = {
     "may utilize",
     "may employ",
     "may use",
-}
+]
 
 hedge_change_verbs = ["increase", "decrease", "affect", "impact"]
 hedge_counterparty_templates = [
@@ -3777,7 +3777,7 @@ def generate_labeled_hedge_paragraph(
                     swap_type = re.sub("commodity", commodity, swap_type)
                 sentence = template.format(
                     company=company_name,
-                    verb=verb
+                    verb=verb,
                     swap_type=swap_type,
                     month=random.choice(months),
                     end_day=random.randint(28, 31),
