@@ -30,14 +30,14 @@ def get_system_config():
     if total_cores >= 20:  # Cloud/Colab
         return {
             'num_fetchers': total_fetchers,
-            'num_parsers': total_cores - total_fetchers,
+            'num_parsers': total_cores,
             'chunk_size': 500,
         }
     else:  # Local machine
         return {
             'num_fetchers': total_fetchers,     # Reduced from 3 to be safer
             'num_parsers': total_cores,      # Reduced from 12 to avoid memory issues
-            'chunk_size': 50,      # Reduced from 100 to be safer
+            'chunk_size': 10,   
         }
 
 CONFIG = get_system_config()
