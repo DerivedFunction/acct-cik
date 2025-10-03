@@ -32,7 +32,7 @@ IS_COLAB = True
 
 # Auto-detect system capabilities
 def get_system_config():
-    total_cores = min(mp.cpu_count() - 1, 1)
+    total_cores = max(mp.cpu_count() - 1, 1)
     total_fetchers = min(5, total_cores)
     return {
         "num_fetchers": total_fetchers,  
