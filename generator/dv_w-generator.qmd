@@ -6,11 +6,19 @@ import re
 import string
 ```
 
-# Common Variables
+# Init
 ```{python}
 output_file = "../excel/training_data.xlsx"
 company_name_file = "../excel/names.xlsx"
+# Precompile regex patterns
+pattern_we_s = re.compile(r"We's", flags=re.IGNORECASE)
+pattern_we_is = re.compile(r"We is", flags=re.IGNORECASE)
+pattern_spaces = re.compile(r"\s+")
+pattern_dots = re.compile(r"\.\.")
+```
 
+# Common Variables
+```{python}
 money_unit_list = ["thousand", "million", "billion"]
 months = [
     "January",
@@ -217,6 +225,7 @@ embedded_identification_templates = [
     '{company} adopted SFAS 155, "Accounting for Certain Hybrid Instruments" to identify all embedded derivative features',
     "{company} measures a hybrid financial instrument in its entirety at fair value after having identified all embedded derivative features."
     "{company} identified and documented the embedded derivative features, and the irrevocably elected to measure and carry the {host_contract} at fair value",
+    "This standard requires the conversion feature of {host_contract} be separated from the host contract and presented as a derivative instrument if certain conditions are met",
 ]
 
 host_contracts = [
@@ -733,7 +742,7 @@ hedge_impact_templates = [
 ]
 
 # Generic Debt Optimization Templates
-ir_fx_debt_optimization_templates = [
+fx_ir_debt_optimization_templates = [
     "{company} uses {swap_type} to optimize the cost and risk profile of its debt portfolio, adjusting both interest rate and currency exposures",
     "To manage borrowing costs and currency risk, {company} employs {swap_type} to modify the effective interest rate and currency mix of outstanding debt",
     "{company} implements {swap_type} to reduce volatility from interest rate fluctuations and foreign exchange movements on its borrowings",
@@ -845,6 +854,7 @@ derivative_template = {
         "option contract",
         "swap",
         "swaption",
+        "OTC Convertible Note hedges",
     ],
 }
 
@@ -1221,6 +1231,12 @@ ir_optional_templates = [
     "{company} employs {swap_type} converting floating rate exposure to fixed rates, with quarterly exchange of payment differentials based on notional values",
 ]
 
+ir_context_templates = [
+    "{company}'s objectives in interest rate risk management are to limit the impact of interest rate changes on earnings and cash flows, and to lower overall borrowing costs",
+    "To achieve its objectives, the {company} borrows at fixed rates when it believes it is in its best interests to do so, and may enter into derivative financial instruments, such as {swap_types}, in order to limit its exposure to interest rate fluctuations",
+    "{company} utilize derivative financial instruments to manage our variable interest rate exposure over a medium- to long-term period",
+    "{company} is exposed to interest rate risk associated with fluctuations in interest rates on our variable rate debt.",
+]
 # Interest Rate (IR) Debt Optimization Templates
 ir_debt_optimization_templates = [
     "{company} uses {swap_type} to optimize the interest rate profile of its debt portfolio, converting portions of fixed-rate debt to floating-rate instruments",
@@ -2778,9 +2794,10 @@ def generate_derivative_liability_paragraph(
         + "."
     )
     # Clean up common formatting issues
-    paragraph = re.sub(r"We's", "Our", paragraph, flags=re.IGNORECASE)
-    paragraph = re.sub(r"\s+", " ", paragraph)  # Remove extra whitespace
-    paragraph = re.sub(r"\.\.", ".", paragraph)  # Remove double periods
+    paragraph = pattern_we_s.sub("Our", paragraph)
+    paragraph = pattern_we_is.sub("We are", paragraph)
+    paragraph = pattern_spaces.sub(" ", paragraph)   # Remove extra whitespace
+    paragraph = pattern_dots.sub(".", paragraph)     # Remove double periods
 
     if paragraph.find("{") != -1 or paragraph.find("[") != -1:
         print("Error in format", paragraph)
@@ -3000,7 +3017,7 @@ def generate_labeled_hedge_paragraph(
 
         # Debt optimization (0-1)
         if random.random() < 0.5:
-            template = random.choice(ir_fx_debt_optimization_templates)
+            template = random.choice(fx_ir_debt_optimization_templates)
             all_sentences.append(
                 template.format(
                     company=company_name,
@@ -3818,9 +3835,10 @@ def generate_labeled_hedge_paragraph(
     )
 
     # Clean up common formatting issues
-    paragraph = re.sub(r"We's", "Our", paragraph)
-    paragraph = re.sub(r"\s+", " ", paragraph)  # Remove extra whitespace
-    paragraph = re.sub(r"\.\.", ".", paragraph)  # Remove double periods
+    paragraph = pattern_we_s.sub("Our", paragraph)
+    paragraph = pattern_we_is.sub("We are", paragraph)
+    paragraph = pattern_spaces.sub(" ", paragraph)   # Remove extra whitespace
+    paragraph = pattern_dots.sub(".", paragraph)     # Remove double periods
 
     # Error checking for unformatted placeholders
     if "{" in paragraph or "}" in paragraph:
@@ -4913,9 +4931,10 @@ def generate_accounting_noise_paragraph(
         + "."
     )
     # Clean up common formatting issues
-    paragraph = re.sub(r"We's", "Our", paragraph, flags=re.IGNORECASE)
-    paragraph = re.sub(r"\s+", " ", paragraph)  # Remove extra whitespace
-    paragraph = re.sub(r"\.\.", ".", paragraph)  # Remove double periods
+    paragraph = pattern_we_s.sub("Our", paragraph)
+    paragraph = pattern_we_is.sub("We are", paragraph)
+    paragraph = pattern_spaces.sub(" ", paragraph)   # Remove extra whitespace
+    paragraph = pattern_dots.sub(".", paragraph)     # Remove double periods
     
     if paragraph.find("{") != -1:
         print("Error in format", paragraph)
