@@ -756,7 +756,7 @@ hedge_fv_position_templates = [
 hedge_impact_templates = [
     "Fluctuations in market conditions {verb} the reported value of our financial instruments and operating results",
     "Changes in market prices {verb} {company}'s financial performance and net asset values",
-    "Movements in market rates {verb} the company's cost structure and profitability",
+    "Movements in market rates {verb} {company}'s cost structure and profitability",
     "Market volatility {verb} the reported value of derivative positions",
     "Shifts in market values {verb} the financial results of {company}'s operations",
     "Changes in market conditions {verb} forecasted cash flows and financial position",
@@ -774,7 +774,7 @@ fx_ir_debt_optimization_templates = [
     "As part of its debt strategy, {company} {verb} {swap_type} to transform debt characteristics, including both fixed/floating rate and currency composition",
     "To hedge against interest rate and foreign exchange risks, {company} applies {swap_type} to optimize its debt obligations",
     "{company} {verb} {swap_type} to manage exposure to both interest rate changes and currency fluctuations across its debt portfolio",
-    "The company {verb} {swap_type} to balance interest rate and currency risk, converting portions of debt as needed",
+    "{company} {verb} {swap_type} to balance interest rate and currency risk, converting portions of debt as needed",
     "{company} optimizes its borrowings by using {swap_type} to adjust interest rate terms and currency allocations simultaneously",
     "To stabilize debt costs, {company} applies {swap_type} to manage both cash flow interest rate risk and foreign exchange risk",
     "{company} manages risk on forecasted and existing borrowings using {swap_type} to optimize interest rate and currency profiles",
@@ -959,12 +959,12 @@ cp_position_template = [
 ]
 cp_specific_templates = [
     "{company} {verb} {swap_type} to hedge exposure to {commodity} price volatility affecting {cost_type}",
-    "The Company enters into {swap_type} to manage the financial impact of fluctuations in {commodity} prices",
+    "{company} enters into {swap_type} to manage the financial impact of fluctuations in {commodity} prices",
     "{swap_type} are {verb} to hedge anticipated {commodity} purchases totaling {volume} {volume_unit} over the next {months} months",
     "In {month} {year}, {company} {verb} {swap_type} to lock in {commodity} prices for {volume} {volume_unit} of forecasted consumption",
     "Commodity price risk related to {commodity} is managed through {swap_type} with notional volumes of {volume} {volume_unit}",
     "{company} {verb} {swap_type} to hedge {commodity} price exposure on production inputs",
-    "The Company {verb} {swap_type} to stabilize {cost_type} by hedging approximately {pct}% of anticipated {commodity} requirements",
+    "{company} {verb} {swap_type} to stabilize {cost_type} by hedging approximately {pct}% of anticipated {commodity} requirements",
     "{swap_type} are designated as cash flow hedges of forecasted {commodity} purchases at fixed prices averaging {currency_code}{price} per {volume_unit}",
     "{company} {verb} {swap_type} to mitigate {commodity} price risks impacting {cost_type} for {volume} {volume_unit}",
     "To secure stable {cost_type}, {company} {verb} {swap_type} for {commodity} with maturities extending to {months} months",
@@ -976,7 +976,7 @@ cp_context_templates = [
     "{company} {verb} commodity contracts and derivatives to manage price exposure to {commodity}",
     "Changes in commodity prices affect {company}'s cost of goods sold and gross margins",
     "To hedge commodity price fluctuations, {company} enters into forwards, futures, and swaps on key {commodity}",
-    "Volatility in commodity markets can influence the company's procurement costs and operational results",
+    "Volatility in commodity markets can influence {company}'s procurement costs and operational results",
     "{company} is exposed to changes in energy, metals, and agricultural prices that may impact financial performance",
     "{company} {verb} commodity hedging strategies to stabilize input costs and protect profit margins",
     "Fluctuations in raw material prices may lead to adjustments in {company}'s pricing strategies",
@@ -987,7 +987,7 @@ cp_context_templates = [
 cp_impact_templates = [
     "Fluctuations in {commodity} prices {verb} the reported cost of goods sold and operating margins",
     "Changes in {commodity} market prices {verb} {company}'s financial performance and net asset values",
-    "Movements in {commodity} prices {verb} the company's cost structure and profitability",
+    "Movements in {commodity} prices {verb} {company}'s cost structure and profitability",
     "{commodity} price volatility {verb} the reported value of inventory and derivative positions",
     "Shifts in {commodity} market values {verb} the financial results of {company}'s operations",
     "Changes in {commodity} prices {verb} forecasted revenue and cash flow from operations",
@@ -1198,7 +1198,7 @@ fx_debt_optimization_templates = [
     "Foreign currency borrowings are optimized using {swap_type} to reduce volatility from {currency_code} exchange rate movements",
     "To manage currency risk, {company} {verb} {swap_types} to modify the currency mix of its debt obligations",
     "{company} {verb} {swap_types} to convert debt from {currency_code} into other currencies as part of its foreign exchange risk management strategy",
-    "The company {verb} {swap_types} to hedge foreign currency exposure on its international debt portfolio",
+    "{company} {verb} {swap_types} to hedge foreign currency exposure on its international debt portfolio",
     "To stabilize the currency profile of debt, {company} applies {swap_types} converting obligations into {currency_code} where beneficial",
     "{company} manages foreign exchange risk on long-term borrowings by using {swap_type} to adjust the currency allocation",
     "To reduce foreign exchange volatility, {company} {verb} {swap_types} to optimize the composition of multi-currency debt",
@@ -1323,7 +1323,7 @@ ir_debt_optimization_templates = [
     "As part of its debt strategy, {company} {verb} {swap_type} to transform fixed-rate debt into variable-rate debt where appropriate",
     "To hedge against rising interest rates, {company} applies {swap_type} to modify the interest rate characteristics of its borrowings",
     "{company} {verb} {swap_type} to manage the interest rate exposure of its long-term debt portfolio",
-    "The company {verb} {swap_type} to convert portions of debt into instruments with more favorable interest rate terms",
+    "{company} {verb} {swap_type} to convert portions of debt into instruments with more favorable interest rate terms",
     "{company} optimizes its debt by using {swap_type} to balance fixed and floating rate obligations",
     "To stabilize interest expense, {company} applies {swap_type} to its debt portfolio, managing cash flow risk",
     "{company} manages interest rate risk on forecasted debt issuances using {swap_type} to adjust the effective interest profile",
@@ -1599,7 +1599,7 @@ inventory_templates = [
     "Inventory is written down to market value when estimated selling prices are less than cost",
     "As of {month} {end_day}, {year}, {company} maintained obsolescence reserves of {currency_code}{reserve} {money_unit} against total inventories of {currency_code}{amount} {money_unit}",
     "Inventories include supplies and components valued at the lower of cost (determined by {method}) or net realizable value",
-    "The company records provisions for excess and obsolete inventories based on expected future demand, market conditions, and product life cycles",
+    "{company} records provisions for excess and obsolete inventories based on expected future demand, market conditions, and product life cycles",
 ]
 
 inventory_methods = [
@@ -1619,7 +1619,7 @@ inventory_writedown_templates = [
     "Inventory obsolescence charges totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
     "As of {month} {end_day}, {year}, {company} maintained reserves of {currency_code}{amount} {money_unit} for excess and obsolete inventories",
     "Write-downs of {currency_code}{amount} {money_unit} were recorded in {year} primarily related to discontinued product lines",
-    "The company recorded {currency_code}{amount} {money_unit} in inventory write-downs due to declining market demand during {year}",
+    "{company} recorded {currency_code}{amount} {money_unit} in inventory write-downs due to declining market demand during {year}",
     "Charges for inventory valuation adjustments were {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in the prior year",
     "{company} recorded inventory write-downs associated with aging components and spare parts totaling {currency_code}{amount} {money_unit} during {year}",
     "Inventory reserves increased to {currency_code}{amount} {money_unit} at year-end {year}, reflecting adjustments for lower selling prices and product obsolescence",
@@ -1679,7 +1679,7 @@ impairment_templates = [
     "Impairment testing performed in {year} resulted in a {currency_code}{amount} {money_unit} write-down of {asset_type}",
     "A non-cash impairment charge of {currency_code}{amount} {money_unit} was recognized during {year} for {asset_type}",
     "Impairment charges of {currency_code}{amount} {money_unit} were recorded in {year} primarily related to {asset_type}",
-    "The company assessed recoverability of {asset_type} and recognized an impairment loss of {currency_code}{amount} {money_unit} in {year}",
+    "{company} assessed recoverability of {asset_type} and recognized an impairment loss of {currency_code}{amount} {money_unit} in {year}",
     "During {year}, {company} recorded impairment losses totaling {currency_code}{amount} {money_unit}, including {asset_type}",
     "An interim impairment assessment conducted in {quarter} {year} resulted in a charge of {currency_code}{amount} {money_unit} for {asset_type}",
 ]
@@ -1953,7 +1953,7 @@ share_reservation_templates = [
     "In addition, {company} has reserved {shares1} shares of the common stock for issuance upon the exercise of outstanding warrants and {shares2} shares of the common stock for issuance upon the exercise of stock options",
     "{company} has reserved a total of {shares} shares for issuance under equity incentive plans and upon exercise of warrants and convertible securities",
     "As of {month} {end_day}, {year}, {shares1} shares were reserved for warrant exercises and {shares2} shares for option exercises under equity plans",
-    "The Company maintains a reserve of {shares} shares for potential issuance upon conversion, exercise, or settlement of outstanding equity instruments",
+    "{company} maintains a reserve of {shares} shares for potential issuance upon conversion, exercise, or settlement of outstanding equity instruments",
     "{shares} shares of authorized common stock are reserved for issuance pursuant to outstanding equity awards, warrants, and convertible instruments as of {year}",
 ]
 
