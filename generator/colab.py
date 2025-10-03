@@ -312,6 +312,7 @@ def save_process_result(df):
 
 
 def fetch_json(url: str) -> dict | None:
+    global SEC_RATE_LIMIT
     headers = {
         "User-Agent": f"{random.randint(1000,9999)} {random.randint(1000,9999)}@{random.randint(1000,9999)}.com"
     }
@@ -319,6 +320,9 @@ def fetch_json(url: str) -> dict | None:
     try:
         resp = requests.get(url, headers=headers, timeout=10)
         debug_print("Fetching", url)
+        if resp.status_code == 429:
+            print(f"Rate Limited {resp.status_code} fetching {url}")
+            return None
         if resp.status_code != 200:
             print(f"Error {resp.status_code} fetching {url}")
             return None
@@ -536,6 +540,7 @@ def parse_plain_text_table_fixed(block: str):
 
 
 def fetch_url(url: str, timeout: int = 10) -> str | None:
+    global SEC_RATE_LIMIT
     if not url:
         return None
     try:
@@ -544,6 +549,9 @@ def fetch_url(url: str, timeout: int = 10) -> str | None:
         resp = requests.get(
             url, timeout=timeout, headers={"User-Agent": "sync-fetch@example.com"}
         )
+        if resp.status_code == 429:
+            print(f"Rate Limited {resp.status_code} for {url}")
+            return None
         if resp.status_code != 200:
             print(f"Error {resp.status_code} for {url}")
             return None
@@ -861,11 +869,15 @@ def fetch_content_only(url: str, cik: int, year: int):
     conn.close()
 
     if exists:
+        # Cooldown after having nothing
+        time.sleep(SEC_RATE_LIMIT)
         return None
 
     try:
         raw_text = fetch_url(url)
         if not raw_text:
+            # Cooldown after having nothing
+            time.sleep(SEC_RATE_LIMIT)
             return None
 
         # Extract content
@@ -916,6 +928,8 @@ def process_all_reports_fully():
     LOCAL: 3 fetchers, 12 parsers, 100 reports/chunk
     CLOUD: 5 fetchers, 35 parsers, 500 reports/chunk
     """
+    global SEC_RATE_LIMIT
+    
     processed_set = get_processed_urls()
 
     reports_to_process = [
@@ -996,6 +1010,8 @@ def process_all_reports_fully():
                         chunk_results += 1
                     else:
                         chunk_empty += 1
+                        # Sleep for a bit to cool off before the next one
+                        time.sleep(SEC_RATE_LIMIT)
                 except Exception as e:
                     print(f"Parse error: {e}")
                     chunk_empty += 1
