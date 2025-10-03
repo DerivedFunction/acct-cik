@@ -2918,14 +2918,9 @@ def generate_labeled_hedge_paragraph(
         # Context (0-1)
         if random.random() < 0.6:
             template = random.choice(hedge_context_templates)
-            end_day = random.randint(28, 31)
             all_sentences.append(
                 template.format(
-                    company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=end_day,
+                    company=company_name
                 )
             )
 
@@ -2933,16 +2928,9 @@ def generate_labeled_hedge_paragraph(
         if random.random() < 0.7:
             template = random.choice(hedge_impact_templates)
             verb = random.choice(hedge_impact_verbs)
-            end_day = random.randint(28, 31)
-            month = random.choice(months)
             all_sentences.append(
                 template.format(
                     company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=end_day,
-                    month=month,
                     verb=verb,
                 )
             )
@@ -2951,34 +2939,20 @@ def generate_labeled_hedge_paragraph(
         if random.random() < 0.8:
             template = random.choice(hedge_mitigation_templates)
             verb = random.choice(hedge_mitigation_verbs)
-            end_day = random.randint(28, 31)
-            month = random.choice(months)
-            swap_type = random.choice(swap_types)
             all_sentences.append(
                 template.format(
                     company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=end_day,
-                    month=month,
-                    verb=verb,
-                    swap_type=swap_type,
+                    verb=verb
                 )
             )
 
         # Accounting policy (always)
         act_template = random.choice(hedge_policy_templates)
-        end_day = random.randint(28, 31)
         swap_type = random.choice(swap_types)
         hedge_type = random.choice(hedge_types)
         all_sentences.append(
             act_template.format(
                 company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=end_day,
                 swap_type=swap_type,
                 hedge_type=hedge_type,
             )
@@ -2986,16 +2960,11 @@ def generate_labeled_hedge_paragraph(
 
         # Documentation (0-1)
         if random.random() < 0.6:
-            template = random.choice(hedge_documentation_templates)
-            end_day = random.randint(28, 31)
+            template = random.choice(hedge_documentation_templates))
             hedge_type = random.choice(hedge_types)
             all_sentences.append(
                 template.format(
                     company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=end_day,
                     hedge_type=hedge_type,
                 )
             )
@@ -3003,8 +2972,6 @@ def generate_labeled_hedge_paragraph(
         # Effectiveness (0-1)
         if random.random() < 0.7:
             template = random.choice(hedge_effectiveness_templates)
-            end_day = random.randint(28, 31)
-            month = random.choice(months)
             hedge_type = random.choice(hedge_types)
             swap_type = random.choice(swap_types)
             metric = random.choice(hedge_metrics)
@@ -3014,11 +2981,6 @@ def generate_labeled_hedge_paragraph(
             standard = random.choice(hedge_standards)
             sentence = template.format(
                 company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=end_day,
-                month=month,
                 hedge_type=hedge_type,
                 swap_type=swap_type,
                 metric=metric,
@@ -3032,17 +2994,10 @@ def generate_labeled_hedge_paragraph(
         # Ineffectiveness (0-1)
         if random.random() < 0.5:
             template = random.choice(hedge_ineffectiveness_templates)
-            end_day = random.randint(28, 31)
-            month = random.choice(months)
             frequency = random.choice(frequencies)
             all_sentences.append(
                 template.format(
                     company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=end_day,
-                    month=month,
                     frequency=frequency,
                 )
             )
@@ -3050,14 +3005,9 @@ def generate_labeled_hedge_paragraph(
         # Discontinuation (0-1)
         if random.random() < 0.5:
             template = random.choice(hedge_discontinuation_templates)
-            end_day = random.randint(28, 31)
             all_sentences.append(
                 template.format(
                     company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=end_day,
                 )
             )
 
@@ -3069,7 +3019,6 @@ def generate_labeled_hedge_paragraph(
         # Debt optimization (0-1)
         if random.random() < 0.5:
             template = random.choice(ir_fx_debt_optimization_templates)
-            end_day = random.randint(28, 31)
             all_sentences.append(
                 template.format(
                     company=company_name,
@@ -3167,11 +3116,6 @@ def generate_labeled_hedge_paragraph(
                 all_sentences.append(
                     template.format(
                         company=company_name,
-                        currency_code=currency_code,
-                        major_currency=major_currency,
-                        money_unit=money_units,
-                        end_day=random.randint(28, 31),
-                        month=random.choice(months),
                         currencies=currency_list,
                     )
                 )
