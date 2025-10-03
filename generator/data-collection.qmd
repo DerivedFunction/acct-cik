@@ -32,7 +32,7 @@ filename = "../excel/derivatives_data.csv"
 DB_PATH = "../db/web_data.db"
 KEYWORDS_FILE = "../config/keywords_find.json"
 NUM_THREADS = 4
-NUM_PROCESSES = (mp.cpu_count() - 2)
+NUM_PROCESSES = max(1, mp.cpu_count() // NUM_THREADS)
 SEC_RATE_LIMIT = 1 / 5 # requests per second
 ```
 
