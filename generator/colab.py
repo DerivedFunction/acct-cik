@@ -14,41 +14,41 @@ import re
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
 import multiprocessing as mp
+# Importing required module
+import subprocess
 
 # =============================================================================
 # CONFIGURATION - AUTO-DETECTS LOCAL VS CLOUD
 # =============================================================================
 
-filename = "./derivatives_data.csv"
-DB_PATH = "./web_data.db"
+filename = "derivatives_data.csv"
+DB_PATH = "web_data.db"
 SEC_RATE_LIMIT = 1 / 5  # requests per second
-
-
+DRIVE_PATH = "./drive/MyDrive/db"
+SHELL_CMD = f"cp {DRIVE_PATH}/{DB_PATH}"
+IS_COLAB = True
 # Auto-detect system capabilities
 def get_system_config():
     total_cores = mp.cpu_count() - 2
     total_fetchers = 5
     if total_cores >= 20:  # Cloud/Colab
         return {
-            "num_fetchers": total_fetchers,
-            "num_parsers": total_cores,
-            "chunk_size": 100,
+            'num_fetchers': total_fetchers,
+            'num_parsers': total_cores,
+            'chunk_size': 100,
         }
     else:  # Local machine
         return {
-            "num_fetchers": total_fetchers,  # Reduced from 3 to be safer
-            "num_parsers": total_cores,  # Reduced from 12 to avoid memory issues
-            "chunk_size": 10,
+            'num_fetchers': total_fetchers,     # Reduced from 3 to be safer
+            'num_parsers': total_cores,      # Reduced from 12 to avoid memory issues
+            'chunk_size': 10,   
         }
-
 
 CONFIG = get_system_config()
 total_cores = mp.cpu_count()
 
 print(f"🖥️  Detected: {total_cores} CPU cores")
-print(
-    f"⚙️  Configuration: {CONFIG['num_fetchers']} fetchers, {CONFIG['num_parsers']} parsers"
-)
+print(f"⚙️  Configuration: {CONFIG['num_fetchers']} fetchers, {CONFIG['num_parsers']} parsers")
 print(f"📦 Chunk size: {CONFIG['chunk_size']} reports per batch")
 
 # =============================================================================
@@ -64,13 +64,8 @@ IGNORE_KEYWORDS = {
 }
 
 FILING_TYPES = {
-    "10-K",
-    "10-KT",
-    "20-F",
-    "40-F",
-    "10-K405",
-    "10KSB",
-    "10KSB40",
+    "10-K", "10-KT", "20-F", "40-F",
+    "10-K405", "10KSB", "10KSB40",
 }
 
 PLACEHOLDERS = {
@@ -183,57 +178,46 @@ all_derivatives_df = pd.read_csv(filename)
 
 debug = False
 
-
 def debug_print(*args):
     if debug:
         print(*args)
-
 
 # =============================================================================
 # DATABASE FUNCTIONS
 # =============================================================================
 
-
 def create_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     try:
-        c.execute(
-            """
+        c.execute("""
             CREATE TABLE IF NOT EXISTS report_data (
                 cik INTEGER,
                 year INTEGER,
                 url TEXT
             )
-        """
-        )
-        c.execute(
-            """
+        """)
+        c.execute("""
             CREATE TABLE IF NOT EXISTS names (
                 cik INTEGER,
                 name TEXT
             )
-        """
-        )
-        c.execute(
-            """
+        """)
+        c.execute("""
             CREATE TABLE IF NOT EXISTS webpage_result (
                 url TEXT,
                 matches TEXT,
                 FOREIGN KEY (url) REFERENCES report_data(url)
             )
-        """
-        )
-        c.execute(
-            """
+        """)
+        c.execute("""
             CREATE TABLE IF NOT EXISTS fail_results (
                 cik INTEGER,
                 year INTEGER,
                 url TEXT,
                 reason TEXT
             )
-        """
-        )
+        """)
         c.execute("CREATE INDEX IF NOT EXISTS url_idx ON report_data (url)")
         c.execute("CREATE INDEX IF NOT EXISTS url_idx ON webpage_result (url)")
         c.execute("CREATE INDEX IF NOT EXISTS name_idx ON names (name)")
@@ -309,16 +293,12 @@ def save_process_result(df):
     conn.commit()
     conn.close()
 
-
 # =============================================================================
 # FETCH SEC FILINGS
 # =============================================================================
 
-
 def fetch_json(url: str) -> dict | None:
-    headers = {
-        "User-Agent": f"{random.randint(1000,9999)} {random.randint(1000,9999)}@{random.randint(1000,9999)}.com"
-    }
+    headers = {"User-Agent": f"{random.randint(1000,9999)} {random.randint(1000,9999)}@{random.randint(1000,9999)}.com"}
     time.sleep(SEC_RATE_LIMIT)
     try:
         resp = requests.get(url, headers=headers, timeout=10)
@@ -347,16 +327,14 @@ def extract_filings(data: dict, cik: str, name: str, ticker: str) -> List[dict]:
             if not doc or doc.endswith("txt"):
                 doc = f"{accession[:10]}-{accession[10:12]}-{accession[12:]}.txt"
             link = f"https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{doc}"
-            links.append(
-                {
-                    "name": name,
-                    "filing_date": filing_dates[i],
-                    "report_date": report_dates[i],
-                    "url": link,
-                    "ticker": ticker,
-                    "type": f_type,
-                }
-            )
+            links.append({
+                "name": name,
+                "filing_date": filing_dates[i],
+                "report_date": report_dates[i],
+                "url": link,
+                "ticker": ticker,
+                "type": f_type,
+            })
     return links
 
 
@@ -382,11 +360,9 @@ def get_cik_filings(cik: str) -> List[dict]:
 
     return links
 
-
 # =============================================================================
 # CONTENT EXTRACTION
 # =============================================================================
-
 
 def extract_content(data: str, asHTML=True, max_len=2000) -> str:
     if not data:
@@ -419,9 +395,7 @@ def extract_content(data: str, asHTML=True, max_len=2000) -> str:
                 else:
                     merged_paragraphs.append(line)
 
-            elif merged_paragraphs and not PUNCTUATION_END_PATTERN.search(
-                merged_paragraphs[-1]
-            ):
+            elif merged_paragraphs and not PUNCTUATION_END_PATTERN.search(merged_paragraphs[-1]):
                 merged_paragraphs[-1] += f" {line}"
             else:
                 merged_paragraphs.append(line)
@@ -563,7 +537,7 @@ def process_url(url: str, cik: int, year: int):
     raw_text = fetch_url(url)
     if not raw_text:
         return ""
-
+    
     if url.endswith("htm"):
         debug_print("Processing as html")
         content = extract_content(raw_text, True)
@@ -572,11 +546,9 @@ def process_url(url: str, cik: int, year: int):
         content = extract_content(raw_text, False)
     return content
 
-
 # =============================================================================
 # KEYWORD FILTERING (OPTIMIZED VERSION)
 # =============================================================================
-
 
 def filter_by_keywords(
     content: str, year: int, min_char_length: int = 400, max_char_length=2000
@@ -602,9 +574,7 @@ def filter_by_keywords(
         normalized = text.lower()
         return any(kw in normalized for kw in ignore_keywords)
 
-    def expand_context(
-        all_sentences: list, target_idx: int, target_category: str
-    ) -> str:
+    def expand_context(all_sentences: list, target_idx: int, target_category: str) -> str:
         random.seed(year + target_idx)
         dynamic_min = random.randint(
             int(min_char_length * 0.75), int(min_char_length * 1.25)
@@ -678,7 +648,7 @@ def filter_by_keywords(
         if len(sentence.split()) < 4:
             sentence_categories.append((i, None))
             continue
-
+        
         category = get_keyword_category(sentence)
         sentence_categories.append((i, category))
 
@@ -692,7 +662,7 @@ def filter_by_keywords(
         if category and category != "gen":
             if i in seen_sentences_global:
                 continue
-
+            
             final_sentence = expand_context(all_sentences, i, category)
             normalized = final_sentence.lower().strip()
 
@@ -709,7 +679,7 @@ def filter_by_keywords(
         if category == "gen":
             if len(all_sentences[i].split()) < 6 or i in seen_sentences_global:
                 continue
-
+            
             final_sentence = expand_context(all_sentences, i, category)
             normalized = final_sentence.lower().strip()
 
@@ -720,22 +690,17 @@ def filter_by_keywords(
                 seen_matches["gen"].add(normalized)
                 categorized_matches["gen"].append(final_sentence)
 
-    debug_print(
-        "Done generating sentences", sum(len(v) for v in categorized_matches.values())
-    )
+    debug_print("Done generating sentences", sum(len(v) for v in categorized_matches.values()))
 
     return categorized_matches
-
 
 # =============================================================================
 # PARALLEL PROCESSING FUNCTIONS (OPTIMIZED FOR 44 CORES)
 # =============================================================================
 
-
 def filter_by_fyear(filings: list[dict], fyear: int) -> list[dict]:
     return [
-        f
-        for f in filings
+        f for f in filings
         if f.get("report_date") and f.get("report_date").startswith(str(fyear))
     ]
 
@@ -746,7 +711,7 @@ def fetch_all_grouped(saveIteration: int = 100):
     OPTIMIZED for 44-core system.
     """
     global existing_report_df, all_derivatives_df
-
+    
     records = []
 
     if existing_report_df is None or existing_report_df.empty:
@@ -769,7 +734,7 @@ def fetch_all_grouped(saveIteration: int = 100):
         if filings is None:
             print("Error fetching filings for", cik)
             return cik_records
-
+            
         for fyear in years_to_fetch:
             year_filings = filter_by_fyear(filings, fyear)
             for filing in year_filings:
@@ -782,7 +747,7 @@ def fetch_all_grouped(saveIteration: int = 100):
         return cik_records
 
     total_ciks = len(cik_groups)
-
+    
     # Use fewer workers for SEC API to avoid rate limiting
     with ProcessPoolExecutor(max_workers=5) as executor:
         future_to_cik = {
@@ -817,14 +782,14 @@ def process_keywords_for_report_standalone(url: str, cik: int, year: int):
     """
     # Add small random delay to stagger requests across workers
     time.sleep(random.uniform(0.1, 0.3))
-
+    
     # Check if already processed
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT 1 FROM webpage_result WHERE url = ?", (url,))
     exists = c.fetchone()
     conn.close()
-
+    
     if exists:
         debug_print(f"Skipping already processed: {url}")
         return None
@@ -842,12 +807,15 @@ def process_keywords_for_report_standalone(url: str, cik: int, year: int):
         matches.extend(sentences["cp"])
         matches.extend(sentences["spec"])
         matches.extend(sentences["gen"])
-
-        result_row = pd.Series({"url": url, "matches": matches})
-
+        
+        result_row = pd.Series({
+            "url": url,
+            "matches": matches
+        })
+        
         debug_print(f"Processed {url}")
         save_process_result(result_row)
-
+        
         return True
     except Exception as e:
         print(f"Error processing {url}: {e}")
@@ -865,21 +833,21 @@ def fetch_content_only(url: str, cik: int, year: int):
     c.execute("SELECT 1 FROM webpage_result WHERE url = ?", (url,))
     exists = c.fetchone()
     conn.close()
-
+    
     if exists:
         return None
-
+    
     try:
         raw_text = fetch_url(url)
         if not raw_text:
             return None
-
+        
         # Extract content
         if url.endswith("htm"):
             content = extract_content(raw_text, True)
         else:
             content = extract_content(raw_text, False)
-
+        
         return (url, cik, year, content) if content else None
     except Exception as e:
         print(f"Fetch error for {url}: {e}")
@@ -893,9 +861,9 @@ def parse_content_only(data):
     """
     if data is None:
         return None
-
+    
     url, cik, year, content = data
-
+    
     try:
         # CPU-intensive parsing
         sentences = filter_by_keywords(content, year)
@@ -905,9 +873,12 @@ def parse_content_only(data):
         matches.extend(sentences["cp"])
         matches.extend(sentences["spec"])
         matches.extend(sentences["gen"])
-
-        result_row = pd.Series({"url": url, "matches": matches})
-
+        
+        result_row = pd.Series({
+            "url": url,
+            "matches": matches
+        })
+        
         save_process_result(result_row)
         return True
     except Exception as e:
@@ -918,7 +889,7 @@ def parse_content_only(data):
 def process_all_reports_fully():
     """
     AUTO-CONFIGURED: Adapts to local (16 cores) or cloud (44 cores).
-
+    
     LOCAL: 3 fetchers, 12 parsers, 100 reports/chunk
     CLOUD: 5 fetchers, 35 parsers, 500 reports/chunk
     """
@@ -929,72 +900,70 @@ def process_all_reports_fully():
         for r in existing_report_df.itertuples(index=False)
         if (r.url,) not in processed_set and r.url
     ]
-
+    
     total_reports = len(reports_to_process)
     print(f"Processing {total_reports:,} new reports")
     print(f"Already processed: {len(processed_set):,} reports")
 
     # Use auto-detected config
-    CHUNK_SIZE = CONFIG["chunk_size"]
-    NUM_FETCHERS = CONFIG["num_fetchers"]
-    NUM_PARSERS = CONFIG["num_parsers"]
-
+    CHUNK_SIZE = CONFIG['chunk_size']
+    NUM_FETCHERS = CONFIG['num_fetchers']
+    NUM_PARSERS = CONFIG['num_parsers']
+    
     total_results = 0
     total_empty = 0
-
+    
     # Split into chunks
     chunks = [
-        reports_to_process[i : i + CHUNK_SIZE]
+        reports_to_process[i:i+CHUNK_SIZE]
         for i in range(0, total_reports, CHUNK_SIZE)
     ]
-
+    
     print(f"\nProcessing in {len(chunks)} chunks of {CHUNK_SIZE} reports each")
-    print("=" * 70)
-
+    print("="*70)
+    
     for chunk_idx, chunk in enumerate(chunks, 1):
         print(f"\n📦 Chunk {chunk_idx}/{len(chunks)} ({len(chunk)} reports)")
-
+        
         # Stage 1: Fetch this chunk
         print(f"  → Fetching with {NUM_FETCHERS} workers...")
         fetched_data = []
-
+        
         with ProcessPoolExecutor(max_workers=NUM_FETCHERS) as fetch_executor:
             fetch_futures = [
                 fetch_executor.submit(fetch_content_only, url, cik, year)
                 for url, cik, year in chunk
             ]
-
-            for future in tqdm(
-                as_completed(fetch_futures),
-                total=len(fetch_futures),
-                desc=f"  Fetching chunk {chunk_idx}",
-                leave=False,
-            ):
+            
+            for future in tqdm(as_completed(fetch_futures), 
+                             total=len(fetch_futures), 
+                             desc=f"  Fetching chunk {chunk_idx}",
+                             leave=False):
                 try:
                     result = future.result()
                     if result:
                         fetched_data.append(result)
                 except Exception as e:
                     print(f"Fetch error: {e}")
-
+        
         print(f"  ✓ Fetched {len(fetched_data)} reports")
-
+        
         # Stage 2: Parse this chunk
         print(f"  → Parsing with {NUM_PARSERS} workers...")
         chunk_results = 0
         chunk_empty = 0
-
+        # execute shell commands
+        
         with ProcessPoolExecutor(max_workers=NUM_PARSERS) as parse_executor:
             parse_futures = [
-                parse_executor.submit(parse_content_only, data) for data in fetched_data
+                parse_executor.submit(parse_content_only, data)
+                for data in fetched_data
             ]
-
-            for future in tqdm(
-                as_completed(parse_futures),
-                total=len(parse_futures),
-                desc=f"  Parsing chunk {chunk_idx}",
-                leave=False,
-            ):
+            
+            for future in tqdm(as_completed(parse_futures), 
+                             total=len(parse_futures), 
+                             desc=f"  Parsing chunk {chunk_idx}",
+                             leave=False):
                 try:
                     result = future.result()
                     if result:
@@ -1004,34 +973,32 @@ def process_all_reports_fully():
                 except Exception as e:
                     print(f"Parse error: {e}")
                     chunk_empty += 1
-
+        
         total_results += chunk_results
         total_empty += chunk_empty
-
+        
         print(f"  ✓ Parsed {chunk_results} reports successfully")
-
+        
         # Clear memory (important for local machines)
         del fetched_data
         import gc
-
         gc.collect()
-
+        if (IS_COLAB):
+          subprocess.Popen(SHELL_CMD, shell=True)
+          print(f"  → Saving {chunk_results} database")
         # Progress summary
         processed_so_far = chunk_idx * CHUNK_SIZE
         percent_complete = (processed_so_far / total_reports) * 100
-        print(
-            f"  📊 Overall: {total_results:,}/{min(processed_so_far, total_reports):,} ({percent_complete:.1f}% complete)"
-        )
-
-    print("\n" + "=" * 70)
+        print(f"  📊 Overall: {total_results:,}/{min(processed_so_far, total_reports):,} ({percent_complete:.1f}% complete)")
+    
+    print("\n" + "="*70)
     print(f"🎉 FINAL RESULTS:")
     print(f"  ✓ Successfully processed: {total_results:,} reports")
     print(f"  ✗ Empty/failed: {total_empty:,} reports")
     if total_results + total_empty > 0:
-        print(
-            f"  📈 Success rate: {(total_results/(total_results+total_empty)*100):.1f}%"
-        )
-    print("=" * 70)
+        print(f"  📈 Success rate: {(total_results/(total_results+total_empty)*100):.1f}%")
+    print("="*70)
+
 
 
 # =============================================================================
@@ -1042,6 +1009,8 @@ create_db()
 existing_report_df = fetch_report_data()
 print(f"Found {len(existing_report_df)} reports in database")
 print(f"Found {len(fetch_report_data(False))} invalid/failed reports in database")
+
+
 
 
 # =============================================================================
