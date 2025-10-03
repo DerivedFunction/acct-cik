@@ -3080,7 +3080,7 @@ def generate_labeled_hedge_paragraph(
         # Debt optimization (0-1)
         if random.random() < 0.5:
             template = random.choice(fx_ir_debt_optimization_templates)
-            verb = random.choice(hedge_use_verbs)
+            verb = random.choice(hedge_may_use_verbs)
             all_sentences.append(
                 template.format(
                     company=company_name,
@@ -3093,7 +3093,7 @@ def generate_labeled_hedge_paragraph(
         nt_template = random.choice(hedge_no_trading_templates)
         all_sentences.append(nt_template.format(
             company=company_name, 
-            verb=random.choice(hedge_use_verbs)
+            verb=random.choice(hedge_may_use_verbs)
             )
         )
 
