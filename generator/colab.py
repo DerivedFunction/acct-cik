@@ -54,7 +54,7 @@ def get_system_config():
 CONFIG = get_system_config()
 total_cores = mp.cpu_count()
 
-print(f"🖥️  Detected: {total_cores + 1} CPU cores")
+print(f"🖥️  Detected: {total_cores} CPU cores")
 print(
     f"⚙️  Configuration: {CONFIG['num_fetchers']} fetchers, {CONFIG['num_parsers']} parsers"
 )
