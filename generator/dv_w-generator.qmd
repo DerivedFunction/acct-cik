@@ -2232,16 +2232,15 @@ def generate_derivative_liability_paragraph(
             )
             all_sentences.append(sentence)
 
-
         # Add fair value measurement (0-1)
         template = random.choice(warrant_fv_templates)
         amount = round(random.uniform(0.5, 15.0), 1)
         end_day = random.randint(28, 31)
-        month=random.choice(months)
-        model=random.choice(valuation_models)
-        verb=random.choice(assessment_verbs)
+        month = random.choice(months)
+        model = random.choice(valuation_models)
+        verb = random.choice(assessment_verbs)
         sentence = template.format(
-            amount=amount,        
+            amount=amount,
             company=company_name,
             model=model,
             verb=verb,
@@ -2255,8 +2254,8 @@ def generate_derivative_liability_paragraph(
         # Add liability classification (0-1)
         template = random.choice(warrant_liability_templates)
         location = random.choice(fv_change_locations)
-        event=random.choice(warrant_events)
-        sentence = template.format(location=location, company=company_name,event=event)
+        event = random.choice(warrant_events)
+        sentence = template.format(location=location, company=company_name, event=event)
         all_sentences.append(sentence)
 
         # Add general derivative liability (0-1) - only for label 4
@@ -2265,7 +2264,7 @@ def generate_derivative_liability_paragraph(
             amount = round(random.uniform(2.0, 20.0), 1)
             prev_amount = round(amount * random.uniform(0.7, 1.4), 1)
             gain_loss = random.choice(["gain", "loss"])
-            model=random.choice(valuation_models)
+            model = random.choice(valuation_models)
             sentence = template.format(
                 year=current_year,
                 amount=amount,
@@ -2368,7 +2367,11 @@ def generate_derivative_liability_paragraph(
         # Add embedded derivative identification (1)
         template = random.choice(embedded_identification_templates)
         host_contract = random.choice(host_contracts)
-        sentence = template.format(host_contract=host_contract, company=company_name, verb=random.choice(assessment_verbs))
+        sentence = template.format(
+            host_contract=host_contract,
+            company=company_name,
+            verb=random.choice(assessment_verbs),
+        )
         all_sentences.append(sentence)
 
         # Add embedded derivative types (0-1)
@@ -2383,10 +2386,6 @@ def generate_derivative_liability_paragraph(
                 host_contract=host_contract,
                 location=location,
                 company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
             )
             all_sentences.append(sentence)
 
@@ -2410,9 +2409,7 @@ def generate_derivative_liability_paragraph(
                     settlement_year=settlement_year,
                     company=company_name,
                     currency_code=currency_code,
-                    major_currency=major_currency,
                     money_unit=money_units,
-                    end_day=random.randint(28, 31),
                 )
             else:
                 # Use issuance template for label 6
@@ -2431,7 +2428,6 @@ def generate_derivative_liability_paragraph(
                     currency_code=currency_code,
                     major_currency=major_currency,
                     money_unit=money_units,
-                    end_day=random.randint(28, 31),
                 )
             all_sentences.append(sentence)
 
@@ -2492,7 +2488,7 @@ def generate_derivative_liability_paragraph(
         # Add clearly and closely related analysis (0-1) - only for label 6
         if not is_past and random.random() < 0.4:
             sentence = random.choice(ccr_analysis_templates)
-            verb=random.choice(assessment_verbs)
+            verb = random.choice(assessment_verbs)
             sentence = sentence.format(verb=verb, company=company_name)
             all_sentences.append(sentence)
 
@@ -2516,9 +2512,7 @@ def generate_derivative_liability_paragraph(
                 gain_loss=gain_loss,
                 company=company_name,
                 currency_code=currency_code,
-                major_currency=major_currency,
                 money_unit=money_units,
-                end_day=random.randint(28, 31),
             )
             all_sentences.append(sentence)
 
@@ -2527,16 +2521,10 @@ def generate_derivative_liability_paragraph(
             template = random.choice(embedded_fx_templates)
             host_contract = random.choice(host_contracts)
             currency_pair = random.choice(currency_pairs)
-
             sentence = template.format(
                 host_contract=host_contract,
-                month=random.choice(months),
                 currency_pair=currency_pair,
                 company=company_name,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
             )
             all_sentences.append(sentence)
 
@@ -2546,19 +2534,17 @@ def generate_derivative_liability_paragraph(
             for _ in range(random.randint(1, 2)):
                 template = random.choice(embedded_past_templates)
                 host_contract = random.choice(host_contracts)
+                month = random.choice(months)
+                end_day = random.randint(28, 31)
                 year = random.choice(past_years)
-
                 sentence = template.format(
                     host_contract=host_contract,
                     year=year,
                     settlement_year=settlement_year,
-                    month=random.choice(months),
+                    month=month,
                     current_year=current_year,
                     company=company_name,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
+                    end_day=end_day,
                 )
                 all_sentences.append(sentence)
 
@@ -2566,17 +2552,17 @@ def generate_derivative_liability_paragraph(
             if random.random() < 0.7:
                 template = random.choice(embedded_no_longer_outstanding_templates)
                 amount = round(random.uniform(5.0, 40.0), 1)
-
+                month = random.choice(months)
+                end_day = random.randint(28, 31)
                 sentence = template.format(
                     settlement_year=settlement_year,
                     current_year=current_year,
-                    month=random.choice(months),
+                    month=month,
+                    end_day=end_day,
                     amount=amount,
                     company=company_name,
                     currency_code=currency_code,
-                    major_currency=major_currency,
                     money_unit=money_units,
-                    end_day=random.randint(28, 31),
                 )
                 all_sentences.append(sentence)
 
@@ -2584,7 +2570,7 @@ def generate_derivative_liability_paragraph(
 
     elif label_type == 3:
         label = 3
-        for _ in range(0, max_len): 
+        for _ in range(0, max_len):
             template = random.choice(
                 equity_warrant_templates + equity_warrant_activity_templates
             )
@@ -2616,22 +2602,30 @@ def generate_derivative_liability_paragraph(
                 end_day=random.randint(28, 31),
                 event=event,
                 quarter=random.choice(quarters),
-                value=value
+                value=value,
             )
             all_sentences.append(sentence)
         # Non-cash transactions and equity dilution
         for _ in range(0, max_len):
-            noncash_type = random.choice([
-                'stock_debt', 'registration', 'market_impact', 'warrant_adjustment',
-                'fair_value', 'share_reservation', 'outstanding_options', 
-                'dilution_concern', 'capital_raising'
-            ])
+            noncash_type = random.choice(
+                [
+                    "stock_debt",
+                    "registration",
+                    "market_impact",
+                    "warrant_adjustment",
+                    "fair_value",
+                    "share_reservation",
+                    "outstanding_options",
+                    "dilution_concern",
+                    "capital_raising",
+                ]
+            )
             company = random.choice(company_names)
             month = random.choice(months)
             year = random.choice([current_year, current_year - 1])
             end_day = random.randint(28, 31)
-            
-            if noncash_type == 'stock_debt':
+
+            if noncash_type == "stock_debt":
                 template = random.choice(stock_debt_issuance_templates)
                 shares = random.choice([10000, 15000, 20000, 25000, 50000])
                 shares1 = random.choice([10000, 15000, 20000, 25000])
@@ -2640,106 +2634,133 @@ def generate_derivative_liability_paragraph(
                 value1 = round(shares1 * random.uniform(8, 15) / 1000, 0)
                 value2 = round(shares2 * random.uniform(2, 8) / 1000, 0)
                 financing_type = random.choice(financing_types)
-                
+
                 sentence = template.format(
-                    company=company_name, month=month, year=year,
+                    company=company_name,
+                    month=month,
+                    year=year,
                     financing_type=financing_type,
-                    shares=f"{shares:,}", shares1=f"{shares1:,}", shares2=f"{shares2:,}",
-                    value=f"{value:,}", value1=f"{value1:,}", value2=f"{value2:,}",
-                    currency_code=currency_code
+                    shares=f"{shares:,}",
+                    shares1=f"{shares1:,}",
+                    shares2=f"{shares2:,}",
+                    value=f"{value:,}",
+                    value1=f"{value1:,}",
+                    value2=f"{value2:,}",
+                    currency_code=currency_code,
                 )
-                
-            elif noncash_type == 'registration':
+
+            elif noncash_type == "registration":
                 template = random.choice(registration_statement_templates)
                 shares = random.choice([500000, 1000000, 1500000, 2000000, 3000000])
                 days = random.choice([30, 60, 90, 120])
-                
+
                 sentence = template.format(
-                    company=company_name, month=month, year=year,
-                    shares=f"{shares:,}", days=days
+                    company=company_name,
+                    month=month,
+                    year=year,
+                    shares=f"{shares:,}",
+                    days=days,
                 )
-                
-            elif noncash_type == 'market_impact':
+
+            elif noncash_type == "market_impact":
                 template = random.choice(market_impact_templates)
                 shares = random.choice([500000, 1000000, 2000000, 3000000])
-                
-                sentence = template.format(
-                    company=company_name, shares=f"{shares:,}"
-                )
-                
-            elif noncash_type == 'warrant_adjustment':
+
+                sentence = template.format(company=company_name, shares=f"{shares:,}")
+
+            elif noncash_type == "warrant_adjustment":
                 template = random.choice(warrant_adjustment_templates)
                 shares = random.choice([100000, 200000, 333334, 500000])
                 shares1 = int(shares * random.uniform(1.2, 1.8))
                 price = round(random.uniform(2.00, 10.00), 2)
                 price2 = round(price * random.uniform(0.5, 0.8), 2)
-                
+
                 sentence = template.format(
-                    month=month, year=year,
-                    shares=f"{shares:,}", shares1=f"{shares1:,}",
-                    price=f"{price:.2f}", price2=f"{price2:.2f}",
-                    currency_code=currency_code
+                    month=month,
+                    year=year,
+                    shares=f"{shares:,}",
+                    shares1=f"{shares1:,}",
+                    price=f"{price:.2f}",
+                    price2=f"{price2:.2f}",
+                    currency_code=currency_code,
                 )
-                
-            elif noncash_type == 'fair_value':
+
+            elif noncash_type == "fair_value":
                 template = random.choice(fair_value_snapshot_templates)
                 shares = random.choice([500000, 1000000, 1500000])
                 value = round(shares * random.uniform(3, 12) / 1000000, 1)
                 value1 = round(random.uniform(2, 10), 1)
                 value2 = round(random.uniform(2, 10), 1)
-                
+
                 sentence = template.format(
-                    company=company_name, month=month, year=year, end_day=end_day,
+                    company=company_name,
+                    month=month,
+                    year=year,
+                    end_day=end_day,
                     shares=f"{shares:,}",
-                    value=f"{value:.1f}", value1=f"{value1:.1f}", value2=f"{value2:.1f}",
-                    currency_code=currency_code
+                    value=f"{value:.1f}",
+                    value1=f"{value1:.1f}",
+                    value2=f"{value2:.1f}",
+                    currency_code=currency_code,
                 )
-                
-            elif noncash_type == 'share_reservation':
+
+            elif noncash_type == "share_reservation":
                 template = random.choice(share_reservation_templates)
                 shares = random.choice([1000000, 2000000, 3000000, 5000000])
                 shares1 = random.choice([500000, 750000, 1000000])
                 shares2 = random.choice([250000, 500000, 750000])
-                
+
                 sentence = template.format(
-                    company=company_name, month=month, year=year, end_day=end_day,
-                    shares=f"{shares:,}", shares1=f"{shares1:,}", shares2=f"{shares2:,}"
+                    company=company_name,
+                    month=month,
+                    year=year,
+                    end_day=end_day,
+                    shares=f"{shares:,}",
+                    shares1=f"{shares1:,}",
+                    shares2=f"{shares2:,}",
                 )
-                
-            elif noncash_type == 'outstanding_options':
+
+            elif noncash_type == "outstanding_options":
                 template = random.choice(outstanding_options_templates)
                 shares = random.choice([500000, 750000, 1000000, 1500000])
                 shares1 = int(shares * random.uniform(0.4, 0.7))
                 price = round(random.uniform(5.00, 25.00), 2)
                 end_year = year + random.randint(5, 10)
-                
+
                 sentence = template.format(
-                    company=company_name, month=month, year=year, end_day=end_day,
+                    company=company_name,
+                    month=month,
+                    year=year,
+                    end_day=end_day,
                     end_year=end_year,
-                    shares=f"{shares:,}", shares1=f"{shares1:,}",
-                    price=f"{price:.2f}", currency_code=currency_code
+                    shares=f"{shares:,}",
+                    shares1=f"{shares1:,}",
+                    price=f"{price:.2f}",
+                    currency_code=currency_code,
                 )
-                
-            elif noncash_type == 'dilution_concern':
+
+            elif noncash_type == "dilution_concern":
                 template = random.choice(dilution_concern_templates)
                 shares = random.choice([1000000, 2000000, 3000000, 5000000])
                 shares1 = int(shares * random.uniform(0.5, 0.8))
                 pct = round(random.uniform(10, 35), 1)
-                
+
                 sentence = template.format(
-                    company=company_name, month=month, year=year, end_day=end_day,
-                    shares=f"{shares:,}", shares1=f"{shares1:,}",
-                    pct=pct
+                    company=company_name,
+                    month=month,
+                    year=year,
+                    end_day=end_day,
+                    shares=f"{shares:,}",
+                    shares1=f"{shares1:,}",
+                    pct=pct,
                 )
-                
-            elif noncash_type == 'capital_raising':
+
+            elif noncash_type == "capital_raising":
                 template = random.choice(capital_raising_impact_templates)
                 shares = random.choice([1000000, 2000000, 3000000])
-                
-                sentence = template.format(
-                    company=company_name, shares=f"{shares:,}"
-                )
-            
+
+                sentence = template.format(company=company_name, shares=f"{shares:,}")
+
             all_sentences.append(sentence)
 
     else:
