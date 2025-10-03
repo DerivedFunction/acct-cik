@@ -5034,5 +5034,5 @@ generate(1000)
 
 ```{python}
 company_name_df = pd.read_excel(company_name_file)
-company_names = set(company_name_df["name"])
+company_names = list(company_name_df["name"])
 ``` 
