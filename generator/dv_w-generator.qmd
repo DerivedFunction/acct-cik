@@ -472,7 +472,7 @@ hedge_expiration_templates = [
     "in the {quarter} quarter of {year}, {company}’s {swap_type} portfolio reached maturity, with no new derivative contracts initiated",
     "All outstanding {swap_type} expired in {month} {year}, and no further hedging instruments were established",
     "During {year}, {company}’s {swap_type} contracts fully matured, with no new hedges entered into",
-    "In {month} {year}, all derivative positions, including {swap_type}, expired, with no new contracts executed",
+    "In {month} {year}, all derivative positions, including {swap_type}, expired, with no new contracts {verb}",
 ]
 
 hedge_quarterly_event_templates = [
@@ -3246,8 +3246,10 @@ def generate_labeled_hedge_paragraph(
                 template = random.choice(hedge_active_position_template)
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 1000)
+                verb = random.choice(hedge_use_verbs)
                 sentence = template.format(
                     company=company_name,
+                    verb=verb,
                     swap_type=swap_type,
                     month=random.choice(months),
                     end_day=random.randint(28, 31),
@@ -3261,12 +3263,14 @@ def generate_labeled_hedge_paragraph(
                 # Optional comparative (0-1)
                 if random.random() < 0.5 and len(past_years) > 0:
                     template = random.choice(hedge_optional_templates)
+                    verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
                     notional1 = random.randint(50, 1000)
                     notional2 = random.randint(50, 1000)
                     prev_year = past_years[-1]
                     sentence = template.format(
                         company=company_name,
+                        verb=verb,
                         swap_type=swap_type,
                         month=random.choice(months),
                         end_day=random.randint(28, 31),
@@ -3324,10 +3328,12 @@ def generate_labeled_hedge_paragraph(
                 # Expiration (0-1)
                 elif random.random() < 0.5:
                     template = random.choice(hedge_expiration_templates)
+                    verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
                     exp_year = random.choice(past_years) if past_years else current_year
                     sentence = template.format(
                         company=company_name,
+                        verb=verb,
                         swap_type=swap_type,
                         quarter=random.choice(quarters),
                         month=random.choice(months),
@@ -3433,12 +3439,14 @@ def generate_labeled_hedge_paragraph(
                 # Optional comparative (0-1)
                 if random.random() < 0.5 and len(past_years) > 0:
                     template = random.choice(hedge_optional_templates)
+                    verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
                     notional1 = random.randint(100, 1000)
                     notional2 = random.randint(100, 1000)
                     prev_year = past_years[-1]
                     sentence = template.format(
                         company=company_name,
+                        verb=verb,
                         swap_type=swap_type,
                         month=random.choice(months),
                         end_day=random.randint(28, 31),
@@ -3540,10 +3548,12 @@ def generate_labeled_hedge_paragraph(
                 # Expiration (0-1)
                 elif random.random() < 0.5:
                     template = random.choice(hedge_expiration_templates)
+                    verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
                     exp_year = random.choice(past_years) if past_years else current_year
                     sentence = template.format(
                         company=company_name,
+                        verb=verb,
                         swap_type=swap_type,
                         quarter=random.choice(quarters),
                         month=random.choice(months),
@@ -3748,10 +3758,12 @@ def generate_labeled_hedge_paragraph(
                 # Expiration (0-1)
                 elif random.random() < 0.5:
                     template = random.choice(hedge_expiration_templates)
+                    verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
                     exp_year = random.choice(past_years) if past_years else current_year
                     sentence = template.format(
                         company=company_name,
+                        verb=verb,
                         swap_type=swap_type,
                         quarter=random.choice(quarters),
                         month=random.choice(months),
@@ -3778,8 +3790,10 @@ def generate_labeled_hedge_paragraph(
                 template = random.choice(hedge_active_position_template)
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 1000)
+                verb = random.choice(hedge_use_verbs)
                 sentence = template.format(
                     company=company_name,
+                    verb=verb,
                     swap_type=swap_type,
                     month=random.choice(months),
                     end_day=random.randint(28, 31),
@@ -3793,12 +3807,14 @@ def generate_labeled_hedge_paragraph(
                 # Optional comparative (0-1)
                 if random.random() < 0.5 and len(past_years) > 0:
                     template = random.choice(hedge_optional_templates)
+                    verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
                     notional1 = random.randint(50, 1000)
                     notional2 = random.randint(50, 1000)
                     prev_year = past_years[-1]
                     sentence = template.format(
                         company=company_name,
+                        verb=verb,
                         swap_type=swap_type,
                         month=random.choice(months),
                         end_day=random.randint(28, 31),
@@ -3833,10 +3849,12 @@ def generate_labeled_hedge_paragraph(
                 # Expiration (0-1)
                 elif random.random() < 0.5:
                     template = random.choice(hedge_expiration_templates)
+                    verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
                     exp_year = random.choice(past_years) if past_years else current_year
                     sentence = template.format(
                         company=company_name,
+                        verb=verb,
                         swap_type=swap_type,
                         quarter=random.choice(quarters),
                         month=random.choice(months),
