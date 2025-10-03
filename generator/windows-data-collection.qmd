@@ -22,9 +22,8 @@ import sqlite3       # To store our data
 from typing import List
 import random
 import re # Regex expressions
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed # Concurrency
+from concurrent.futures import ThreadPoolExecutor, as_completed # Concurrency
 from tqdm import tqdm
-import multiprocessing as mp
 ```
 
 ```{python}
@@ -32,7 +31,6 @@ filename = "../excel/derivatives_data.csv"
 DB_PATH = "../db/web_data.db"
 KEYWORDS_FILE = "../config/keywords_find.json"
 NUM_THREADS = 4
-NUM_PROCESSES = max(1, (mp.cpu_count() - 2) // NUM_THREADS)
 SEC_RATE_LIMIT = 1 / 5 # requests per second
 ```
 
@@ -360,7 +358,7 @@ def extract_filings(data: dict, cik: str, name: str, ticker: str) -> List[dict]:
         if f_type in FILING_TYPES:
             accession = accession_numbers[i].replace("-", "")
             doc = primary_docs[i]
-            if not doc or doc.endswith("txt") or doc == "0001.htm":  # For old files
+            if not doc or doc.endswith("txt"):  # For old files
                 doc = f"{accession[:10]}-{accession[10:12]}-{accession[12:]}.txt"
             link = f"https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{doc}"
             links.append(
@@ -405,70 +403,57 @@ def get_cik_filings(cik: str) -> List[dict]:
 ### Extract Content from Webpage
 
 ```{python}
-
-def clean_paragraph(para: str) -> str:
-    """Clean a single paragraph with all regex and formatting rules"""
-    para = para.strip()
-    if not para:
-        return ""
-
-    is_list_item = BULLET_PATTERN.match(para) or NUMBERED_PATTERN.match(para)
-    if not is_list_item:
-        para = re.sub(r"\n+", " ", para)
-
-    for pattern, replacement in CRUNCHED_TEXT_PATTERNS:
-        para = pattern.sub(replacement, para)
-
-    for pattern, replacement in CLEANUP_PATTERNS:
-        para = pattern.sub(replacement, para)
-
-    return para.strip()
-
-def merge_paragraphs_chunk(chunk: list) -> list:
-    """Merge paragraphs within a chunk using bullet/numbered/punctuation rules"""
-    merged = []
-    i = 0
-    while i < len(chunk):
-        line = chunk[i]
-        if BULLET_PATTERN.match(line):
-            if len(line.strip()) == 1 and i + 1 < len(chunk):
-                line = f"{line} {chunk[i + 1]}"
-                i += 1
-            if merged and BULLET_PATTERN.match(merged[-1]):
-                merged[-1] += f"\n{line}"
-            else:
-                merged.append(line)
-        elif NUMBERED_PATTERN.match(line):
-            if merged and NUMBERED_PATTERN.match(merged[-1]):
-                merged[-1] += f"\n{line}"
-            else:
-                merged.append(line)
-        elif merged and not PUNCTUATION_END_PATTERN.search(merged[-1]):
-            merged[-1] += f" {line}"
-        else:
-            merged.append(line)
-        i += 1
-    return merged
-
 def extract_content(data: str, asHTML=True, max_len=2000) -> str:
+    """
+    Extract and clean text from HTML or plaintext in one pass.
+    Optimized version with reduced regex compilation and string operations.
+    """
     if not data:
         return ""
+
     if asHTML:
         soup = BeautifulSoup(data, "html.parser")
         text = soup.get_text(separator="\n\n", strip=True)
         text = keep_allowed_chars(text, True)
+        # Split into candidate paragraphs
         paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
+        merged_paragraphs = []
 
-        # Parallel merge
-        chunk_size = max(50, len(paragraphs) // 12)
-        chunks = [paragraphs[i:i + chunk_size] for i in range(0, len(paragraphs), chunk_size)]
+        i = 0
+        while i < len(paragraphs):
+            line = paragraphs[i]
 
-        with ProcessPoolExecutor(max_workers=NUM_PROCESSES) as executor:
-            merged_chunks = executor.map(merge_paragraphs_chunk, chunks)
+            # Check for bullets
+            if BULLET_PATTERN.match(line):
+                # Merge single-character bullet with next line
+                if len(line.strip()) == 1 and i + 1 < len(paragraphs):
+                    line = f"{line} {paragraphs[i + 1]}"
+                    i += 1  # Skip next line
 
-        merged_paragraphs = [para for chunk in merged_chunks for para in chunk]
+                # Merge with previous bullet if applicable
+                if merged_paragraphs and BULLET_PATTERN.match(merged_paragraphs[-1]):
+                    merged_paragraphs[-1] += f"\n{line}"
+                else:
+                    merged_paragraphs.append(line)
 
-        # Handle max length
+            # Check for numbered lists
+            elif NUMBERED_PATTERN.match(line):
+                if merged_paragraphs and NUMBERED_PATTERN.match(merged_paragraphs[-1]):
+                    merged_paragraphs[-1] += f"\n{line}"
+                else:
+                    merged_paragraphs.append(line)
+
+            # Merge if previous line doesn't end in punctuation
+            elif merged_paragraphs and not PUNCTUATION_END_PATTERN.search(
+                merged_paragraphs[-1]
+            ):
+                merged_paragraphs[-1] += f" {line}"
+            else:
+                merged_paragraphs.append(line)
+
+            i += 1
+
+        # Handle max length with pre-compiled regex
         final_paragraphs = []
         for para in merged_paragraphs:
             if len(para) <= max_len:
@@ -476,6 +461,7 @@ def extract_content(data: str, asHTML=True, max_len=2000) -> str:
             else:
                 parts = SENTENCE_SPLIT_PATTERN.split(para)
                 current_chunk = ""
+
                 for part in parts:
                     if len(current_chunk) + len(part) + 1 <= max_len:
                         current_chunk += f" {part}" if current_chunk else part
@@ -483,38 +469,56 @@ def extract_content(data: str, asHTML=True, max_len=2000) -> str:
                         if current_chunk:
                             final_paragraphs.append(current_chunk)
                         current_chunk = part
+
                 if current_chunk:
                     final_paragraphs.append(current_chunk)
+
         paragraphs = final_paragraphs
 
-    else:
+    else:  # Plain text processing
         text = keep_allowed_chars(data)
         parts = TABLE_SPLIT_PATTERN.split(text)
         paragraphs = []
+
         for part in parts:
             if part.strip().lower().startswith("<table>"):
                 rows = parse_plain_text_table_fixed(part)
                 table_text = "\n".join(["\t".join(row) for row in rows])
                 paragraphs.append(table_text)
             else:
+                # Use list comprehension for better performance
                 sub_paras = [p for p in re.split(r"\n\s*\n", part) if p.strip()]
                 paragraphs.extend(sub_paras)
 
-    # Parallel cleaning
-    with ProcessPoolExecutor(max_workers=NUM_PROCESSES) as executor:
-        cleaned = executor.map(clean_paragraph, paragraphs)
-
-    # Merge short paragraphs
-    final_output = []
-    for para in cleaned:
+    # Optimized cleaning loop
+    cleaned_paragraphs = []
+    for para in paragraphs:
+        para = para.strip()
         if not para:
             continue
-        if len(para) < 15 and final_output:
-            final_output[-1] = f"{final_output[-1]} {para}"
-        else:
-            final_output.append(para)
 
-    return "\n\n".join(final_output)
+        # Keep newlines for bullets and numbered lists (check once)
+        is_list_item = BULLET_PATTERN.match(para) or NUMBERED_PATTERN.match(para)
+        if not is_list_item:
+            para = re.sub(r"\n+", " ", para)
+
+        # Apply crunched text fixes
+        for pattern, replacement in CRUNCHED_TEXT_PATTERNS:
+            para = pattern.sub(replacement, para)
+
+        # Apply cleanup patterns
+        for pattern, replacement in CLEANUP_PATTERNS:
+            para = pattern.sub(replacement, para)
+
+        para = para.strip()
+
+        # Merge short paragraphs
+        if len(para) < 15 and cleaned_paragraphs:
+            cleaned_paragraphs[-1] = f"{cleaned_paragraphs[-1]} {para}"
+        elif para:
+            cleaned_paragraphs.append(para)
+
+    return "\n\n".join(cleaned_paragraphs)
 
 
 def keep_allowed_chars(text, asHTML=False):
@@ -600,7 +604,7 @@ def fetch_url(url: str, timeout: int = 10) -> str | None:
         return None
 
 
-def process_url(url, cik, year):
+def process_url(url: str, cik: int, year: int):
     """
     Processes a URL and its data synchronously.
     Saves the extracted content in the DB if not already cached.
@@ -640,49 +644,67 @@ def find_count_by_keywords(content: str, year: int) -> dict:
 
 ```{python}
 
-def process_sentence(args):
-    """Worker function for parallel sentence processing"""
-    (
-        i,
-        sentence,
-        all_sentences,
-        year,
-        min_char_length,
-        max_char_length,
-        ignore_keywords,
-    ) = args
-    if len(sentence.split()) < 4:
-        return None
+
+def filter_by_keywords(
+    content: str, year: int, min_char_length: int = 400, max_char_length=2000
+) -> dict:
+    """
+    Extract and filter sentences based on keywords with simple context expansion.
+    Optimized for speed with pre-cleaning and minimal keyword searches.
+    (All lowercase)
+    IGNORE_KEYWORDS # Do not match or add to context
+    """
+    ignore_keywords = [kw.lower() for kw in IGNORE_KEYWORDS]
+
+    debug_print("Generating sentences")
 
     def get_keyword_category(text: str) -> str:
+        """Determine which keyword category the text matches (priority order: IR > FX > CP > SPEC > GEN)"""
         for category, regex in CATEGORY_REGEX_ORDER:
             if regex.search(text):
                 return category
         return None
 
+    def clean_sentence(sentence: str) -> str:
+        """Apply consistent cleaning to a single sentence"""
+        return re.sub(r"\s+", " ", sentence.strip())
+
     def measure_merged_length(sentences: list) -> int:
+        """Calculate length of merged sentences with proper formatting"""
         return len(". ".join(sentences).strip() + ".")
 
     def should_ignore(text: str) -> bool:
+        """Check if text should be ignored based on keywords"""
         normalized = text.lower()
         return any(kw in normalized for kw in ignore_keywords)
 
-    def expand_context(all_sentences, target_idx, target_category):
-        random.seed(year + target_idx)
+    def expand_context(
+        all_sentences: list, target_idx: int, target_category: str
+    ) -> str:
+        """Expand context around target sentence, only including sentences from same category or no category"""
+        # Randomize min length within range (e.g., 600–800)
+        random.seed(year + target_idx)  # stable per target sentence
         dynamic_min = random.randint(
             int(min_char_length * 0.75), int(min_char_length * 1.25)
         )
+
         merged = [all_sentences[target_idx]]
-        left_idx, right_idx = target_idx - 1, target_idx + 1
+        left_idx = target_idx - 1
+        right_idx = target_idx + 1
 
         while True:
             current_length = measure_merged_length(merged)
             if current_length >= dynamic_min:
                 break
+
             added = False
+
+            # Try adding left
             if left_idx >= 0:
                 left_sentence = all_sentences[left_idx]
                 left_category = get_keyword_category(left_sentence)
+
+                # Only add if same category or no category (None)
                 if left_category is None or left_category == target_category:
                     candidate = [left_sentence] + merged
                     if measure_merged_length(candidate) <= max_char_length:
@@ -690,12 +712,16 @@ def process_sentence(args):
                         left_idx -= 1
                         added = True
                     else:
-                        left_idx = -1
+                        left_idx = -1  # Stop trying left
                 else:
-                    left_idx = -1
+                    left_idx = -1  # Stop trying left if different category
+
+            # Try adding right
             if right_idx < len(all_sentences):
                 right_sentence = all_sentences[right_idx]
                 right_category = get_keyword_category(right_sentence)
+
+                # Only add if same category or no category (None)
                 if right_category is None or right_category == target_category:
                     candidate = merged + [right_sentence]
                     if measure_merged_length(candidate) <= max_char_length:
@@ -703,99 +729,94 @@ def process_sentence(args):
                         right_idx += 1
                         added = True
                     else:
-                        right_idx = len(all_sentences)
+                        right_idx = len(all_sentences)  # Stop trying right
                 else:
-                    right_idx = len(all_sentences)
+                    right_idx = len(
+                        all_sentences
+                    )  # Stop trying right if different category
+
             if not added:
                 break
 
+        # --- enforce max_char_length by truncating ---
         final_text = ". ".join(merged).strip() + "."
         if len(final_text) > max_char_length:
             excess = len(final_text) - max_char_length
             trim_left = excess // 2
             trim_right = excess - trim_left
             final_text = final_text[trim_left : len(final_text) - trim_right].strip()
+
         return final_text
 
-    category = get_keyword_category(sentence)
-    if category and category != "gen":
-        final_sentence = expand_context(all_sentences, i, category)
-        normalized = final_sentence.lower().strip()
-        if should_ignore(normalized):
-            return None
-        return (category, normalized, final_sentence, i)
-    return None
-
-
-def filter_by_keywords(
-    content: str, year: int, min_char_length: int = 400, max_char_length=2000
-) -> dict:
-    ignore_keywords = [kw.lower() for kw in IGNORE_KEYWORDS]
-    debug_print("Generating sentences")
-
+    # Pre-process and clean all sentences from entire content
     text = re.sub(r"\s+", " ", content.strip())
     raw_sentences = [
         s.strip()
         for s in re.split(r"(?<![A-Z0-9])\s*\.\s*(?![a-zA-Z0-9])", text)
         if s.strip()
     ]
-    all_sentences = [re.sub(r"\s+", " ", s.strip()) for s in raw_sentences]
 
-    categorized_matches = {k: [] for k in ["ir", "fx", "cp", "spec", "gen"]}
-    seen_matches = {k: set() for k in categorized_matches}
-    seen_sentences_global = set()
+    # Clean sentences once during preprocessing
+    all_sentences = [clean_sentence(sentence) for sentence in raw_sentences]
 
-    # First pass: IR, FX, CP, SPEC
-    args_list = [
-        (i, s, all_sentences, year, min_char_length, max_char_length, ignore_keywords)
-        for i, s in enumerate(all_sentences)
-    ]
+    # Process sentences in two passes: specific keywords first, then generic
+    categorized_matches = {"ir": [], "fx": [], "cp": [], "spec": [], "gen": []}
+    seen_matches = {"ir": set(), "fx": set(), "cp": set(), "spec": set(), "gen": set()}
+    seen_sentences_global = set()  # Track all matched sentences globally
+    random.seed(year)
 
-    # First pass
-    with ProcessPoolExecutor(max_workers=NUM_PROCESSES) as executor:
-        for result in executor.map(process_sentence, args_list):
-            if result:
-                category, normalized, final_sentence, i = result
-                if normalized not in seen_matches[category]:
-                    seen_matches[category].add(normalized)
-                    categorized_matches[category].append(final_sentence)
-                    seen_sentences_global.add(i)
-
-    # Second pass: GEN
-    gen_args_list = []
+    # First pass: Process IR, FX, CP, SPEC (specific keywords)
     for i, sentence in enumerate(all_sentences):
-        if len(sentence.split()) < 6 or i in seen_sentences_global:
+        if len(sentence.split()) < 4:
             continue
-        for cat, regex in CATEGORY_REGEX_ORDER:
-            if regex.search(sentence):
-                if cat == "gen":
-                    gen_args_list.append(
-                        (
-                            i,
-                            sentence,
-                            all_sentences,
-                            year,
-                            min_char_length,
-                            max_char_length,
-                            ignore_keywords,
-                        )
-                    )
-                break
+        # Check which category this sentence matches
+        category = get_keyword_category(sentence)
 
-    with ProcessPoolExecutor(max_workers=NUM_PROCESSES) as executor:
-        for result in executor.map(process_sentence, gen_args_list):
-            if result:
-                _, normalized, final_text, _ = result
-                if normalized not in seen_matches["gen"]:
-                    seen_matches["gen"].add(normalized)
-                    categorized_matches["gen"].append(final_text)
+        # Skip generic in first pass
+        if category and category != "gen":
+            # Expand context around sentence
+            final_sentence = expand_context(all_sentences, i, category)
+            normalized = final_sentence.lower().strip()
 
+            if should_ignore(normalized):
+                continue
+
+            # Add to appropriate category if not seen
+            if normalized not in seen_matches[category]:
+                seen_matches[category].add(normalized)
+                categorized_matches[category].append(final_sentence)
+                seen_sentences_global.add(i)  # Mark this sentence index as used
+
+    # Second pass: Process GEN (generic keywords) - only if not already matched
+    for i, sentence in enumerate(all_sentences):
+        if len(sentence.split()) < 6:
+            continue
+
+        # Skip if already matched in first pass
+        if i in seen_sentences_global:
+            continue
+
+        category = get_keyword_category(sentence)
+
+        # Only process generic in second pass
+        if category == "gen":
+            # Expand context around sentence
+            final_sentence = expand_context(all_sentences, i, category)
+            normalized = final_sentence.lower().strip()
+
+            if should_ignore(normalized):
+                continue
+
+            # Add to gen category if not seen
+            if normalized not in seen_matches["gen"]:
+                seen_matches["gen"].add(normalized)
+                categorized_matches["gen"].append(final_sentence)
 
     debug_print(
         "Done generating sentences", sum(len(v) for v in categorized_matches.values())
     )
-    return categorized_matches
 
+    return categorized_matches
 
 ```
 
@@ -904,7 +925,7 @@ def process_all_reports_fully():
                 debug_print(f"Failed to process {url}: No content.")
                 return None
 
-            sentences = filter_by_keywords(content, int(report.year))
+            sentences = filter_by_keywords(content, report.year)
             matches = []
             matches.extend(sentences["ir"])
             matches.extend(sentences["fx"])
@@ -939,7 +960,7 @@ def process_all_reports_fully():
 
     results = 0
     empty_results = 0
-    SEC_RATE_LIMIT = NUM_THREADS / 8  # requests per second
+    SEC_RATE_LIMIT = NUM_THREADS / 5  # requests per second
     with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         future_to_report = {
             executor.submit(process_keywords_for_report, r): r
