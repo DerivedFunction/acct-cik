@@ -308,7 +308,7 @@ embedded_fv_change_templates = [
 
 # Closely and clearly related analysis templates
 ccr_analysis_templates = [
-    "{company} performed an assessment of whether the embedded features were clearly and closely related to the economic characteristics of the host contract and concluded bifurcation was required",
+    "{company} {verb} an assessment of whether the embedded features were clearly and closely related to the economic characteristics of the host contract and concluded bifurcation was required",
     "The embedded features are not clearly and closely related to the debt host instrument, as the conversion feature is indexed to {company}'s own stock and includes down round protection",
     "Management {verb} the economic characteristics and risks of the embedded features and determined they are not clearly and closely related to the host, requiring separate accounting",
     "The embedded derivative fails the clearly and closely related test due to its equity-linked characteristics and variable settlement provisions",
