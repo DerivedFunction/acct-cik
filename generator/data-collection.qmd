@@ -939,7 +939,7 @@ def process_all_reports_fully():
 
     results = 0
     empty_results = 0
-    SEC_RATE_LIMIT = NUM_THREADS / 5  # requests per second
+    SEC_RATE_LIMIT = NUM_THREADS / 8  # requests per second
     with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         future_to_report = {
             executor.submit(process_keywords_for_report, r): r
