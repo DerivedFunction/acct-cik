@@ -2682,6 +2682,7 @@ def generate_derivative_liability_paragraph(
                     end_day=end_day,
                     year=year,
                     settlement_year=settlement_year,
+                    maturity_year=maturity_year,
                     company=company_name,
                     currency_code=currency_code,
                     money_unit=money_units,
