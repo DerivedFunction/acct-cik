@@ -21,13 +21,13 @@ DB_PATH = "web_data.db"
 REPORT_CSV_PATH = "./report_data.csv"
 SERVER_EXCEL_PATH = "./server_results.xlsx"
 SENTENCE_PATH = "./sentence_labels.xlsx"
-NUM_THREADS = 6
+NUM_THREADS = 36
 SERVER_URL = "http://127.0.0.1:5000/predict"
 KEYWORDS_FILE = "./keywords_find.json"
 DEBUG = False  # Debug printing
 
 # Chunking configuration
-CHUNK_SIZE = 500  # Process 500 reports per chunk
+CHUNK_SIZE = 1500  # Process 1000 reports per chunk
 SAVE_ITERATION = 1  # Save after each chunk
 
 # =============================================================================
