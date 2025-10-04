@@ -21,7 +21,7 @@ import subprocess
 # =============================================================================
 # CONFIGURATION - DEFAULT
 # =============================================================================
-
+debug = False
 ALL_FIRMS_DATA = "derivatives_data.csv"
 REPORT_CSV_PATH = "report_data_to_process.csv"
 DB_PATH = "web_data.db"
@@ -190,8 +190,8 @@ all_derivatives_df = pd.read_csv(ALL_FIRMS_DATA)
 # DEBUG UTILITIES
 # =============================================================================
 
-debug = False
 def debug_print(*args):
+    global debug
     if debug:
         print(*args)
 
@@ -757,7 +757,6 @@ def filter_by_fyear(filings: list[dict], fyear: int) -> list[dict]:
 def fetch_all_grouped(saveIteration: int = 100):
     """
     Fetch filings using ProcessPoolExecutor for parallelism.
-    OPTIMIZED for 44-core system.
     """
     global existing_report_df, all_derivatives_df
 
@@ -835,8 +834,6 @@ def fetch_content_only(url: str):
     conn.close()
 
     if exists:
-        # Cooldown after having nothing
-        time.sleep(SEC_RATE_LIMIT)
         return None
 
     try:
@@ -906,7 +903,7 @@ def process_all_reports_fully():
     reports_to_process = [
         (r.url)
         for r in existing_report_df.itertuples(index=False)
-        if (r.url) not in processed_set and r.url
+        if (r.url,) not in processed_set and r.url
     ]
 
     total_reports = len(reports_to_process)
