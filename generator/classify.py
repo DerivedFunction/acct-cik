@@ -22,7 +22,7 @@ SERVER_EXCEL_PATH = "./server_results.xlsx"
 SENTENCE_PATH = "./sentence_labels.xlsx"
 NUM_THREADS = 6
 SERVER_URL = "http://127.0.0.1:5000/predict"
-KEYWORDS_FILE = "./keywords_labels.json"
+KEYWORDS_FILE = "./keywords_find.json"
 DEBUG = False  # Debug printing
 
 # =============================================================================
