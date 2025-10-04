@@ -1102,5 +1102,5 @@ if __name__ == "__main__":
     process_all_reports_fully()
 
     print("\n" + "=" * 70)
-    print("Setup complete! Uncomment the function calls above to execute.")
+    print("All done!")
     print("=" * 70)
