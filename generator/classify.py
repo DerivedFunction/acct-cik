@@ -6,14 +6,9 @@ import pandas as pd
 import requests
 import json
 import sqlite3
-from typing import List
-import random
-import re
-import matplotlib.pyplot as plt
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 from collections import Counter
-from openpyxl import load_workbook
 import subprocess
 from pathlib import Path
 
@@ -28,6 +23,7 @@ SENTENCE_PATH = "./sentence_labels.xlsx"
 NUM_THREADS = 6
 SERVER_URL = "http://127.0.0.1:5000/predict"
 KEYWORDS_FILE = "./keywords_labels.json"
+DEBUG = False  # Debug printing
 
 # =============================================================================
 # COLAB CONFIGURATION
@@ -46,25 +42,13 @@ else:
     print("Running in local environment")
 
 # =============================================================================
-# LOAD DATA
+# DEBUG UTILITIES
 # =============================================================================
 
-existing_report_df = pd.read_csv(REPORT_CSV_PATH)
-
-# Mapping IDs to labels
-with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
-    keyword_data = json.load(f)
-
-id2label = {int(id): label for id, label in keyword_data["id2label"].items()}
-label2id = {label: int(id) for id, label in id2label.items()}
-
-debug = False  # Debug printing
-
-
 def debug_print(*args):
-    if debug:
+    global DEBUG
+    if DEBUG:
         print(*args)
-
 
 # =============================================================================
 # DATABASE FUNCTIONS
@@ -462,7 +446,6 @@ def get_sentence_analysis():
 def build_sentence_label_excel():
     # Load both DB tables with a join to get cik and year
     conn = sqlite3.connect(DB_PATH)
-    
     query = """
         SELECT 
             r.cik,
@@ -474,7 +457,6 @@ def build_sentence_label_excel():
         JOIN report_data r ON w.url = r.url
         JOIN server_result s ON w.url = s.url
     """
-    
     combined_df = pd.read_sql(query, conn)
     conn.close()
 
@@ -510,7 +492,7 @@ def build_sentence_label_excel():
     # Save to Excel
     final_df.to_excel(SENTENCE_PATH, index=False)
     print(f"Saved sentence-label mapping to {SENTENCE_PATH}")
-    
+
     # Save to Google Drive if in Colab
     if IS_COLAB:
         print("Saving sentence labels to Google Drive...")
@@ -518,6 +500,18 @@ def build_sentence_label_excel():
 
     return final_df
 
+# =============================================================================
+# INITIALIZATION
+# =============================================================================
+
+create_db()
+existing_report_df = fetch_report_data()
+print(f"Found {len(existing_report_df)} reports in database")
+with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
+    keyword_data = json.load(f)
+
+id2label = {int(id): label for id, label in keyword_data["id2label"].items()}
+label2id = {label: int(id) for id, label in id2label.items()}
 
 # =============================================================================
 # MAIN EXECUTION
