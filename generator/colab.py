@@ -990,7 +990,7 @@ def process_all_reports_fully():
                                 SEC_RATE - current_rate) / SEC_RATE
                             new_limit = current_sleep * (1 - RATE_INCREASE)
                             shared_rate_limit.value = max(
-                                new_limit, 0.001)  # don't go below 1ms
+                                new_limit, 0)  # don't go below 0ms
                         elif current_rate > SEC_RATE:
                             shared_rate_limit.value = SEC_RATE_LIMIT
                         current_chunk_time = time.time()  # reset
