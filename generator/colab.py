@@ -11,7 +11,7 @@ import sqlite3
 from typing import List
 import random
 import re
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 import multiprocessing as mp
 from pathlib import Path
@@ -34,6 +34,7 @@ CHUNK_SIZE = 500
 CHUNK_CHECK_RATE = 20  # Check every 20 iterations
 NUM_FETCHERS = 1
 NUM_PARSERS = 1
+NUM_THREADS = 5
 
 # =============================================================================
 # COLAB CONFIGURATION
@@ -817,12 +818,12 @@ def fetch_all_grouped(saveIteration: int = 100):
         return cik_records
 
     # Use fewer workers for SEC API to avoid rate limiting
-    with ProcessPoolExecutor(max_workers=NUM_FETCHERS) as executor:
+    with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         future_to_cik = {
             executor.submit(process_cik, row): i
             for i, row in enumerate(cik_groups.itertuples(index=False), start=1)
         }
-        SEC_RATE_LIMIT = NUM_FETCHERS / SEC_RATE
+        SEC_RATE_LIMIT = NUM_THREADS / SEC_RATE
         for future in tqdm(as_completed(future_to_cik), total=len(future_to_cik)):
             i = future_to_cik[future]
             try:
@@ -1092,7 +1093,7 @@ if __name__ == "__main__":
     print("STEP 1: Fetch all 10-K report URLs from SEC")
     print("=" * 70)
     # Uncomment to run:
-    # fetch_all_grouped()
+    fetch_all_grouped()
 
     print("\n" + "=" * 70)
     print(f"STEP 2: Perform keyword extraction in parallel")
