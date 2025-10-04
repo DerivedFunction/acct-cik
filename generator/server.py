@@ -62,3 +62,5 @@ def predict_endpoint():
 # Run Flask app
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
+# gunicorn --workers {num_workers} --timeout 120 server:app --bind 0.0.0.0:5000"
