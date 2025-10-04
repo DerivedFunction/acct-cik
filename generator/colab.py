@@ -957,7 +957,8 @@ def process_all_reports_fully():
     total_time = 0
 
     for chunk_idx, chunk in enumerate(chunks, 1):
-        current_chunk_time = time.time()
+        start_chunk_time = time.time()
+        current_chunk_time = start_chunk_time
         num_reqs = 0  # Keep track of number of requests, to divide difference between cur time and chunk time
         print(f"\n📦 Chunk {chunk_idx}/{len(chunks)} ({len(chunk)} reports)")
 
@@ -979,13 +980,14 @@ def process_all_reports_fully():
                 try:
                     num_reqs += 1
                     if num_reqs % CHUNK_CHECK_RATE == 0:
-                        current_rate = time.time() - current_chunk_time
+                        current_rate = (time.time() - current_chunk_time) / CHUNK_CHECK_RATE
                         if current_rate < SEC_RATE:
                             SEC_RATE_LIMIT -= RATE_INCREASE
                         elif current_rate > SEC_RATE:
                             SEC_RATE_LIMIT = NUM_FETCHERS / SEC_RATE
                         else:
                             pass
+                        current_chunk_time = time.time() # reset
                     result = future.result()
                     if result:
                         fetched_data.append(result)
@@ -993,7 +995,7 @@ def process_all_reports_fully():
                 except Exception as e:
                     print(f"Fetch error: {e}")
 
-        chunk_time = time.time() - current_chunk_time
+        chunk_time = time.time() - start_chunk_time
         chunk_times.append(chunk_time)
         total_time += chunk_time
         avg_chunk_time = sum(chunk_times) / len(chunk_times)
