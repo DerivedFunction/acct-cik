@@ -50,10 +50,12 @@ else:
 # DEBUG UTILITIES
 # =============================================================================
 
+
 def debug_print(*args):
     global DEBUG
     if DEBUG:
         print(*args)
+
 
 def format_time(seconds):
     hours, remainder = divmod(seconds, 3600)
@@ -65,9 +67,11 @@ def format_time(seconds):
     else:
         return f"{int(seconds)}s"
 
+
 # =============================================================================
 # DATABASE FUNCTIONS
 # =============================================================================
+
 
 def create_db():
     conn = sqlite3.connect(DB_PATH)
@@ -174,6 +178,66 @@ def save_process_result(df):
     conn.close()
 
 
+def save_batch_results(results_buffer):
+    """
+    Batch insert multiple results into the server_result table
+    """
+    if not results_buffer:
+        return
+
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+
+    success_count = 0
+    fail_count = 0
+
+    try:
+        # Prepare batch data
+        batch_data = []
+        fail_data = []
+
+        for result in results_buffer:
+            try:
+                batch_data.append((result.url, json.dumps(result.server_response)))
+            except Exception as e:
+                debug_print(f"Error preparing data for {result.url}: {e}")
+                # Get cik and year from report_data for fail_results
+                c.execute(
+                    "SELECT cik, year FROM report_data WHERE url=?", (result.url,)
+                )
+                db_result = c.fetchone()
+                if db_result:
+                    cik, year = db_result
+                    fail_data.append((cik, year, result.url))
+                fail_count += 1
+
+        # Batch insert successful results
+        if batch_data:
+            c.executemany(
+                "INSERT OR REPLACE INTO server_result (url, server_response) VALUES (?, ?)",
+                batch_data,
+            )
+            success_count = len(batch_data)
+
+        # Batch insert failures
+        if fail_data:
+            c.executemany(
+                "INSERT OR IGNORE INTO fail_results (cik, year, url) VALUES (?, ?, ?)",
+                fail_data,
+            )
+
+        conn.commit()
+        debug_print(f"Batch saved: {success_count} success, {fail_count} failures")
+
+    except sqlite3.Error as e:
+        print(f"Batch DB error: {e}")
+        conn.rollback()
+    finally:
+        conn.close()
+
+    return success_count, fail_count
+
+
 def fetch_report_data(valid=True):
     global REPORT_CSV_PATH
     try:
@@ -195,6 +259,7 @@ def fetch_report_data(valid=True):
 # =============================================================================
 # SERVER COMMUNICATION
 # =============================================================================
+
 
 def get_result_from_server(sentences, batch_size=128):
     predictions = []
@@ -229,12 +294,12 @@ def process_report_fully(report):
     Processes a single report completely:
     1. Loads content (from cache or web).
     2. Gets analysis from the server for those sentences from `matches`.
-    3. Saves the result to the server_result table.
+    3. Returns the result (does NOT save to database immediately).
     """
     # Get the report's `matches`
     matches = get_matches(report.url)
     server_predictions = []
-    
+
     # Prepend <reportYear> to each sentence
     if matches:
         matches_with_year = [
@@ -245,7 +310,7 @@ def process_report_fully(report):
     else:
         server_predictions = []
 
-    # Prepare the final result row for the database
+    # Prepare the final result row (return, don't save yet)
     result_row = pd.Series(
         {
             "url": report.url,
@@ -253,14 +318,13 @@ def process_report_fully(report):
         }
     )
 
-    # Save the complete result
-    save_process_result(result_row)
     return result_row
 
 
 # =============================================================================
 # ANALYSIS FUNCTIONS
 # =============================================================================
+
 
 def parse_json(json_str):
     """Helper function to parse JSON strings safely"""
@@ -273,7 +337,7 @@ def parse_json(json_str):
 def get_final_results():
     """Get all processed results from the database, joined with report_data for cik/year"""
     conn = sqlite3.connect(DB_PATH)
-    
+
     # Join server_result with report_data to get cik and year
     query = """
         SELECT 
@@ -284,10 +348,10 @@ def get_final_results():
         FROM server_result s
         JOIN report_data r ON s.url = r.url
     """
-    
+
     wr = pd.read_sql(query, conn)
     conn.close()
-    
+
     if wr.empty:
         print("No results found in server_result table")
         return pd.DataFrame()
@@ -342,15 +406,15 @@ def get_sentence_analysis():
         hedge_labels_current = [
             id2label[0],  # General/Unknown Hedge Der.
             id2label[8],  # IR Hedge
-            id2label[10], # FX Hedge
-            id2label[12], # CP Hedge
+            id2label[10],  # FX Hedge
+            id2label[12],  # CP Hedge
         ]
 
         hedge_labels_historic = [
             id2label[1],  # General/Unknown Hedge Der. Historic
             id2label[9],  # IR Hedge Historic
-            id2label[11], # FX Hedge Historic
-            id2label[13], # CP Hedge Historic
+            id2label[11],  # FX Hedge Historic
+            id2label[13],  # CP Hedge Historic
         ]
 
         # --- Firms with any current hedge ---
@@ -364,7 +428,9 @@ def get_sentence_analysis():
             lambda g: g[hedge_labels_historic].sum().sum() > 0
             and g[hedge_labels_current].sum().sum() == 0
         )
-        firms_historic_only.to_excel(writer, sheet_name="Hedging Past Year", index=False)
+        firms_historic_only.to_excel(
+            writer, sheet_name="Hedging Past Year", index=False
+        )
 
         # --- Firms with only speculative mentions (label 2) ---
         exclude_cols = [id2label[i] for i in id2label if i != 2]
@@ -375,16 +441,16 @@ def get_sentence_analysis():
         firms_label2_only.to_excel(writer, sheet_name="Speculation Only", index=False)
 
         # --- Firms with liabilities/warrants (labels 4 or 5) ---
-        firms_liabilities = sa.loc[
-            (sa[id2label[4]] > 0) | (sa[id2label[5]] > 0)
-        ]
-        firms_liabilities.to_excel(writer, sheet_name="Derivative Liabilities/Warrants", index=False)
+        firms_liabilities = sa.loc[(sa[id2label[4]] > 0) | (sa[id2label[5]] > 0)]
+        firms_liabilities.to_excel(
+            writer, sheet_name="Derivative Liabilities/Warrants", index=False
+        )
 
         # --- Firms with Embedded Derivatives (labels 6 or 7) ---
-        embedded_derivatives = sa.loc[
-            (sa[id2label[6]] > 0) | (sa[id2label[7]] > 0)
-        ]
-        embedded_derivatives.to_excel(writer, sheet_name="Embedded Derivatives", index=False)
+        embedded_derivatives = sa.loc[(sa[id2label[6]] > 0) | (sa[id2label[7]] > 0)]
+        embedded_derivatives.to_excel(
+            writer, sheet_name="Embedded Derivatives", index=False
+        )
 
         # --- Unique firms per label/year ---
         label_cols = [id2label[i] for i in id2label]
@@ -428,24 +494,39 @@ def get_sentence_analysis():
             )
 
         # --- Hedge Type Cross-Analysis ---
-        hedge_flags = sa.groupby("cik")[[
-            id2label[0], id2label[8], id2label[10], id2label[12],
-            id2label[1], id2label[9], id2label[11], id2label[13],
-        ]].sum().gt(0).astype(int)
+        hedge_flags = (
+            sa.groupby("cik")[
+                [
+                    id2label[0],
+                    id2label[8],
+                    id2label[10],
+                    id2label[12],
+                    id2label[1],
+                    id2label[9],
+                    id2label[11],
+                    id2label[13],
+                ]
+            ]
+            .sum()
+            .gt(0)
+            .astype(int)
+        )
 
         # Map to current hedge categories only (merge historic)
-        hedge_flags_simple = pd.DataFrame({
-            "General": hedge_flags[[id2label[0], id2label[1]]].max(axis=1),
-            "IR": hedge_flags[[id2label[8], id2label[9]]].max(axis=1),
-            "FX": hedge_flags[[id2label[10], id2label[11]]].max(axis=1),
-            "CP": hedge_flags[[id2label[12], id2label[13]]].max(axis=1),
-        })
+        hedge_flags_simple = pd.DataFrame(
+            {
+                "General": hedge_flags[[id2label[0], id2label[1]]].max(axis=1),
+                "IR": hedge_flags[[id2label[8], id2label[9]]].max(axis=1),
+                "FX": hedge_flags[[id2label[10], id2label[11]]].max(axis=1),
+                "CP": hedge_flags[[id2label[12], id2label[13]]].max(axis=1),
+            }
+        )
 
         hedge_cross = hedge_flags_simple.T.dot(hedge_flags_simple)
         hedge_cross.to_excel(writer, sheet_name="Hedge Type Cross", index=True)
 
     print(f"Sentence analysis saved to: {SERVER_EXCEL_PATH}")
-    
+
     # Save to Google Drive if in Colab
     if IS_COLAB:
         print("Saving results to Google Drive...")
@@ -511,59 +592,61 @@ def build_sentence_label_excel():
 
     return final_df
 
+
 # =============================================================================
 # CHUNKED PROCESSING
 # =============================================================================
 
+
 def process_reports_in_chunks():
     """Process reports in chunks with periodic saves and statistics."""
     global existing_report_df
-    
+
     processed_set = get_processed_server_urls()
-    
+
     # Only process reports not already in server_result
     reports_to_process = [
         r
         for r in existing_report_df.itertuples(index=False)
         if r.url not in processed_set
     ]
-    
+
     total_reports = len(reports_to_process)
     print(f"Processing {total_reports:,} new reports")
     print(f"Already processed: {len(processed_set):,} reports")
-    
+
     # Create chunks
     chunks = [
-        reports_to_process[i: i + CHUNK_SIZE]
+        reports_to_process[i : i + CHUNK_SIZE]
         for i in range(0, total_reports, CHUNK_SIZE)
     ]
-    
+
     print(f"\nProcessing in {len(chunks)} chunks of {CHUNK_SIZE} reports each")
     print("=" * 70)
-    
+
     chunk_times = []
     total_time = 0
     total_results = 0
     total_empty = 0
-    
+
     for chunk_idx, chunk in enumerate(chunks, 1):
         start_chunk_time = time.time()
         print(f"\n📦 Chunk {chunk_idx}/{len(chunks)} ({len(chunk)} reports)")
-        
+
         chunk_results = 0
         chunk_empty = 0
-        
+
         # Process chunk with ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
             future_to_report = {
                 executor.submit(process_report_fully, r): r for r in chunk
             }
-            
+
             for future in tqdm(
                 as_completed(future_to_report),
                 total=len(future_to_report),
                 desc=f"  Processing chunk {chunk_idx}",
-                leave=False
+                leave=False,
             ):
                 try:
                     res = future.result()
@@ -574,37 +657,37 @@ def process_reports_in_chunks():
                 except Exception as e:
                     debug_print(f"Error processing {future_to_report[future].url}: {e}")
                     chunk_empty += 1
-        
+
         chunk_time = time.time() - start_chunk_time
         chunk_times.append(chunk_time)
         total_time += chunk_time
         total_results += chunk_results
         total_empty += chunk_empty
-        
+
         # Calculate statistics
         avg_chunk_time = sum(chunk_times) / len(chunk_times)
         remaining_chunks = len(chunks) - chunk_idx
         est_time_remaining = avg_chunk_time * remaining_chunks
-        
+
         print(f"  ✓ Processed {chunk_results} reports successfully")
         print(f"  ✗ Empty/failed: {chunk_empty} reports")
         print(f"  Time taken: {format_time(chunk_time)}")
         print(f"  Avg chunk time: {format_time(avg_chunk_time)}")
         print(f"  Est. time remaining: {format_time(est_time_remaining)}")
         print(f"  Total time: {format_time(total_time)}")
-        
+
         # Save to Google Drive if in Colab
         if IS_COLAB:
             print(f"  → Saving to Google Drive...")
             subprocess.run(SAVE_SHELL_CMD, shell=True)
-        
+
         # Progress summary
         processed_so_far = chunk_idx * CHUNK_SIZE
         percent_complete = (processed_so_far / total_reports) * 100
         print(
             f"  📊 Overall: {total_results:,}/{min(processed_so_far, total_reports):,} ({percent_complete:.1f}% complete)"
         )
-    
+
     print("\n" + "=" * 70)
     print(f"🎉 FINAL RESULTS:")
     print(f"  ✓ Successfully processed: {total_results:,} reports")
@@ -614,8 +697,9 @@ def process_reports_in_chunks():
             f"  📈 Success rate: {(total_results/(total_results+total_empty)*100):.1f}%"
         )
     print("=" * 70)
-    
+
     return total_results
+
 
 # =============================================================================
 # INITIALIZATION
@@ -638,16 +722,16 @@ if __name__ == "__main__":
     print("=" * 70)
     print("Model Classification and Analysis Script")
     print("=" * 70)
-    
+
     # Initialize database
     create_db()
-    
+
     # Process reports in chunks
     print("\nProcessing reports with server predictions...")
     total_processed = process_reports_in_chunks()
-    
+
     print(f"\nProcessed {total_processed} new reports in chunked parallel mode.")
-    
+
     # Generate analysis
     print("\n" + "=" * 70)
     print("Generating sentence analysis...")
@@ -655,7 +739,7 @@ if __name__ == "__main__":
     sa = get_sentence_analysis()
     print(f"\nFirst 10 rows of analysis:")
     print(sa.head(10))
-    
+
     # Build sentence-label mapping
     print("\n" + "=" * 70)
     print("Building sentence-label Excel file...")
@@ -663,12 +747,12 @@ if __name__ == "__main__":
     sentence_label_df = build_sentence_label_excel()
     print(f"\nFirst 10 rows of sentence labels:")
     print(sentence_label_df.head(10))
-    
+
     # Final save to Drive if in Colab
     if IS_COLAB:
         print("\nFinal database sync to Google Drive...")
         subprocess.run(SAVE_SHELL_CMD, shell=True)
-    
+
     print("\n" + "=" * 70)
     print("All done!")
     print("=" * 70)
