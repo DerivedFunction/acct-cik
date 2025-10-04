@@ -976,7 +976,8 @@ def process_all_reports_fully():
         fetched_data = []
         with ProcessPoolExecutor(max_workers=NUM_FETCHERS) as fetch_executor:
             fetch_futures = [
-                fetch_executor.submit(fetch_content_only, shared_rate_limit)
+                fetch_executor.submit(fetch_content_only,
+                                      url, shared_rate_limit)
                 for url in chunk
             ]
 
