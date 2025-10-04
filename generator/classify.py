@@ -22,7 +22,7 @@ from pathlib import Path
 # =============================================================================
 
 DB_PATH = "webpage.db"
-REPORT_URLS_PATH = "./report_data.csv"
+REPORT_CSV_PATH = "./report_data.csv"
 SERVER_EXCEL_PATH = "./server_results.xlsx"
 SENTENCE_PATH = "./sentence_labels.xlsx"
 NUM_THREADS = 6
@@ -49,7 +49,7 @@ else:
 # LOAD DATA
 # =============================================================================
 
-existing_report_df = pd.read_csv(REPORT_URLS_PATH)
+existing_report_df = pd.read_csv(REPORT_CSV_PATH)
 
 # Mapping IDs to labels
 with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
@@ -173,6 +173,24 @@ def save_process_result(df):
 
     conn.commit()
     conn.close()
+
+
+def fetch_report_data(valid=True):
+    global REPORT_CSV_PATH
+    try:
+        return pd.read_csv(REPORT_CSV_PATH)
+    except:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        if valid:
+            c.execute("SELECT * FROM report_data WHERE NOT url =''")
+        else:
+            c.execute("SELECT * FROM report_data WHERE url =''")
+        columns = [col[0] for col in c.description]
+        rows = c.fetchall()
+        pre_data = pd.DataFrame(rows, columns=columns)
+        conn.close()
+        return pre_data
 
 
 # =============================================================================
