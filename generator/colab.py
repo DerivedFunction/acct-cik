@@ -32,7 +32,6 @@ SEC_RATE = 9  # requests per second
 SEC_RATE_LIMIT = 1 / SEC_RATE  # requests per second
 CHUNK_SIZE = 500
 CHUNK_CHECK_RATE = 20  # Check every 20 iterations
-RATE_INCREASE = 0.1
 NUM_FETCHERS = 1
 NUM_PARSERS = 1
 
@@ -48,13 +47,12 @@ IS_COLAB = Path(DRIVE_PATH).exists()
 
 
 def get_system_config():
-    global RATE_INCREASE, SEC_RATE_LIMIT, NUM_FETCHERS, NUM_PARSERS, CHUNK_SIZE
+    global SEC_RATE_LIMIT, NUM_FETCHERS, NUM_PARSERS, CHUNK_SIZE
     total_cores = max(mp.cpu_count() - 1, 1)
     if IS_COLAB and not Path(DB_PATH).exists():
         print("Loading database from Google Drive. Run again after it is loaded.")
         subprocess.run(LOAD_SHELL_CMD, shell=True)
         return None
-    RATE_INCREASE = 0.1 / SEC_RATE * total_cores
     NUM_FETCHERS = total_cores
     NUM_PARSERS = total_cores
     CHUNK_SIZE *= (5 if IS_COLAB else 1)
@@ -921,11 +919,10 @@ def format_time(seconds):
 
 
 def process_all_reports_fully():
-    global SEC_RATE_LIMIT, SEC_RATE, CHUNK_CHECK_RATE, RATE_INCREASE, NUM_FETCHERS, NUM_PARSERS
+    global SEC_RATE_LIMIT, SEC_RATE, CHUNK_CHECK_RATE, NUM_FETCHERS, NUM_PARSERS
     # SEC_RATE_LIMIT is how long a worker sleeps
     # SEC_RATE is the target requests / sec
     # CHUNK_CHECK_RATE is how often to check within each chunk
-    # RATE_INCREASE is how much to adjust given our current rate ~(0.05 sec)
     manager = mp.Manager()
     shared_rate_limit = manager.Value(
         'd', SEC_RATE_LIMIT)  # 'd' for double/float
@@ -945,8 +942,6 @@ def process_all_reports_fully():
     print(f"  • {NUM_FETCHERS} parallel fetchers")
     print(f"  • Each worker waits {SEC_RATE_LIMIT:.2f}s between requests")
     print(f"  • Effective rate: ~{NUM_FETCHERS / SEC_RATE_LIMIT:.2f} req/sec")
-    print(
-        f"  • Rate Increase on slowdown: {(SEC_RATE_LIMIT - RATE_INCREASE):.2f} req/sec")
     total_results = 0
     total_empty = 0
 
@@ -986,14 +981,18 @@ def process_all_reports_fully():
                 try:
                     num_reqs += 1
                     if num_reqs % CHUNK_CHECK_RATE == 0:
+                        current_sleep = shared_rate_limit.value
                         current_rate = CHUNK_CHECK_RATE / \
                             (time.time() - current_chunk_time)
                         # Update the shared rate limit value
                         if current_rate < SEC_RATE:
-                            new_limit = shared_rate_limit.value - RATE_INCREASE
-                            shared_rate_limit.value = max(new_limit, 0.01)
+                            RATE_INCREASE = (
+                                SEC_RATE - current_rate) / SEC_RATE
+                            new_limit = current_sleep * (1 - RATE_INCREASE)
+                            shared_rate_limit.value = max(
+                                new_limit, 0.001)  # don't go below 1ms
                         elif current_rate > SEC_RATE:
-                            shared_rate_limit.value = NUM_FETCHERS / SEC_RATE
+                            shared_rate_limit.value = SEC_RATE_LIMIT
                         current_chunk_time = time.time()  # reset
 
                     result = future.result()
