@@ -303,33 +303,58 @@ def get_sentence_analysis():
     print(f"Sentence analysis for {len(sa)} reports:")
 
     # Excel writer (overwrite if fresh, append otherwise)
+
     with pd.ExcelWriter(SERVER_EXCEL_PATH, engine="openpyxl") as writer:
+
         # --- Main sheet ---
         sa.to_excel(writer, sheet_name="all_reports", index=False)
-        # --- Firms with label 0 ---
-        firms_hedges = sa.groupby("cik").filter(
-            lambda g: g[id2label[0]].sum() > 0)
-        firms_hedges.to_excel(writer, sheet_name="Current Hedging", index=False)
 
-        # --- Firms with label 1 but no label 0 ---
-        firms_label1_no0 = sa.groupby("cik").filter(
-            lambda g: g[id2label[1]].sum() > 0 and g[id2label[0]].sum() == 0
+        # --- Define label groups ---
+        hedge_labels_current = [
+            id2label[0],  # General/Unknown Hedge Der.
+            id2label[8],  # IR Hedge
+            id2label[10], # FX Hedge
+            id2label[12], # CP Hedge
+        ]
+
+        hedge_labels_historic = [
+            id2label[1],  # General/Unknown Hedge Der. Historic
+            id2label[9],  # IR Hedge Historic
+            id2label[11], # FX Hedge Historic
+            id2label[13], # CP Hedge Historic
+        ]
+
+        # --- Firms with any current hedge ---
+        firms_current_hedge = sa.groupby("cik").filter(
+            lambda g: g[hedge_labels_current].sum().sum() > 0
         )
-        firms_label1_no0.to_excel(writer, sheet_name="Hedging Past Year", index=False)
+        firms_current_hedge.to_excel(writer, sheet_name="Current Hedging", index=False)
+
+        # --- Firms with only historical hedges and no current hedge ---
+        firms_historic_only = sa.groupby("cik").filter(
+            lambda g: g[hedge_labels_historic].sum().sum() > 0
+            and g[hedge_labels_current].sum().sum() == 0
+        )
+        firms_historic_only.to_excel(writer, sheet_name="Hedging Past Year", index=False)
 
         # --- Firms with only speculative mentions (label 2) ---
         exclude_cols = [id2label[i] for i in id2label if i != 2]
         firms_label2_only = sa.groupby("cik").filter(
-            lambda g: g[id2label[2]].sum() > 0 and g[exclude_cols].sum().sum() < g[id2label[2]].sum()
+            lambda g: g[id2label[2]].sum() > 0
+            and g[exclude_cols].sum().sum() < g[id2label[2]].sum()
         )
         firms_label2_only.to_excel(writer, sheet_name="Speculation Only", index=False)
 
         # --- Firms with liabilities/warrants (labels 4 or 5) ---
-        firms_liabilities = sa.loc[(sa[id2label[4]] > 0) | (sa[id2label[5]] > 0)]
-        firms_liabilities.to_excel(writer, sheet_name="Derivative Liabilties or Warrants", index=False)
+        firms_liabilities = sa.loc[
+            (sa[id2label[4]] > 0) | (sa[id2label[5]] > 0)
+        ]
+        firms_liabilities.to_excel(writer, sheet_name="Derivative Liabilities/Warrants", index=False)
 
         # --- Firms with Embedded Derivatives (labels 6 or 7) ---
-        embedded_derivatives = sa.loc[(sa[id2label[6]] > 0) | (sa[id2label[7]] > 0)]
+        embedded_derivatives = sa.loc[
+            (sa[id2label[6]] > 0) | (sa[id2label[7]] > 0)
+        ]
         embedded_derivatives.to_excel(writer, sheet_name="Embedded Derivatives", index=False)
 
         # --- Unique firms per label/year ---
@@ -348,7 +373,54 @@ def get_sentence_analysis():
         cooc = sa[label_cols].gt(0).astype(int).T.dot(sa[label_cols].gt(0).astype(int))
         cooc.to_excel(writer, sheet_name="label_cooccurrence")
 
+        # =========================================================
+        # --- NEW: Hedging by Type ---
+        # =========================================================
+        hedge_types = {
+            "General": [id2label[0], id2label[1]],
+            "IR": [id2label[8], id2label[9]],
+            "FX": [id2label[10], id2label[11]],
+            "CP": [id2label[12], id2label[13]],
+        }
+
+        hedge_type_records = []
+        for hedge_name, labels in hedge_types.items():
+            temp = (
+                sa.groupby(["cik", "year"])
+                .filter(lambda g: g[labels].sum().sum() > 0)
+                .assign(hedge_type=hedge_name)
+            )
+            hedge_type_records.append(temp)
+
+        if hedge_type_records:
+            hedge_by_type = pd.concat(hedge_type_records, ignore_index=True)
+            hedge_by_type.to_excel(writer, sheet_name="Hedging by Type", index=False)
+        else:
+            pd.DataFrame(columns=["cik", "year", "hedge_type"]).to_excel(
+                writer, sheet_name="Hedging by Type", index=False
+            )
+
+        # =========================================================
+        # --- NEW: Hedge Type Cross-Analysis ---
+        # =========================================================
+        hedge_flags = sa.groupby("cik")[[
+            id2label[0], id2label[8], id2label[10], id2label[12],
+            id2label[1], id2label[9], id2label[11], id2label[13],
+        ]].sum().gt(0).astype(int)
+
+        # Map to current hedge categories only (merge historic)
+        hedge_flags_simple = pd.DataFrame({
+            "General": hedge_flags[[id2label[0], id2label[1]]].max(axis=1),
+            "IR": hedge_flags[[id2label[8], id2label[9]]].max(axis=1),
+            "FX": hedge_flags[[id2label[10], id2label[11]]].max(axis=1),
+            "CP": hedge_flags[[id2label[12], id2label[13]]].max(axis=1),
+        })
+
+        hedge_cross = hedge_flags_simple.T.dot(hedge_flags_simple)
+        hedge_cross.to_excel(writer, sheet_name="Hedge Type Cross", index=True)
+
     print(f"Sentence analysis saved to: {SERVER_EXCEL_PATH}")
+
     return sa
 
 # Generate sentence analysis
