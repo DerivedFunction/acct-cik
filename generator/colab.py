@@ -26,11 +26,15 @@ DEBUG = False
 ALL_FIRMS_DATA = "derivatives_data.csv"
 REPORT_CSV_PATH = "report_data.csv"
 DB_PATH = "web_data.db"
-SEC_RATE = 9  # requests per second
+
+
+SEC_RATE = 9.5  # requests per second
 SEC_RATE_LIMIT = 1 / SEC_RATE  # requests per second
 CHUNK_SIZE = 500
 CHUNK_CHECK_RATE = 20  # Check every 20 iterations
-RATE_INCREASE = 0.05
+RATE_INCREASE = 0.1
+NUM_FETCHERS = 1
+NUM_PARSERS = 1
 
 # =============================================================================
 # COLAB CONFIGURATION
@@ -38,20 +42,24 @@ RATE_INCREASE = 0.05
 DRIVE_PATH = "./drive/MyDrive/db"
 LOAD_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/{DB_PATH} ."
 SAVE_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/."
-IS_COLAB = False
+IS_COLAB = True
 
 # Auto-detect system capabilities
 
 
 def get_system_config():
+    global RATE_INCREASE, SEC_RATE_LIMIT, NUM_FETCHERS, NUM_PARSERS, CHUNK_SIZE
     total_cores = max(mp.cpu_count() - 1, 1)
-    total_fetchers = min(5, total_cores)
     if IS_COLAB and not Path(DB_PATH).exists():
         print("Loading database from Google Drive. Run again after it is loaded.")
         subprocess.run(LOAD_SHELL_CMD, shell=True)
         exit(0)
+    RATE_INCREASE = 0.1 / SEC_RATE * total_cores
+    NUM_FETCHERS = total_cores
+    NUM_PARSERS = total_cores
+    SEC_RATE_LIMIT = NUM_FETCHERS / SEC_RATE
     return {
-        "num_fetchers": total_fetchers,
+        "num_fetchers": total_cores,
         "num_parsers": total_cores,
         "chunk_size": CHUNK_SIZE * (5 if IS_COLAB else 1),
     }
@@ -565,12 +573,13 @@ def parse_plain_text_table_fixed(block: str):
     return rows
 
 
-def fetch_url(url: str, timeout: int = 10) -> str | None:
-    global SEC_RATE_LIMIT
+def fetch_url(url: str, timeout: int = 10, shared_rate_limit=None) -> str | None:
+    global SEC_RATE_LIMIT, SEC_RATE
     if not url:
         return None
     try:
-        time.sleep(SEC_RATE_LIMIT)
+        rate_limit = shared_rate_limit.value if shared_rate_limit else SEC_RATE_LIMIT
+        time.sleep(rate_limit)
         debug_print("Fetching", url)
         resp = requests.get(
             url, timeout=timeout, headers={
@@ -775,7 +784,7 @@ def fetch_all_grouped(saveIteration: int = 100):
     """
     Fetch filings using ProcessPoolExecutor for parallelism.
     """
-    global existing_report_df, all_derivatives_df
+    global existing_report_df, all_derivatives_df, SEC_RATE_LIMIT, SEC_RATE
 
     records = []
 
@@ -814,12 +823,12 @@ def fetch_all_grouped(saveIteration: int = 100):
         return cik_records
 
     # Use fewer workers for SEC API to avoid rate limiting
-    with ProcessPoolExecutor(max_workers=5) as executor:
+    with ProcessPoolExecutor(max_workers=NUM_FETCHERS) as executor:
         future_to_cik = {
             executor.submit(process_cik, row): i
             for i, row in enumerate(cik_groups.itertuples(index=False), start=1)
         }
-
+        SEC_RATE_LIMIT = NUM_FETCHERS / SEC_RATE
         for future in tqdm(as_completed(future_to_cik), total=len(future_to_cik)):
             i = future_to_cik[future]
             try:
@@ -840,7 +849,7 @@ def fetch_all_grouped(saveIteration: int = 100):
     return fetch_report_data()
 
 
-def fetch_content_only(url: str):
+def fetch_content_only(url: str, shared_rate_limit=None):
     """
     Fetch and extract content only (I/O bound).
     Runs in fetcher pool with 5 workers.
@@ -856,10 +865,11 @@ def fetch_content_only(url: str):
         return None
 
     try:
-        raw_text = fetch_url(url)
+        raw_text = fetch_url(url, shared_rate_limit=shared_rate_limit)
         if not raw_text:
-            # Cooldown after having nothing
-            time.sleep(SEC_RATE_LIMIT)
+            # Use shared rate limit if available
+            rate_limit = shared_rate_limit.value if shared_rate_limit else SEC_RATE_LIMIT
+            time.sleep(rate_limit)
             return None
 
         # Extract content
@@ -915,11 +925,14 @@ def format_time(seconds):
 
 
 def process_all_reports_fully():
-    global SEC_RATE_LIMIT, SEC_RATE, CHUNK_CHECK_RATE, RATE_INCREASE
+    global SEC_RATE_LIMIT, SEC_RATE, CHUNK_CHECK_RATE, RATE_INCREASE, NUM_FETCHERS, NUM_PARSERS
     # SEC_RATE_LIMIT is how long a worker sleeps
     # SEC_RATE is the target requests / sec
     # CHUNK_CHECK_RATE is how often to check within each chunk
     # RATE_INCREASE is how much to adjust given our current rate ~(0.05 sec)
+    manager = mp.Manager()
+    shared_rate_limit = manager.Value(
+        'd', SEC_RATE_LIMIT)  # 'd' for double/float
 
     processed_set = get_processed_urls()
 
@@ -932,16 +945,12 @@ def process_all_reports_fully():
     total_reports = len(reports_to_process)
     print(f"Processing {total_reports:,} new reports")
     print(f"Already processed: {len(processed_set):,} reports")
-
-    CHUNK_SIZE = CONFIG["chunk_size"]
-    NUM_FETCHERS = CONFIG["num_fetchers"]
-    NUM_PARSERS = CONFIG["num_parsers"]
-    SEC_RATE_LIMIT = NUM_FETCHERS / SEC_RATE
     print(f"\n⚙️  Rate Limiting Configuration:")
     print(f"  • {NUM_FETCHERS} parallel fetchers")
     print(f"  • Each worker waits {SEC_RATE_LIMIT:.2f}s between requests")
     print(f"  • Effective rate: ~{NUM_FETCHERS / SEC_RATE_LIMIT:.2f} req/sec")
-    print(f"  • Target limit: {SEC_RATE_LIMIT:.2f} req/sec")
+    print(
+        f"  • Rate Increase on slowdown: {NUM_FETCHERS / (SEC_RATE_LIMIT - RATE_INCREASE):.2f} req/sec")
     total_results = 0
     total_empty = 0
 
@@ -967,7 +976,7 @@ def process_all_reports_fully():
         fetched_data = []
         with ProcessPoolExecutor(max_workers=NUM_FETCHERS) as fetch_executor:
             fetch_futures = [
-                fetch_executor.submit(fetch_content_only, url)
+                fetch_executor.submit(fetch_content_only, shared_rate_limit)
                 for url in chunk
             ]
 
@@ -980,14 +989,16 @@ def process_all_reports_fully():
                 try:
                     num_reqs += 1
                     if num_reqs % CHUNK_CHECK_RATE == 0:
-                        current_rate = (time.time() - current_chunk_time) / CHUNK_CHECK_RATE
+                        current_rate = CHUNK_CHECK_RATE / \
+                            (time.time() - current_chunk_time)
+                        # Update the shared rate limit value
                         if current_rate < SEC_RATE:
-                            SEC_RATE_LIMIT -= RATE_INCREASE
+                            new_limit = shared_rate_limit.value - RATE_INCREASE
+                            shared_rate_limit.value = max(new_limit, 0.01)
                         elif current_rate > SEC_RATE:
-                            SEC_RATE_LIMIT = NUM_FETCHERS / SEC_RATE
-                        else:
-                            pass
-                        current_chunk_time = time.time() # reset
+                            shared_rate_limit.value = NUM_FETCHERS / SEC_RATE
+                        current_chunk_time = time.time()  # reset
+                        
                     result = future.result()
                     if result:
                         fetched_data.append(result)
@@ -1028,7 +1039,6 @@ def process_all_reports_fully():
                     else:
                         chunk_empty += 1
                         debug_print("Error with processing")
-                        time.sleep(SEC_RATE_LIMIT)
                 except Exception as e:
                     print(f"Parse error: {e}")
                     chunk_empty += 1
@@ -1038,6 +1048,7 @@ def process_all_reports_fully():
 
         print(f"  ✓ Parsed {chunk_results} reports successfully")
         print(f"  Time taken: {format_time(chunk_time)}")
+        print(f"  Current sleep rate: {SEC_RATE_LIMIT:.2f}")
         print(f"  Avg chunk time: {format_time(avg_chunk_time)}")
         print(f"  Est. time remaining: {format_time(est_time_remaining)}")
         print(f"  Total time: {format_time(total_time)}")
