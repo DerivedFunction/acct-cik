@@ -42,7 +42,7 @@ NUM_PARSERS = 1
 DRIVE_PATH = "./drive/MyDrive/db"
 LOAD_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/{DB_PATH} ."
 SAVE_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/."
-IS_COLAB = True
+IS_COLAB = Path(DRIVE_PATH).exists()
 
 # Auto-detect system capabilities
 
@@ -57,12 +57,8 @@ def get_system_config():
     RATE_INCREASE = 0.1 / SEC_RATE * total_cores
     NUM_FETCHERS = total_cores
     NUM_PARSERS = total_cores
+    CHUNK_SIZE *= (5 if IS_COLAB else 1)
     SEC_RATE_LIMIT = NUM_FETCHERS / SEC_RATE
-    return {
-        "num_fetchers": total_cores,
-        "num_parsers": total_cores,
-        "chunk_size": CHUNK_SIZE * (5 if IS_COLAB else 1),
-    }
 
 
 CONFIG = get_system_config()
@@ -70,9 +66,9 @@ total_cores = mp.cpu_count()
 
 print(f"🖥️  Detected: {total_cores} CPU cores")
 print(
-    f"⚙️  Configuration: {CONFIG['num_fetchers']} fetchers, {CONFIG['num_parsers']} parsers"
+    f"⚙️  Configuration: {NUM_FETCHERS} fetchers, {NUM_PARSERS} parsers"
 )
-print(f"📦 Chunk size: {CONFIG['chunk_size']} reports per batch")
+print(f"📦 Chunk size: {CHUNK_SIZE} reports per batch")
 
 
 # =============================================================================
