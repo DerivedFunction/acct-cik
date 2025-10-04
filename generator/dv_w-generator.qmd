@@ -522,12 +522,12 @@ embedded_no_longer_outstanding_templates = [
     # Balance sheet focused
     "No amounts related to embedded derivatives are recorded on the consolidated balance sheet as of {month} {end_day}, {current_year}",
     "All previously bifurcated embedded derivatives have been derecognized, and no liability remains as of {month} {end_day}, {current_year}",
-    "The Company has eliminated all embedded derivative liabilities from its financial statements as of {current_year}",
+    "{company} has eliminated all embedded derivative liabilities from its financial statements as of {current_year}",
     # Explicit extinguishment / derecognition
     "The final embedded derivative liability was derecognized in {settlement_year}, and no further instruments contain bifurcated features",
     "Embedded derivatives identified in earlier periods have all been extinguished, with none remaining outstanding at the end of {current_year}",
     # Catch-all confirmation
-    "Management has determined that as of {month} {end_day}, {current_year}, the Company does not have any contracts requiring bifurcation of embedded derivatives",
+    "Management has determined that as of {month} {end_day}, {current_year}, {company} does not have any contracts requiring bifurcation of embedded derivatives",
     "No embedded derivative features exist within any outstanding financial instruments as of the reporting date",
 ]
 
