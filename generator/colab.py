@@ -24,11 +24,13 @@ import subprocess
 # =============================================================================
 DEBUG = False
 ALL_FIRMS_DATA = "derivatives_data.csv"
-REPORT_CSV_PATH = "report_data_to_process.csv"
+REPORT_CSV_PATH = "report_data.csv"
 DB_PATH = "web_data.db"
 SEC_RATE = 9  # requests per second
-SEC_RATE_LIMIT =  1 / SEC_RATE # requests per second
+SEC_RATE_LIMIT = 1 / SEC_RATE  # requests per second
 CHUNK_SIZE = 500
+CHUNK_CHECK_RATE = 20  # Check every 20 iterations
+RATE_INCREASE = 0.05
 
 # =============================================================================
 # COLAB CONFIGURATION
@@ -39,6 +41,8 @@ SAVE_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/."
 IS_COLAB = False
 
 # Auto-detect system capabilities
+
+
 def get_system_config():
     total_cores = max(mp.cpu_count() - 1, 1)
     total_fetchers = min(5, total_cores)
@@ -129,7 +133,8 @@ CLEANUP_PATTERNS = [
 SEPARATOR_PATTERN = re.compile(r"[-=\s]+")
 CAPTION_PATTERN = re.compile(r"<CAPTION>", re.IGNORECASE)
 COLUMN_SPLIT_PATTERN = re.compile(r"\s{2,}")
-TABLE_SPLIT_PATTERN = re.compile(r"(<TABLE>.*?</TABLE>)", re.DOTALL | re.IGNORECASE)
+TABLE_SPLIT_PATTERN = re.compile(
+    r"(<TABLE>.*?</TABLE>)", re.DOTALL | re.IGNORECASE)
 
 # Category regex patterns
 IR_REGEX = re.compile(
@@ -192,6 +197,7 @@ all_derivatives_df = pd.read_csv(ALL_FIRMS_DATA)
 # =============================================================================
 # DEBUG UTILITIES
 # =============================================================================
+
 
 def debug_print(*args):
     global DEBUG
@@ -392,7 +398,8 @@ def get_cik_filings(cik: str) -> List[dict]:
 
     older_files = data.get("filings", {}).get("files", [])
     for f in older_files:
-        older_data = fetch_json(f"https://data.sec.gov/submissions/{f.get('name')}")
+        older_data = fetch_json(
+            f"https://data.sec.gov/submissions/{f.get('name')}")
         if isinstance(older_data, dict):
             links.extend(extract_filings(older_data, cik, name, ticker))
 
@@ -412,7 +419,8 @@ def extract_content(data: str, asHTML=True, max_len=2000) -> str:
         soup = BeautifulSoup(data, "html.parser")
         text = soup.get_text(separator="\n\n", strip=True)
         text = keep_allowed_chars(text, True)
-        paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
+        paragraphs = [p.strip()
+                      for p in re.split(r"\n\s*\n", text) if p.strip()]
         merged_paragraphs = []
 
         i = 0
@@ -476,7 +484,8 @@ def extract_content(data: str, asHTML=True, max_len=2000) -> str:
                 table_text = "\n".join(["\t".join(row) for row in rows])
                 paragraphs.append(table_text)
             else:
-                sub_paras = [p for p in re.split(r"\n\s*\n", part) if p.strip()]
+                sub_paras = [p for p in re.split(
+                    r"\n\s*\n", part) if p.strip()]
                 paragraphs.extend(sub_paras)
 
     cleaned_paragraphs = []
@@ -485,7 +494,8 @@ def extract_content(data: str, asHTML=True, max_len=2000) -> str:
         if not para:
             continue
 
-        is_list_item = BULLET_PATTERN.match(para) or NUMBERED_PATTERN.match(para)
+        is_list_item = BULLET_PATTERN.match(
+            para) or NUMBERED_PATTERN.match(para)
         if not is_list_item:
             para = re.sub(r"\n+", " ", para)
 
@@ -563,7 +573,8 @@ def fetch_url(url: str, timeout: int = 10) -> str | None:
         time.sleep(SEC_RATE_LIMIT)
         debug_print("Fetching", url)
         resp = requests.get(
-            url, timeout=timeout, headers={"User-Agent": "sync-fetch@example.com"}
+            url, timeout=timeout, headers={
+                "User-Agent": "sync-fetch@example.com"}
         )
         if resp.status_code == 429:
             print(f"Rate Limited {resp.status_code} for {url}")
@@ -678,7 +689,8 @@ def filter_by_keywords(
             excess = len(final_text) - max_char_length
             trim_left = excess // 2
             trim_right = excess - trim_left
-            final_text = final_text[trim_left : len(final_text) - trim_right].strip()
+            final_text = final_text[trim_left: len(
+                final_text) - trim_right].strip()
 
         return final_text
 
@@ -702,7 +714,8 @@ def filter_by_keywords(
         sentence_categories.append((i, category))
 
     categorized_matches = {"ir": [], "fx": [], "cp": [], "spec": [], "gen": []}
-    seen_matches = {"ir": set(), "fx": set(), "cp": set(), "spec": set(), "gen": set()}
+    seen_matches = {"ir": set(), "fx": set(), "cp": set(),
+                    "spec": set(), "gen": set()}
     seen_sentences_global = set()
     # First pass: specific categories
     for i, category in sentence_categories:
@@ -738,7 +751,8 @@ def filter_by_keywords(
                 categorized_matches["gen"].append(final_sentence)
 
     debug_print(
-        "Done generating sentences", sum(len(v) for v in categorized_matches.values())
+        "Done generating sentences", sum(len(v)
+                                         for v in categorized_matches.values())
     )
 
     return categorized_matches
@@ -768,8 +782,10 @@ def fetch_all_grouped(saveIteration: int = 100):
     if existing_report_df is None or existing_report_df.empty:
         existing_report_df = pd.DataFrame(columns=["cik", "year"])
 
-    already_done = set(zip(existing_report_df["cik"], existing_report_df["year"]))
-    cik_groups = all_derivatives_df.groupby("cik")["year"].apply(list).reset_index()
+    already_done = set(
+        zip(existing_report_df["cik"], existing_report_df["year"]))
+    cik_groups = all_derivatives_df.groupby(
+        "cik")["year"].apply(list).reset_index()
 
     def process_cik(row):
         cik = row.cik
@@ -898,20 +914,12 @@ def format_time(seconds):
         return f"{int(seconds)}s"
 
 
-def calculate_rate_limit(num_fetchers, max_requests_per_sec=SEC_RATE):
-    """
-    Calculate per-worker delay to stay under global rate limit
-
-    Examples:
-        - 1 worker,  4.5 req/sec: each waits 0.22s → 4.5 req/sec total ✓
-        - 3 workers, 4.5 req/sec: each waits 0.67s → 4.5 req/sec total ✓
-        - 5 workers, 4.5 req/sec: each waits 1.11s → 4.5 req/sec total ✓
-    """
-    return num_fetchers / max_requests_per_sec
-
-
 def process_all_reports_fully():
-    global SEC_RATE_LIMIT
+    global SEC_RATE_LIMIT, SEC_RATE, CHUNK_CHECK_RATE, RATE_INCREASE
+    # SEC_RATE_LIMIT is how long a worker sleeps
+    # SEC_RATE is the target requests / sec
+    # CHUNK_CHECK_RATE is how often to check within each chunk
+    # RATE_INCREASE is how much to adjust given our current rate ~(0.05 sec)
 
     processed_set = get_processed_urls()
 
@@ -928,7 +936,7 @@ def process_all_reports_fully():
     CHUNK_SIZE = CONFIG["chunk_size"]
     NUM_FETCHERS = CONFIG["num_fetchers"]
     NUM_PARSERS = CONFIG["num_parsers"]
-    SEC_RATE_LIMIT = calculate_rate_limit(NUM_FETCHERS)
+    SEC_RATE_LIMIT = NUM_FETCHERS / SEC_RATE
     print(f"\n⚙️  Rate Limiting Configuration:")
     print(f"  • {NUM_FETCHERS} parallel fetchers")
     print(f"  • Each worker waits {SEC_RATE_LIMIT:.2f}s between requests")
@@ -938,7 +946,7 @@ def process_all_reports_fully():
     total_empty = 0
 
     chunks = [
-        reports_to_process[i : i + CHUNK_SIZE]
+        reports_to_process[i: i + CHUNK_SIZE]
         for i in range(0, total_reports, CHUNK_SIZE)
     ]
 
@@ -949,13 +957,13 @@ def process_all_reports_fully():
     total_time = 0
 
     for chunk_idx, chunk in enumerate(chunks, 1):
-        current_time = time.time()
+        current_chunk_time = time.time()
+        num_reqs = 0  # Keep track of number of requests, to divide difference between cur time and chunk time
         print(f"\n📦 Chunk {chunk_idx}/{len(chunks)} ({len(chunk)} reports)")
 
         # Stage 1: Fetch this chunk
         print(f"  → Fetching with {NUM_FETCHERS} workers...")
         fetched_data = []
-
         with ProcessPoolExecutor(max_workers=NUM_FETCHERS) as fetch_executor:
             fetch_futures = [
                 fetch_executor.submit(fetch_content_only, url)
@@ -969,6 +977,15 @@ def process_all_reports_fully():
                 leave=False,
             ):
                 try:
+                    num_reqs += 1
+                    if num_reqs % CHUNK_CHECK_RATE == 0:
+                        current_rate = current_chunk_time - time.time()
+                        if current_rate < SEC_RATE:
+                            SEC_RATE_LIMIT -= RATE_INCREASE
+                        elif current_rate > SEC_RATE:
+                            SEC_RATE_LIMIT = NUM_FETCHERS / SEC_RATE
+                        else:
+                            pass
                     result = future.result()
                     if result:
                         fetched_data.append(result)
@@ -976,7 +993,7 @@ def process_all_reports_fully():
                 except Exception as e:
                     print(f"Fetch error: {e}")
 
-        chunk_time = time.time() - current_time
+        chunk_time = time.time() - current_chunk_time
         chunk_times.append(chunk_time)
         total_time += chunk_time
         avg_chunk_time = sum(chunk_times) / len(chunk_times)
