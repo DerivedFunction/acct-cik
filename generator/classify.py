@@ -28,7 +28,6 @@ DEBUG = False  # Debug printing
 
 # Chunking configuration
 CHUNK_SIZE = 1500  # Process 1000 reports per chunk
-SAVE_ITERATION = 1  # Save after each chunk
 
 # =============================================================================
 # COLAB CONFIGURATION
