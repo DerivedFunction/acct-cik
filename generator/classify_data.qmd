@@ -26,6 +26,7 @@ from openpyxl import load_workbook
 DB_PATH = "./webpage.db"
 REPORT_URLS_PATH = "./report_data.csv"
 SERVER_EXCEL_PATH = "./server_results.xlsx"
+SENTENCE_PATH = "./sentence_labels.xlsx"
 NUM_THREADS = 6
 SERVER_URL = "http://127.0.0.1:5000/predict"
 KEYWORDS_FILE = "./keywords_labels.json"
@@ -429,7 +430,7 @@ sa.head(10)
 ```
 
 ```{python}
-def build_sentence_label_excel(output_path="./sentence_labels.xlsx"):
+def build_sentence_label_excel():
     # Load both DB tables
     conn = sqlite3.connect(DB_PATH)
     server_df = pd.read_sql("SELECT * FROM server_result", conn)
@@ -477,8 +478,8 @@ def build_sentence_label_excel(output_path="./sentence_labels.xlsx"):
     final_df = pd.DataFrame(all_rows)
 
     # Save to Excel
-    final_df.to_excel(output_path, index=False)
-    print(f"Saved sentence-label mapping to {output_path}")
+    final_df.to_excel(SENTENCE_PATH, index=False)
+    print(f"Saved sentence-label mapping to {SENTENCE_PATH}")
 
     return final_df
 
