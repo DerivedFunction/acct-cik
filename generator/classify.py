@@ -21,13 +21,9 @@ DB_PATH = "web_data.db"
 REPORT_CSV_PATH = "./report_data.csv"
 SERVER_EXCEL_PATH = "./server_results.xlsx"
 SENTENCE_PATH = "./sentence_labels.xlsx"
-NUM_THREADS = 36
 SERVER_URL = "http://127.0.0.1:5000/predict"
 KEYWORDS_FILE = "./keywords_find.json"
 DEBUG = False  # Debug printing
-
-# Chunking configuration
-CHUNK_SIZE = 1500  # Process 1000 reports per chunk
 
 # =============================================================================
 # COLAB CONFIGURATION
@@ -36,6 +32,10 @@ DRIVE_PATH = "./drive/MyDrive/db"
 LOAD_SHELL_CMD = f"cp {DRIVE_PATH}/{DB_PATH} ."
 SAVE_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/."
 IS_COLAB = Path(DRIVE_PATH).exists()
+
+# Chunking configuration
+CHUNK_SIZE = 1000 * (1 if not IS_COLAB else 5)
+NUM_THREADS = 6 * (1 if not IS_COLAB else 5)
 
 if IS_COLAB:
     print("Running in Google Colab environment")
