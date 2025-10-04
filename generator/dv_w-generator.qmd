@@ -10,6 +10,7 @@ import string
 ```{python}
 output_file = "./training_data.xlsx"
 company_name_file = "./names.xlsx"
+parquet_file = "./training_data.parquet"
 # Precompile regex patterns
 pattern_we_s = re.compile(r"We's", flags=re.IGNORECASE)
 pattern_we_is = re.compile(r"We is", flags=re.IGNORECASE)
@@ -5524,3 +5525,8 @@ generate(1000)
 company_name_df = pd.read_excel(company_name_file)
 company_names = list(company_name_df["name"])
 ``` 
+
+```{python}
+df = pd.read_excel(output_file)
+df.to_parquet(parquet_file, index=False)
+```
