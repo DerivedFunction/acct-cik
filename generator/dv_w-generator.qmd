@@ -469,25 +469,68 @@ earnout_past_templates = [
 
 # Historical embedded derivative templates (for label 7)
 embedded_past_templates = [
+    # Convertible debt / notes
     "{company} previously {verb} embedded derivatives within {host_contract} issued in {year}. These instruments were fully converted or redeemed by {settlement_year}",
     "Embedded derivative liabilities related to convertible notes issued in {year} were extinguished upon conversion during {settlement_year}",
-    "As of {month} {end_day}, {current_year}, {company} has no embedded derivative liabilities. All instruments containing embedded features were settled in {settlement_year}",
     "The embedded derivatives bifurcated from {host_contract} in {year} were eliminated following the redemption of the host instruments in {settlement_year}",
+    "All embedded features associated with convertible debt issued in {year} expired unexercised by {settlement_year}",
+    # General elimination / maturity
+    "As of {month} {end_day}, {current_year}, {company} has no embedded derivative liabilities. All instruments containing embedded features were settled in {settlement_year}",
+    "{company} redeemed all outstanding {host_contract} containing embedded derivatives during {settlement_year}, resulting in elimination of bifurcated liabilities",
+    "Embedded derivative instruments recognized in prior periods were derecognized following the settlement of the underlying {host_contract}",
+    "The embedded features within {host_contract} issued in {year} matured in accordance with their contractual terms during {settlement_year}",
+    # Other host contract variations
+    "Embedded derivatives associated with redeemable preferred stock issued in {year} were extinguished upon repurchase in {settlement_year}",
+    "The embedded foreign currency features within supplier agreements entered in {year} no longer exist following contract termination in {settlement_year}",
+    "Royalty agreements containing commodity-linked embedded derivatives expired by {settlement_year}, and no related liabilities remain",
+    "Lease agreements with variable FX-linked payments identified as embedded derivatives were terminated during {settlement_year}",
+    # Explicit none outstanding / balance sheet focus
+    "No embedded derivative liabilities were outstanding as of {month} {end_day}, {current_year}, as all bifurcated instruments had been settled or converted",
+    "All previously bifurcated embedded derivatives were derecognized, and no amounts remain recorded on the consolidated balance sheet",
+    "Management notes that as of {month} {end_day}, {current_year}, the Company no longer maintains any embedded derivative positions",
 ]
 
 convertible_debt_redemption_templates = [
+    # Full conversion / redemption
     "The {currency_code}{principal} {money_unit} convertible notes issued in {year} were fully converted to common stock during {settlement_year}, resulting in derecognition of the {currency_code}{embedded_fv} {money_unit} embedded derivative liability",
     "In {month} {settlement_year}, {company} redeemed all outstanding convertible debt originally issued in {year}, eliminating embedded derivative liabilities of {currency_code}{amount} {money_unit}",
     "The convertible debt instruments with embedded derivatives issued in {year} matured in {settlement_year}, with all notes converted to equity prior to maturity",
     "During {settlement_year}, {company} completed the conversion of all {currency_code}{principal} {money_unit} in convertible notes, extinguishing the related embedded derivative liability",
+    # Partial / repurchase
+    "{company} repurchased a portion of its convertible notes issued in {year}, reducing embedded derivative liabilities by {currency_code}{amount} {money_unit} during {settlement_year}",
+    "Only part of the {currency_code}{principal} {money_unit} convertible notes were converted during {settlement_year}, with the remainder redeemed in cash, eliminating the associated embedded derivatives",
+    # Early / induced conversion
+    "In {settlement_year}, {company} induced early conversion of {currency_code}{principal} {money_unit} convertible notes originally due {maturity_year}, eliminating related embedded derivative liabilities",
+    "Convertible notes issued in {year} were settled earlier than contractual maturity in {settlement_year}, derecognizing bifurcated embedded derivative liabilities",
+    # Settlement method variations
+    "Embedded derivative liabilities of {currency_code}{embedded_fv} {money_unit} were extinguished when convertible notes were settled in cash rather than shares during {settlement_year}",
+    "Upon conversion in {settlement_year}, holders elected mixed settlement (part cash, part equity), resulting in derecognition of the embedded derivative component",
+    # Gain/loss on extinguishment
+    "The redemption of convertible debt in {settlement_year} resulted in a {gain_loss} of {currency_code}{amount} {money_unit} recognized on extinguishment of the embedded derivative liability",
+    "Conversion of convertible notes during {settlement_year} eliminated embedded derivative liabilities and generated a {gain_loss} recorded in other income (expense)",
+    # Zero balance confirmation
+    "As of {month} {end_day}, {settlement_year}, no embedded derivative liabilities remain from convertible notes, as all such instruments were either converted or redeemed",
 ]
 
+
 embedded_no_longer_outstanding_templates = [
+    # General eliminations
     "{company} no longer has any embedded derivative liabilities as all instruments containing bifurcated features were settled, converted, or matured by {settlement_year}",
     "As of {month} {end_day}, {current_year}, there are no outstanding embedded derivatives. All such liabilities were extinguished in {settlement_year}",
     "The embedded derivative liabilities of {currency_code}{amount} {money_unit} recorded in prior years were fully eliminated by {settlement_year}",
     "No embedded derivatives remain outstanding as of year-end {current_year}. The last remaining instruments were settled in {settlement_year}",
+    # Balance sheet focused
+    "No amounts related to embedded derivatives are recorded on the consolidated balance sheet as of {month} {end_day}, {current_year}",
+    "All previously bifurcated embedded derivatives have been derecognized, and no liability remains as of {month} {end_day}, {current_year}",
+    "The Company has eliminated all embedded derivative liabilities from its financial statements as of {current_year}",
+    # Explicit extinguishment / derecognition
+    "The final embedded derivative liability was derecognized in {settlement_year}, and no further instruments contain bifurcated features",
+    "Embedded derivatives identified in earlier periods have all been extinguished, with none remaining outstanding at the end of {current_year}",
+    # Catch-all confirmation
+    "Management has determined that as of {month} {end_day}, {current_year}, the Company does not have any contracts requiring bifurcation of embedded derivatives",
+    "No embedded derivative features exist within any outstanding financial instruments as of the reporting date",
 ]
+
 
 ```
 
