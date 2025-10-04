@@ -16,7 +16,7 @@ from pathlib import Path
 # CONFIGURATION
 # =============================================================================
 
-DB_PATH = "webpage.db"
+DB_PATH = "web_data.db"
 REPORT_CSV_PATH = "./report_data.csv"
 SERVER_EXCEL_PATH = "./server_results.xlsx"
 SENTENCE_PATH = "./sentence_labels.xlsx"
