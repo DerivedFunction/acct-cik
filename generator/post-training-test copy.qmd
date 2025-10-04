@@ -1,3 +1,8 @@
+---
+title: "Using the Model to Classify"
+editor: source
+---
+
 ```{python}
 # %%
 # Installing required libraries
@@ -20,7 +25,7 @@ from collections import Counter
 from openpyxl import load_workbook
 
 DB_PATH = "./webpage.db"
-REPORT_URLS_PATH = "../excel/report_data.csv"
+REPORT_URLS_PATH = "./report_data.csv"
 SERVER_EXCEL_PATH = "./server_results.xlsx"
 NUM_THREADS = 6
 SERVER_URL = "http://127.0.0.1:5000/predict"
