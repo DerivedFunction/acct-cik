@@ -230,6 +230,8 @@ embedded_identification_templates = [
 
 host_contracts = [
     "convertible debt instruments",
+    "OTC convertible notes hedge",
+    "convertible hedge",
     "hybrid financial instruments",
     "convertible preferred stock",
     "redeemable preferred stock",
@@ -237,6 +239,7 @@ host_contracts = [
     "customer contracts",
     "supplier agreements",
     "lease agreements with variable payments",
+    "warrants",
 ]
 
 # Specific embedded derivative types
