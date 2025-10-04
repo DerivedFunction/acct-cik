@@ -950,7 +950,7 @@ def process_all_reports_fully():
     print(f"  • Each worker waits {SEC_RATE_LIMIT:.2f}s between requests")
     print(f"  • Effective rate: ~{NUM_FETCHERS / SEC_RATE_LIMIT:.2f} req/sec")
     print(
-        f"  • Rate Increase on slowdown: {NUM_FETCHERS / (SEC_RATE_LIMIT - RATE_INCREASE):.2f} req/sec")
+        f"  • Rate Increase on slowdown: {(SEC_RATE_LIMIT - RATE_INCREASE):.2f} req/sec")
     total_results = 0
     total_empty = 0
 
