@@ -1,27 +1,25 @@
----
-title: "Using the Model to Classify"
-editor: source
----
+# =============================================================================
+# Model Classification Script
+# =============================================================================
 
-```{python}
-# %%
-# Installing required libraries
-# %pip install pandas requests matplotlib
-```
-
-```{python}
-import pandas as pd  # Data processing
-import requests  # Synchronous HTTP requests
-import json  # JSON parsing
-import sqlite3  # To store our data
+import pandas as pd
+import requests
+import json
+import sqlite3
 from typing import List
 import random
-import re  # Regex expressions
-import matplotlib.pyplot as plt  # For plotting
-from concurrent.futures import ThreadPoolExecutor, as_completed  # Concurrency
+import re
+import matplotlib.pyplot as plt
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 from collections import Counter
 from openpyxl import load_workbook
+import subprocess
+from pathlib import Path
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
 
 DB_PATH = "./webpage.db"
 REPORT_URLS_PATH = "./report_data.csv"
@@ -30,11 +28,29 @@ SENTENCE_PATH = "./sentence_labels.xlsx"
 NUM_THREADS = 6
 SERVER_URL = "http://127.0.0.1:5000/predict"
 KEYWORDS_FILE = "./keywords_labels.json"
-```
 
-```{python}
-# Load data
+# =============================================================================
+# COLAB CONFIGURATION
+# =============================================================================
+DRIVE_PATH = "./drive/MyDrive/db"
+LOAD_SHELL_CMD = f"cp {DRIVE_PATH}/{DB_PATH} ."
+SAVE_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/."
+IS_COLAB = Path(DRIVE_PATH).exists()
+
+if IS_COLAB:
+    print("🔵 Running in Google Colab environment")
+    if not Path(DB_PATH).exists():
+        print("📥 Loading database from Google Drive...")
+        subprocess.run(LOAD_SHELL_CMD, shell=True)
+else:
+    print("💻 Running in local environment")
+
+# =============================================================================
+# LOAD DATA
+# =============================================================================
+
 existing_report_df = pd.read_csv(REPORT_URLS_PATH)
+
 # Mapping IDs to labels
 with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
     keyword_data = json.load(f)
@@ -42,11 +58,17 @@ with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
 id2label = {int(id): label for id, label in keyword_data["id2label"].items()}
 label2id = {label: int(id) for id, label in id2label.items()}
 
+debug = False  # Debug printing
 
-debug = False # Debug printing
+
 def debug_print(*args):
     if debug:
         print(*args)
+
+
+# =============================================================================
+# DATABASE FUNCTIONS
+# =============================================================================
 
 def create_db():
     conn = sqlite3.connect(DB_PATH)
@@ -86,8 +108,7 @@ def create_db():
 
 def get_matches(url):
     """
-    Fetch matches from webpage_result, which has
-    (url, matches).
+    Fetch matches from webpage_result, which has (url, matches).
     Return: a list
     """
     conn = sqlite3.connect(DB_PATH)
@@ -101,6 +122,7 @@ def get_matches(url):
     data = pd.DataFrame([result], columns=columns)
     matches = json.loads(data.matches.iloc[0])
     return matches
+
 
 def fetch_server_results():
     """
@@ -116,7 +138,7 @@ def fetch_server_results():
     return pre_data
 
 
-def get_processed_server_urls() -> set[tuple]:
+def get_processed_server_urls() -> set:
     """
     Return a set of (cik, year, url) that are already processed in `server_result`.
     """
@@ -149,10 +171,11 @@ def save_process_result(df):
     conn.commit()
     conn.close()
 
-create_db()
-```
 
-```{python}
+# =============================================================================
+# SERVER COMMUNICATION
+# =============================================================================
+
 def get_result_from_server(sentences, batch_size=128):
     predictions = []
     headers = {"Content-Type": "application/json"}
@@ -177,8 +200,9 @@ def get_result_from_server(sentences, batch_size=128):
             predictions.extend(preds)
         except requests.exceptions.RequestException as e:
             print(f"Error communicating with server: {e}")
-            predictions.extend([-1] * len(batch))  # placeholder for failures
+            predictions.extend([-1] * len(batch))
     return predictions
+
 
 def process_report_fully(report):
     """
@@ -195,6 +219,7 @@ def process_report_fully(report):
     # Get the report's `matches`
     matches = get_matches(report.link)
     server_predictions = []
+    
     # Prepend <reportYear> to each sentence
     if matches:
         matches_with_year = [
@@ -211,7 +236,7 @@ def process_report_fully(report):
             "url": report.link,
             "cik": report.cik,
             "year": report.year,
-            "server_response": server_predictions,  # This now correctly holds the server's predictions
+            "server_response": server_predictions,
         }
     )
 
@@ -219,43 +244,18 @@ def process_report_fully(report):
     save_process_result(result_row)
     return result_row
 
-```
 
-```{python}
-results = []
-processed_set = get_processed_server_urls()
+# =============================================================================
+# ANALYSIS FUNCTIONS
+# =============================================================================
 
-# Only process reports not already in webpage_result
-reports_to_process = [
-    r
-    for r in existing_report_df.itertuples(index=False)
-    if (r.cik, r.year, r.link) not in processed_set
-]
-
-with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
-    # Use the new, consolidated function
-    future_to_report = {
-        executor.submit(process_report_fully, r): r for r in reports_to_process
-    }
-
-    for future in tqdm(as_completed(future_to_report), total=len(future_to_report)):
-        try:
-            res = future.result()
-            if res is not None:
-                results.append(res)
-        except Exception as e:
-            debug_print(f"Error processing {future_to_report[future].link}: {e}")
-
-print(f"Processed {len(results)} new reports in parallel.")
-```
-
-```{python}
 def parse_json(json_str):
     """Helper function to parse JSON strings safely"""
     try:
         return json.loads(json_str) if isinstance(json_str, str) else json_str
     except (json.JSONDecodeError, TypeError):
         return []
+
 
 def get_final_results():
     """Get all processed results from the database"""
@@ -268,6 +268,7 @@ def get_final_results():
     wr["server_response"] = wr["server_response"].apply(parse_json)
 
     return wr
+
 
 def get_sentence_analysis():
     """Get sentence analysis with server predictions and save to Excel."""
@@ -303,8 +304,7 @@ def get_sentence_analysis():
 
     print(f"Sentence analysis for {len(sa)} reports:")
 
-    # Excel writer (overwrite if fresh, append otherwise)
-
+    # Excel writer
     with pd.ExcelWriter(SERVER_EXCEL_PATH, engine="openpyxl") as writer:
 
         # --- Main sheet ---
@@ -374,9 +374,7 @@ def get_sentence_analysis():
         cooc = sa[label_cols].gt(0).astype(int).T.dot(sa[label_cols].gt(0).astype(int))
         cooc.to_excel(writer, sheet_name="label_cooccurrence")
 
-        # =========================================================
-        # --- NEW: Hedging by Type ---
-        # =========================================================
+        # --- Hedging by Type ---
         hedge_types = {
             "General": [id2label[0], id2label[1]],
             "IR": [id2label[8], id2label[9]],
@@ -401,9 +399,7 @@ def get_sentence_analysis():
                 writer, sheet_name="Hedging by Type", index=False
             )
 
-        # =========================================================
-        # --- NEW: Hedge Type Cross-Analysis ---
-        # =========================================================
+        # --- Hedge Type Cross-Analysis ---
         hedge_flags = sa.groupby("cik")[[
             id2label[0], id2label[8], id2label[10], id2label[12],
             id2label[1], id2label[9], id2label[11], id2label[13],
@@ -421,15 +417,15 @@ def get_sentence_analysis():
         hedge_cross.to_excel(writer, sheet_name="Hedge Type Cross", index=True)
 
     print(f"Sentence analysis saved to: {SERVER_EXCEL_PATH}")
+    
+    # Save to Google Drive if in Colab
+    if IS_COLAB:
+        print("💾 Saving results to Google Drive...")
+        subprocess.run(f"cp {SERVER_EXCEL_PATH} {DRIVE_PATH}/.", shell=True)
 
     return sa
 
-# Generate sentence analysis
-sa = get_sentence_analysis()
-sa.head(10)
-```
 
-```{python}
 def build_sentence_label_excel():
     # Load both DB tables
     conn = sqlite3.connect(DB_PATH)
@@ -480,11 +476,75 @@ def build_sentence_label_excel():
     # Save to Excel
     final_df.to_excel(SENTENCE_PATH, index=False)
     print(f"Saved sentence-label mapping to {SENTENCE_PATH}")
+    
+    # Save to Google Drive if in Colab
+    if IS_COLAB:
+        print("💾 Saving sentence labels to Google Drive...")
+        subprocess.run(f"cp {SENTENCE_PATH} {DRIVE_PATH}/.", shell=True)
 
     return final_df
 
 
-# Run it
-sentence_label_df = build_sentence_label_excel()
-sentence_label_df.head(10)
-```
+# =============================================================================
+# MAIN EXECUTION
+# =============================================================================
+
+if __name__ == "__main__":
+    print("=" * 70)
+    print("Model Classification and Analysis Script")
+    print("=" * 70)
+    
+    # Initialize database
+    create_db()
+    
+    # Process reports
+    print("\nProcessing reports with server predictions...")
+    results = []
+    processed_set = get_processed_server_urls()
+
+    # Only process reports not already in server_result
+    reports_to_process = [
+        r
+        for r in existing_report_df.itertuples(index=False)
+        if (r.cik, r.year, r.link) not in processed_set
+    ]
+
+    with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+        future_to_report = {
+            executor.submit(process_report_fully, r): r for r in reports_to_process
+        }
+
+        for future in tqdm(as_completed(future_to_report), total=len(future_to_report)):
+            try:
+                res = future.result()
+                if res is not None:
+                    results.append(res)
+            except Exception as e:
+                debug_print(f"Error processing {future_to_report[future].link}: {e}")
+
+    print(f"Processed {len(results)} new reports in parallel.")
+    
+    # Generate analysis
+    print("\n" + "=" * 70)
+    print("Generating sentence analysis...")
+    print("=" * 70)
+    sa = get_sentence_analysis()
+    print(f"\nFirst 10 rows of analysis:")
+    print(sa.head(10))
+    
+    # Build sentence-label mapping
+    print("\n" + "=" * 70)
+    print("Building sentence-label Excel file...")
+    print("=" * 70)
+    sentence_label_df = build_sentence_label_excel()
+    print(f"\nFirst 10 rows of sentence labels:")
+    print(sentence_label_df.head(10))
+    
+    # Final save to Drive if in Colab
+    if IS_COLAB:
+        print("\n💾 Final database sync to Google Drive...")
+        subprocess.run(SAVE_SHELL_CMD, shell=True)
+    
+    print("\n" + "=" * 70)
+    print("All done!")
+    print("=" * 70)
