@@ -398,7 +398,7 @@ ccr_analysis_templates = [
     # Neutral/assessment-only language
     "Management {verb} whether the embedded features were clearly and closely related to the host instrument as required under ASC 815",
     "{company} {verb} the economic characteristics of the embedded provisions in accordance with the clearly and closely related guidance",
-    "An evaluation of the embedded derivative features was performed to determine whether they are clearly and closely related to the host contract",
+    "An evaluation of the embedded derivative features was performed to {verb} whether they are clearly and closely related to the host contract",
     # Variations in contract types
     "{company} {verb} its lease agreements containing variable payments and determined the features are not clearly and closely related to the lease host",
     "{company} {verb} customer contracts containing indexed payment terms and concluded bifurcation was required",
