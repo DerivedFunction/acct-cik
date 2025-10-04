@@ -26,7 +26,8 @@ DEBUG = False
 ALL_FIRMS_DATA = "derivatives_data.csv"
 REPORT_CSV_PATH = "report_data_to_process.csv"
 DB_PATH = "web_data.db"
-SEC_RATE_LIMIT = 1 / 5  # requests per second
+SEC_RATE = 9  # requests per second
+SEC_RATE_LIMIT =  1 / SEC_RATE # requests per second
 CHUNK_SIZE = 500
 
 # =============================================================================
@@ -42,9 +43,9 @@ def get_system_config():
     total_cores = max(mp.cpu_count() - 1, 1)
     total_fetchers = min(5, total_cores)
     if IS_COLAB and not Path(DB_PATH).exists():
-        print("Loading database from Google Drive")
+        print("Loading database from Google Drive. Run again after it is loaded.")
         subprocess.run(LOAD_SHELL_CMD, shell=True)
-        time.sleep(5)
+        exit(0)
     return {
         "num_fetchers": total_fetchers,
         "num_parsers": total_cores,
@@ -60,6 +61,7 @@ print(
     f"⚙️  Configuration: {CONFIG['num_fetchers']} fetchers, {CONFIG['num_parsers']} parsers"
 )
 print(f"📦 Chunk size: {CONFIG['chunk_size']} reports per batch")
+
 
 # =============================================================================
 # REGEX PATTERNS AND KEYWORDS
@@ -328,7 +330,7 @@ def save_process_result(df):
 def fetch_json(url: str) -> dict | None:
     global SEC_RATE_LIMIT
     headers = {
-        "User-Agent": f"{random.randint(1000,9999)} {random.randint(1000,9999)}@{random.randint(1000,9999)}.com"
+        "User-Agent": f"{random.randint(1000,9999)}-{random.randint(1000,9999)}@{random.randint(1000,9999)}.com"
     }
     time.sleep(SEC_RATE_LIMIT)
     try:
@@ -743,7 +745,7 @@ def filter_by_keywords(
 
 
 # =============================================================================
-# PARALLEL PROCESSING FUNCTIONS (OPTIMIZED FOR 44 CORES)
+# PARALLEL PROCESSING FUNCTIONS (OPTIMIZED FOR PARALLEL CORES)
 # =============================================================================
 
 
@@ -896,6 +898,18 @@ def format_time(seconds):
         return f"{int(seconds)}s"
 
 
+def calculate_rate_limit(num_fetchers, max_requests_per_sec=SEC_RATE):
+    """
+    Calculate per-worker delay to stay under global rate limit
+
+    Examples:
+        - 1 worker,  4.5 req/sec: each waits 0.22s → 4.5 req/sec total ✓
+        - 3 workers, 4.5 req/sec: each waits 0.67s → 4.5 req/sec total ✓
+        - 5 workers, 4.5 req/sec: each waits 1.11s → 4.5 req/sec total ✓
+    """
+    return num_fetchers / max_requests_per_sec
+
+
 def process_all_reports_fully():
     global SEC_RATE_LIMIT
 
@@ -914,7 +928,12 @@ def process_all_reports_fully():
     CHUNK_SIZE = CONFIG["chunk_size"]
     NUM_FETCHERS = CONFIG["num_fetchers"]
     NUM_PARSERS = CONFIG["num_parsers"]
-
+    SEC_RATE_LIMIT = calculate_rate_limit(NUM_FETCHERS)
+    print(f"\n⚙️  Rate Limiting Configuration:")
+    print(f"  • {NUM_FETCHERS} parallel fetchers")
+    print(f"  • Each worker waits {SEC_RATE_LIMIT:.2f}s between requests")
+    print(f"  • Effective rate: ~{NUM_FETCHERS / SEC_RATE_LIMIT:.2f} req/sec")
+    print(f"  • Target limit: {SEC_RATE_LIMIT:.2f} req/sec")
     total_results = 0
     total_empty = 0
 
