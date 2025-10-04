@@ -51,7 +51,7 @@ def execute_sql(sql: str, fetch: bool = True) -> Union[pd.DataFrame, int]:
 ## Execute SELECT Statements 
 
 ```{python}
-wf = execute_sql("SELECT url FROM report_data WHERE NOT url=''", fetch=True)
+wf = execute_sql("SELECT * FROM report_data WHERE NOT url=''", fetch=True)
 wf.to_csv("./report_data.csv", index=False)
 len(wf)
 ```
