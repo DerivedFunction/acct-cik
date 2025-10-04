@@ -415,11 +415,30 @@ embedded_settlement_templates = [
 
 # Embedded FX derivatives templates
 embedded_fx_templates = [
+    # General identification
     "Certain {host_contract} contain payments indexed to foreign currency exchange rates that represent embedded foreign currency derivatives",
     "{company} has identified embedded foreign currency derivatives in {host_contract} where payments are denominated in a currency other than the functional currency of either party",
     "Embedded foreign exchange derivatives arise from {host_contract} with payment terms linked to movements in the {currency_pair} exchange rate",
     "{company}'s {host_contract} include embedded FX derivatives requiring bifurcation due to currency mismatches between contract terms and functional currencies",
+    # Outcome: bifurcation required
+    "The embedded foreign currency feature is not clearly and closely related to the host contract and was bifurcated as a separate derivative instrument",
+    "Management concluded that the currency-indexed provisions of the {host_contract} are not clearly and closely related and therefore require separate accounting",
+    "{company} determined that the foreign currency-linked payments within {host_contract} fail the closely related test and must be accounted for as derivatives",
+    # Outcome: bifurcation not required
+    "The foreign currency denominated payments within the {host_contract} are considered clearly and closely related to the host and do not require bifurcation",
+    "Management assessed the FX-linked terms of the {host_contract} and concluded they are clearly and closely related to the economic characteristics of the host instrument",
+    "The embedded foreign exchange feature is deemed to be clearly and closely related to the host contract and remains within the host’s accounting treatment",
+    # Contract variations
+    "{company}'s long-term debt agreements denominated in {currency_pair} contain embedded FX derivatives requiring analysis under ASC 815",
+    "Lease agreements with rental payments linked to {currency_pair} expose the Company to embedded foreign exchange derivative features",
+    "Supplier agreements denominated in {currency_pair} include embedded currency features subject to bifurcation assessment",
+    "Customer contracts requiring settlement in {currency_pair} create embedded FX derivatives under the host revenue arrangement",
+    "Royalty agreements denominated in foreign currency contain embedded foreign exchange features subject to ASC 815 analysis",
+    # Neutral disclosure language
+    "Management evaluated embedded foreign exchange features in {host_contract} to determine whether they are clearly and closely related to the host instrument",
+    "An assessment was performed of foreign currency-linked provisions in {host_contract} under the embedded derivative guidance",
 ]
+
 
 # Historical warrant templates (for label 5)
 warrant_past_templates = [
