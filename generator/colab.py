@@ -53,7 +53,7 @@ def get_system_config():
     if IS_COLAB and not Path(DB_PATH).exists():
         print("Loading database from Google Drive. Run again after it is loaded.")
         subprocess.run(LOAD_SHELL_CMD, shell=True)
-        exit(0)
+        return None
     RATE_INCREASE = 0.1 / SEC_RATE * total_cores
     NUM_FETCHERS = total_cores
     NUM_PARSERS = total_cores
@@ -998,7 +998,7 @@ def process_all_reports_fully():
                         elif current_rate > SEC_RATE:
                             shared_rate_limit.value = NUM_FETCHERS / SEC_RATE
                         current_chunk_time = time.time()  # reset
-                        
+
                     result = future.result()
                     if result:
                         fetched_data.append(result)
@@ -1048,7 +1048,7 @@ def process_all_reports_fully():
 
         print(f"  ✓ Parsed {chunk_results} reports successfully")
         print(f"  Time taken: {format_time(chunk_time)}")
-        print(f"  Current sleep rate: {SEC_RATE_LIMIT:.2f}")
+        print(f"  Current sleep rate: {shared_rate_limit.value:.2f}")
         print(f"  Avg chunk time: {format_time(avg_chunk_time)}")
         print(f"  Est. time remaining: {format_time(est_time_remaining)}")
         print(f"  Total time: {format_time(total_time)}")
