@@ -979,7 +979,7 @@ def process_all_reports_fully():
                 try:
                     num_reqs += 1
                     if num_reqs % CHUNK_CHECK_RATE == 0:
-                        current_rate = current_chunk_time - time.time()
+                        current_rate = time.time() - current_chunk_time
                         if current_rate < SEC_RATE:
                             SEC_RATE_LIMIT -= RATE_INCREASE
                         elif current_rate > SEC_RATE:
