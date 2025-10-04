@@ -2,11 +2,12 @@ from flask import Flask, request, jsonify
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 import json
+
 app = Flask(__name__)
 
 # Paths
 MODEL_PATH = "DerivedFunction/finbert-derivative-type-classifier"  # your saved Hugging Face model
-KEYWORDS_FILE = "./keywords_labels.json"
+KEYWORDS_FILE = "./keywords_find.json"
 # Load tokenizer & model
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
