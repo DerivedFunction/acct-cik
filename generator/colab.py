@@ -14,6 +14,7 @@ import re
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
 import multiprocessing as mp
+from pathlib import Path
 
 # Importing required module
 import subprocess
@@ -21,7 +22,7 @@ import subprocess
 # =============================================================================
 # CONFIGURATION - DEFAULT
 # =============================================================================
-debug = False
+DEBUG = False
 ALL_FIRMS_DATA = "derivatives_data.csv"
 REPORT_CSV_PATH = "report_data_to_process.csv"
 DB_PATH = "web_data.db"
@@ -40,7 +41,7 @@ IS_COLAB = False
 def get_system_config():
     total_cores = max(mp.cpu_count() - 1, 1)
     total_fetchers = min(5, total_cores)
-    if IS_COLAB:
+    if IS_COLAB and not Path(DB_PATH).exists():
         print("Loading database from Google Drive")
         subprocess.run(LOAD_SHELL_CMD, shell=True)
         time.sleep(5)
@@ -191,8 +192,8 @@ all_derivatives_df = pd.read_csv(ALL_FIRMS_DATA)
 # =============================================================================
 
 def debug_print(*args):
-    global debug
-    if debug:
+    global DEBUG
+    if DEBUG:
         print(*args)
 
 # =============================================================================
