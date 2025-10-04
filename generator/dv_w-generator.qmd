@@ -2672,7 +2672,7 @@ def generate_derivative_liability_paragraph(
                 month = random.choice(months)
                 end_day = random.randint(28, 31)
                 year = random.choice(past_years)
-
+                gain_loss = random.choice(["gain", "loss"])
                 sentence = template.format(
                     principal=principal,
                     embedded_fv=embedded_fv,
@@ -2684,6 +2684,7 @@ def generate_derivative_liability_paragraph(
                     company=company_name,
                     currency_code=currency_code,
                     money_unit=money_units,
+                    gain_loss=gain_loss
                 )
             else:
                 # Use issuance template for label 6
