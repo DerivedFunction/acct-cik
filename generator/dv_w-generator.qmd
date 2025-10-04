@@ -2670,6 +2670,7 @@ def generate_derivative_liability_paragraph(
                 embedded_fv = round(principal * random.uniform(0.05, 0.15), 1)
                 amount = embedded_fv
                 month = random.choice(months)
+                end_day = random.randint(28, 31)
                 year = random.choice(past_years)
 
                 sentence = template.format(
@@ -2677,6 +2678,7 @@ def generate_derivative_liability_paragraph(
                     embedded_fv=embedded_fv,
                     amount=amount,
                     month=month,
+                    end_day=end_day,
                     year=year,
                     settlement_year=settlement_year,
                     company=company_name,
