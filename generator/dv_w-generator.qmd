@@ -2673,6 +2673,7 @@ def generate_derivative_liability_paragraph(
                 end_day = random.randint(28, 31)
                 year = random.choice(past_years)
                 gain_loss = random.choice(["gain", "loss"])
+                maturity_year=random.randint(current_year, current_year + 5)
                 sentence = template.format(
                     principal=principal,
                     embedded_fv=embedded_fv,
