@@ -6,13 +6,12 @@ editor: source
 ```{python}
 # %%
 # Installing required libraries
-# %pip install pandas requests bs4 matplotlib
+# %pip install pandas requests matplotlib
 ```
 
 ```{python}
 import pandas as pd  # Data processing
 import requests  # Synchronous HTTP requests
-from bs4 import BeautifulSoup  # Webpage extraction
 import json  # JSON parsing
 import sqlite3  # To store our data
 from typing import List
