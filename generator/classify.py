@@ -1,11 +1,12 @@
 # =============================================================================
-# Model Classification Script
+# Model Classification Script - Chunked Processing
 # =============================================================================
 
 import pandas as pd
 import requests
 import json
 import sqlite3
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 from collections import Counter
@@ -24,6 +25,10 @@ NUM_THREADS = 6
 SERVER_URL = "http://127.0.0.1:5000/predict"
 KEYWORDS_FILE = "./keywords_find.json"
 DEBUG = False  # Debug printing
+
+# Chunking configuration
+CHUNK_SIZE = 500  # Process 500 reports per chunk
+SAVE_ITERATION = 1  # Save after each chunk
 
 # =============================================================================
 # COLAB CONFIGURATION
@@ -49,6 +54,16 @@ def debug_print(*args):
     global DEBUG
     if DEBUG:
         print(*args)
+
+def format_time(seconds):
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    if hours > 0:
+        return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+    elif minutes > 0:
+        return f"{int(minutes)}m {int(seconds)}s"
+    else:
+        return f"{int(seconds)}s"
 
 # =============================================================================
 # DATABASE FUNCTIONS
@@ -216,10 +231,6 @@ def process_report_fully(report):
     2. Gets analysis from the server for those sentences from `matches`.
     3. Saves the result to the server_result table.
     """
-    if report.url in processed_set:
-        debug_print(f"Skipping already processed: {report.url}")
-        return None
-
     # Get the report's `matches`
     matches = get_matches(report.url)
     server_predictions = []
@@ -501,6 +512,112 @@ def build_sentence_label_excel():
     return final_df
 
 # =============================================================================
+# CHUNKED PROCESSING
+# =============================================================================
+
+def process_reports_in_chunks():
+    """Process reports in chunks with periodic saves and statistics."""
+    global existing_report_df
+    
+    processed_set = get_processed_server_urls()
+    
+    # Only process reports not already in server_result
+    reports_to_process = [
+        r
+        for r in existing_report_df.itertuples(index=False)
+        if r.url not in processed_set
+    ]
+    
+    total_reports = len(reports_to_process)
+    print(f"Processing {total_reports:,} new reports")
+    print(f"Already processed: {len(processed_set):,} reports")
+    
+    # Create chunks
+    chunks = [
+        reports_to_process[i: i + CHUNK_SIZE]
+        for i in range(0, total_reports, CHUNK_SIZE)
+    ]
+    
+    print(f"\nProcessing in {len(chunks)} chunks of {CHUNK_SIZE} reports each")
+    print("=" * 70)
+    
+    chunk_times = []
+    total_time = 0
+    total_results = 0
+    total_empty = 0
+    
+    for chunk_idx, chunk in enumerate(chunks, 1):
+        start_chunk_time = time.time()
+        print(f"\n📦 Chunk {chunk_idx}/{len(chunks)} ({len(chunk)} reports)")
+        
+        chunk_results = 0
+        chunk_empty = 0
+        
+        # Process chunk with ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+            future_to_report = {
+                executor.submit(process_report_fully, r): r for r in chunk
+            }
+            
+            for future in tqdm(
+                as_completed(future_to_report),
+                total=len(future_to_report),
+                desc=f"  Processing chunk {chunk_idx}",
+                leave=False
+            ):
+                try:
+                    res = future.result()
+                    if res is not None:
+                        chunk_results += 1
+                    else:
+                        chunk_empty += 1
+                except Exception as e:
+                    debug_print(f"Error processing {future_to_report[future].url}: {e}")
+                    chunk_empty += 1
+        
+        chunk_time = time.time() - start_chunk_time
+        chunk_times.append(chunk_time)
+        total_time += chunk_time
+        total_results += chunk_results
+        total_empty += chunk_empty
+        
+        # Calculate statistics
+        avg_chunk_time = sum(chunk_times) / len(chunk_times)
+        remaining_chunks = len(chunks) - chunk_idx
+        est_time_remaining = avg_chunk_time * remaining_chunks
+        
+        print(f"  ✓ Processed {chunk_results} reports successfully")
+        print(f"  ✗ Empty/failed: {chunk_empty} reports")
+        print(f"  Time taken: {format_time(chunk_time)}")
+        print(f"  Avg chunk time: {format_time(avg_chunk_time)}")
+        print(f"  Est. time remaining: {format_time(est_time_remaining)}")
+        print(f"  Total time: {format_time(total_time)}")
+        
+        # Save to Google Drive if in Colab
+        if IS_COLAB:
+            print(f"  → Saving to Google Drive...")
+            subprocess.run(SAVE_SHELL_CMD, shell=True)
+        
+        # Progress summary
+        processed_so_far = chunk_idx * CHUNK_SIZE
+        percent_complete = (processed_so_far / total_reports) * 100
+        print(
+            f"  📊 Overall: {total_results:,}/{min(processed_so_far, total_reports):,} ({percent_complete:.1f}% complete)"
+        )
+    
+    print("\n" + "=" * 70)
+    print(f"🎉 FINAL RESULTS:")
+    print(f"  ✓ Successfully processed: {total_results:,} reports")
+    print(f"  ✗ Empty/failed: {total_empty:,} reports")
+    if total_results + total_empty > 0:
+        print(
+            f"  📈 Success rate: {(total_results/(total_results+total_empty)*100):.1f}%"
+        )
+    print("=" * 70)
+    
+    return total_results
+
+# =============================================================================
 # INITIALIZATION
 # =============================================================================
 
@@ -525,35 +642,11 @@ if __name__ == "__main__":
     # Initialize database
     create_db()
     
-    # Process reports
+    # Process reports in chunks
     print("\nProcessing reports with server predictions...")
-    results = []
-    processed_set = get_processed_server_urls()
-
-    # Only process reports not already in server_result
-    reports_to_process = [
-        r
-        for r in existing_report_df.itertuples(index=False)
-        if r.url not in processed_set
-    ]
-
-    print(f"Found {len(reports_to_process)} reports to process")
-    print(f"Already processed: {len(processed_set)} reports")
-
-    with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
-        future_to_report = {
-            executor.submit(process_report_fully, r): r for r in reports_to_process
-        }
-
-        for future in tqdm(as_completed(future_to_report), total=len(future_to_report)):
-            try:
-                res = future.result()
-                if res is not None:
-                    results.append(res)
-            except Exception as e:
-                debug_print(f"Error processing {future_to_report[future].url}: {e}")
-
-    print(f"Processed {len(results)} new reports in parallel.")
+    total_processed = process_reports_in_chunks()
+    
+    print(f"\nProcessed {total_processed} new reports in chunked parallel mode.")
     
     # Generate analysis
     print("\n" + "=" * 70)
