@@ -47,19 +47,78 @@ months = [
 
 quarters = ["first", "second", "third", "fourth", "last", "1st", "2nd", "3rd", "4th"]
 # Currency codes for international flavor
-currency_codes = ["$", "€", "£", "¥", "CHF ", "SGD ", "CAD ", "AUD "]
+currency_codes = [
+    "$",
+    "USD",
+    "€",
+    "EUR",
+    "£",
+    "GBP",
+    "¥",
+    "JPY",
+    "CHF",  # Swiss Franc
+    "CNY",  # Chinese Yuan
+    "HKD",  # Hong Kong Dollar
+    "SGD",  # Singapore Dollar
+    "CAD",  # Canadian Dollar
+    "AUD",  # Australian Dollar
+    "NZD",  # New Zealand Dollar
+    "SEK",  # Swedish Krona
+    "NOK",  # Norwegian Krone
+    "DKK",  # Danish Krone
+    "ZAR",  # South African Rand
+    "BRL",  # Brazilian Real
+    "MXN",  # Mexican Peso
+    "INR",  # Indian Rupee
+    "KRW",  # South Korean Won
+    "TRY",  # Turkish Lira
+]
 currency_pairs = [
+    # Major USD crosses
     "EUR/USD",
+    "GBP/USD",
+    "USD/JPY",
+    "USD/CHF",
+    "USD/CAD",
+    "AUD/USD",
+    "NZD/USD",
+    "USD/CNY",
+    "USD/HKD",
+    "USD/SGD",
+    "USD/INR",
+    "USD/KRW",
+    "USD/MXN",
+    "USD/BRL",
+    "USD/TRY",
+    "USD/ZAR",
+    # Euro crosses
     "EUR/GBP",
     "EUR/JPY",
     "EUR/CHF",
-    "EUR/SGD",
-    "USD/JPY",
-    "GBP/USD",
-    "USD/CAD",
-    "AUD/USD",
-    "USD/CNY",
+    "EUR/CAD",
+    "EUR/AUD",
+    "EUR/NZD",
+    "EUR/SEK",
+    "EUR/NOK",
+    "EUR/DKK",
+    "EUR/PLN",
+    "EUR/HUF",
+    "EUR/CZK",
+    # Asia-Pacific crosses
+    "AUD/JPY",
+    "AUD/NZD",
+    "AUD/CAD",
+    "NZD/JPY",
+    "SGD/JPY",
+    "CNY/JPY",
+    # Pound crosses
+    "GBP/JPY",
+    "GBP/CHF",
+    "GBP/CAD",
+    "GBP/AUD",
+    "GBP/NZD",
 ]
+
 
 major_currencies = [
     "the Euro",
@@ -123,7 +182,7 @@ assessment_verbs = [
     "measured",
     "analyzed",
     "conducted",
-    "performed"
+    "performed",
 ]
 ```
 
@@ -260,7 +319,23 @@ embedded_types = [
     "indexed payment terms",
     "foreign currency-linked provisions",
     "commodity price escalation clauses",
+    # Common embedded derivative features to add:
+    "put options",  # investor put right in debt
+    "call options",  # issuer call right
+    "prepayment options",  # common in loans/leases
+    "step-up interest features",  # coupon steps up/down
+    "participating payment features",  # extra payments linked to equity/earnings
+    "profit participation features",  # linked to issuer performance
+    "contingent conversion features",  # conversion only if trigger met
+    "down-round protection",  # equity-linked anti-dilution
+    "ratchet provisions",  # similar to down-round resets
+    "dual currency provisions",  # payment in one of two currencies
+    "interest rate reset features",  # coupon reset tied to benchmark
+    "equity-linked provisions",  # payment terms tied to stock price
+    "inflation indexation clauses",  # payments indexed to CPI/RPI
+    "performance-based conversion",  # convertibility linked to financial targets
 ]
+
 
 # Convertible debt embedded derivative templates
 convertible_debt_templates = [
@@ -311,10 +386,23 @@ embedded_fv_change_templates = [
 
 # Closely and clearly related analysis templates
 ccr_analysis_templates = [
+    # Assessment leading to bifurcation
     "{company} {verb} an assessment of whether the embedded features were clearly and closely related to the economic characteristics of the host contract and concluded bifurcation was required",
     "The embedded features are not clearly and closely related to the debt host instrument, as the conversion feature is indexed to {company}'s own stock and includes down round protection",
     "Management {verb} the economic characteristics and risks of the embedded features and determined they are not clearly and closely related to the host, requiring separate accounting",
     "The embedded derivative fails the clearly and closely related test due to its equity-linked characteristics and variable settlement provisions",
+    # Assessment leading to no bifurcation
+    "{company} {verb} the terms of the embedded provisions and concluded they are clearly and closely related to the host contract, and therefore do not require bifurcation",
+    "The embedded features are considered clearly and closely related to the debt host instrument, and accordingly no separate derivative recognition is necessary",
+    "Based on its analysis, management determined that the embedded option is clearly and closely related to the host contract and remains accounted for within the host instrument",
+    # Neutral/assessment-only language
+    "Management {verb} whether the embedded features were clearly and closely related to the host instrument as required under ASC 815",
+    "{company} {verb} the economic characteristics of the embedded provisions in accordance with the clearly and closely related guidance",
+    "An evaluation of the embedded derivative features was performed to determine whether they are clearly and closely related to the host contract",
+    # Variations in contract types
+    "{company} {verb} its lease agreements containing variable payments and determined the features are not clearly and closely related to the lease host",
+    "{company} {verb} customer contracts containing indexed payment terms and concluded bifurcation was required",
+    "Management reviewed supplier agreements with commodity-linked pricing terms and determined the features were not clearly and closely related to the host contract",
 ]
 
 # Conversion/settlement templates
