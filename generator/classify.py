@@ -38,12 +38,12 @@ SAVE_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/."
 IS_COLAB = Path(DRIVE_PATH).exists()
 
 if IS_COLAB:
-    print("🔵 Running in Google Colab environment")
+    print("Running in Google Colab environment")
     if not Path(DB_PATH).exists():
-        print("📥 Loading database from Google Drive...")
+        print("Loading database from Google Drive...")
         subprocess.run(LOAD_SHELL_CMD, shell=True)
 else:
-    print("💻 Running in local environment")
+    print("Running in local environment")
 
 # =============================================================================
 # LOAD DATA
@@ -77,8 +77,6 @@ def create_db():
         c.execute(
             """
             CREATE TABLE IF NOT EXISTS server_result (
-                cik INTEGER,
-                year INTEGER,
                 url TEXT PRIMARY KEY,
                 server_response TEXT,
                 FOREIGN KEY (url) REFERENCES report_data (url)
@@ -140,14 +138,14 @@ def fetch_server_results():
 
 def get_processed_server_urls() -> set:
     """
-    Return a set of (cik, year, url) that are already processed in `server_result`.
+    Return a set of URLs that are already processed in `server_result`.
     """
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT cik, year, url FROM server_result")
+    c.execute("SELECT url FROM server_result")
     rows = c.fetchall()
     conn.close()
-    return set(rows)
+    return set(url for (url,) in rows)
 
 
 def save_process_result(df):
@@ -158,15 +156,20 @@ def save_process_result(df):
     c = conn.cursor()
     try:
         c.execute(
-            "INSERT OR REPLACE INTO server_result (url, cik, year, server_response) VALUES (?, ?, ?, ?)",
-            (df.url, df.cik, df.year, json.dumps(df.server_response)),
+            "INSERT OR REPLACE INTO server_result (url, server_response) VALUES (?, ?)",
+            (df.url, json.dumps(df.server_response)),
         )
     except sqlite3.Error as e:
         debug_print(f"DB error on {df.url}: {e}")
-        c.execute(
-            "INSERT OR IGNORE INTO fail_results (cik, year, url) VALUES (?, ?, ?)",
-            (df.cik, df.year, df.url),
-        )
+        # Get cik and year from report_data for fail_results
+        c.execute("SELECT cik, year FROM report_data WHERE url=?", (df.url,))
+        result = c.fetchone()
+        if result:
+            cik, year = result
+            c.execute(
+                "INSERT OR IGNORE INTO fail_results (cik, year, url) VALUES (?, ?, ?)",
+                (cik, year, df.url),
+            )
 
     conn.commit()
     conn.close()
@@ -211,13 +214,12 @@ def process_report_fully(report):
     2. Gets analysis from the server for those sentences from `matches`.
     3. Saves the result to the server_result table.
     """
-    key = (report.cik, report.year, report.link)
-    if key in processed_set:
-        debug_print(f"Skipping already processed: {key}")
+    if report.url in processed_set:
+        debug_print(f"Skipping already processed: {report.url}")
         return None
 
     # Get the report's `matches`
-    matches = get_matches(report.link)
+    matches = get_matches(report.url)
     server_predictions = []
     
     # Prepend <reportYear> to each sentence
@@ -233,9 +235,7 @@ def process_report_fully(report):
     # Prepare the final result row for the database
     result_row = pd.Series(
         {
-            "url": report.link,
-            "cik": report.cik,
-            "year": report.year,
+            "url": report.url,
             "server_response": server_predictions,
         }
     )
@@ -258,8 +258,23 @@ def parse_json(json_str):
 
 
 def get_final_results():
-    """Get all processed results from the database"""
-    wr = fetch_server_results()
+    """Get all processed results from the database, joined with report_data for cik/year"""
+    conn = sqlite3.connect(DB_PATH)
+    
+    # Join server_result with report_data to get cik and year
+    query = """
+        SELECT 
+            r.cik,
+            r.year,
+            s.url,
+            s.server_response
+        FROM server_result s
+        JOIN report_data r ON s.url = r.url
+    """
+    
+    wr = pd.read_sql(query, conn)
+    conn.close()
+    
     if wr.empty:
         print("No results found in server_result table")
         return pd.DataFrame()
@@ -420,36 +435,37 @@ def get_sentence_analysis():
     
     # Save to Google Drive if in Colab
     if IS_COLAB:
-        print("💾 Saving results to Google Drive...")
+        print("Saving results to Google Drive...")
         subprocess.run(f"cp {SERVER_EXCEL_PATH} {DRIVE_PATH}/.", shell=True)
 
     return sa
 
 
 def build_sentence_label_excel():
-    # Load both DB tables
+    # Load both DB tables with a join to get cik and year
     conn = sqlite3.connect(DB_PATH)
-    server_df = pd.read_sql("SELECT * FROM server_result", conn)
-    webpage_df = pd.read_sql("SELECT * FROM webpage_result", conn)
+    
+    query = """
+        SELECT 
+            r.cik,
+            r.year,
+            w.url,
+            w.matches,
+            s.server_response
+        FROM webpage_result w
+        JOIN report_data r ON w.url = r.url
+        JOIN server_result s ON w.url = s.url
+    """
+    
+    combined_df = pd.read_sql(query, conn)
     conn.close()
 
     all_rows = []
 
-    for _, srow in server_df.iterrows():
-        key = (srow["cik"], srow["year"], srow["url"])
-
-        # Find matching webpage_result row
-        wrow = webpage_df[
-            (webpage_df["cik"] == srow["cik"])
-            & (webpage_df["year"] == srow["year"])
-            & (webpage_df["url"] == srow["url"])
-        ]
-        if wrow.empty:
-            continue
-
+    for _, row in combined_df.iterrows():
         # Parse arrays
-        matches = json.loads(wrow.iloc[0]["matches"])
-        predictions = json.loads(srow["server_response"])
+        matches = json.loads(row["matches"])
+        predictions = json.loads(row["server_response"])
 
         # Defensive check: align lengths
         min_len = min(len(matches), len(predictions))
@@ -461,9 +477,9 @@ def build_sentence_label_excel():
 
             all_rows.append(
                 {
-                    "cik": srow["cik"],
-                    "year": srow["year"],
-                    "url": srow["url"],
+                    "cik": row["cik"],
+                    "year": row["year"],
+                    "url": row["url"],
                     "sentence": sentence,
                     "label_id": pred,
                     "label": label,
@@ -479,7 +495,7 @@ def build_sentence_label_excel():
     
     # Save to Google Drive if in Colab
     if IS_COLAB:
-        print("💾 Saving sentence labels to Google Drive...")
+        print("Saving sentence labels to Google Drive...")
         subprocess.run(f"cp {SENTENCE_PATH} {DRIVE_PATH}/.", shell=True)
 
     return final_df
@@ -506,8 +522,11 @@ if __name__ == "__main__":
     reports_to_process = [
         r
         for r in existing_report_df.itertuples(index=False)
-        if (r.cik, r.year, r.link) not in processed_set
+        if r.url not in processed_set
     ]
+
+    print(f"Found {len(reports_to_process)} reports to process")
+    print(f"Already processed: {len(processed_set)} reports")
 
     with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         future_to_report = {
@@ -520,7 +539,7 @@ if __name__ == "__main__":
                 if res is not None:
                     results.append(res)
             except Exception as e:
-                debug_print(f"Error processing {future_to_report[future].link}: {e}")
+                debug_print(f"Error processing {future_to_report[future].url}: {e}")
 
     print(f"Processed {len(results)} new reports in parallel.")
     
@@ -542,7 +561,7 @@ if __name__ == "__main__":
     
     # Final save to Drive if in Colab
     if IS_COLAB:
-        print("\n💾 Final database sync to Google Drive...")
+        print("\nFinal database sync to Google Drive...")
         subprocess.run(SAVE_SHELL_CMD, shell=True)
     
     print("\n" + "=" * 70)
