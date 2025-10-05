@@ -1023,6 +1023,7 @@ def get_sentence_analysis():
                 writer, sheet_name="Hedging by Type", index=False)
             hedge_cross.to_excel(
                 writer, sheet_name="Hedge Type Cross", index=True)
+        print(f"Server analysis saved to: {SERVER_EXCEL_PATH}")
         with pd.ExcelWriter(KEYWORDS_EXCEL_PATH, engine="xlsxwriter") as writer:
             if keyword_model_comparison is not None:
                 workbook = writer.book
@@ -1061,15 +1062,15 @@ def get_sentence_analysis():
                     writer, sheet_name="Confusion_IR_All")
                 keyword_model_comparison['confusion_cp_all'].to_excel(
                     writer, sheet_name="Confusion_CP_All")
+        print(f"Keyword analysis saved to: {KEYWORDS_EXCEL_PATH}")
     except ImportError:
         print("  (pip install xlsxwriter for better performance)")
-
-    print(f"Sentence analysis saved to: {SERVER_EXCEL_PATH}")
-
+        return pd.DataFrame(columns=[])
     # Save to Google Drive if in Colab
     if IS_COLAB:
         print("Saving results to Google Drive...")
         subprocess.run(f"cp {SERVER_EXCEL_PATH} {DRIVE_PATH}/.", shell=True)
+        subprocess.run(f"cp {KEYWORDS_EXCEL_PATH} {DRIVE_PATH}/.", shell=True)
 
     return sa
 
