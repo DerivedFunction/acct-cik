@@ -33,6 +33,7 @@ DEBUG = False  # Debug printing
 # COLAB CONFIGURATION
 # =============================================================================
 DRIVE_PATH = "./drive/MyDrive/db"
+DRIVE_SENTENCE_PATH = "sentence_results"
 LOAD_SHELL_CMD = f"cp {DRIVE_PATH}/{DB_PATH} ."
 SAVE_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/."
 IS_COLAB = Path(DRIVE_PATH).exists()
@@ -1359,7 +1360,8 @@ def build_sentence_label_excel():
         print(f"  ✓ Saved {summary_file}")
 
         if IS_COLAB:
-            subprocess.run(f"cp {summary_file} {DRIVE_PATH}/.", shell=True)
+            subprocess.run(
+                f"cp {summary_file} {DRIVE_PATH}/{DRIVE_SENTENCE_PATH}/.", shell=True)
 
     except ImportError:
         print(" (pip install xlsxwriter for better performance)")
