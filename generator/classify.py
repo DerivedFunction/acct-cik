@@ -767,7 +767,8 @@ def build_sentence_label_excel():
     # Define label groupings (pairs of related labels)
     label_groups = {
         "General_Hedge_0-1": [0, 1],
-        "Speculation_2-3": [2, 3],
+        "Speculation_2": [2],
+        "Irrelevant_3": [3],
         "Liabilities_Warrants_4-5": [4, 5],
         "Embedded_Derivatives_6-7": [6, 7],
         "Interest_Rate_8-9": [8, 9],
