@@ -1241,6 +1241,37 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             ]
         )
 
+        # --- AGGREGATE PERFORMANCE METRICS ---
+        all_performance_data = []
+
+        # Helper to format and add data
+        def add_metrics(data, file_name):
+            df = pd.DataFrame(data)
+            df = df[df['Category'] != 'Overall (All Derivatives: Hedges + Liabilities + Embedded)'] # Exclude if not needed
+            df.rename(columns={'Category': 'Sub-Category'}, inplace=True)
+            # Handle different 'Overall' labels
+            if 'Hedges Only' in df['Sub-Category'].iloc[0]:
+                df.insert(0, 'Category', 'Overall (Hedges Only)')
+            else:
+                df.insert(0, 'Category', 'Overall (All Derivatives)')
+            df.insert(1, 'File Name', file_name)
+            return df
+
+        # Collect data from all summary tables
+        all_performance_data.append(add_metrics(summary_any_deriv_current.to_dict('records'), "keywords_comp_ALL_DERIVATIVES_CURRENT.xlsx"))
+        all_performance_data.append(add_metrics(summary_any_deriv_all.to_dict('records'), "keywords_comp_ALL_DERIVATIVES_FULL.xlsx"))
+        all_performance_data.append(add_metrics(summary_all.to_dict('records'), "keywords_comparison_HEDGES_ALL.xlsx"))
+        all_performance_data.append(add_metrics(summary_current.to_dict('records'), "keywords_comparison_HEDGES_CURRENT.xlsx"))
+
+        # Combine all data into a single DataFrame
+        model_performance_summary = pd.concat(all_performance_data, ignore_index=True)
+
+        # Clean up the 'Sub-Category' column for clarity
+        model_performance_summary['Sub-Category'] = model_performance_summary['Sub-Category'].str.replace(r' \(Hedges Only: IR/FX/CP\)', '', regex=True)
+        model_performance_summary = model_performance_summary[[
+            'Category', 'File Name', 'Accuracy', 'Precision', 'Recall', 'F1_Score'
+        ]]
+
         return {
             # Current only - Hedges (IR/FX/CP)
             "comparison_current": comparison_current,
@@ -1270,6 +1301,7 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             "model_only_all": model_only_all,
             # Comparison
             "comparison_summary": comparison_summary,
+            "model_performance_summary": model_performance_summary,
         }
 
     except FileNotFoundError:
@@ -1473,7 +1505,11 @@ def write_workbooks(
                 base_path.stem + "_KW_MODEL_COMPARISON.xlsx"
             ),
             "description": "Keyword vs Model Comparison (Standalone)",
-            "sheets": {"KW_Model_Comparison": ("comparison_summary", False)},
+            "sheets": {
+                "KW_Model_Comparison": ("comparison_summary", False),
+                # Add this line to create the new sheet
+                "Model_Performance_Summary": ("model_performance_summary", False)
+            },
         },
     ]
 
