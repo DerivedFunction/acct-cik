@@ -7,11 +7,13 @@ import requests
 import json
 import sqlite3
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 from tqdm import tqdm
 from collections import Counter
 import subprocess
 from pathlib import Path
+import multiprocessing as mp
+
 
 # =============================================================================
 # CONFIGURATION
@@ -197,12 +199,14 @@ def save_batch_results(results_buffer):
 
         for result in results_buffer:
             try:
-                batch_data.append((result.url, json.dumps(result.server_response)))
+                batch_data.append(
+                    (result.url, json.dumps(result.server_response)))
             except Exception as e:
                 debug_print(f"Error preparing data for {result.url}: {e}")
                 # Get cik and year from report_data for fail_results
                 c.execute(
-                    "SELECT cik, year FROM report_data WHERE url=?", (result.url,)
+                    "SELECT cik, year FROM report_data WHERE url=?", (
+                        result.url,)
                 )
                 db_result = c.fetchone()
                 if db_result:
@@ -226,7 +230,8 @@ def save_batch_results(results_buffer):
             )
 
         conn.commit()
-        debug_print(f"Batch saved: {success_count} success, {fail_count} failures")
+        debug_print(
+            f"Batch saved: {success_count} success, {fail_count} failures")
 
     except sqlite3.Error as e:
         print(f"Batch DB error: {e}")
@@ -265,7 +270,7 @@ def get_result_from_server(sentences, batch_size=128):
     headers = {"Content-Type": "application/json"}
 
     for i in range(0, len(sentences), batch_size):
-        batch = sentences[i : i + batch_size]
+        batch = sentences[i: i + batch_size]
         payload = {"texts": batch}
         try:
             response = requests.post(
@@ -339,7 +344,7 @@ def get_final_results():
 
     # Join server_result with report_data to get cik and year
     query = """
-        SELECT 
+        SELECT
             r.cik,
             r.year,
             s.url,
@@ -360,169 +365,307 @@ def get_final_results():
 
     return wr
 
+# =============================================================================
+# PARALLELIZED ANALYSIS FUNCTIONS
+# =============================================================================
+
+
+def process_row_for_analysis(row_data):
+    """Process a single row for sentence analysis - designed for ProcessPoolExecutor"""
+    cik, year, url, server_response = row_data
+
+    # Parse server_response if it's a string
+    if isinstance(server_response, str):
+        try:
+            predictions = json.loads(server_response)
+        except (json.JSONDecodeError, TypeError):
+            predictions = []
+    else:
+        predictions = server_response if isinstance(
+            server_response, list) else []
+
+    if not predictions:
+        return None
+
+    # Map IDs → labels
+    predicted_labels = [id2label.get(pid, "Unknown") for pid in predictions]
+    pred_counts = Counter(predicted_labels)
+
+    result = {
+        "cik": cik,
+        "year": year,
+        "url": url,
+        "total_sentences": len(predictions),
+        **pred_counts,
+    }
+
+    return result
+
+
+def compute_firms_current_hedge(sa, hedge_labels_current):
+    """Parallel task: filter firms with current hedge - OPTIMIZED"""
+    # Aggregate first, then filter - much faster than groupby().filter()
+    firm_totals = sa.groupby("cik")[hedge_labels_current].sum().sum(axis=1)
+    firms_with_current = firm_totals[firm_totals > 0].index
+    return sa[sa["cik"].isin(firms_with_current)]
+
+
+def compute_firms_historic_only(sa, hedge_labels_historic, hedge_labels_current):
+    """Parallel task: filter firms with only historic hedge - OPTIMIZED"""
+    # Compute totals per firm for both categories
+    firm_historic = sa.groupby("cik")[hedge_labels_historic].sum().sum(axis=1)
+    firm_current = sa.groupby("cik")[hedge_labels_current].sum().sum(axis=1)
+
+    # Find firms with historic > 0 AND current == 0
+    firms_historic_only = firm_historic[(
+        firm_historic > 0) & (firm_current == 0)].index
+    return sa[sa["cik"].isin(firms_historic_only)]
+
+
+def compute_firms_label2_only(sa, label2_col, exclude_cols):
+    """Parallel task: filter firms with only label 2 - OPTIMIZED"""
+    # Aggregate per firm
+    firm_label2 = sa.groupby("cik")[label2_col].sum()
+    firm_others = sa.groupby("cik")[exclude_cols].sum().sum(axis=1)
+
+    # Find firms where label2 > 0 AND others < label2
+    firms_label2_only = firm_label2[(firm_label2 > 0) & (
+        firm_others < firm_label2)].index
+    return sa[sa["cik"].isin(firms_label2_only)]
+
+
+def compute_firms_liabilities(sa, label4_col, label5_col):
+    """Parallel task: filter firms with liabilities"""
+    return sa.loc[(sa[label4_col] > 0) | (sa[label5_col] > 0)]
+
+
+def compute_embedded_derivatives(sa, label6_col, label7_col):
+    """Parallel task: filter embedded derivatives"""
+    return sa.loc[(sa[label6_col] > 0) | (sa[label7_col] > 0)]
+
+
+def compute_unique_counts(sa, label_cols):
+    """Parallel task: compute unique firms per label/year"""
+    return (
+        sa.melt(id_vars=["cik", "year"], value_vars=label_cols)
+        .query("value > 0")
+        .drop_duplicates(["cik", "year", "variable"])
+        .groupby(["year", "variable"])["cik"]
+        .nunique()
+        .reset_index(name="unique_firms")
+    )
+
+
+def compute_label_cooccurrence(sa, label_cols):
+    """Parallel task: compute label co-occurrence matrix"""
+    return sa[label_cols].gt(0).astype(int).T.dot(sa[label_cols].gt(0).astype(int))
+
+
+def compute_hedge_by_type(sa, hedge_types):
+    """Parallel task: compute hedging by type - OPTIMIZED v2"""
+    # Pre-compute a multi-index column for fast lookups
+    sa_indexed = sa.copy()
+    sa_indexed['cik_year'] = sa_indexed['cik'].astype(
+        str) + '_' + sa_indexed['year'].astype(str)
+
+    hedge_type_records = []
+
+    for hedge_name, labels in hedge_types.items():
+        # Aggregate per (cik, year), then filter
+        firm_year_totals = sa.groupby(["cik", "year"])[
+            labels].sum().sum(axis=1)
+        firms_with_hedge = firm_year_totals[firm_year_totals > 0].index
+
+        # Create lookup set for fast membership testing
+        firms_lookup = set(f"{cik}_{year}" for cik, year in firms_with_hedge)
+
+        # Filter using the lookup
+        temp = sa_indexed[sa_indexed['cik_year'].isin(firms_lookup)].copy()
+        temp["hedge_type"] = hedge_name
+        temp = temp.drop(columns=['cik_year'])
+
+        if not temp.empty:
+            hedge_type_records.append(temp)
+
+    if hedge_type_records:
+        return pd.concat(hedge_type_records, ignore_index=True)
+    else:
+        return pd.DataFrame(columns=["cik", "year", "hedge_type"])
+
+
+def compute_hedge_cross(sa, hedge_label_groups):
+    """Parallel task: compute hedge type cross-analysis"""
+    hedge_flags = (
+        sa.groupby("cik")[hedge_label_groups]
+        .sum()
+        .gt(0)
+        .astype(int)
+    )
+
+    # Map to current hedge categories only (merge historic)
+    hedge_flags_simple = pd.DataFrame({
+        "General": hedge_flags[[hedge_label_groups[0], hedge_label_groups[4]]].max(axis=1),
+        "IR": hedge_flags[[hedge_label_groups[1], hedge_label_groups[5]]].max(axis=1),
+        "FX": hedge_flags[[hedge_label_groups[2], hedge_label_groups[6]]].max(axis=1),
+        "CP": hedge_flags[[hedge_label_groups[3], hedge_label_groups[7]]].max(axis=1),
+    })
+
+    return hedge_flags_simple.T.dot(hedge_flags_simple)
+
 
 def get_sentence_analysis():
-    """Get sentence analysis with server predictions and save to Excel."""
+    """Get sentence analysis with server predictions using parallel processing."""
     wr = get_final_results()
     if wr.empty:
         print("No processed results found for sentence analysis")
         return pd.DataFrame()
 
-    # Expand server responses
+    print(f"Processing {len(wr):,} rows with parallel processing...")
+
+    # Prepare data for parallel processing
+    row_data_list = [
+        (row.cik, row.year, row.url, row.server_response)
+        for row in wr.itertuples(index=False)
+    ]
+
+    # Process in parallel
+    num_workers = mp.cpu_count()
+    print(f"Using {num_workers} CPU cores for row processing")
+
     analysis_data = []
-    for _, row in wr.iterrows():
-        predictions = row["server_response"]
-        if not isinstance(predictions, list):
-            continue
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        results = list(tqdm(
+            executor.map(process_row_for_analysis, row_data_list),
+            total=len(row_data_list),
+            desc="Analyzing sentences"
+        ))
 
-        # Map IDs → labels
-        predicted_labels = [id2label.get(pid, "Unknown") for pid in predictions]
-        pred_counts = Counter(predicted_labels)
-
-        analysis_data.append(
-            {
-                "cik": row["cik"],
-                "year": row["year"],
-                "url": row["url"],
-                "total_sentences": len(predictions),
-                **pred_counts,
-            }
-        )
+    # Filter out None results
+    analysis_data = [r for r in results if r is not None]
 
     sa = pd.DataFrame(analysis_data)
     # Fill missing numeric cols with 0
     sa = sa.fillna({col: 0 for col in sa.select_dtypes("number").columns})
 
     print(f"Sentence analysis for {len(sa)} reports:")
+    print(f"Computing Excel sheets in parallel...")
 
-    # Excel writer
-    with pd.ExcelWriter(SERVER_EXCEL_PATH, engine="openpyxl") as writer:
+    # --- Define label groups ---
+    hedge_labels_current = [
+        id2label[0],  # General/Unknown Hedge Der.
+        id2label[8],  # IR Hedge
+        id2label[10],  # FX Hedge
+        id2label[12],  # CP Hedge
+    ]
 
-        # --- Main sheet ---
-        sa.to_excel(writer, sheet_name="all_reports", index=False)
+    hedge_labels_historic = [
+        id2label[1],  # General/Unknown Hedge Der. Historic
+        id2label[9],  # IR Hedge Historic
+        id2label[11],  # FX Hedge Historic
+        id2label[13],  # CP Hedge Historic
+    ]
 
-        # --- Define label groups ---
-        hedge_labels_current = [
-            id2label[0],  # General/Unknown Hedge Der.
-            id2label[8],  # IR Hedge
-            id2label[10],  # FX Hedge
-            id2label[12],  # CP Hedge
-        ]
+    label_cols = [id2label[i] for i in id2label]
+    exclude_cols = [id2label[i] for i in id2label if i != 2]
 
-        hedge_labels_historic = [
-            id2label[1],  # General/Unknown Hedge Der. Historic
-            id2label[9],  # IR Hedge Historic
-            id2label[11],  # FX Hedge Historic
-            id2label[13],  # CP Hedge Historic
-        ]
+    hedge_types = {
+        "General": [id2label[0], id2label[1]],
+        "IR": [id2label[8], id2label[9]],
+        "FX": [id2label[10], id2label[11]],
+        "CP": [id2label[12], id2label[13]],
+    }
 
-        # --- Firms with any current hedge ---
-        firms_current_hedge = sa.groupby("cik").filter(
-            lambda g: g[hedge_labels_current].sum().sum() > 0
-        )
-        firms_current_hedge.to_excel(writer, sheet_name="Current Hedging", index=False)
+    hedge_label_groups = [
+        id2label[0], id2label[8], id2label[10], id2label[12],
+        id2label[1], id2label[9], id2label[11], id2label[13]
+    ]
 
-        # --- Firms with only historical hedges and no current hedge ---
-        firms_historic_only = sa.groupby("cik").filter(
-            lambda g: g[hedge_labels_historic].sum().sum() > 0
-            and g[hedge_labels_current].sum().sum() == 0
-        )
-        firms_historic_only.to_excel(
-            writer, sheet_name="Hedging Past Year", index=False
-        )
+    # Submit all computation tasks in parallel
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        future_current_hedge = executor.submit(
+            compute_firms_current_hedge, sa, hedge_labels_current)
+        future_historic_only = executor.submit(
+            compute_firms_historic_only, sa, hedge_labels_historic, hedge_labels_current)
+        future_label2_only = executor.submit(
+            compute_firms_label2_only, sa, id2label[2], exclude_cols)
+        future_liabilities = executor.submit(
+            compute_firms_liabilities, sa, id2label[4], id2label[5])
+        future_embedded = executor.submit(
+            compute_embedded_derivatives, sa, id2label[6], id2label[7])
+        future_unique = executor.submit(compute_unique_counts, sa, label_cols)
+        future_cooc = executor.submit(
+            compute_label_cooccurrence, sa, label_cols)
+        future_hedge_type = executor.submit(
+            compute_hedge_by_type, sa, hedge_types)
+        future_hedge_cross = executor.submit(
+            compute_hedge_cross, sa, hedge_label_groups)
 
-        # --- Firms with only speculative mentions (label 2) ---
-        exclude_cols = [id2label[i] for i in id2label if i != 2]
-        firms_label2_only = sa.groupby("cik").filter(
-            lambda g: g[id2label[2]].sum() > 0
-            and g[exclude_cols].sum().sum() < g[id2label[2]].sum()
-        )
-        firms_label2_only.to_excel(writer, sheet_name="Speculation Only", index=False)
+        # Collect results with progress indication
+        print("  Computing Current Hedging...")
+        firms_current_hedge = future_current_hedge.result()
+        print("  Computing Hedging Past Year...")
+        firms_historic_only = future_historic_only.result()
+        print("  Computing Speculation Only...")
+        firms_label2_only = future_label2_only.result()
+        print("  Computing Derivative Liabilities...")
+        firms_liabilities = future_liabilities.result()
+        print("  Computing Embedded Derivatives...")
+        embedded_derivatives = future_embedded.result()
+        print("  Computing Unique per Year...")
+        unique_counts = future_unique.result()
+        print("  Computing Label Co-occurrence...")
+        cooc = future_cooc.result()
+        print("  Computing Hedging by Type...")
+        hedge_by_type = future_hedge_type.result()
+        print("  Computing Hedge Type Cross...")
+        hedge_cross = future_hedge_cross.result()
 
-        # --- Firms with liabilities/warrants (labels 4 or 5) ---
-        firms_liabilities = sa.loc[(sa[id2label[4]] > 0) | (sa[id2label[5]] > 0)]
-        firms_liabilities.to_excel(
-            writer, sheet_name="Derivative Liabilities/Warrants", index=False
-        )
+    print("Writing results to Excel...")
 
-        # --- Firms with Embedded Derivatives (labels 6 or 7) ---
-        embedded_derivatives = sa.loc[(sa[id2label[6]] > 0) | (sa[id2label[7]] > 0)]
-        embedded_derivatives.to_excel(
-            writer, sheet_name="Embedded Derivatives", index=False
-        )
-
-        # --- Unique firms per label/year ---
-        label_cols = [id2label[i] for i in id2label]
-        unique_counts = (
-            sa.melt(id_vars=["cik", "year"], value_vars=label_cols)
-            .query("value > 0")
-            .drop_duplicates(["cik", "year", "variable"])
-            .groupby(["year", "variable"])["cik"]
-            .nunique()
-            .reset_index(name="unique_firms")
-        )
-        unique_counts.to_excel(writer, sheet_name="unique_per_year", index=False)
-
-        # --- Label co-occurrence ---
-        cooc = sa[label_cols].gt(0).astype(int).T.dot(sa[label_cols].gt(0).astype(int))
-        cooc.to_excel(writer, sheet_name="label_cooccurrence")
-
-        # --- Hedging by Type ---
-        hedge_types = {
-            "General": [id2label[0], id2label[1]],
-            "IR": [id2label[8], id2label[9]],
-            "FX": [id2label[10], id2label[11]],
-            "CP": [id2label[12], id2label[13]],
-        }
-
-        hedge_type_records = []
-        for hedge_name, labels in hedge_types.items():
-            temp = (
-                sa.groupby(["cik", "year"])
-                .filter(lambda g: g[labels].sum().sum() > 0)
-                .assign(hedge_type=hedge_name)
-            )
-            hedge_type_records.append(temp)
-
-        if hedge_type_records:
-            hedge_by_type = pd.concat(hedge_type_records, ignore_index=True)
-            hedge_by_type.to_excel(writer, sheet_name="Hedging by Type", index=False)
-        else:
-            pd.DataFrame(columns=["cik", "year", "hedge_type"]).to_excel(
-                writer, sheet_name="Hedging by Type", index=False
-            )
-
-        # --- Hedge Type Cross-Analysis ---
-        hedge_flags = (
-            sa.groupby("cik")[
-                [
-                    id2label[0],
-                    id2label[8],
-                    id2label[10],
-                    id2label[12],
-                    id2label[1],
-                    id2label[9],
-                    id2label[11],
-                    id2label[13],
-                ]
-            ]
-            .sum()
-            .gt(0)
-            .astype(int)
-        )
-
-        # Map to current hedge categories only (merge historic)
-        hedge_flags_simple = pd.DataFrame(
-            {
-                "General": hedge_flags[[id2label[0], id2label[1]]].max(axis=1),
-                "IR": hedge_flags[[id2label[8], id2label[9]]].max(axis=1),
-                "FX": hedge_flags[[id2label[10], id2label[11]]].max(axis=1),
-                "CP": hedge_flags[[id2label[12], id2label[13]]].max(axis=1),
-            }
-        )
-
-        hedge_cross = hedge_flags_simple.T.dot(hedge_flags_simple)
-        hedge_cross.to_excel(writer, sheet_name="Hedge Type Cross", index=True)
+    # Excel writer - writing is sequential (can't be parallelized)
+    # Use xlsxwriter engine for better performance with large datasets
+    try:
+        with pd.ExcelWriter(SERVER_EXCEL_PATH, engine="xlsxwriter") as writer:
+            sa.to_excel(writer, sheet_name="all_reports", index=False)
+            firms_current_hedge.to_excel(
+                writer, sheet_name="Current Hedging", index=False)
+            firms_historic_only.to_excel(
+                writer, sheet_name="Hedging Past Year", index=False)
+            firms_label2_only.to_excel(
+                writer, sheet_name="Speculation Only", index=False)
+            firms_liabilities.to_excel(
+                writer, sheet_name="Derivative Liabilities Warrants", index=False)
+            embedded_derivatives.to_excel(
+                writer, sheet_name="Embedded Derivatives", index=False)
+            unique_counts.to_excel(
+                writer, sheet_name="unique_per_year", index=False)
+            cooc.to_excel(writer, sheet_name="label_cooccurrence")
+            hedge_by_type.to_excel(
+                writer, sheet_name="Hedging by Type", index=False)
+            hedge_cross.to_excel(
+                writer, sheet_name="Hedge Type Cross", index=True)
+    except ImportError:
+        # Fallback to openpyxl if xlsxwriter not available
+        print("  (Using openpyxl engine - install xlsxwriter for better performance)")
+        with pd.ExcelWriter(SERVER_EXCEL_PATH, engine="openpyxl") as writer:
+            sa.to_excel(writer, sheet_name="all_reports", index=False)
+            firms_current_hedge.to_excel(
+                writer, sheet_name="Current Hedging", index=False)
+            firms_historic_only.to_excel(
+                writer, sheet_name="Hedging Past Year", index=False)
+            firms_label2_only.to_excel(
+                writer, sheet_name="Speculation Only", index=False)
+            firms_liabilities.to_excel(
+                writer, sheet_name="Derivative Liabilities Warrants", index=False)
+            embedded_derivatives.to_excel(
+                writer, sheet_name="Embedded Derivatives", index=False)
+            unique_counts.to_excel(
+                writer, sheet_name="unique_per_year", index=False)
+            cooc.to_excel(writer, sheet_name="label_cooccurrence")
+            hedge_by_type.to_excel(
+                writer, sheet_name="Hedging by Type", index=False)
+            hedge_cross.to_excel(
+                writer, sheet_name="Hedge Type Cross", index=True)
 
     print(f"Sentence analysis saved to: {SERVER_EXCEL_PATH}")
 
@@ -534,11 +677,39 @@ def get_sentence_analysis():
     return sa
 
 
+def process_sentence_chunk(chunk_data):
+    """Process a chunk of sentences for label mapping - designed for ProcessPoolExecutor"""
+    results = []
+
+    for row_data in chunk_data:
+        cik, year, url, matches, predictions = row_data
+
+        # Defensive check: align lengths
+        min_len = min(len(matches), len(predictions))
+
+        for i in range(min_len):
+            sentence = matches[i]
+            pred = predictions[i]
+            label = id2label.get(pred, "Unknown")
+
+            results.append({
+                "cik": cik,
+                "year": year,
+                "url": url,
+                "sentence": sentence,
+                "label_id": pred,
+                "label": label,
+            })
+
+    return results
+
+
 def build_sentence_label_excel():
+    """Build sentence-label Excel files using parallel processing, split into separate workbooks by label groups."""
     # Load both DB tables with a join to get cik and year
     conn = sqlite3.connect(DB_PATH)
     query = """
-        SELECT 
+        SELECT
             r.cik,
             r.year,
             w.url,
@@ -551,46 +722,256 @@ def build_sentence_label_excel():
     combined_df = pd.read_sql(query, conn)
     conn.close()
 
-    all_rows = []
+    print(
+        f"Processing {len(combined_df):,} reports for sentence-label mapping...")
 
+    # Prepare data for parallel processing
+    row_data_list = []
     for _, row in combined_df.iterrows():
-        # Parse arrays
         matches = json.loads(row["matches"])
         predictions = json.loads(row["server_response"])
+        row_data_list.append(
+            (row["cik"], row["year"], row["url"], matches, predictions))
 
-        # Defensive check: align lengths
-        min_len = min(len(matches), len(predictions))
+    # Split into chunks for better load balancing
+    num_workers = mp.cpu_count()
+    chunk_size = max(1, len(row_data_list) // (num_workers * 4))
+    chunks = [row_data_list[i:i + chunk_size]
+              for i in range(0, len(row_data_list), chunk_size)]
 
-        for i in range(min_len):
-            sentence = matches[i]
-            pred = predictions[i]
-            label = id2label.get(pred, "Unknown")
+    print(f"Using {num_workers} CPU cores, processing {len(chunks)} chunks")
 
-            all_rows.append(
-                {
-                    "cik": row["cik"],
-                    "year": row["year"],
-                    "url": row["url"],
-                    "sentence": sentence,
-                    "label_id": pred,
-                    "label": label,
-                }
-            )
+    # Process in parallel
+    all_rows = []
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        results = list(tqdm(
+            executor.map(process_sentence_chunk, chunks),
+            total=len(chunks),
+            desc="Building sentence labels"
+        ))
+
+        # Flatten results
+        for chunk_result in results:
+            all_rows.extend(chunk_result)
 
     # Build final DataFrame
     final_df = pd.DataFrame(all_rows)
+    print(f"Created DataFrame with {len(final_df):,} sentence-label mappings")
 
-    # Save to Excel
-    final_df.to_excel(SENTENCE_PATH, index=False)
-    print(f"Saved sentence-label mapping to {SENTENCE_PATH}")
+    # Define label groupings (pairs of related labels)
+    label_groups = {
+        "General_Hedge_0-1": [0, 1],
+        "Speculation_2-3": [2, 3],
+        "Liabilities_Warrants_4-5": [4, 5],
+        "Embedded_Derivatives_6-7": [6, 7],
+        "Interest_Rate_8-9": [8, 9],
+        "Foreign_Exchange_10-11": [10, 11],
+        "Commodity_Price_12-13": [12, 13],
+    }
 
-    # Save to Google Drive if in Colab
-    if IS_COLAB:
-        print("Saving sentence labels to Google Drive...")
-        subprocess.run(f"cp {SENTENCE_PATH} {DRIVE_PATH}/.", shell=True)
+    # Create a mapping from label_id to group name
+    label_id_to_group = {}
+    for group_name, label_ids in label_groups.items():
+        for label_id in label_ids:
+            label_id_to_group[label_id] = group_name
+
+    print(f"\nWriting to separate Excel workbooks by label group...")
+
+    # Group data by label groups
+    final_df['group'] = final_df['label_id'].map(label_id_to_group)
+
+    # Handle any unmapped labels (shouldn't happen, but defensive coding)
+    unmapped = final_df[final_df['group'].isna()]
+    if not unmapped.empty:
+        print(
+            f"  Warning: Found {len(unmapped)} rows with unmapped label_ids: {unmapped['label_id'].unique()}")
+        final_df['group'] = final_df['group'].fillna('Other')
+
+    try:
+        # Write each group to a separate workbook
+        for group_name, label_ids in label_groups.items():
+            group_df = final_df[final_df['label_id'].isin(label_ids)].copy()
+
+            if group_df.empty:
+                print(f"  Skipping {group_name} (no data)")
+                continue
+
+            # Create filename
+            file_path = SENTENCE_PATH.replace('.xlsx', f'_{group_name}.xlsx')
+
+            print(
+                f"\n  Writing {group_name} workbook ({len(group_df):,} rows)...")
+
+            with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
+                # Disable automatic URL conversion
+                workbook = writer.book
+                workbook.strings_to_urls = False
+
+                # Write complete group dataset to first sheet
+                group_df_clean = group_df.drop(columns=['group'])
+                print(f"    - 'All_{group_name}' sheet...")
+                group_df_clean.to_excel(
+                    writer, sheet_name=f"All_{group_name}"[:31], index=False)
+
+                # Write separate sheet for each label in this group
+                unique_labels_in_group = sorted(group_df["label"].unique())
+
+                for label in unique_labels_in_group:
+                    label_df = group_df_clean[group_df_clean["label"] == label]
+                    sheet_name = str(label)[:31].replace(
+                        "/", "-").replace("\\", "-").replace(":", "-")
+                    print(
+                        f"    - '{sheet_name}' sheet ({len(label_df):,} rows)...")
+                    label_df.to_excel(
+                        writer, sheet_name=sheet_name, index=False)
+
+                # Write summary for this group
+                print(f"    - 'Summary' sheet...")
+                summary_stats = []
+
+                for label in unique_labels_in_group:
+                    label_data = group_df_clean[group_df_clean["label"] == label]
+                    label_id = label_data["label_id"].iloc[0]
+
+                    stats = {
+                        "label": label,
+                        "label_id": label_id,
+                        "total_sentences": len(label_data),
+                        "unique_firms": label_data["cik"].nunique(),
+                        "unique_urls": label_data["url"].nunique(),
+                        "year_min": label_data["year"].min(),
+                        "year_max": label_data["year"].max(),
+                        "avg_sentences_per_firm": len(label_data) / label_data["cik"].nunique(),
+                        "avg_sentences_per_url": len(label_data) / label_data["url"].nunique(),
+                    }
+                    summary_stats.append(stats)
+
+                summary = pd.DataFrame(summary_stats)
+                summary["pct_of_group"] = (
+                    summary["total_sentences"] / len(group_df_clean) * 100).round(2)
+
+                summary = summary[[
+                    "label", "label_id", "total_sentences", "pct_of_group",
+                    "unique_firms", "unique_urls",
+                    "avg_sentences_per_firm", "avg_sentences_per_url",
+                    "year_min", "year_max"
+                ]]
+
+                summary = summary.sort_values(
+                    "total_sentences", ascending=False).reset_index(drop=True)
+                summary.to_excel(writer, sheet_name="Summary", index=False)
+
+                # Format the summary sheet
+                worksheet = writer.sheets["Summary"]
+                worksheet.set_column('A:A', 30)
+                worksheet.set_column('B:B', 10)
+                worksheet.set_column('C:D', 18)
+                worksheet.set_column('E:F', 15)
+                worksheet.set_column('G:H', 22)
+                worksheet.set_column('I:J', 12)
+
+                number_format = workbook.add_format({'num_format': '#,##0'})
+                percent_format = workbook.add_format({'num_format': '0.00"%"'})
+                decimal_format = workbook.add_format(
+                    {'num_format': '#,##0.00'})
+
+                for row_num in range(1, len(summary) + 1):
+                    worksheet.write_number(
+                        row_num, 2, summary.iloc[row_num-1]["total_sentences"], number_format)
+                    worksheet.write_number(
+                        row_num, 3, summary.iloc[row_num-1]["pct_of_group"], percent_format)
+                    worksheet.write_number(
+                        row_num, 4, summary.iloc[row_num-1]["unique_firms"], number_format)
+                    worksheet.write_number(
+                        row_num, 5, summary.iloc[row_num-1]["unique_urls"], number_format)
+                    worksheet.write_number(
+                        row_num, 6, summary.iloc[row_num-1]["avg_sentences_per_firm"], decimal_format)
+                    worksheet.write_number(
+                        row_num, 7, summary.iloc[row_num-1]["avg_sentences_per_url"], decimal_format)
+
+                total_row = len(summary) + 2
+                worksheet.write(total_row, 0, "TOTAL",
+                                workbook.add_format({'bold': True}))
+                worksheet.write_number(total_row, 2, len(
+                    group_df_clean), number_format)
+                worksheet.write_number(total_row, 3, 100.0, percent_format)
+                worksheet.write_number(
+                    total_row, 4, group_df_clean["cik"].nunique(), number_format)
+                worksheet.write_number(
+                    total_row, 5, group_df_clean["url"].nunique(), number_format)
+
+            print(f"  ✓ Saved {file_path}")
+
+            # Save to Google Drive if in Colab
+            if IS_COLAB:
+                subprocess.run(f"cp {file_path} {DRIVE_PATH}/.", shell=True)
+
+        # Create overall summary workbook
+        print(f"\n  Writing overall summary workbook...")
+        summary_file = SENTENCE_PATH.replace('.xlsx', '_Overall_Summary.xlsx')
+
+        with pd.ExcelWriter(summary_file, engine="xlsxwriter") as writer:
+            workbook = writer.book
+
+            # Overall summary by label
+            overall_summary_stats = []
+            for label in sorted(final_df["label"].unique()):
+                label_data = final_df[final_df["label"] == label]
+                label_id = label_data["label_id"].iloc[0]
+                group = label_id_to_group.get(label_id, "Other")
+
+                stats = {
+                    "group": group,
+                    "label": label,
+                    "label_id": label_id,
+                    "total_sentences": len(label_data),
+                    "unique_firms": label_data["cik"].nunique(),
+                    "unique_urls": label_data["url"].nunique(),
+                    "year_min": label_data["year"].min(),
+                    "year_max": label_data["year"].max(),
+                }
+                overall_summary_stats.append(stats)
+
+            overall_summary = pd.DataFrame(overall_summary_stats)
+            overall_summary["pct_of_total"] = (
+                overall_summary["total_sentences"] / len(final_df) * 100).round(2)
+
+            overall_summary = overall_summary[[
+                "group", "label", "label_id", "total_sentences", "pct_of_total",
+                "unique_firms", "unique_urls", "year_min", "year_max"
+            ]]
+
+            overall_summary = overall_summary.sort_values(
+                "total_sentences", ascending=False).reset_index(drop=True)
+            overall_summary.to_excel(
+                writer, sheet_name="Overall_Summary", index=False)
+
+            # Format
+            worksheet = writer.sheets["Overall_Summary"]
+            worksheet.set_column('A:A', 25)
+            worksheet.set_column('B:B', 30)
+            worksheet.set_column('C:G', 15)
+            worksheet.set_column('H:I', 12)
+
+        print(f"  ✓ Saved {summary_file}")
+
+        if IS_COLAB:
+            subprocess.run(f"cp {summary_file} {DRIVE_PATH}/.", shell=True)
+
+    except ImportError:
+        print("  ERROR: xlsxwriter not available. Please install: pip install xlsxwriter")
+        return None
+
+    print(f"\n{'='*70}")
+    print(
+        f"Saved {len(final_df):,} sentence-label mappings to {len(label_groups)} workbooks")
+    print(f"Each workbook contains:")
+    print(f"  - 1 'All_[Group]' sheet with all data for that group")
+    print(f"  - Separate sheets for each label in the group")
+    print(f"  - 1 'Summary' sheet with statistics")
+    print(f"{'='*70}")
 
     return final_df
-
 
 # =============================================================================
 # CHUNKED PROCESSING
@@ -616,7 +997,7 @@ def process_reports_in_chunks():
 
     # Create chunks
     chunks = [
-        reports_to_process[i : i + CHUNK_SIZE]
+        reports_to_process[i: i + CHUNK_SIZE]
         for i in range(0, total_reports, CHUNK_SIZE)
     ]
 
@@ -656,7 +1037,8 @@ def process_reports_in_chunks():
                     else:
                         chunk_empty += 1
                 except Exception as e:
-                    debug_print(f"Error processing {future_to_report[future].url}: {e}")
+                    debug_print(
+                        f"Error processing {future_to_report[future].url}: {e}")
                     chunk_empty += 1
         # Flush the results buffer
         save_batch_results(results_buffer)
@@ -734,7 +1116,8 @@ if __name__ == "__main__":
     print("\nProcessing reports with server predictions...")
     total_processed = process_reports_in_chunks()
 
-    print(f"\nProcessed {total_processed} new reports in chunked parallel mode.")
+    print(
+        f"\nProcessed {total_processed} new reports in chunked parallel mode.")
 
     # Generate analysis
     print("\n" + "=" * 70)
