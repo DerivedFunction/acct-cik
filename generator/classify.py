@@ -23,6 +23,7 @@ DB_PATH = "web_data.db"
 REPORT_CSV_PATH = "./report_data.csv"
 DERIVATIVES_CSV_PATH = "./derivatives_data.csv"
 SERVER_EXCEL_PATH = "./server_results.xlsx"
+KEYWORDS_EXCEL_PATH = "./keywords_comparison.xlsx"
 SENTENCE_PATH = "./sentence_labels.xlsx"
 SERVER_URL = "http://127.0.0.1:5000/predict"
 KEYWORDS_FILE = "./keywords_find.json"
@@ -1022,11 +1023,13 @@ def get_sentence_analysis():
                 writer, sheet_name="Hedging by Type", index=False)
             hedge_cross.to_excel(
                 writer, sheet_name="Hedge Type Cross", index=True)
+        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH, engine="xlsxwriter") as writer:
             if keyword_model_comparison is not None:
+                workbook = writer.book
+                workbook.strings_to_urls = False
                 # Comparison summary
                 keyword_model_comparison['comparison_summary'].to_excel(
                     writer, sheet_name="KW_Model_Comparison", index=False)
-
                 # Current only sheets
                 keyword_model_comparison['summary_current'].to_excel(
                     writer, sheet_name="Summary_Current_Only", index=False)
