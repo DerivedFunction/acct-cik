@@ -1419,93 +1419,143 @@ def get_sentence_analysis():
             hedge_cross.to_excel(
                 writer, sheet_name="Hedge Type Cross", index=True)
         print(f"Server analysis saved to: {SERVER_EXCEL_PATH}")
-
-        # Define workbook configurations
-        workbook_configs = [
-            {
-                'filename': KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES_CURRENT.xlsx"),
-                'description': "Current Only - Hedges",
-                'sheets': {
-                    'KW_Model_Comparison': ('comparison_summary', False),
-                    'Summary_Current_Only': ('summary_current', False),
-                    'Detailed_Current_Only': ('detailed_current', False),
-                    'Basic_Current_Only': ('comparison_current', False),
-                    'Confusion_Overall_Curr': ('confusion_overall_current', True),
-                    'Confusion_FX_Curr': ('confusion_fx_current', True),
-                    'Confusion_IR_Curr': ('confusion_ir_current', True),
-                    'Confusion_CP_Curr': ('confusion_cp_current', True),
-                }
-            },
-            {
-                'filename': KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES_ALL.xlsx"),
-                'description': "Current+Historic - Hedges",
-                'sheets': {
-                    'Summary_Curr_Historic': ('summary_all', False),
-                    'Detailed_Curr_Historic': ('detailed_all', False),
-                    'Basic_Curr_Historic': ('comparison_all', False),
-                    'Confusion_Overall_All': ('confusion_overall_all', True),
-                    'Confusion_FX_All': ('confusion_fx_all', True),
-                    'Confusion_IR_All': ('confusion_ir_all', True),
-                    'Confusion_CP_All': ('confusion_cp_all', True),
-                }
-            },
-            {
-                'filename': KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_CURRENT.xlsx"),
-                'description': "Current Only - All Derivatives",
-                'sheets': {
-                    'KW_Model_Comparison': ('comparison_summary', False),
-                    'Summary_Current_Only': ('summary_any_deriv_current', False),
-                    'Detailed_Current_Only': ('detailed_any_deriv_current', False),
-                    'Basic_Current_Only': ('comparison_current', False),
-                    'Confusion_Overall_Curr': ('confusion_any_deriv_current', True),
-                    'Confusion_FX_Curr': ('confusion_fx_current', True),
-                    'Confusion_IR_Curr': ('confusion_ir_current', True),
-                    'Confusion_CP_Curr': ('confusion_cp_current', True),
-                    'ModelOnly_Liab_Embed': ('model_only_current', False),
-                }
-            },
-            {
-                'filename': KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_FULL.xlsx"),
-                'description': "Current+Historic - All Derivatives",
-                'sheets': {
-                    'Summary_Curr_Historic': ('summary_any_deriv_all', False),
-                    'Detailed_Curr_Historic': ('detailed_any_deriv_all', False),
-                    'Basic_Curr_Historic': ('comparison_all', False),
-                    'Confusion_Overall_All': ('confusion_any_deriv_all', True),
-                    'Confusion_FX_All': ('confusion_fx_all', True),
-                    'Confusion_IR_All': ('confusion_ir_all', True),
-                    'Confusion_CP_All': ('confusion_cp_all', True),
-                    'ModelOnly_Liab_Embed': ('model_only_all', False),
-                }
-            },
-        ]
-
-        # Write all keyword comparison workbooks using the loop
-        if keyword_model_comparison is not None:
-            for config in workbook_configs:
-                with pd.ExcelWriter(config['filename'], engine="xlsxwriter") as writer:
-                    workbook = writer.book
-                    workbook.strings_to_urls = False
-                    
-                    for sheet_name, (data_key, with_index) in config['sheets'].items():
-                        keyword_model_comparison[data_key].to_excel(
-                            writer, 
-                            sheet_name=sheet_name, 
-                            index=with_index
-                        )
-                
-                print(f"Keyword analysis ({config['description']}) saved to: {config['filename']}")
-
+        write_keyword_workbooks(keyword_model_comparison, KEYWORDS_EXCEL_PATH, max_workers=num_workers)
     except ImportError:
         print("  (pip install xlsxwriter for better performance)")
         return pd.DataFrame(columns=[])
-    
+
     # Save to Google Drive if in Colab
     if IS_COLAB:
         print("Saving results to Google Drive...")
         subprocess.run(f"cp *.xlsx {DRIVE_PATH}/{DRIVE_KEYWORDS_PATH}/.", shell=True)        
 
     return sa
+
+def write_keyword_workbooks(keyword_model_comparison, base_path, max_workers=4):
+    """
+    Write multiple keyword comparison Excel workbooks in parallel.
+
+    Parameters
+    ----------
+    keyword_model_comparison : dict[str, pd.DataFrame]
+        Dictionary mapping keys to DataFrames for keyword analysis results.
+    base_path : str or Path
+        Base Excel file path (used to derive filenames).
+    max_workers : int, optional
+        Number of threads for parallel writing (default: 4).
+    """
+
+    base_path = Path(base_path)
+
+    workbook_configs = [
+        {
+            "filename": base_path.with_name(base_path.stem + "_HEDGES_CURRENT.xlsx"),
+            "description": "Current Only - Hedges",
+            "sheets": {
+                "KW_Model_Comparison": ("comparison_summary", False),
+                "Summary_Current_Only": ("summary_current", False),
+                "Detailed_Current_Only": ("detailed_current", False),
+                "Basic_Current_Only": ("comparison_current", False),
+                "Confusion_Overall_Curr": ("confusion_overall_current", True),
+                "Confusion_FX_Curr": ("confusion_fx_current", True),
+                "Confusion_IR_Curr": ("confusion_ir_current", True),
+                "Confusion_CP_Curr": ("confusion_cp_current", True),
+            },
+        },
+        {
+            "filename": base_path.with_name(base_path.stem + "_HEDGES_ALL.xlsx"),
+            "description": "Current+Historic - Hedges",
+            "sheets": {
+                "Summary_Curr_Historic": ("summary_all", False),
+                "Detailed_Curr_Historic": ("detailed_all", False),
+                "Basic_Curr_Historic": ("comparison_all", False),
+                "Confusion_Overall_All": ("confusion_overall_all", True),
+                "Confusion_FX_All": ("confusion_fx_all", True),
+                "Confusion_IR_All": ("confusion_ir_all", True),
+                "Confusion_CP_All": ("confusion_cp_all", True),
+            },
+        },
+        {
+            "filename": base_path.with_name(
+                base_path.stem + "_ALL_DERIVATIVES_CURRENT.xlsx"
+            ),
+            "description": "Current Only - All Derivatives",
+            "sheets": {
+                "KW_Model_Comparison": ("comparison_summary", False),
+                "Summary_Current_Only": ("summary_any_deriv_current", False),
+                "Detailed_Current_Only": ("detailed_any_deriv_current", False),
+                "Basic_Current_Only": ("comparison_current", False),
+                "Confusion_Overall_Curr": ("confusion_any_deriv_current", True),
+                "Confusion_FX_Curr": ("confusion_fx_current", True),
+                "Confusion_IR_Curr": ("confusion_ir_current", True),
+                "Confusion_CP_Curr": ("confusion_cp_current", True),
+                "ModelOnly_Liab_Embed": ("model_only_current", False),
+            },
+        },
+        {
+            "filename": base_path.with_name(
+                base_path.stem + "_ALL_DERIVATIVES_FULL.xlsx"
+            ),
+            "description": "Current+Historic - All Derivatives",
+            "sheets": {
+                "Summary_Curr_Historic": ("summary_any_deriv_all", False),
+                "Detailed_Curr_Historic": ("detailed_any_deriv_all", False),
+                "Basic_Curr_Historic": ("comparison_all", False),
+                "Confusion_Overall_All": ("confusion_any_deriv_all", True),
+                "Confusion_FX_All": ("confusion_fx_all", True),
+                "Confusion_IR_All": ("confusion_ir_all", True),
+                "Confusion_CP_All": ("confusion_cp_all", True),
+                "ModelOnly_Liab_Embed": ("model_only_all", False),
+            },
+        },
+    ]
+
+    def write_one_workbook(config):
+        """Write one workbook safely."""
+        filename = config["filename"]
+        Path(filename).parent.mkdir(parents=True, exist_ok=True)
+
+        with pd.ExcelWriter(filename, engine="xlsxwriter") as writer:
+            workbook = writer.book
+            workbook.strings_to_urls = False
+
+            for sheet_name, (data_key, with_index) in config["sheets"].items():
+                df = keyword_model_comparison.get(data_key)
+                if df is None or df.empty:
+                    print(
+                        f"⚠️  Skipped '{data_key}' (missing/empty) in {config['description']}"
+                    )
+                    continue
+
+                df.to_excel(writer, sheet_name=sheet_name, index=with_index)
+
+                # Optional: auto-fit columns
+                worksheet = writer.sheets[sheet_name]
+                for i, col in enumerate(df.columns):
+                    try:
+                        max_len = (
+                            max(df[col].astype(str).map(len).max(), len(str(col))) + 2
+                        )
+                        worksheet.set_column(i, i, max_len)
+                    except Exception:
+                        pass
+
+        return f"✅ {config['description']} saved → {filename}"
+
+    # --- Parallel execution ---
+    print(
+        f"\n🚀 Writing {len(workbook_configs)} keyword workbooks with {max_workers} threads...\n"
+    )
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(write_one_workbook, cfg) for cfg in workbook_configs]
+        for future in as_completed(futures):
+            try:
+                print(future.result())
+            except Exception as e:
+                print(f"❌ Error writing workbook: {e}")
+
+    print("\n🎉 All keyword analysis workbooks generated successfully!\n")
 
 
 def process_sentence_chunk(chunk_data):
