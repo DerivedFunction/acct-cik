@@ -1794,7 +1794,7 @@ def build_sentence_label_excel():
 
             # Save to Google Drive if in Colab
             if IS_COLAB:
-                subprocess.run(f"cp {file_path} {DRIVE_PATH}/.", shell=True)
+                subprocess.run(f"cp {file_path} {DRIVE_PATH}/{DRIVE_SENTENCE_PATH}/.", shell=True)
 
         # Create overall summary workbook
         print(f"\n  Writing overall summary workbook...")
@@ -1852,7 +1852,7 @@ def build_sentence_label_excel():
 
     except ImportError:
         print(" (pip install xlsxwriter for better performance)")
-        return None
+        return pd.DataFrame()
 
     print(f"\n{'='*70}")
     print(
