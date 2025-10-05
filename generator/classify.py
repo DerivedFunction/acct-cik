@@ -1419,125 +1419,87 @@ def get_sentence_analysis():
             hedge_cross.to_excel(
                 writer, sheet_name="Hedge Type Cross", index=True)
         print(f"Server analysis saved to: {SERVER_EXCEL_PATH}")
-        # First workbook - Current Only (Hedges: IR/FX/CP)
-        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES_CURRENT.xlsx"), engine="xlsxwriter") as writer:
-            if keyword_model_comparison is not None:
-                workbook = writer.book
-                workbook.strings_to_urls = False
 
-                # Comparison summary
-                keyword_model_comparison['comparison_summary'].to_excel(
-                    writer, sheet_name="KW_Model_Comparison", index=False)
+        # Define workbook configurations
+        workbook_configs = [
+            {
+                'filename': KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES_CURRENT.xlsx"),
+                'description': "Current Only - Hedges",
+                'sheets': {
+                    'KW_Model_Comparison': ('comparison_summary', False),
+                    'Summary_Current_Only': ('summary_current', False),
+                    'Detailed_Current_Only': ('detailed_current', False),
+                    'Basic_Current_Only': ('comparison_current', False),
+                    'Confusion_Overall_Curr': ('confusion_overall_current', True),
+                    'Confusion_FX_Curr': ('confusion_fx_current', True),
+                    'Confusion_IR_Curr': ('confusion_ir_current', True),
+                    'Confusion_CP_Curr': ('confusion_cp_current', True),
+                }
+            },
+            {
+                'filename': KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES_ALL.xlsx"),
+                'description': "Current+Historic - Hedges",
+                'sheets': {
+                    'Summary_Curr_Historic': ('summary_all', False),
+                    'Detailed_Curr_Historic': ('detailed_all', False),
+                    'Basic_Curr_Historic': ('comparison_all', False),
+                    'Confusion_Overall_All': ('confusion_overall_all', True),
+                    'Confusion_FX_All': ('confusion_fx_all', True),
+                    'Confusion_IR_All': ('confusion_ir_all', True),
+                    'Confusion_CP_All': ('confusion_cp_all', True),
+                }
+            },
+            {
+                'filename': KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_CURRENT.xlsx"),
+                'description': "Current Only - All Derivatives",
+                'sheets': {
+                    'KW_Model_Comparison': ('comparison_summary', False),
+                    'Summary_Current_Only': ('summary_any_deriv_current', False),
+                    'Detailed_Current_Only': ('detailed_any_deriv_current', False),
+                    'Basic_Current_Only': ('comparison_current', False),
+                    'Confusion_Overall_Curr': ('confusion_any_deriv_current', True),
+                    'Confusion_FX_Curr': ('confusion_fx_current', True),
+                    'Confusion_IR_Curr': ('confusion_ir_current', True),
+                    'Confusion_CP_Curr': ('confusion_cp_current', True),
+                    'ModelOnly_Liab_Embed': ('model_only_current', False),
+                }
+            },
+            {
+                'filename': KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_FULL.xlsx"),
+                'description': "Current+Historic - All Derivatives",
+                'sheets': {
+                    'Summary_Curr_Historic': ('summary_any_deriv_all', False),
+                    'Detailed_Curr_Historic': ('detailed_any_deriv_all', False),
+                    'Basic_Curr_Historic': ('comparison_all', False),
+                    'Confusion_Overall_All': ('confusion_any_deriv_all', True),
+                    'Confusion_FX_All': ('confusion_fx_all', True),
+                    'Confusion_IR_All': ('confusion_ir_all', True),
+                    'Confusion_CP_All': ('confusion_cp_all', True),
+                    'ModelOnly_Liab_Embed': ('model_only_all', False),
+                }
+            },
+        ]
 
-                # Current only sheets - Hedges (IR/FX/CP)
-                keyword_model_comparison['summary_current'].to_excel(
-                    writer, sheet_name="Summary_Current_Only", index=False)
-                keyword_model_comparison['detailed_current'].to_excel(
-                    writer, sheet_name="Detailed_Current_Only", index=False)
-                keyword_model_comparison['comparison_current'].to_excel(
-                    writer, sheet_name="Basic_Current_Only", index=False)
-                keyword_model_comparison['confusion_overall_current'].to_excel(
-                    writer, sheet_name="Confusion_Overall_Curr")
-                keyword_model_comparison['confusion_fx_current'].to_excel(
-                    writer, sheet_name="Confusion_FX_Curr")
-                keyword_model_comparison['confusion_ir_current'].to_excel(
-                    writer, sheet_name="Confusion_IR_Curr")
-                keyword_model_comparison['confusion_cp_current'].to_excel(
-                    writer, sheet_name="Confusion_CP_Curr")
+        # Write all keyword comparison workbooks using the loop
+        if keyword_model_comparison is not None:
+            for config in workbook_configs:
+                with pd.ExcelWriter(config['filename'], engine="xlsxwriter") as writer:
+                    workbook = writer.book
+                    workbook.strings_to_urls = False
+                    
+                    for sheet_name, (data_key, with_index) in config['sheets'].items():
+                        keyword_model_comparison[data_key].to_excel(
+                            writer, 
+                            sheet_name=sheet_name, 
+                            index=with_index
+                        )
+                
+                print(f"Keyword analysis ({config['description']}) saved to: {config['filename']}")
 
-        print(f"Keyword analysis (Current Only - Hedges) saved to: {KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES_CURRENT.xlsx"),}")
-
-        # Second workbook - Current + Historic (Hedges: IR/FX/CP)
-        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES_ALL.xlsx"), engine="xlsxwriter") as writer:
-            if keyword_model_comparison is not None:
-                workbook = writer.book
-                workbook.strings_to_urls = False
-
-                # Current + Historic sheets - Hedges (IR/FX/CP)
-                keyword_model_comparison['summary_all'].to_excel(
-                    writer, sheet_name="Summary_Curr_Historic", index=False)
-                keyword_model_comparison['detailed_all'].to_excel(
-                    writer, sheet_name="Detailed_Curr_Historic", index=False)
-                keyword_model_comparison['comparison_all'].to_excel(
-                    writer, sheet_name="Basic_Curr_Historic", index=False)
-                keyword_model_comparison['confusion_overall_all'].to_excel(
-                    writer, sheet_name="Confusion_Overall_All")
-                keyword_model_comparison['confusion_fx_all'].to_excel(
-                    writer, sheet_name="Confusion_FX_All")
-                keyword_model_comparison['confusion_ir_all'].to_excel(
-                    writer, sheet_name="Confusion_IR_All")
-                keyword_model_comparison['confusion_cp_all'].to_excel(
-                    writer, sheet_name="Confusion_CP_All")
-
-        print(
-            f"Keyword analysis (Current+Historic - Hedges) saved to: {KEYWORDS_EXCEL_PATH.replace('.xlsx', '_HEDGES_ALL.xlsx')}"
-        )
-
-        # Third workbook - All Derivatives Current Only (like hedges workbook but with liabilities & embedded in general)
-        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_CURRENT.xlsx"), engine="xlsxwriter") as writer:
-            if keyword_model_comparison is not None:
-                workbook = writer.book
-                workbook.strings_to_urls = False
-
-                # Comparison summary (includes both hedges-only and all-derivatives metrics)
-                keyword_model_comparison['comparison_summary'].to_excel(
-                    writer, sheet_name="KW_Model_Comparison", index=False)
-
-                # Current only sheets - All Derivatives (Overall = Hedges + Liabilities + Embedded)
-                keyword_model_comparison['summary_any_deriv_current'].to_excel(
-                    writer, sheet_name="Summary_Current_Only", index=False)
-                keyword_model_comparison['detailed_any_deriv_current'].to_excel(
-                    writer, sheet_name="Detailed_Current_Only", index=False)
-                keyword_model_comparison['comparison_current'].to_excel(
-                    writer, sheet_name="Basic_Current_Only", index=False)
-                keyword_model_comparison['confusion_any_deriv_current'].to_excel(
-                    writer, sheet_name="Confusion_Overall_Curr")
-                keyword_model_comparison['confusion_fx_current'].to_excel(
-                    writer, sheet_name="Confusion_FX_Curr")
-                keyword_model_comparison['confusion_ir_current'].to_excel(
-                    writer, sheet_name="Confusion_IR_Curr")
-                keyword_model_comparison['confusion_cp_current'].to_excel(
-                    writer, sheet_name="Confusion_CP_Curr")
-
-                # Additional model-only stats for liabilities and embedded
-                keyword_model_comparison['model_only_current'].to_excel(
-                    writer, sheet_name="ModelOnly_Liab_Embed", index=False)
-
-        print(f"All Derivatives analysis (Current Only) saved to: {KEYWORDS_EXCEL_PATH.replace('.xlsx', '_ALL_DERIVATIVES_CURRENT.xlsx')}")
-
-        # Fourth workbook - All Derivatives Current + Historic (like hedges workbook but with liabilities & embedded in general)
-        with pd.ExcelWriter(
-            KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_FULL.xlsx"),
-            engine="xlsxwriter",
-        ) as writer:
-            if keyword_model_comparison is not None:
-                workbook = writer.book
-                workbook.strings_to_urls = False
-
-                # Current + Historic sheets - All Derivatives (Overall = Hedges + Liabilities + Embedded)
-                keyword_model_comparison['summary_any_deriv_all'].to_excel(
-                    writer, sheet_name="Summary_Curr_Historic", index=False)
-                keyword_model_comparison['detailed_any_deriv_all'].to_excel(
-                    writer, sheet_name="Detailed_Curr_Historic", index=False)
-                keyword_model_comparison['comparison_all'].to_excel(
-                    writer, sheet_name="Basic_Curr_Historic", index=False)
-                keyword_model_comparison['confusion_any_deriv_all'].to_excel(
-                    writer, sheet_name="Confusion_Overall_All")
-                keyword_model_comparison['confusion_fx_all'].to_excel(
-                    writer, sheet_name="Confusion_FX_All")
-                keyword_model_comparison['confusion_ir_all'].to_excel(
-                    writer, sheet_name="Confusion_IR_All")
-                keyword_model_comparison['confusion_cp_all'].to_excel(
-                    writer, sheet_name="Confusion_CP_All")
-
-                # Additional model-only stats for liabilities and embedded
-                keyword_model_comparison['model_only_all'].to_excel(
-                    writer, sheet_name="ModelOnly_Liab_Embed", index=False)
-
-        print(f"All Derivatives analysis (Current+Historic) saved to: {KEYWORDS_EXCEL_PATH.replace('.xlsx', '_ALL_DERIVATIVES_FULL.xlsx')}")
     except ImportError:
         print("  (pip install xlsxwriter for better performance)")
         return pd.DataFrame(columns=[])
+    
     # Save to Google Drive if in Colab
     if IS_COLAB:
         print("Saving results to Google Drive...")
