@@ -35,7 +35,7 @@ IS_COLAB = Path(DRIVE_PATH).exists()
 
 # Chunking configuration
 CHUNK_SIZE = 1000 * (1 if not IS_COLAB else 5)
-NUM_THREADS = 2 * (1 if not IS_COLAB else 5)
+NUM_THREADS = 6 * (1 if not IS_COLAB else 5)
 
 if IS_COLAB:
     print("Running in Google Colab environment")
@@ -661,7 +661,7 @@ def process_reports_in_chunks():
         # Flush the results buffer
         save_batch_results(results_buffer)
         results_buffer.clear()
-        
+
         chunk_time = time.time() - start_chunk_time
         chunk_times.append(chunk_time)
         total_time += chunk_time
