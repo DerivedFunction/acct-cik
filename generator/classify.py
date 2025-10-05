@@ -35,7 +35,7 @@ IS_COLAB = Path(DRIVE_PATH).exists()
 
 # Chunking configuration
 CHUNK_SIZE = 1000 * (1 if not IS_COLAB else 5)
-NUM_THREADS = 6 * (1 if not IS_COLAB else 5)
+NUM_THREADS = 2 * (1 if not IS_COLAB else 5)
 
 if IS_COLAB:
     print("Running in Google Colab environment")
