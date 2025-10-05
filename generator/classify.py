@@ -1046,7 +1046,11 @@ def get_sentence_analysis():
                     writer, sheet_name="Confusion_IR_Curr")
                 keyword_model_comparison['confusion_cp_current'].to_excel(
                     writer, sheet_name="Confusion_CP_Curr")
-
+        print(f"Keyword analysis saved to: {KEYWORDS_EXCEL_PATH}")
+        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL.xlsx"), engine="xlsxwriter") as writer:
+            if keyword_model_comparison is not None:
+                workbook = writer.book
+                workbook.strings_to_urls = False
                 # Current + Historic sheets
                 keyword_model_comparison['summary_all'].to_excel(
                     writer, sheet_name="Summary_Curr_Historic", index=False)
@@ -1062,15 +1066,14 @@ def get_sentence_analysis():
                     writer, sheet_name="Confusion_IR_All")
                 keyword_model_comparison['confusion_cp_all'].to_excel(
                     writer, sheet_name="Confusion_CP_All")
-        print(f"Keyword analysis saved to: {KEYWORDS_EXCEL_PATH}")
+        print(f"Keyword analysis saved to: {KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL.xlsx")}")
     except ImportError:
         print("  (pip install xlsxwriter for better performance)")
         return pd.DataFrame(columns=[])
     # Save to Google Drive if in Colab
     if IS_COLAB:
         print("Saving results to Google Drive...")
-        subprocess.run(f"cp {SERVER_EXCEL_PATH} {DRIVE_PATH}/.", shell=True)
-        subprocess.run(f"cp {KEYWORDS_EXCEL_PATH} {DRIVE_PATH}/.", shell=True)
+        subprocess.run(f"cp *.xlsx {DRIVE_PATH}/.", shell=True)        
 
     return sa
 
