@@ -634,6 +634,7 @@ def process_reports_in_chunks():
 
         chunk_results = 0
         chunk_empty = 0
+        results_buffer = []
 
         # Process chunk with ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
@@ -651,12 +652,16 @@ def process_reports_in_chunks():
                     res = future.result()
                     if res is not None:
                         chunk_results += 1
+                        results_buffer.append(res)
                     else:
                         chunk_empty += 1
                 except Exception as e:
                     debug_print(f"Error processing {future_to_report[future].url}: {e}")
                     chunk_empty += 1
-
+        # Flush the results buffer
+        save_batch_results(results_buffer)
+        results_buffer.clear()
+        
         chunk_time = time.time() - start_chunk_time
         chunk_times.append(chunk_time)
         total_time += chunk_time
