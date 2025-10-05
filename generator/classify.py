@@ -881,13 +881,16 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             ]
         )
 
-        # Separate summary for broader derivative coverage
+        # Combined summary for all derivatives workbook (Overall = All Derivatives)
         summary_any_deriv_current = pd.DataFrame(
             [
                 {
-                    "Category": "Any Derivative (Hedges + Liabilities + Embedded)",
+                    "Category": "Overall (All Derivatives: Hedges + Liabilities + Embedded)",
                     **metrics_any_deriv_current,
-                }
+                },
+                {"Category": "Foreign Exchange (FX)", **metrics_fx_current},
+                {"Category": "Interest Rate (IR)", **metrics_ir_current},
+                {"Category": "Commodity Price (CP)", **metrics_cp_current},
             ]
         )
 
@@ -899,7 +902,7 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             ]
         )
 
-        # Detailed comparison - current only
+        # Detailed comparison - current only (Hedges only)
         detailed_current = comparison_current.copy()
         detailed_current["overall_agree"] = (
             detailed_current["keyword_user"] == detailed_current["model_user_current"]
@@ -929,6 +932,46 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
                 )
             ),
             axis=1,
+        )
+
+        # Detailed comparison - current only (All Derivatives)
+        detailed_any_deriv_current = comparison_current.copy()
+        detailed_any_deriv_current["overall_agree"] = (
+            detailed_any_deriv_current["keyword_user"]
+            == detailed_any_deriv_current["model_any_deriv_current"]
+        ).astype(int)
+        detailed_any_deriv_current["fx_agree"] = (
+            detailed_any_deriv_current["keyword_fx"]
+            == detailed_any_deriv_current["model_fx_current"]
+        ).astype(int)
+        detailed_any_deriv_current["ir_agree"] = (
+            detailed_any_deriv_current["keyword_ir"]
+            == detailed_any_deriv_current["model_ir_current"]
+        ).astype(int)
+        detailed_any_deriv_current["cp_agree"] = (
+            detailed_any_deriv_current["keyword_cp"]
+            == detailed_any_deriv_current["model_cp_current"]
+        ).astype(int)
+
+        detailed_any_deriv_current["overall_classification"] = (
+            detailed_any_deriv_current.apply(
+                lambda row: (
+                    "True Positive"
+                    if row["keyword_user"] == 1 and row["model_any_deriv_current"] == 1
+                    else (
+                        "True Negative"
+                        if row["keyword_user"] == 0
+                        and row["model_any_deriv_current"] == 0
+                        else (
+                            "False Positive"
+                            if row["keyword_user"] == 0
+                            and row["model_any_deriv_current"] == 1
+                            else "False Negative"
+                        )
+                    )
+                ),
+                axis=1,
+            )
         )
 
         # --- CURRENT + HISTORIC ANALYSIS ---
@@ -999,13 +1042,16 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             ]
         )
 
-        # Separate summary for broader derivative coverage
+        # Combined summary for all derivatives workbook (Overall = All Derivatives)
         summary_any_deriv_all = pd.DataFrame(
             [
                 {
-                    "Category": "Any Derivative (Hedges + Liabilities + Embedded)",
+                    "Category": "Overall (All Derivatives: Hedges + Liabilities + Embedded)",
                     **metrics_any_deriv_all,
-                }
+                },
+                {"Category": "Foreign Exchange (FX)", **metrics_fx_all},
+                {"Category": "Interest Rate (IR)", **metrics_ir_all},
+                {"Category": "Commodity Price (CP)", **metrics_cp_all},
             ]
         )
 
@@ -1017,7 +1063,7 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             ]
         )
 
-        # Detailed comparison - current + historic
+        # Detailed comparison - current + historic (Hedges only)
         detailed_all = comparison_all.copy()
         detailed_all["overall_agree"] = (
             detailed_all["keyword_user"] == detailed_all["model_user_all"]
@@ -1042,6 +1088,42 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
                     else (
                         "False Positive"
                         if row["keyword_user"] == 0 and row["model_user_all"] == 1
+                        else "False Negative"
+                    )
+                )
+            ),
+            axis=1,
+        )
+
+        # Detailed comparison - current + historic (All Derivatives)
+        detailed_any_deriv_all = comparison_all.copy()
+        detailed_any_deriv_all["overall_agree"] = (
+            detailed_any_deriv_all["keyword_user"]
+            == detailed_any_deriv_all["model_any_deriv_all"]
+        ).astype(int)
+        detailed_any_deriv_all["fx_agree"] = (
+            detailed_any_deriv_all["keyword_fx"]
+            == detailed_any_deriv_all["model_fx_all"]
+        ).astype(int)
+        detailed_any_deriv_all["ir_agree"] = (
+            detailed_any_deriv_all["keyword_ir"]
+            == detailed_any_deriv_all["model_ir_all"]
+        ).astype(int)
+        detailed_any_deriv_all["cp_agree"] = (
+            detailed_any_deriv_all["keyword_cp"]
+            == detailed_any_deriv_all["model_cp_all"]
+        ).astype(int)
+
+        detailed_any_deriv_all["overall_classification"] = detailed_any_deriv_all.apply(
+            lambda row: (
+                "True Positive"
+                if row["keyword_user"] == 1 and row["model_any_deriv_all"] == 1
+                else (
+                    "True Negative"
+                    if row["keyword_user"] == 0 and row["model_any_deriv_all"] == 0
+                    else (
+                        "False Positive"
+                        if row["keyword_user"] == 0 and row["model_any_deriv_all"] == 1
                         else "False Negative"
                     )
                 )
@@ -1169,6 +1251,7 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             "confusion_cp_current": confusion_cp_current,
             "summary_current": summary_current,
             # Current only - All Derivatives (Hedges + Liabilities + Embedded)
+            "detailed_any_deriv_current": detailed_any_deriv_current,
             "confusion_any_deriv_current": confusion_any_deriv_current,
             "summary_any_deriv_current": summary_any_deriv_current,
             "model_only_current": model_only_current,
@@ -1181,6 +1264,7 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             "confusion_cp_all": confusion_cp_all,
             "summary_all": summary_all,
             # Current + Historic - All Derivatives (Hedges + Liabilities + Embedded)
+            "detailed_any_deriv_all": detailed_any_deriv_all,
             "confusion_any_deriv_all": confusion_any_deriv_all,
             "summary_any_deriv_all": summary_any_deriv_all,
             "model_only_all": model_only_all,
@@ -1193,6 +1277,7 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             f"  Warning: {DERIVATIVES_CSV_PATH} not found. Skipping keyword vs. model analysis."
         )
         return None
+
 
 def get_sentence_analysis():
     """Get sentence analysis with server predictions using parallel processing."""
@@ -1334,16 +1419,16 @@ def get_sentence_analysis():
             hedge_cross.to_excel(
                 writer, sheet_name="Hedge Type Cross", index=True)
         print(f"Server analysis saved to: {SERVER_EXCEL_PATH}")
-            # First workbook - Current Only (Hedges: IR/FX/CP)
-        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH, engine="xlsxwriter") as writer:
+        # First workbook - Current Only (Hedges: IR/FX/CP)
+        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES_CURRENT.xlsx"), engine="xlsxwriter") as writer:
             if keyword_model_comparison is not None:
                 workbook = writer.book
                 workbook.strings_to_urls = False
-                
+
                 # Comparison summary
                 keyword_model_comparison['comparison_summary'].to_excel(
                     writer, sheet_name="KW_Model_Comparison", index=False)
-                
+
                 # Current only sheets - Hedges (IR/FX/CP)
                 keyword_model_comparison['summary_current'].to_excel(
                     writer, sheet_name="Summary_Current_Only", index=False)
@@ -1360,14 +1445,14 @@ def get_sentence_analysis():
                 keyword_model_comparison['confusion_cp_current'].to_excel(
                     writer, sheet_name="Confusion_CP_Curr")
 
-        print(f"Keyword analysis (Current Only - Hedges) saved to: {KEYWORDS_EXCEL_PATH}")
+        print(f"Keyword analysis (Current Only - Hedges) saved to: {KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES_CURRENT.xlsx"),}")
 
         # Second workbook - Current + Historic (Hedges: IR/FX/CP)
-        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES.xlsx"), engine="xlsxwriter") as writer:
+        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES_ALL.xlsx"), engine="xlsxwriter") as writer:
             if keyword_model_comparison is not None:
                 workbook = writer.book
                 workbook.strings_to_urls = False
-                
+
                 # Current + Historic sheets - Hedges (IR/FX/CP)
                 keyword_model_comparison['summary_all'].to_excel(
                     writer, sheet_name="Summary_Curr_Historic", index=False)
@@ -1384,45 +1469,70 @@ def get_sentence_analysis():
                 keyword_model_comparison['confusion_cp_all'].to_excel(
                     writer, sheet_name="Confusion_CP_All")
 
-        print(f"Keyword analysis (Current+Historic - Hedges) saved to: {KEYWORDS_EXCEL_PATH.replace('.xlsx', '_HEDGES.xlsx')}")
+        print(
+            f"Keyword analysis (Current+Historic - Hedges) saved to: {KEYWORDS_EXCEL_PATH.replace('.xlsx', '_HEDGES_ALL.xlsx')}"
+        )
 
-        # Third workbook - All Derivatives (Current Only: Hedges + Liabilities + Embedded)
+        # Third workbook - All Derivatives Current Only (like hedges workbook but with liabilities & embedded in general)
         with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_CURRENT.xlsx"), engine="xlsxwriter") as writer:
             if keyword_model_comparison is not None:
                 workbook = writer.book
                 workbook.strings_to_urls = False
-                
-                # Current only sheets - All Derivatives
+
+                # Comparison summary (includes both hedges-only and all-derivatives metrics)
+                keyword_model_comparison['comparison_summary'].to_excel(
+                    writer, sheet_name="KW_Model_Comparison", index=False)
+
+                # Current only sheets - All Derivatives (Overall = Hedges + Liabilities + Embedded)
                 keyword_model_comparison['summary_any_deriv_current'].to_excel(
-                    writer, sheet_name="Summary_AnyDeriv_Curr", index=False)
-                keyword_model_comparison['confusion_any_deriv_current'].to_excel(
-                    writer, sheet_name="Confusion_AnyDeriv_Curr")
-                keyword_model_comparison['model_only_current'].to_excel(
-                    writer, sheet_name="ModelOnly_Liab_Embed_Curr", index=False)
-                
-                # Include the basic comparison data for reference
+                    writer, sheet_name="Summary_Current_Only", index=False)
+                keyword_model_comparison['detailed_any_deriv_current'].to_excel(
+                    writer, sheet_name="Detailed_Current_Only", index=False)
                 keyword_model_comparison['comparison_current'].to_excel(
-                    writer, sheet_name="Comparison_Data", index=False)
+                    writer, sheet_name="Basic_Current_Only", index=False)
+                keyword_model_comparison['confusion_any_deriv_current'].to_excel(
+                    writer, sheet_name="Confusion_Overall_Curr")
+                keyword_model_comparison['confusion_fx_current'].to_excel(
+                    writer, sheet_name="Confusion_FX_Curr")
+                keyword_model_comparison['confusion_ir_current'].to_excel(
+                    writer, sheet_name="Confusion_IR_Curr")
+                keyword_model_comparison['confusion_cp_current'].to_excel(
+                    writer, sheet_name="Confusion_CP_Curr")
+
+                # Additional model-only stats for liabilities and embedded
+                keyword_model_comparison['model_only_current'].to_excel(
+                    writer, sheet_name="ModelOnly_Liab_Embed", index=False)
 
         print(f"All Derivatives analysis (Current Only) saved to: {KEYWORDS_EXCEL_PATH.replace('.xlsx', '_ALL_DERIVATIVES_CURRENT.xlsx')}")
 
-        # Fourth workbook - All Derivatives (Current + Historic: Hedges + Liabilities + Embedded)
-        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_FULL.xlsx"), engine="xlsxwriter") as writer:
+        # Fourth workbook - All Derivatives Current + Historic (like hedges workbook but with liabilities & embedded in general)
+        with pd.ExcelWriter(
+            KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_FULL.xlsx"),
+            engine="xlsxwriter",
+        ) as writer:
             if keyword_model_comparison is not None:
                 workbook = writer.book
                 workbook.strings_to_urls = False
-                
-                # Current + Historic sheets - All Derivatives
+
+                # Current + Historic sheets - All Derivatives (Overall = Hedges + Liabilities + Embedded)
                 keyword_model_comparison['summary_any_deriv_all'].to_excel(
-                    writer, sheet_name="Summary_AnyDeriv_All", index=False)
-                keyword_model_comparison['confusion_any_deriv_all'].to_excel(
-                    writer, sheet_name="Confusion_AnyDeriv_All")
-                keyword_model_comparison['model_only_all'].to_excel(
-                    writer, sheet_name="ModelOnly_Liab_Embed_All", index=False)
-                
-                # Include the basic comparison data for reference
+                    writer, sheet_name="Summary_Curr_Historic", index=False)
+                keyword_model_comparison['detailed_any_deriv_all'].to_excel(
+                    writer, sheet_name="Detailed_Curr_Historic", index=False)
                 keyword_model_comparison['comparison_all'].to_excel(
-                    writer, sheet_name="Comparison_Data", index=False)
+                    writer, sheet_name="Basic_Curr_Historic", index=False)
+                keyword_model_comparison['confusion_any_deriv_all'].to_excel(
+                    writer, sheet_name="Confusion_Overall_All")
+                keyword_model_comparison['confusion_fx_all'].to_excel(
+                    writer, sheet_name="Confusion_FX_All")
+                keyword_model_comparison['confusion_ir_all'].to_excel(
+                    writer, sheet_name="Confusion_IR_All")
+                keyword_model_comparison['confusion_cp_all'].to_excel(
+                    writer, sheet_name="Confusion_CP_All")
+
+                # Additional model-only stats for liabilities and embedded
+                keyword_model_comparison['model_only_all'].to_excel(
+                    writer, sheet_name="ModelOnly_Liab_Embed", index=False)
 
         print(f"All Derivatives analysis (Current+Historic) saved to: {KEYWORDS_EXCEL_PATH.replace('.xlsx', '_ALL_DERIVATIVES_FULL.xlsx')}")
     except ImportError:
