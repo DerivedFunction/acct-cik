@@ -626,6 +626,9 @@ def get_sentence_analysis():
     # Use xlsxwriter engine for better performance with large datasets
     try:
         with pd.ExcelWriter(SERVER_EXCEL_PATH, engine="xlsxwriter") as writer:
+            # Disable automatic URL conversion
+            workbook = writer.book
+            workbook.strings_to_urls = False
             sa.to_excel(writer, sheet_name="all_reports", index=False)
             firms_current_hedge.to_excel(
                 writer, sheet_name="Current Hedging", index=False)
@@ -648,6 +651,9 @@ def get_sentence_analysis():
         # Fallback to openpyxl if xlsxwriter not available
         print("  (Using openpyxl engine - install xlsxwriter for better performance)")
         with pd.ExcelWriter(SERVER_EXCEL_PATH, engine="openpyxl") as writer:
+            # Disable automatic URL conversion
+            workbook = writer.book
+            workbook.strings_to_urls = False
             sa.to_excel(writer, sheet_name="all_reports", index=False)
             firms_current_hedge.to_excel(
                 writer, sheet_name="Current Hedging", index=False)
@@ -911,8 +917,9 @@ def build_sentence_label_excel():
         summary_file = SENTENCE_PATH.replace('.xlsx', '_Overall_Summary.xlsx')
 
         with pd.ExcelWriter(summary_file, engine="xlsxwriter") as writer:
+            # Disable automatic URL conversion
             workbook = writer.book
-
+            workbook.strings_to_urls = False
             # Overall summary by label
             overall_summary_stats = []
             for label in sorted(final_df["label"].unique()):
