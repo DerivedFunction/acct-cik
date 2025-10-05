@@ -539,7 +539,7 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
 
         # Merge keyword and model results
         comparison_df = pd.merge(keyword_users, model_users, on='cik', how='left')
-        comparison_df['model_user'] = comparison_df['model_user'].fillna(False).astype(int)
+        comparison_df['model_user'] = comparison_df['model_user'].fillna(value=False).astype(int)
 
         # Create a confusion matrix
         confusion_matrix = pd.crosstab(comparison_df['keyword_user'], comparison_df['model_user'], rownames=['Keyword'], colnames=['Model'])
