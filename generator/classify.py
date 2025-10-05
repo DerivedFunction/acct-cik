@@ -648,30 +648,7 @@ def get_sentence_analysis():
             hedge_cross.to_excel(
                 writer, sheet_name="Hedge Type Cross", index=True)
     except ImportError:
-        # Fallback to openpyxl if xlsxwriter not available
-        print("  (Using openpyxl engine - install xlsxwriter for better performance)")
-        with pd.ExcelWriter(SERVER_EXCEL_PATH, engine="openpyxl") as writer:
-            # Disable automatic URL conversion
-            workbook = writer.book
-            workbook.strings_to_urls = False
-            sa.to_excel(writer, sheet_name="all_reports", index=False)
-            firms_current_hedge.to_excel(
-                writer, sheet_name="Current Hedging", index=False)
-            firms_historic_only.to_excel(
-                writer, sheet_name="Hedging Past Year", index=False)
-            firms_label2_only.to_excel(
-                writer, sheet_name="Speculation Only", index=False)
-            firms_liabilities.to_excel(
-                writer, sheet_name="Derivative Liabilities Warrants", index=False)
-            embedded_derivatives.to_excel(
-                writer, sheet_name="Embedded Derivatives", index=False)
-            unique_counts.to_excel(
-                writer, sheet_name="unique_per_year", index=False)
-            cooc.to_excel(writer, sheet_name="label_cooccurrence")
-            hedge_by_type.to_excel(
-                writer, sheet_name="Hedging by Type", index=False)
-            hedge_cross.to_excel(
-                writer, sheet_name="Hedge Type Cross", index=True)
+        print("  (pip install xlsxwriter for better performance)")
 
     print(f"Sentence analysis saved to: {SERVER_EXCEL_PATH}")
 
@@ -967,7 +944,7 @@ def build_sentence_label_excel():
             subprocess.run(f"cp {summary_file} {DRIVE_PATH}/.", shell=True)
 
     except ImportError:
-        print("  ERROR: xlsxwriter not available. Please install: pip install xlsxwriter")
+        print(" (pip install xlsxwriter for better performance)")
         return None
 
     print(f"\n{'='*70}")
