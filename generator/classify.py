@@ -517,6 +517,8 @@ def compute_hedge_cross(sa, hedge_label_groups):
 def analyze_keyword_vs_model(sa, hedge_labels_current):
     """
     Analyzes the original keyword-based derivatives data against the model's results.
+    Now includes detailed breakdowns by hedge type, confusion matrices, and accuracy metrics.
+    Includes both current-only and current+historic comparisons.
     """
     print("  Comparing keyword search results with model results...")
     try:
@@ -524,8 +526,11 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
         deriv_df = pd.read_csv(DERIVATIVES_CSV_PATH)
         # Ensure CIK is integer for merging
         deriv_df['cik'] = deriv_df['cik'].astype(int)
-        # We only need the flags for each cik/year
-        keyword_users = deriv_df.groupby(['cik', 'year'])[['user', 'fx_user', 'ir_user', 'cp_user']].max().reset_index()
+
+        # Get keyword flags for each cik/year
+        keyword_users = deriv_df.groupby(['cik', 'year'])[
+            ['user', 'fx_user', 'ir_user', 'cp_user']
+        ].max().reset_index()
         keyword_users.rename(columns={
             'user': 'keyword_user',
             'fx_user': 'keyword_fx',
@@ -533,21 +538,350 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             'cp_user': 'keyword_cp'
         }, inplace=True)
 
-        # Determine if a firm is a hedge user based on the model's sentence analysis
-        model_users = sa.groupby('cik')[hedge_labels_current].sum().sum(axis=1) > 0
-        model_users = model_users.reset_index(name='model_user')
+        # --- CURRENT ONLY MODEL FLAGS ---
+
+        # General hedge (any current hedge)
+        model_general_current = sa.groupby(['cik', 'year'])[
+            hedge_labels_current].sum().sum(axis=1) > 0
+        model_general_current = model_general_current.reset_index(
+            name='model_user_current')
+
+        # FX hedge - id2label[10] is FX Hedge (current)
+        model_fx_current = sa.groupby(['cik', 'year'])[id2label[10]].sum() > 0
+        model_fx_current = model_fx_current.reset_index(
+            name='model_fx_current')
+
+        # IR hedge - id2label[8] is IR Hedge (current)
+        model_ir_current = sa.groupby(['cik', 'year'])[id2label[8]].sum() > 0
+        model_ir_current = model_ir_current.reset_index(
+            name='model_ir_current')
+
+        # CP hedge - id2label[12] is CP Hedge (current)
+        model_cp_current = sa.groupby(['cik', 'year'])[id2label[12]].sum() > 0
+        model_cp_current = model_cp_current.reset_index(
+            name='model_cp_current')
+
+        # --- CURRENT + HISTORIC MODEL FLAGS ---
+
+        # General hedge (current + historic)
+        hedge_labels_all = [
+            id2label[0], id2label[1],  # General current + historic
+            id2label[8], id2label[9],  # IR current + historic
+            id2label[10], id2label[11],  # FX current + historic
+            id2label[12], id2label[13],  # CP current + historic
+        ]
+        model_general_all = sa.groupby(['cik', 'year'])[
+            hedge_labels_all].sum().sum(axis=1) > 0
+        model_general_all = model_general_all.reset_index(
+            name='model_user_all')
+
+        # FX hedge (current + historic) - id2label[10] and id2label[11]
+        model_fx_all = sa.groupby(['cik', 'year'])[
+            [id2label[10], id2label[11]]].sum().sum(axis=1) > 0
+        model_fx_all = model_fx_all.reset_index(name='model_fx_all')
+
+        # IR hedge (current + historic) - id2label[8] and id2label[9]
+        model_ir_all = sa.groupby(['cik', 'year'])[
+            [id2label[8], id2label[9]]].sum().sum(axis=1) > 0
+        model_ir_all = model_ir_all.reset_index(name='model_ir_all')
+
+        # CP hedge (current + historic) - id2label[12] and id2label[13]
+        model_cp_all = sa.groupby(['cik', 'year'])[
+            [id2label[12], id2label[13]]].sum().sum(axis=1) > 0
+        model_cp_all = model_cp_all.reset_index(name='model_cp_all')
+
+        # Merge all model results (current)
+        model_users_current = model_general_current.merge(
+            model_fx_current, on=['cik', 'year'], how='outer')
+        model_users_current = model_users_current.merge(
+            model_ir_current, on=['cik', 'year'], how='outer')
+        model_users_current = model_users_current.merge(
+            model_cp_current, on=['cik', 'year'], how='outer')
+
+        # Merge all model results (current + historic)
+        model_users_all = model_general_all.merge(
+            model_fx_all, on=['cik', 'year'], how='outer')
+        model_users_all = model_users_all.merge(
+            model_ir_all, on=['cik', 'year'], how='outer')
+        model_users_all = model_users_all.merge(
+            model_cp_all, on=['cik', 'year'], how='outer')
+
+        # Fill NaN with False and convert to int
+        for col in ['model_user_current', 'model_fx_current', 'model_ir_current', 'model_cp_current']:
+            model_users_current[col] = model_users_current[col].fillna(
+                False).astype(bool).astype(int)
+
+        for col in ['model_user_all', 'model_fx_all', 'model_ir_all', 'model_cp_all']:
+            model_users_all[col] = model_users_all[col].fillna(
+                False).astype(bool).astype(int)
 
         # Merge keyword and model results
-        comparison_df = pd.merge(keyword_users, model_users, on='cik', how='left')
-        comparison_df['model_user'] = comparison_df['model_user'].fillna(
-            False).infer_objects(copy=False).astype(int)
+        comparison_current = pd.merge(keyword_users, model_users_current, on=[
+                                      'cik', 'year'], how='outer')
+        comparison_all = pd.merge(keyword_users, model_users_all, on=[
+                                  'cik', 'year'], how='outer')
 
-        # Create a confusion matrix
-        confusion_matrix = pd.crosstab(comparison_df['keyword_user'], comparison_df['model_user'], rownames=['Keyword'], colnames=['Model'])
-        return comparison_df, confusion_matrix
+        # Fill NaN values - if missing from either dataset, assume False
+        for col in comparison_current.columns:
+            if col not in ['cik', 'year']:
+                comparison_current[col] = comparison_current[col].fillna(
+                    False).astype(bool).astype(int)
+
+        for col in comparison_all.columns:
+            if col not in ['cik', 'year']:
+                comparison_all[col] = comparison_all[col].fillna(
+                    False).astype(bool).astype(int)
+
+        # --- Helper function for metrics ---
+        def calculate_metrics(keyword_col, model_col, df):
+            """Calculate accuracy, precision, recall, F1 for a given comparison"""
+            # True Positives, False Positives, True Negatives, False Negatives
+            tp = ((df[keyword_col] == 1) & (df[model_col] == 1)).sum()
+            fp = ((df[keyword_col] == 0) & (df[model_col] == 1)).sum()
+            tn = ((df[keyword_col] == 0) & (df[model_col] == 0)).sum()
+            fn = ((df[keyword_col] == 1) & (df[model_col] == 0)).sum()
+
+            total = len(df)
+            accuracy = (tp + tn) / total if total > 0 else 0
+            precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+            recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+            f1 = 2 * (precision * recall) / (precision +
+                                             recall) if (precision + recall) > 0 else 0
+
+            return {
+                'True_Positives': tp,
+                'False_Positives': fp,
+                'True_Negatives': tn,
+                'False_Negatives': fn,
+                'Total': total,
+                'Accuracy': round(accuracy * 100, 2),
+                'Precision': round(precision * 100, 2),
+                'Recall': round(recall * 100, 2),
+                'F1_Score': round(f1 * 100, 2),
+                'Agreement_Rate': round(((tp + tn) / total) * 100, 2) if total > 0 else 0
+            }
+
+        # --- CURRENT ONLY ANALYSIS ---
+
+        # Confusion matrices - current only
+        confusion_overall_current = pd.crosstab(
+            comparison_current['keyword_user'],
+            comparison_current['model_user_current'],
+            rownames=['Keyword'],
+            colnames=['Model_Current'],
+            margins=True
+        )
+
+        confusion_fx_current = pd.crosstab(
+            comparison_current['keyword_fx'],
+            comparison_current['model_fx_current'],
+            rownames=['Keyword_FX'],
+            colnames=['Model_FX_Current'],
+            margins=True
+        )
+
+        confusion_ir_current = pd.crosstab(
+            comparison_current['keyword_ir'],
+            comparison_current['model_ir_current'],
+            rownames=['Keyword_IR'],
+            colnames=['Model_IR_Current'],
+            margins=True
+        )
+
+        confusion_cp_current = pd.crosstab(
+            comparison_current['keyword_cp'],
+            comparison_current['model_cp_current'],
+            rownames=['Keyword_CP'],
+            colnames=['Model_CP_Current'],
+            margins=True
+        )
+
+        # Calculate metrics - current only
+        metrics_overall_current = calculate_metrics(
+            'keyword_user', 'model_user_current', comparison_current)
+        metrics_fx_current = calculate_metrics(
+            'keyword_fx', 'model_fx_current', comparison_current)
+        metrics_ir_current = calculate_metrics(
+            'keyword_ir', 'model_ir_current', comparison_current)
+        metrics_cp_current = calculate_metrics(
+            'keyword_cp', 'model_cp_current', comparison_current)
+
+        summary_current = pd.DataFrame([
+            {'Category': 'Overall (Any Hedge)', **metrics_overall_current},
+            {'Category': 'Foreign Exchange (FX)', **metrics_fx_current},
+            {'Category': 'Interest Rate (IR)', **metrics_ir_current},
+            {'Category': 'Commodity Price (CP)', **metrics_cp_current}
+        ])
+
+        # Detailed comparison - current only
+        detailed_current = comparison_current.copy()
+        detailed_current['overall_agree'] = (
+            detailed_current['keyword_user'] == detailed_current['model_user_current']
+        ).astype(int)
+        detailed_current['fx_agree'] = (
+            detailed_current['keyword_fx'] == detailed_current['model_fx_current']
+        ).astype(int)
+        detailed_current['ir_agree'] = (
+            detailed_current['keyword_ir'] == detailed_current['model_ir_current']
+        ).astype(int)
+        detailed_current['cp_agree'] = (
+            detailed_current['keyword_cp'] == detailed_current['model_cp_current']
+        ).astype(int)
+
+        detailed_current['overall_classification'] = detailed_current.apply(
+            lambda row: 'True Positive' if row['keyword_user'] == 1 and row['model_user_current'] == 1
+            else 'True Negative' if row['keyword_user'] == 0 and row['model_user_current'] == 0
+            else 'False Positive' if row['keyword_user'] == 0 and row['model_user_current'] == 1
+            else 'False Negative', axis=1
+        )
+
+        # --- CURRENT + HISTORIC ANALYSIS ---
+
+        # Confusion matrices - current + historic
+        confusion_overall_all = pd.crosstab(
+            comparison_all['keyword_user'],
+            comparison_all['model_user_all'],
+            rownames=['Keyword'],
+            colnames=['Model_All'],
+            margins=True
+        )
+
+        confusion_fx_all = pd.crosstab(
+            comparison_all['keyword_fx'],
+            comparison_all['model_fx_all'],
+            rownames=['Keyword_FX'],
+            colnames=['Model_FX_All'],
+            margins=True
+        )
+
+        confusion_ir_all = pd.crosstab(
+            comparison_all['keyword_ir'],
+            comparison_all['model_ir_all'],
+            rownames=['Keyword_IR'],
+            colnames=['Model_IR_All'],
+            margins=True
+        )
+
+        confusion_cp_all = pd.crosstab(
+            comparison_all['keyword_cp'],
+            comparison_all['model_cp_all'],
+            rownames=['Keyword_CP'],
+            colnames=['Model_CP_All'],
+            margins=True
+        )
+
+        # Calculate metrics - current + historic
+        metrics_overall_all = calculate_metrics(
+            'keyword_user', 'model_user_all', comparison_all)
+        metrics_fx_all = calculate_metrics(
+            'keyword_fx', 'model_fx_all', comparison_all)
+        metrics_ir_all = calculate_metrics(
+            'keyword_ir', 'model_ir_all', comparison_all)
+        metrics_cp_all = calculate_metrics(
+            'keyword_cp', 'model_cp_all', comparison_all)
+
+        summary_all = pd.DataFrame([
+            {'Category': 'Overall (Any Hedge)', **metrics_overall_all},
+            {'Category': 'Foreign Exchange (FX)', **metrics_fx_all},
+            {'Category': 'Interest Rate (IR)', **metrics_ir_all},
+            {'Category': 'Commodity Price (CP)', **metrics_cp_all}
+        ])
+
+        # Detailed comparison - current + historic
+        detailed_all = comparison_all.copy()
+        detailed_all['overall_agree'] = (
+            detailed_all['keyword_user'] == detailed_all['model_user_all']
+        ).astype(int)
+        detailed_all['fx_agree'] = (
+            detailed_all['keyword_fx'] == detailed_all['model_fx_all']
+        ).astype(int)
+        detailed_all['ir_agree'] = (
+            detailed_all['keyword_ir'] == detailed_all['model_ir_all']
+        ).astype(int)
+        detailed_all['cp_agree'] = (
+            detailed_all['keyword_cp'] == detailed_all['model_cp_all']
+        ).astype(int)
+
+        detailed_all['overall_classification'] = detailed_all.apply(
+            lambda row: 'True Positive' if row['keyword_user'] == 1 and row['model_user_all'] == 1
+            else 'True Negative' if row['keyword_user'] == 0 and row['model_user_all'] == 0
+            else 'False Positive' if row['keyword_user'] == 0 and row['model_user_all'] == 1
+            else 'False Negative', axis=1
+        )
+
+        # --- COMPARISON SUMMARY (Current vs Current+Historic) ---
+        comparison_summary = pd.DataFrame([
+            {
+                'Metric': 'Overall Accuracy',
+                'Current_Only': metrics_overall_current['Accuracy'],
+                'Current_Historic': metrics_overall_all['Accuracy'],
+                'Improvement': round(metrics_overall_all['Accuracy'] - metrics_overall_current['Accuracy'], 2)
+            },
+            {
+                'Metric': 'Overall Precision',
+                'Current_Only': metrics_overall_current['Precision'],
+                'Current_Historic': metrics_overall_all['Precision'],
+                'Improvement': round(metrics_overall_all['Precision'] - metrics_overall_current['Precision'], 2)
+            },
+            {
+                'Metric': 'Overall Recall',
+                'Current_Only': metrics_overall_current['Recall'],
+                'Current_Historic': metrics_overall_all['Recall'],
+                'Improvement': round(metrics_overall_all['Recall'] - metrics_overall_current['Recall'], 2)
+            },
+            {
+                'Metric': 'Overall F1 Score',
+                'Current_Only': metrics_overall_current['F1_Score'],
+                'Current_Historic': metrics_overall_all['F1_Score'],
+                'Improvement': round(metrics_overall_all['F1_Score'] - metrics_overall_current['F1_Score'], 2)
+            },
+            {
+                'Metric': 'FX Accuracy',
+                'Current_Only': metrics_fx_current['Accuracy'],
+                'Current_Historic': metrics_fx_all['Accuracy'],
+                'Improvement': round(metrics_fx_all['Accuracy'] - metrics_fx_current['Accuracy'], 2)
+            },
+            {
+                'Metric': 'IR Accuracy',
+                'Current_Only': metrics_ir_current['Accuracy'],
+                'Current_Historic': metrics_ir_all['Accuracy'],
+                'Improvement': round(metrics_ir_all['Accuracy'] - metrics_ir_current['Accuracy'], 2)
+            },
+            {
+                'Metric': 'CP Accuracy',
+                'Current_Only': metrics_cp_current['Accuracy'],
+                'Current_Historic': metrics_cp_all['Accuracy'],
+                'Improvement': round(metrics_cp_all['Accuracy'] - metrics_cp_current['Accuracy'], 2)
+            }
+        ])
+
+        return {
+            # Current only
+            'comparison_current': comparison_current,
+            'detailed_current': detailed_current,
+            'confusion_overall_current': confusion_overall_current,
+            'confusion_fx_current': confusion_fx_current,
+            'confusion_ir_current': confusion_ir_current,
+            'confusion_cp_current': confusion_cp_current,
+            'summary_current': summary_current,
+
+            # Current + Historic
+            'comparison_all': comparison_all,
+            'detailed_all': detailed_all,
+            'confusion_overall_all': confusion_overall_all,
+            'confusion_fx_all': confusion_fx_all,
+            'confusion_ir_all': confusion_ir_all,
+            'confusion_cp_all': confusion_cp_all,
+            'summary_all': summary_all,
+
+            # Comparison
+            'comparison_summary': comparison_summary
+        }
+
     except FileNotFoundError:
-        print(f"  Warning: {DERIVATIVES_CSV_PATH} not found. Skipping keyword vs. model analysis.")
-        return None, None
+        print(
+            f"  Warning: {DERIVATIVES_CSV_PATH} not found. Skipping keyword vs. model analysis.")
+        return None
 
 def get_sentence_analysis():
     """Get sentence analysis with server predictions using parallel processing."""
@@ -659,7 +993,7 @@ def get_sentence_analysis():
         print("  Computing Hedge Type Cross...")
         hedge_cross = future_hedge_cross.result()
         print("  Computing Keyword vs Model Analysis...")
-        keyword_model_comparison, confusion_matrix = future_keyword_analysis.result()
+        keyword_model_comparison = future_keyword_analysis.result()
 
     print("Writing results to Excel...")
 
@@ -689,11 +1023,41 @@ def get_sentence_analysis():
             hedge_cross.to_excel(
                 writer, sheet_name="Hedge Type Cross", index=True)
             if keyword_model_comparison is not None:
-                keyword_model_comparison.to_excel(
-                    writer, sheet_name="Keyword_vs_Model", index=False)
-            if confusion_matrix is not None:
-                confusion_matrix.to_excel(
-                    writer, sheet_name="Keyword_Model_Confusion")
+                # Comparison summary
+                keyword_model_comparison['comparison_summary'].to_excel(
+                    writer, sheet_name="KW_Model_Comparison", index=False)
+
+                # Current only sheets
+                keyword_model_comparison['summary_current'].to_excel(
+                    writer, sheet_name="Summary_Current_Only", index=False)
+                keyword_model_comparison['detailed_current'].to_excel(
+                    writer, sheet_name="Detailed_Current_Only", index=False)
+                keyword_model_comparison['comparison_current'].to_excel(
+                    writer, sheet_name="Basic_Current_Only", index=False)
+                keyword_model_comparison['confusion_overall_current'].to_excel(
+                    writer, sheet_name="Confusion_Overall_Curr")
+                keyword_model_comparison['confusion_fx_current'].to_excel(
+                    writer, sheet_name="Confusion_FX_Curr")
+                keyword_model_comparison['confusion_ir_current'].to_excel(
+                    writer, sheet_name="Confusion_IR_Curr")
+                keyword_model_comparison['confusion_cp_current'].to_excel(
+                    writer, sheet_name="Confusion_CP_Curr")
+
+                # Current + Historic sheets
+                keyword_model_comparison['summary_all'].to_excel(
+                    writer, sheet_name="Summary_Curr_Historic", index=False)
+                keyword_model_comparison['detailed_all'].to_excel(
+                    writer, sheet_name="Detailed_Curr_Historic", index=False)
+                keyword_model_comparison['comparison_all'].to_excel(
+                    writer, sheet_name="Basic_Curr_Historic", index=False)
+                keyword_model_comparison['confusion_overall_all'].to_excel(
+                    writer, sheet_name="Confusion_Overall_All")
+                keyword_model_comparison['confusion_fx_all'].to_excel(
+                    writer, sheet_name="Confusion_FX_All")
+                keyword_model_comparison['confusion_ir_all'].to_excel(
+                    writer, sheet_name="Confusion_IR_All")
+                keyword_model_comparison['confusion_cp_all'].to_excel(
+                    writer, sheet_name="Confusion_CP_All")
     except ImportError:
         print("  (pip install xlsxwriter for better performance)")
 
