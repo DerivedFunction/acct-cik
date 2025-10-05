@@ -1298,161 +1298,121 @@ def get_sentence_analysis():
     num_workers = mp.cpu_count()
     print(f"Using {num_workers} CPU cores for row processing")
 
-    analysis_data = []
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        results = list(tqdm(
-            executor.map(process_row_for_analysis, row_data_list),
-            total=len(row_data_list),
-            desc="Analyzing sentences"
-        ))
+        results = list(
+            tqdm(
+                executor.map(process_row_for_analysis, row_data_list),
+                total=len(row_data_list),
+                desc="Analyzing sentences",
+            )
+        )
 
     # Filter out None results
     analysis_data = [r for r in results if r is not None]
-
     sa = pd.DataFrame(analysis_data)
-    # Fill missing numeric cols with 0
     sa = sa.fillna({col: 0 for col in sa.select_dtypes("number").columns})
 
     print(f"Sentence analysis for {len(sa)} reports:")
     print(f"Computing Excel sheets in parallel...")
 
     # --- Define label groups ---
-    hedge_labels_current = [
-        id2label[0],  # General/Unknown Hedge Der.
-        id2label[8],  # IR Hedge
-        id2label[10],  # FX Hedge
-        id2label[12],  # CP Hedge
-    ]
-
-    hedge_labels_historic = [
-        id2label[1],  # General/Unknown Hedge Der. Historic
-        id2label[9],  # IR Hedge Historic
-        id2label[11],  # FX Hedge Historic
-        id2label[13],  # CP Hedge Historic
-    ]
-
+    hedge_labels_current = [id2label[0], id2label[8], id2label[10], id2label[12]]
+    hedge_labels_historic = [id2label[1], id2label[9], id2label[11], id2label[13]]
     label_cols = [id2label[i] for i in id2label]
     exclude_cols = [id2label[i] for i in id2label if i != 2]
-
     hedge_types = {
         "General": [id2label[0], id2label[1]],
         "IR": [id2label[8], id2label[9]],
         "FX": [id2label[10], id2label[11]],
         "CP": [id2label[12], id2label[13]],
     }
-
-    hedge_label_groups = [
-        id2label[0], id2label[8], id2label[10], id2label[12],
-        id2label[1], id2label[9], id2label[11], id2label[13]
-    ]
+    hedge_label_groups = hedge_labels_current + hedge_labels_historic
 
     # Submit all computation tasks in parallel
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        future_current_hedge = executor.submit(
-            compute_firms_current_hedge, sa, hedge_labels_current)
-        future_historic_only = executor.submit(
-            compute_firms_historic_only, sa, hedge_labels_historic, hedge_labels_current)
-        future_label2_only = executor.submit(
-            compute_firms_label2_only, sa, id2label[2], exclude_cols)
-        future_liabilities = executor.submit(
-            compute_firms_liabilities, sa, id2label[4], id2label[5])
-        future_embedded = executor.submit(
-            compute_embedded_derivatives, sa, id2label[6], id2label[7])
-        future_unique = executor.submit(compute_unique_counts, sa, label_cols)
-        future_cooc = executor.submit(
-            compute_label_cooccurrence, sa, label_cols)
-        future_hedge_type = executor.submit(
-            compute_hedge_by_type, sa, hedge_types)
-        future_hedge_cross = executor.submit(
-            compute_hedge_cross, sa, hedge_label_groups)
-        # Add the new analysis task
-        future_keyword_analysis = executor.submit(
-            analyze_keyword_vs_model, sa, hedge_labels_current)
+        futures = {
+            "current": executor.submit(
+                compute_firms_current_hedge, sa, hedge_labels_current
+            ),
+            "historic": executor.submit(
+                compute_firms_historic_only,
+                sa,
+                hedge_labels_historic,
+                hedge_labels_current,
+            ),
+            "speculation": executor.submit(
+                compute_firms_label2_only, sa, id2label[2], exclude_cols
+            ),
+            "liabilities": executor.submit(
+                compute_firms_liabilities, sa, id2label[4], id2label[5]
+            ),
+            "embedded": executor.submit(
+                compute_embedded_derivatives, sa, id2label[6], id2label[7]
+            ),
+            "unique": executor.submit(compute_unique_counts, sa, label_cols),
+            "cooc": executor.submit(compute_label_cooccurrence, sa, label_cols),
+            "hedge_type": executor.submit(compute_hedge_by_type, sa, hedge_types),
+            "hedge_cross": executor.submit(compute_hedge_cross, sa, hedge_label_groups),
+            "keyword_analysis": executor.submit(
+                analyze_keyword_vs_model, sa, hedge_labels_current
+            ),
+        }
 
-        # Collect results with progress indication
-        print("  Computing Current Hedging...")
-        firms_current_hedge = future_current_hedge.result()
-        print("  Computing Hedging Past Year...")
-        firms_historic_only = future_historic_only.result()
-        print("  Computing Speculation Only...")
-        firms_label2_only = future_label2_only.result()
-        print("  Computing Derivative Liabilities...")
-        firms_liabilities = future_liabilities.result()
-        print("  Computing Embedded Derivatives...")
-        embedded_derivatives = future_embedded.result()
-        print("  Computing Unique per Year...")
-        unique_counts = future_unique.result()
-        print("  Computing Label Co-occurrence...")
-        cooc = future_cooc.result()
-        print("  Computing Hedging by Type...")
-        hedge_by_type = future_hedge_type.result()
-        print("  Computing Hedge Type Cross...")
-        hedge_cross = future_hedge_cross.result()
-        print("  Computing Keyword vs Model Analysis...")
-        keyword_model_comparison = future_keyword_analysis.result()
+        print("  Computing parallel tasks...")
+        results = {k: f.result() for k, f in futures.items()}
 
-    print("Writing results to Excel...")
-
-    # Excel writer - writing is sequential (can't be parallelized)
-    # Use xlsxwriter engine for better performance with large datasets
-    try:
-        with pd.ExcelWriter(SERVER_EXCEL_PATH, engine="xlsxwriter") as writer:
-            # Disable automatic URL conversion
-            workbook = writer.book
-            workbook.strings_to_urls = False
-            sa.to_excel(writer, sheet_name="all_reports", index=False)
-            firms_current_hedge.to_excel(
-                writer, sheet_name="Current Hedging", index=False)
-            firms_historic_only.to_excel(
-                writer, sheet_name="Hedging Past Year", index=False)
-            firms_label2_only.to_excel(
-                writer, sheet_name="Speculation Only", index=False)
-            firms_liabilities.to_excel(
-                writer, sheet_name="Derivative Liabilities Warrants", index=False)
-            embedded_derivatives.to_excel(
-                writer, sheet_name="Embedded Derivatives", index=False)
-            unique_counts.to_excel(
-                writer, sheet_name="unique_per_year", index=False)
-            cooc.to_excel(writer, sheet_name="label_cooccurrence")
-            hedge_by_type.to_excel(
-                writer, sheet_name="Hedging by Type", index=False)
-            hedge_cross.to_excel(
-                writer, sheet_name="Hedge Type Cross", index=True)
-        print(f"Server analysis saved to: {SERVER_EXCEL_PATH}")
-        write_keyword_workbooks(keyword_model_comparison, KEYWORDS_EXCEL_PATH, max_workers=num_workers)
-    except ImportError:
-        print("  (pip install xlsxwriter for better performance)")
-        return pd.DataFrame(columns=[])
+    print("Writing all results to Excel files...")
+    write_workbooks(
+        keyword_model_comparison=results["keyword_analysis"],
+        sa=sa,
+        other_results=results,
+        max_workers=num_workers,
+    )
 
     # Save to Google Drive if in Colab
     if IS_COLAB:
         print("Saving results to Google Drive...")
-        subprocess.run(f"cp *.xlsx {DRIVE_PATH}/{DRIVE_KEYWORDS_PATH}/.", shell=True)        
+        subprocess.run(f"cp *.xlsx {DRIVE_PATH}/{DRIVE_KEYWORDS_PATH}/.", shell=True)
 
     return sa
 
-def write_keyword_workbooks(keyword_model_comparison, base_path, max_workers=4):
-    """
-    Write multiple keyword comparison Excel workbooks in parallel.
 
-    Parameters
-    ----------
-    keyword_model_comparison : dict[str, pd.DataFrame]
-        Dictionary mapping keys to DataFrames for keyword analysis results.
-    base_path : str or Path
-        Base Excel file path (used to derive filenames).
-    max_workers : int, optional
-        Number of threads for parallel writing (default: 4).
+def write_workbooks(
+    keyword_model_comparison,
+    sa,
+    other_results,
+    base_path=KEYWORDS_EXCEL_PATH,
+    max_workers=4,
+):
     """
-
+    Write main and keyword comparison Excel workbooks in parallel.
+    """
     base_path = Path(base_path)
 
-    workbook_configs = [
+    # --- 1. Main server workbook ---
+    main_server_workbook = {
+        "filename": SERVER_EXCEL_PATH,
+        "description": "Server Sentence Analysis",
+        "sheets": {
+            "all_reports": (sa, False),
+            "Current Hedging": (other_results["current"], False),
+            "Hedging Past Year": (other_results["historic"], False),
+            "Speculation Only": (other_results["speculation"], False),
+            "Derivative Liabilities Warrants": (other_results["liabilities"], False),
+            "Embedded Derivatives": (other_results["embedded"], False),
+            "unique_per_year": (other_results["unique"], False),
+            "label_cooccurrence": (other_results["cooc"], True),
+            "Hedging by Type": (other_results["hedge_type"], False),
+            "Hedge Type Cross": (other_results["hedge_cross"], True),
+        },
+    }
+
+    # --- 2. Keyword workbooks ---
+    keyword_workbooks = [
         {
             "filename": base_path.with_name(base_path.stem + "_HEDGES_CURRENT.xlsx"),
             "description": "Current Only - Hedges",
             "sheets": {
-                "KW_Model_Comparison": ("comparison_summary", False),
                 "Summary_Current_Only": ("summary_current", False),
                 "Detailed_Current_Only": ("detailed_current", False),
                 "Basic_Current_Only": ("comparison_current", False),
@@ -1481,7 +1441,6 @@ def write_keyword_workbooks(keyword_model_comparison, base_path, max_workers=4):
             ),
             "description": "Current Only - All Derivatives",
             "sheets": {
-                "KW_Model_Comparison": ("comparison_summary", False),
                 "Summary_Current_Only": ("summary_any_deriv_current", False),
                 "Detailed_Current_Only": ("detailed_any_deriv_current", False),
                 "Basic_Current_Only": ("comparison_current", False),
@@ -1508,28 +1467,38 @@ def write_keyword_workbooks(keyword_model_comparison, base_path, max_workers=4):
                 "ModelOnly_Liab_Embed": ("model_only_all", False),
             },
         },
+        {
+            # Separate workbook just for KW_Model_Comparison
+            "filename": base_path.with_name(
+                base_path.stem + "_KW_MODEL_COMPARISON.xlsx"
+            ),
+            "description": "Keyword vs Model Comparison (Standalone)",
+            "sheets": {"KW_Model_Comparison": ("comparison_summary", False)},
+        },
     ]
 
+    all_workbooks = [main_server_workbook] + keyword_workbooks
+
     def write_one_workbook(config):
-        """Write one workbook safely."""
-        filename = config["filename"]
-        Path(filename).parent.mkdir(parents=True, exist_ok=True)
+        filename = Path(config["filename"])
+        filename.parent.mkdir(parents=True, exist_ok=True)
 
         with pd.ExcelWriter(filename, engine="xlsxwriter") as writer:
             workbook = writer.book
             workbook.strings_to_urls = False
 
-            for sheet_name, (data_key, with_index) in config["sheets"].items():
-                df = keyword_model_comparison.get(data_key)
+            for sheet_name, data_cfg in config["sheets"].items():
+                if isinstance(data_cfg[0], pd.DataFrame):
+                    df = data_cfg[0]
+                else:
+                    df = keyword_model_comparison.get(data_cfg[0])
+
                 if df is None or df.empty:
-                    print(
-                        f"⚠️  Skipped '{data_key}' (missing/empty) in {config['description']}"
-                    )
+                    print(f"⚠️  Skipped '{sheet_name}' in {config['description']}")
                     continue
 
-                df.to_excel(writer, sheet_name=sheet_name, index=with_index)
+                df.to_excel(writer, sheet_name=sheet_name, index=data_cfg[1])
 
-                # Optional: auto-fit columns
                 worksheet = writer.sheets[sheet_name]
                 for i, col in enumerate(df.columns):
                     try:
@@ -1542,20 +1511,18 @@ def write_keyword_workbooks(keyword_model_comparison, base_path, max_workers=4):
 
         return f"✅ {config['description']} saved → {filename}"
 
-    # --- Parallel execution ---
     print(
-        f"\n🚀 Writing {len(workbook_configs)} keyword workbooks with {max_workers} threads...\n"
+        f"\n🚀 Writing {len(all_workbooks)} workbooks with {max_workers} threads...\n"
     )
-
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(write_one_workbook, cfg) for cfg in workbook_configs]
-        for future in as_completed(futures):
+        futures = [executor.submit(write_one_workbook, cfg) for cfg in all_workbooks]
+        for f in as_completed(futures):
             try:
-                print(future.result())
+                print(f.result())
             except Exception as e:
                 print(f"❌ Error writing workbook: {e}")
 
-    print("\n🎉 All keyword analysis workbooks generated successfully!\n")
+    print("\n🎉 All Excel workbooks generated successfully!\n")
 
 
 def process_sentence_chunk(chunk_data):
