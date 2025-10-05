@@ -21,6 +21,7 @@ import multiprocessing as mp
 
 DB_PATH = "web_data.db"
 REPORT_CSV_PATH = "./report_data.csv"
+DERIVATIVES_CSV_PATH = "./derivatives_data.csv"
 SERVER_EXCEL_PATH = "./server_results.xlsx"
 SENTENCE_PATH = "./sentence_labels.xlsx"
 SERVER_URL = "http://127.0.0.1:5000/predict"
@@ -513,6 +514,40 @@ def compute_hedge_cross(sa, hedge_label_groups):
     return hedge_flags_simple.T.dot(hedge_flags_simple)
 
 
+def analyze_keyword_vs_model(sa, hedge_labels_current):
+    """
+    Analyzes the original keyword-based derivatives data against the model's results.
+    """
+    print("  Comparing keyword search results with model results...")
+    try:
+        # Load original keyword-based data
+        deriv_df = pd.read_csv(DERIVATIVES_CSV_PATH)
+        # Ensure CIK is integer for merging
+        deriv_df['cik'] = deriv_df['cik'].astype(int)
+        # We only need the flags for each cik/year
+        keyword_users = deriv_df.groupby(['cik', 'year'])[['user', 'fx_user', 'ir_user', 'cp_user']].max().reset_index()
+        keyword_users.rename(columns={
+            'user': 'keyword_user',
+            'fx_user': 'keyword_fx',
+            'ir_user': 'keyword_ir',
+            'cp_user': 'keyword_cp'
+        }, inplace=True)
+
+        # Determine if a firm is a hedge user based on the model's sentence analysis
+        model_users = sa.groupby('cik')[hedge_labels_current].sum().sum(axis=1) > 0
+        model_users = model_users.reset_index(name='model_user')
+
+        # Merge keyword and model results
+        comparison_df = pd.merge(keyword_users, model_users, on='cik', how='left')
+        comparison_df['model_user'] = comparison_df['model_user'].fillna(False).astype(int)
+
+        # Create a confusion matrix
+        confusion_matrix = pd.crosstab(comparison_df['keyword_user'], comparison_df['model_user'], rownames=['Keyword'], colnames=['Model'])
+        return comparison_df, confusion_matrix
+    except FileNotFoundError:
+        print(f"  Warning: {DERIVATIVES_CSV_PATH} not found. Skipping keyword vs. model analysis.")
+        return None, None
+
 def get_sentence_analysis():
     """Get sentence analysis with server predictions using parallel processing."""
     wr = get_final_results()
@@ -599,6 +634,9 @@ def get_sentence_analysis():
             compute_hedge_by_type, sa, hedge_types)
         future_hedge_cross = executor.submit(
             compute_hedge_cross, sa, hedge_label_groups)
+        # Add the new analysis task
+        future_keyword_analysis = executor.submit(
+            analyze_keyword_vs_model, sa, hedge_labels_current)
 
         # Collect results with progress indication
         print("  Computing Current Hedging...")
@@ -619,6 +657,8 @@ def get_sentence_analysis():
         hedge_by_type = future_hedge_type.result()
         print("  Computing Hedge Type Cross...")
         hedge_cross = future_hedge_cross.result()
+        print("  Computing Keyword vs Model Analysis...")
+        keyword_model_comparison, confusion_matrix = future_keyword_analysis.result()
 
     print("Writing results to Excel...")
 
@@ -647,6 +687,12 @@ def get_sentence_analysis():
                 writer, sheet_name="Hedging by Type", index=False)
             hedge_cross.to_excel(
                 writer, sheet_name="Hedge Type Cross", index=True)
+            if keyword_model_comparison is not None:
+                keyword_model_comparison.to_excel(
+                    writer, sheet_name="Keyword_vs_Model", index=False)
+            if confusion_matrix is not None:
+                confusion_matrix.to_excel(
+                    writer, sheet_name="Keyword_Model_Confusion")
     except ImportError:
         print("  (pip install xlsxwriter for better performance)")
 
