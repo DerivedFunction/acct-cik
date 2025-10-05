@@ -34,6 +34,7 @@ DEBUG = False  # Debug printing
 # =============================================================================
 DRIVE_PATH = "./drive/MyDrive/db"
 DRIVE_SENTENCE_PATH = "sentence_results"
+DRIVE_KEYWORDS_PATH = "keywords_results"
 LOAD_SHELL_CMD = f"cp {DRIVE_PATH}/{DB_PATH} ."
 SAVE_SHELL_CMD = f"cp {DB_PATH} {DRIVE_PATH}/."
 IS_COLAB = Path(DRIVE_PATH).exists()
@@ -521,118 +522,230 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
     Analyzes the original keyword-based derivatives data against the model's results.
     Now includes detailed breakdowns by hedge type, confusion matrices, and accuracy metrics.
     Includes both current-only and current+historic comparisons.
+    ENHANCED: Now includes derivative liabilities and embedded derivatives analysis.
     """
     print("  Comparing keyword search results with model results...")
     try:
         # Load original keyword-based data
         deriv_df = pd.read_csv(DERIVATIVES_CSV_PATH)
         # Ensure CIK is integer for merging
-        deriv_df['cik'] = deriv_df['cik'].astype(int)
+        deriv_df["cik"] = deriv_df["cik"].astype(int)
 
         # Get keyword flags for each cik/year
-        keyword_users = deriv_df.groupby(['cik', 'year'])[
-            ['user', 'fx_user', 'ir_user', 'cp_user']
-        ].max().reset_index()
-        keyword_users.rename(columns={
-            'user': 'keyword_user',
-            'fx_user': 'keyword_fx',
-            'ir_user': 'keyword_ir',
-            'cp_user': 'keyword_cp'
-        }, inplace=True)
+        keyword_users = (
+            deriv_df.groupby(["cik", "year"])[["user", "fx_user", "ir_user", "cp_user"]]
+            .max()
+            .reset_index()
+        )
+        keyword_users.rename(
+            columns={
+                "user": "keyword_user",
+                "fx_user": "keyword_fx",
+                "ir_user": "keyword_ir",
+                "cp_user": "keyword_cp",
+            },
+            inplace=True,
+        )
 
         # --- CURRENT ONLY MODEL FLAGS ---
 
-        # General hedge (any current hedge)
-        model_general_current = sa.groupby(['cik', 'year'])[
-            hedge_labels_current].sum().sum(axis=1) > 0
+        # General hedge (any current hedge - IR, FX, CP only)
+        model_general_current = (
+            sa.groupby(["cik", "year"])[hedge_labels_current].sum().sum(axis=1) > 0
+        )
         model_general_current = model_general_current.reset_index(
-            name='model_user_current')
+            name="model_user_current"
+        )
+
+        # Any derivatives (includes hedges, liabilities, and embedded)
+        all_derivative_labels_current = hedge_labels_current + [
+            id2label[4],
+            id2label[6],
+        ]
+        model_any_deriv_current = (
+            sa.groupby(["cik", "year"])[all_derivative_labels_current].sum().sum(axis=1)
+            > 0
+        )
+        model_any_deriv_current = model_any_deriv_current.reset_index(
+            name="model_any_deriv_current"
+        )
 
         # FX hedge - id2label[10] is FX Hedge (current)
-        model_fx_current = sa.groupby(['cik', 'year'])[id2label[10]].sum() > 0
-        model_fx_current = model_fx_current.reset_index(
-            name='model_fx_current')
+        model_fx_current = sa.groupby(["cik", "year"])[id2label[10]].sum() > 0
+        model_fx_current = model_fx_current.reset_index(name="model_fx_current")
 
         # IR hedge - id2label[8] is IR Hedge (current)
-        model_ir_current = sa.groupby(['cik', 'year'])[id2label[8]].sum() > 0
-        model_ir_current = model_ir_current.reset_index(
-            name='model_ir_current')
+        model_ir_current = sa.groupby(["cik", "year"])[id2label[8]].sum() > 0
+        model_ir_current = model_ir_current.reset_index(name="model_ir_current")
 
         # CP hedge - id2label[12] is CP Hedge (current)
-        model_cp_current = sa.groupby(['cik', 'year'])[id2label[12]].sum() > 0
-        model_cp_current = model_cp_current.reset_index(
-            name='model_cp_current')
+        model_cp_current = sa.groupby(["cik", "year"])[id2label[12]].sum() > 0
+        model_cp_current = model_cp_current.reset_index(name="model_cp_current")
+
+        # Derivative Liabilities - id2label[4] is current
+        model_liab_current = sa.groupby(["cik", "year"])[id2label[4]].sum() > 0
+        model_liab_current = model_liab_current.reset_index(name="model_liab_current")
+
+        # Embedded Derivatives - id2label[6] is current
+        model_embed_current = sa.groupby(["cik", "year"])[id2label[6]].sum() > 0
+        model_embed_current = model_embed_current.reset_index(
+            name="model_embed_current"
+        )
 
         # --- CURRENT + HISTORIC MODEL FLAGS ---
 
-        # General hedge (current + historic)
+        # General hedge (current + historic - IR, FX, CP only)
         hedge_labels_all = [
-            id2label[0], id2label[1],  # General current + historic
-            id2label[8], id2label[9],  # IR current + historic
-            id2label[10], id2label[11],  # FX current + historic
-            id2label[12], id2label[13],  # CP current + historic
+            id2label[0],
+            id2label[1],  # General current + historic
+            id2label[8],
+            id2label[9],  # IR current + historic
+            id2label[10],
+            id2label[11],  # FX current + historic
+            id2label[12],
+            id2label[13],  # CP current + historic
         ]
-        model_general_all = sa.groupby(['cik', 'year'])[
-            hedge_labels_all].sum().sum(axis=1) > 0
-        model_general_all = model_general_all.reset_index(
-            name='model_user_all')
+        model_general_all = (
+            sa.groupby(["cik", "year"])[hedge_labels_all].sum().sum(axis=1) > 0
+        )
+        model_general_all = model_general_all.reset_index(name="model_user_all")
+
+        # Any derivatives (includes hedges, liabilities, and embedded)
+        all_derivative_labels_all = hedge_labels_all + [
+            id2label[4],
+            id2label[5],  # Liabilities current + historic
+            id2label[6],
+            id2label[7],  # Embedded current + historic
+        ]
+        model_any_deriv_all = (
+            sa.groupby(["cik", "year"])[all_derivative_labels_all].sum().sum(axis=1) > 0
+        )
+        model_any_deriv_all = model_any_deriv_all.reset_index(
+            name="model_any_deriv_all"
+        )
 
         # FX hedge (current + historic) - id2label[10] and id2label[11]
-        model_fx_all = sa.groupby(['cik', 'year'])[
-            [id2label[10], id2label[11]]].sum().sum(axis=1) > 0
-        model_fx_all = model_fx_all.reset_index(name='model_fx_all')
+        model_fx_all = (
+            sa.groupby(["cik", "year"])[[id2label[10], id2label[11]]].sum().sum(axis=1)
+            > 0
+        )
+        model_fx_all = model_fx_all.reset_index(name="model_fx_all")
 
         # IR hedge (current + historic) - id2label[8] and id2label[9]
-        model_ir_all = sa.groupby(['cik', 'year'])[
-            [id2label[8], id2label[9]]].sum().sum(axis=1) > 0
-        model_ir_all = model_ir_all.reset_index(name='model_ir_all')
+        model_ir_all = (
+            sa.groupby(["cik", "year"])[[id2label[8], id2label[9]]].sum().sum(axis=1)
+            > 0
+        )
+        model_ir_all = model_ir_all.reset_index(name="model_ir_all")
 
         # CP hedge (current + historic) - id2label[12] and id2label[13]
-        model_cp_all = sa.groupby(['cik', 'year'])[
-            [id2label[12], id2label[13]]].sum().sum(axis=1) > 0
-        model_cp_all = model_cp_all.reset_index(name='model_cp_all')
+        model_cp_all = (
+            sa.groupby(["cik", "year"])[[id2label[12], id2label[13]]].sum().sum(axis=1)
+            > 0
+        )
+        model_cp_all = model_cp_all.reset_index(name="model_cp_all")
+
+        # Derivative Liabilities (current + historic) - id2label[4] and id2label[5]
+        model_liab_all = (
+            sa.groupby(["cik", "year"])[[id2label[4], id2label[5]]].sum().sum(axis=1)
+            > 0
+        )
+        model_liab_all = model_liab_all.reset_index(name="model_liab_all")
+
+        # Embedded Derivatives (current + historic) - id2label[6] and id2label[7]
+        model_embed_all = (
+            sa.groupby(["cik", "year"])[[id2label[6], id2label[7]]].sum().sum(axis=1)
+            > 0
+        )
+        model_embed_all = model_embed_all.reset_index(name="model_embed_all")
 
         # Merge all model results (current)
         model_users_current = model_general_current.merge(
-            model_fx_current, on=['cik', 'year'], how='outer')
+            model_fx_current, on=["cik", "year"], how="outer"
+        )
         model_users_current = model_users_current.merge(
-            model_ir_current, on=['cik', 'year'], how='outer')
+            model_ir_current, on=["cik", "year"], how="outer"
+        )
         model_users_current = model_users_current.merge(
-            model_cp_current, on=['cik', 'year'], how='outer')
+            model_cp_current, on=["cik", "year"], how="outer"
+        )
+        model_users_current = model_users_current.merge(
+            model_liab_current, on=["cik", "year"], how="outer"
+        )
+        model_users_current = model_users_current.merge(
+            model_embed_current, on=["cik", "year"], how="outer"
+        )
+        model_users_current = model_users_current.merge(
+            model_any_deriv_current, on=["cik", "year"], how="outer"
+        )
 
         # Merge all model results (current + historic)
         model_users_all = model_general_all.merge(
-            model_fx_all, on=['cik', 'year'], how='outer')
+            model_fx_all, on=["cik", "year"], how="outer"
+        )
         model_users_all = model_users_all.merge(
-            model_ir_all, on=['cik', 'year'], how='outer')
+            model_ir_all, on=["cik", "year"], how="outer"
+        )
         model_users_all = model_users_all.merge(
-            model_cp_all, on=['cik', 'year'], how='outer')
+            model_cp_all, on=["cik", "year"], how="outer"
+        )
+        model_users_all = model_users_all.merge(
+            model_liab_all, on=["cik", "year"], how="outer"
+        )
+        model_users_all = model_users_all.merge(
+            model_embed_all, on=["cik", "year"], how="outer"
+        )
+        model_users_all = model_users_all.merge(
+            model_any_deriv_all, on=["cik", "year"], how="outer"
+        )
 
         # Fill NaN with False and convert to int
-        for col in ['model_user_current', 'model_fx_current', 'model_ir_current', 'model_cp_current']:
-            model_users_current[col] = model_users_current[col].fillna(
-                False).astype(bool).astype(int)
+        for col in [
+            "model_user_current",
+            "model_fx_current",
+            "model_ir_current",
+            "model_cp_current",
+            "model_liab_current",
+            "model_embed_current",
+            "model_any_deriv_current",
+        ]:
+            model_users_current[col] = (
+                model_users_current[col].fillna(False).astype(bool).astype(int)
+            )
 
-        for col in ['model_user_all', 'model_fx_all', 'model_ir_all', 'model_cp_all']:
-            model_users_all[col] = model_users_all[col].fillna(
-                False).astype(bool).astype(int)
+        for col in [
+            "model_user_all",
+            "model_fx_all",
+            "model_ir_all",
+            "model_cp_all",
+            "model_liab_all",
+            "model_embed_all",
+            "model_any_deriv_all",
+        ]:
+            model_users_all[col] = (
+                model_users_all[col].fillna(False).astype(bool).astype(int)
+            )
 
         # Merge keyword and model results
-        comparison_current = pd.merge(keyword_users, model_users_current, on=[
-                                      'cik', 'year'], how='outer')
-        comparison_all = pd.merge(keyword_users, model_users_all, on=[
-                                  'cik', 'year'], how='outer')
+        comparison_current = pd.merge(
+            keyword_users, model_users_current, on=["cik", "year"], how="outer"
+        )
+        comparison_all = pd.merge(
+            keyword_users, model_users_all, on=["cik", "year"], how="outer"
+        )
 
         # Fill NaN values - if missing from either dataset, assume False
         for col in comparison_current.columns:
-            if col not in ['cik', 'year']:
-                comparison_current[col] = comparison_current[col].fillna(
-                    False).astype(bool).astype(int)
+            if col not in ["cik", "year"]:
+                comparison_current[col] = (
+                    comparison_current[col].fillna(False).astype(bool).astype(int)
+                )
 
         for col in comparison_all.columns:
-            if col not in ['cik', 'year']:
-                comparison_all[col] = comparison_all[col].fillna(
-                    False).astype(bool).astype(int)
+            if col not in ["cik", "year"]:
+                comparison_all[col] = (
+                    comparison_all[col].fillna(False).astype(bool).astype(int)
+                )
 
         # --- Helper function for metrics ---
         def calculate_metrics(keyword_col, model_col, df):
@@ -647,242 +760,438 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             accuracy = (tp + tn) / total if total > 0 else 0
             precision = tp / (tp + fp) if (tp + fp) > 0 else 0
             recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-            f1 = 2 * (precision * recall) / (precision +
-                                             recall) if (precision + recall) > 0 else 0
+            f1 = (
+                2 * (precision * recall) / (precision + recall)
+                if (precision + recall) > 0
+                else 0
+            )
 
             return {
-                'True_Positives': tp,
-                'False_Positives': fp,
-                'True_Negatives': tn,
-                'False_Negatives': fn,
-                'Total': total,
-                'Accuracy': round(accuracy * 100, 2),
-                'Precision': round(precision * 100, 2),
-                'Recall': round(recall * 100, 2),
-                'F1_Score': round(f1 * 100, 2),
-                'Agreement_Rate': round(((tp + tn) / total) * 100, 2) if total > 0 else 0
+                "True_Positives": tp,
+                "False_Positives": fp,
+                "True_Negatives": tn,
+                "False_Negatives": fn,
+                "Total": total,
+                "Accuracy": round(accuracy * 100, 2),
+                "Precision": round(precision * 100, 2),
+                "Recall": round(recall * 100, 2),
+                "F1_Score": round(f1 * 100, 2),
+                "Agreement_Rate": (
+                    round(((tp + tn) / total) * 100, 2) if total > 0 else 0
+                ),
+            }
+
+        # --- Helper function for model-only analysis (no keyword comparison) ---
+        def calculate_model_only_stats(model_col, df):
+            """Calculate statistics for model predictions without keyword comparison"""
+            positive = (df[model_col] == 1).sum()
+            negative = (df[model_col] == 0).sum()
+            total = len(df)
+
+            return {
+                "Total": total,
+                "Model_Positive": positive,
+                "Model_Negative": negative,
+                "Positive_Rate": round((positive / total) * 100, 2) if total > 0 else 0,
             }
 
         # --- CURRENT ONLY ANALYSIS ---
 
-        # Confusion matrices - current only
+        # Confusion matrices - current only (for hedges with keyword comparison)
+        # Using more descriptive labels for clarity
         confusion_overall_current = pd.crosstab(
-            comparison_current['keyword_user'],
-            comparison_current['model_user_current'],
-            rownames=['Keyword'],
-            colnames=['Model_Current'],
-            margins=True
+            comparison_current["keyword_user"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
+            comparison_current["model_user_current"].map(
+                {0: "Model_No", 1: "Model_Yes"}
+            ),
+            rownames=["Keyword_Search"],
+            colnames=["Model_Prediction"],
+            margins=True,
+        )
+
+        # Confusion matrix for ANY derivative (hedge + liabilities + embedded) vs keyword hedge
+        confusion_any_deriv_current = pd.crosstab(
+            comparison_current["keyword_user"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
+            comparison_current["model_any_deriv_current"].map(
+                {0: "Model_No", 1: "Model_Yes"}
+            ),
+            rownames=["Keyword_Search"],
+            colnames=["Model_Prediction"],
+            margins=True,
         )
 
         confusion_fx_current = pd.crosstab(
-            comparison_current['keyword_fx'],
-            comparison_current['model_fx_current'],
-            rownames=['Keyword_FX'],
-            colnames=['Model_FX_Current'],
-            margins=True
+            comparison_current["keyword_fx"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
+            comparison_current["model_fx_current"].map({0: "Model_No", 1: "Model_Yes"}),
+            rownames=["Keyword_FX"],
+            colnames=["Model_FX"],
+            margins=True,
         )
 
         confusion_ir_current = pd.crosstab(
-            comparison_current['keyword_ir'],
-            comparison_current['model_ir_current'],
-            rownames=['Keyword_IR'],
-            colnames=['Model_IR_Current'],
-            margins=True
+            comparison_current["keyword_ir"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
+            comparison_current["model_ir_current"].map({0: "Model_No", 1: "Model_Yes"}),
+            rownames=["Keyword_IR"],
+            colnames=["Model_IR"],
+            margins=True,
         )
 
         confusion_cp_current = pd.crosstab(
-            comparison_current['keyword_cp'],
-            comparison_current['model_cp_current'],
-            rownames=['Keyword_CP'],
-            colnames=['Model_CP_Current'],
-            margins=True
+            comparison_current["keyword_cp"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
+            comparison_current["model_cp_current"].map({0: "Model_No", 1: "Model_Yes"}),
+            rownames=["Keyword_CP"],
+            colnames=["Model_CP"],
+            margins=True,
         )
 
         # Calculate metrics - current only
         metrics_overall_current = calculate_metrics(
-            'keyword_user', 'model_user_current', comparison_current)
+            "keyword_user", "model_user_current", comparison_current
+        )
         metrics_fx_current = calculate_metrics(
-            'keyword_fx', 'model_fx_current', comparison_current)
+            "keyword_fx", "model_fx_current", comparison_current
+        )
         metrics_ir_current = calculate_metrics(
-            'keyword_ir', 'model_ir_current', comparison_current)
+            "keyword_ir", "model_ir_current", comparison_current
+        )
         metrics_cp_current = calculate_metrics(
-            'keyword_cp', 'model_cp_current', comparison_current)
+            "keyword_cp", "model_cp_current", comparison_current
+        )
+        metrics_any_deriv_current = calculate_metrics(
+            "keyword_user", "model_any_deriv_current", comparison_current
+        )
 
-        summary_current = pd.DataFrame([
-            {'Category': 'Overall (Any Hedge)', **metrics_overall_current},
-            {'Category': 'Foreign Exchange (FX)', **metrics_fx_current},
-            {'Category': 'Interest Rate (IR)', **metrics_ir_current},
-            {'Category': 'Commodity Price (CP)', **metrics_cp_current}
-        ])
+        # Model-only statistics for liabilities and embedded derivatives (current)
+        stats_liab_current = calculate_model_only_stats(
+            "model_liab_current", comparison_current
+        )
+        stats_embed_current = calculate_model_only_stats(
+            "model_embed_current", comparison_current
+        )
+
+        summary_current = pd.DataFrame(
+            [
+                {
+                    "Category": "Overall (Hedges Only: IR/FX/CP)",
+                    **metrics_overall_current,
+                },
+                {"Category": "Foreign Exchange (FX)", **metrics_fx_current},
+                {"Category": "Interest Rate (IR)", **metrics_ir_current},
+                {"Category": "Commodity Price (CP)", **metrics_cp_current},
+            ]
+        )
+
+        # Separate summary for broader derivative coverage
+        summary_any_deriv_current = pd.DataFrame(
+            [
+                {
+                    "Category": "Any Derivative (Hedges + Liabilities + Embedded)",
+                    **metrics_any_deriv_current,
+                }
+            ]
+        )
+
+        # Model-only summary for current
+        model_only_current = pd.DataFrame(
+            [
+                {"Category": "Derivative Liabilities/Warrants", **stats_liab_current},
+                {"Category": "Embedded Derivatives", **stats_embed_current},
+            ]
+        )
 
         # Detailed comparison - current only
         detailed_current = comparison_current.copy()
-        detailed_current['overall_agree'] = (
-            detailed_current['keyword_user'] == detailed_current['model_user_current']
+        detailed_current["overall_agree"] = (
+            detailed_current["keyword_user"] == detailed_current["model_user_current"]
         ).astype(int)
-        detailed_current['fx_agree'] = (
-            detailed_current['keyword_fx'] == detailed_current['model_fx_current']
+        detailed_current["fx_agree"] = (
+            detailed_current["keyword_fx"] == detailed_current["model_fx_current"]
         ).astype(int)
-        detailed_current['ir_agree'] = (
-            detailed_current['keyword_ir'] == detailed_current['model_ir_current']
+        detailed_current["ir_agree"] = (
+            detailed_current["keyword_ir"] == detailed_current["model_ir_current"]
         ).astype(int)
-        detailed_current['cp_agree'] = (
-            detailed_current['keyword_cp'] == detailed_current['model_cp_current']
+        detailed_current["cp_agree"] = (
+            detailed_current["keyword_cp"] == detailed_current["model_cp_current"]
         ).astype(int)
 
-        detailed_current['overall_classification'] = detailed_current.apply(
-            lambda row: 'True Positive' if row['keyword_user'] == 1 and row['model_user_current'] == 1
-            else 'True Negative' if row['keyword_user'] == 0 and row['model_user_current'] == 0
-            else 'False Positive' if row['keyword_user'] == 0 and row['model_user_current'] == 1
-            else 'False Negative', axis=1
+        detailed_current["overall_classification"] = detailed_current.apply(
+            lambda row: (
+                "True Positive"
+                if row["keyword_user"] == 1 and row["model_user_current"] == 1
+                else (
+                    "True Negative"
+                    if row["keyword_user"] == 0 and row["model_user_current"] == 0
+                    else (
+                        "False Positive"
+                        if row["keyword_user"] == 0 and row["model_user_current"] == 1
+                        else "False Negative"
+                    )
+                )
+            ),
+            axis=1,
         )
 
         # --- CURRENT + HISTORIC ANALYSIS ---
 
-        # Confusion matrices - current + historic
+        # Confusion matrices - current + historic (for hedges with keyword comparison)
         confusion_overall_all = pd.crosstab(
-            comparison_all['keyword_user'],
-            comparison_all['model_user_all'],
-            rownames=['Keyword'],
-            colnames=['Model_All'],
-            margins=True
+            comparison_all["keyword_user"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
+            comparison_all["model_user_all"].map({0: "Model_No", 1: "Model_Yes"}),
+            rownames=["Keyword_Search"],
+            colnames=["Model_Prediction"],
+            margins=True,
+        )
+
+        # Confusion matrix for ANY derivative (hedge + liabilities + embedded) vs keyword hedge
+        confusion_any_deriv_all = pd.crosstab(
+            comparison_all["keyword_user"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
+            comparison_all["model_any_deriv_all"].map({0: "Model_No", 1: "Model_Yes"}),
+            rownames=["Keyword_Search"],
+            colnames=["Model_Prediction"],
+            margins=True,
         )
 
         confusion_fx_all = pd.crosstab(
-            comparison_all['keyword_fx'],
-            comparison_all['model_fx_all'],
-            rownames=['Keyword_FX'],
-            colnames=['Model_FX_All'],
-            margins=True
+            comparison_all["keyword_fx"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
+            comparison_all["model_fx_all"].map({0: "Model_No", 1: "Model_Yes"}),
+            rownames=["Keyword_FX"],
+            colnames=["Model_FX"],
+            margins=True,
         )
 
         confusion_ir_all = pd.crosstab(
-            comparison_all['keyword_ir'],
-            comparison_all['model_ir_all'],
-            rownames=['Keyword_IR'],
-            colnames=['Model_IR_All'],
-            margins=True
+            comparison_all["keyword_ir"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
+            comparison_all["model_ir_all"].map({0: "Model_No", 1: "Model_Yes"}),
+            rownames=["Keyword_IR"],
+            colnames=["Model_IR"],
+            margins=True,
         )
 
         confusion_cp_all = pd.crosstab(
-            comparison_all['keyword_cp'],
-            comparison_all['model_cp_all'],
-            rownames=['Keyword_CP'],
-            colnames=['Model_CP_All'],
-            margins=True
+            comparison_all["keyword_cp"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
+            comparison_all["model_cp_all"].map({0: "Model_No", 1: "Model_Yes"}),
+            rownames=["Keyword_CP"],
+            colnames=["Model_CP"],
+            margins=True,
         )
 
         # Calculate metrics - current + historic
         metrics_overall_all = calculate_metrics(
-            'keyword_user', 'model_user_all', comparison_all)
-        metrics_fx_all = calculate_metrics(
-            'keyword_fx', 'model_fx_all', comparison_all)
-        metrics_ir_all = calculate_metrics(
-            'keyword_ir', 'model_ir_all', comparison_all)
-        metrics_cp_all = calculate_metrics(
-            'keyword_cp', 'model_cp_all', comparison_all)
+            "keyword_user", "model_user_all", comparison_all
+        )
+        metrics_fx_all = calculate_metrics("keyword_fx", "model_fx_all", comparison_all)
+        metrics_ir_all = calculate_metrics("keyword_ir", "model_ir_all", comparison_all)
+        metrics_cp_all = calculate_metrics("keyword_cp", "model_cp_all", comparison_all)
+        metrics_any_deriv_all = calculate_metrics(
+            "keyword_user", "model_any_deriv_all", comparison_all
+        )
 
-        summary_all = pd.DataFrame([
-            {'Category': 'Overall (Any Hedge)', **metrics_overall_all},
-            {'Category': 'Foreign Exchange (FX)', **metrics_fx_all},
-            {'Category': 'Interest Rate (IR)', **metrics_ir_all},
-            {'Category': 'Commodity Price (CP)', **metrics_cp_all}
-        ])
+        # Model-only statistics for liabilities and embedded derivatives (all)
+        stats_liab_all = calculate_model_only_stats("model_liab_all", comparison_all)
+        stats_embed_all = calculate_model_only_stats("model_embed_all", comparison_all)
+
+        summary_all = pd.DataFrame(
+            [
+                {"Category": "Overall (Hedges Only: IR/FX/CP)", **metrics_overall_all},
+                {"Category": "Foreign Exchange (FX)", **metrics_fx_all},
+                {"Category": "Interest Rate (IR)", **metrics_ir_all},
+                {"Category": "Commodity Price (CP)", **metrics_cp_all},
+            ]
+        )
+
+        # Separate summary for broader derivative coverage
+        summary_any_deriv_all = pd.DataFrame(
+            [
+                {
+                    "Category": "Any Derivative (Hedges + Liabilities + Embedded)",
+                    **metrics_any_deriv_all,
+                }
+            ]
+        )
+
+        # Model-only summary for all
+        model_only_all = pd.DataFrame(
+            [
+                {"Category": "Derivative Liabilities/Warrants", **stats_liab_all},
+                {"Category": "Embedded Derivatives", **stats_embed_all},
+            ]
+        )
 
         # Detailed comparison - current + historic
         detailed_all = comparison_all.copy()
-        detailed_all['overall_agree'] = (
-            detailed_all['keyword_user'] == detailed_all['model_user_all']
+        detailed_all["overall_agree"] = (
+            detailed_all["keyword_user"] == detailed_all["model_user_all"]
         ).astype(int)
-        detailed_all['fx_agree'] = (
-            detailed_all['keyword_fx'] == detailed_all['model_fx_all']
+        detailed_all["fx_agree"] = (
+            detailed_all["keyword_fx"] == detailed_all["model_fx_all"]
         ).astype(int)
-        detailed_all['ir_agree'] = (
-            detailed_all['keyword_ir'] == detailed_all['model_ir_all']
+        detailed_all["ir_agree"] = (
+            detailed_all["keyword_ir"] == detailed_all["model_ir_all"]
         ).astype(int)
-        detailed_all['cp_agree'] = (
-            detailed_all['keyword_cp'] == detailed_all['model_cp_all']
+        detailed_all["cp_agree"] = (
+            detailed_all["keyword_cp"] == detailed_all["model_cp_all"]
         ).astype(int)
 
-        detailed_all['overall_classification'] = detailed_all.apply(
-            lambda row: 'True Positive' if row['keyword_user'] == 1 and row['model_user_all'] == 1
-            else 'True Negative' if row['keyword_user'] == 0 and row['model_user_all'] == 0
-            else 'False Positive' if row['keyword_user'] == 0 and row['model_user_all'] == 1
-            else 'False Negative', axis=1
+        detailed_all["overall_classification"] = detailed_all.apply(
+            lambda row: (
+                "True Positive"
+                if row["keyword_user"] == 1 and row["model_user_all"] == 1
+                else (
+                    "True Negative"
+                    if row["keyword_user"] == 0 and row["model_user_all"] == 0
+                    else (
+                        "False Positive"
+                        if row["keyword_user"] == 0 and row["model_user_all"] == 1
+                        else "False Negative"
+                    )
+                )
+            ),
+            axis=1,
         )
 
         # --- COMPARISON SUMMARY (Current vs Current+Historic) ---
-        comparison_summary = pd.DataFrame([
-            {
-                'Metric': 'Overall Accuracy',
-                'Current_Only': metrics_overall_current['Accuracy'],
-                'Current_Historic': metrics_overall_all['Accuracy'],
-                'Improvement': round(metrics_overall_all['Accuracy'] - metrics_overall_current['Accuracy'], 2)
-            },
-            {
-                'Metric': 'Overall Precision',
-                'Current_Only': metrics_overall_current['Precision'],
-                'Current_Historic': metrics_overall_all['Precision'],
-                'Improvement': round(metrics_overall_all['Precision'] - metrics_overall_current['Precision'], 2)
-            },
-            {
-                'Metric': 'Overall Recall',
-                'Current_Only': metrics_overall_current['Recall'],
-                'Current_Historic': metrics_overall_all['Recall'],
-                'Improvement': round(metrics_overall_all['Recall'] - metrics_overall_current['Recall'], 2)
-            },
-            {
-                'Metric': 'Overall F1 Score',
-                'Current_Only': metrics_overall_current['F1_Score'],
-                'Current_Historic': metrics_overall_all['F1_Score'],
-                'Improvement': round(metrics_overall_all['F1_Score'] - metrics_overall_current['F1_Score'], 2)
-            },
-            {
-                'Metric': 'FX Accuracy',
-                'Current_Only': metrics_fx_current['Accuracy'],
-                'Current_Historic': metrics_fx_all['Accuracy'],
-                'Improvement': round(metrics_fx_all['Accuracy'] - metrics_fx_current['Accuracy'], 2)
-            },
-            {
-                'Metric': 'IR Accuracy',
-                'Current_Only': metrics_ir_current['Accuracy'],
-                'Current_Historic': metrics_ir_all['Accuracy'],
-                'Improvement': round(metrics_ir_all['Accuracy'] - metrics_ir_current['Accuracy'], 2)
-            },
-            {
-                'Metric': 'CP Accuracy',
-                'Current_Only': metrics_cp_current['Accuracy'],
-                'Current_Historic': metrics_cp_all['Accuracy'],
-                'Improvement': round(metrics_cp_all['Accuracy'] - metrics_cp_current['Accuracy'], 2)
-            }
-        ])
+        comparison_summary = pd.DataFrame(
+            [
+                {
+                    "Metric": "Hedges Only - Accuracy",
+                    "Current_Only": metrics_overall_current["Accuracy"],
+                    "Current_Historic": metrics_overall_all["Accuracy"],
+                    "Improvement": round(
+                        metrics_overall_all["Accuracy"]
+                        - metrics_overall_current["Accuracy"],
+                        2,
+                    ),
+                },
+                {
+                    "Metric": "Hedges Only - Precision",
+                    "Current_Only": metrics_overall_current["Precision"],
+                    "Current_Historic": metrics_overall_all["Precision"],
+                    "Improvement": round(
+                        metrics_overall_all["Precision"]
+                        - metrics_overall_current["Precision"],
+                        2,
+                    ),
+                },
+                {
+                    "Metric": "Hedges Only - Recall",
+                    "Current_Only": metrics_overall_current["Recall"],
+                    "Current_Historic": metrics_overall_all["Recall"],
+                    "Improvement": round(
+                        metrics_overall_all["Recall"]
+                        - metrics_overall_current["Recall"],
+                        2,
+                    ),
+                },
+                {
+                    "Metric": "Hedges Only - F1 Score",
+                    "Current_Only": metrics_overall_current["F1_Score"],
+                    "Current_Historic": metrics_overall_all["F1_Score"],
+                    "Improvement": round(
+                        metrics_overall_all["F1_Score"]
+                        - metrics_overall_current["F1_Score"],
+                        2,
+                    ),
+                },
+                {
+                    "Metric": "Any Derivative - Accuracy",
+                    "Current_Only": metrics_any_deriv_current["Accuracy"],
+                    "Current_Historic": metrics_any_deriv_all["Accuracy"],
+                    "Improvement": round(
+                        metrics_any_deriv_all["Accuracy"]
+                        - metrics_any_deriv_current["Accuracy"],
+                        2,
+                    ),
+                },
+                {
+                    "Metric": "Any Derivative - Recall",
+                    "Current_Only": metrics_any_deriv_current["Recall"],
+                    "Current_Historic": metrics_any_deriv_all["Recall"],
+                    "Improvement": round(
+                        metrics_any_deriv_all["Recall"]
+                        - metrics_any_deriv_current["Recall"],
+                        2,
+                    ),
+                },
+                {
+                    "Metric": "FX Accuracy",
+                    "Current_Only": metrics_fx_current["Accuracy"],
+                    "Current_Historic": metrics_fx_all["Accuracy"],
+                    "Improvement": round(
+                        metrics_fx_all["Accuracy"] - metrics_fx_current["Accuracy"], 2
+                    ),
+                },
+                {
+                    "Metric": "IR Accuracy",
+                    "Current_Only": metrics_ir_current["Accuracy"],
+                    "Current_Historic": metrics_ir_all["Accuracy"],
+                    "Improvement": round(
+                        metrics_ir_all["Accuracy"] - metrics_ir_current["Accuracy"], 2
+                    ),
+                },
+                {
+                    "Metric": "CP Accuracy",
+                    "Current_Only": metrics_cp_current["Accuracy"],
+                    "Current_Historic": metrics_cp_all["Accuracy"],
+                    "Improvement": round(
+                        metrics_cp_all["Accuracy"] - metrics_cp_current["Accuracy"], 2
+                    ),
+                },
+                {
+                    "Metric": "Liabilities Positive Rate",
+                    "Current_Only": stats_liab_current["Positive_Rate"],
+                    "Current_Historic": stats_liab_all["Positive_Rate"],
+                    "Improvement": round(
+                        stats_liab_all["Positive_Rate"]
+                        - stats_liab_current["Positive_Rate"],
+                        2,
+                    ),
+                },
+                {
+                    "Metric": "Embedded Der. Positive Rate",
+                    "Current_Only": stats_embed_current["Positive_Rate"],
+                    "Current_Historic": stats_embed_all["Positive_Rate"],
+                    "Improvement": round(
+                        stats_embed_all["Positive_Rate"]
+                        - stats_embed_current["Positive_Rate"],
+                        2,
+                    ),
+                },
+            ]
+        )
 
         return {
-            # Current only
-            'comparison_current': comparison_current,
-            'detailed_current': detailed_current,
-            'confusion_overall_current': confusion_overall_current,
-            'confusion_fx_current': confusion_fx_current,
-            'confusion_ir_current': confusion_ir_current,
-            'confusion_cp_current': confusion_cp_current,
-            'summary_current': summary_current,
-
-            # Current + Historic
-            'comparison_all': comparison_all,
-            'detailed_all': detailed_all,
-            'confusion_overall_all': confusion_overall_all,
-            'confusion_fx_all': confusion_fx_all,
-            'confusion_ir_all': confusion_ir_all,
-            'confusion_cp_all': confusion_cp_all,
-            'summary_all': summary_all,
-
+            # Current only - Hedges (IR/FX/CP)
+            "comparison_current": comparison_current,
+            "detailed_current": detailed_current,
+            "confusion_overall_current": confusion_overall_current,
+            "confusion_fx_current": confusion_fx_current,
+            "confusion_ir_current": confusion_ir_current,
+            "confusion_cp_current": confusion_cp_current,
+            "summary_current": summary_current,
+            # Current only - All Derivatives (Hedges + Liabilities + Embedded)
+            "confusion_any_deriv_current": confusion_any_deriv_current,
+            "summary_any_deriv_current": summary_any_deriv_current,
+            "model_only_current": model_only_current,
+            # Current + Historic - Hedges (IR/FX/CP)
+            "comparison_all": comparison_all,
+            "detailed_all": detailed_all,
+            "confusion_overall_all": confusion_overall_all,
+            "confusion_fx_all": confusion_fx_all,
+            "confusion_ir_all": confusion_ir_all,
+            "confusion_cp_all": confusion_cp_all,
+            "summary_all": summary_all,
+            # Current + Historic - All Derivatives (Hedges + Liabilities + Embedded)
+            "confusion_any_deriv_all": confusion_any_deriv_all,
+            "summary_any_deriv_all": summary_any_deriv_all,
+            "model_only_all": model_only_all,
             # Comparison
-            'comparison_summary': comparison_summary
+            "comparison_summary": comparison_summary,
         }
 
     except FileNotFoundError:
         print(
-            f"  Warning: {DERIVATIVES_CSV_PATH} not found. Skipping keyword vs. model analysis.")
+            f"  Warning: {DERIVATIVES_CSV_PATH} not found. Skipping keyword vs. model analysis."
+        )
         return None
 
 def get_sentence_analysis():
@@ -1025,14 +1334,17 @@ def get_sentence_analysis():
             hedge_cross.to_excel(
                 writer, sheet_name="Hedge Type Cross", index=True)
         print(f"Server analysis saved to: {SERVER_EXCEL_PATH}")
+            # First workbook - Current Only (Hedges: IR/FX/CP)
         with pd.ExcelWriter(KEYWORDS_EXCEL_PATH, engine="xlsxwriter") as writer:
             if keyword_model_comparison is not None:
                 workbook = writer.book
                 workbook.strings_to_urls = False
+                
                 # Comparison summary
                 keyword_model_comparison['comparison_summary'].to_excel(
                     writer, sheet_name="KW_Model_Comparison", index=False)
-                # Current only sheets
+                
+                # Current only sheets - Hedges (IR/FX/CP)
                 keyword_model_comparison['summary_current'].to_excel(
                     writer, sheet_name="Summary_Current_Only", index=False)
                 keyword_model_comparison['detailed_current'].to_excel(
@@ -1047,12 +1359,16 @@ def get_sentence_analysis():
                     writer, sheet_name="Confusion_IR_Curr")
                 keyword_model_comparison['confusion_cp_current'].to_excel(
                     writer, sheet_name="Confusion_CP_Curr")
-        print(f"Keyword analysis saved to: {KEYWORDS_EXCEL_PATH}")
-        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL.xlsx"), engine="xlsxwriter") as writer:
+
+        print(f"Keyword analysis (Current Only - Hedges) saved to: {KEYWORDS_EXCEL_PATH}")
+
+        # Second workbook - Current + Historic (Hedges: IR/FX/CP)
+        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_HEDGES.xlsx"), engine="xlsxwriter") as writer:
             if keyword_model_comparison is not None:
                 workbook = writer.book
                 workbook.strings_to_urls = False
-                # Current + Historic sheets
+                
+                # Current + Historic sheets - Hedges (IR/FX/CP)
                 keyword_model_comparison['summary_all'].to_excel(
                     writer, sheet_name="Summary_Curr_Historic", index=False)
                 keyword_model_comparison['detailed_all'].to_excel(
@@ -1067,14 +1383,55 @@ def get_sentence_analysis():
                     writer, sheet_name="Confusion_IR_All")
                 keyword_model_comparison['confusion_cp_all'].to_excel(
                     writer, sheet_name="Confusion_CP_All")
-        print(f"Keyword analysis saved to: {KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL.xlsx")}")
+
+        print(f"Keyword analysis (Current+Historic - Hedges) saved to: {KEYWORDS_EXCEL_PATH.replace('.xlsx', '_HEDGES.xlsx')}")
+
+        # Third workbook - All Derivatives (Current Only: Hedges + Liabilities + Embedded)
+        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_CURRENT.xlsx"), engine="xlsxwriter") as writer:
+            if keyword_model_comparison is not None:
+                workbook = writer.book
+                workbook.strings_to_urls = False
+                
+                # Current only sheets - All Derivatives
+                keyword_model_comparison['summary_any_deriv_current'].to_excel(
+                    writer, sheet_name="Summary_AnyDeriv_Curr", index=False)
+                keyword_model_comparison['confusion_any_deriv_current'].to_excel(
+                    writer, sheet_name="Confusion_AnyDeriv_Curr")
+                keyword_model_comparison['model_only_current'].to_excel(
+                    writer, sheet_name="ModelOnly_Liab_Embed_Curr", index=False)
+                
+                # Include the basic comparison data for reference
+                keyword_model_comparison['comparison_current'].to_excel(
+                    writer, sheet_name="Comparison_Data", index=False)
+
+        print(f"All Derivatives analysis (Current Only) saved to: {KEYWORDS_EXCEL_PATH.replace('.xlsx', '_ALL_DERIVATIVES_CURRENT.xlsx')}")
+
+        # Fourth workbook - All Derivatives (Current + Historic: Hedges + Liabilities + Embedded)
+        with pd.ExcelWriter(KEYWORDS_EXCEL_PATH.replace(".xlsx", "_ALL_DERIVATIVES_FULL.xlsx"), engine="xlsxwriter") as writer:
+            if keyword_model_comparison is not None:
+                workbook = writer.book
+                workbook.strings_to_urls = False
+                
+                # Current + Historic sheets - All Derivatives
+                keyword_model_comparison['summary_any_deriv_all'].to_excel(
+                    writer, sheet_name="Summary_AnyDeriv_All", index=False)
+                keyword_model_comparison['confusion_any_deriv_all'].to_excel(
+                    writer, sheet_name="Confusion_AnyDeriv_All")
+                keyword_model_comparison['model_only_all'].to_excel(
+                    writer, sheet_name="ModelOnly_Liab_Embed_All", index=False)
+                
+                # Include the basic comparison data for reference
+                keyword_model_comparison['comparison_all'].to_excel(
+                    writer, sheet_name="Comparison_Data", index=False)
+
+        print(f"All Derivatives analysis (Current+Historic) saved to: {KEYWORDS_EXCEL_PATH.replace('.xlsx', '_ALL_DERIVATIVES_FULL.xlsx')}")
     except ImportError:
         print("  (pip install xlsxwriter for better performance)")
         return pd.DataFrame(columns=[])
     # Save to Google Drive if in Colab
     if IS_COLAB:
         print("Saving results to Google Drive...")
-        subprocess.run(f"cp *.xlsx {DRIVE_PATH}/.", shell=True)        
+        subprocess.run(f"cp *.xlsx {DRIVE_PATH}/{DRIVE_KEYWORDS_PATH}/.", shell=True)        
 
     return sa
 
