@@ -1244,33 +1244,38 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
         # --- AGGREGATE PERFORMANCE METRICS ---
         all_performance_data = []
 
-        # Helper to format and add data
-        def add_metrics(data, file_name):
-            df = pd.DataFrame(data)
-            df = df[df['Category'] != 'Overall (All Derivatives: Hedges + Liabilities + Embedded)'] # Exclude if not needed
-            df.rename(columns={'Category': 'Sub-Category'}, inplace=True)
-            # Handle different 'Overall' labels
-            if 'Hedges Only' in df['Sub-Category'].iloc[0]:
-                df.insert(0, 'Category', 'Overall (Hedges Only)')
-            else:
-                df.insert(0, 'Category', 'Overall (All Derivatives)')
-            df.insert(1, 'File Name', file_name)
-            return df
+        # Dictionary mapping the file names to their corresponding summary DataFrames
+        sources = {
+            "keywords_comp_ALL_DERIVATIVES_CURRENT.xlsx": summary_any_deriv_current,
+            "keywords_comp_ALL_DERIVATIVES_FULL.xlsx": summary_any_deriv_all,
+            "keywords_comparison_HEDGES_ALL.xlsx": summary_all,
+            "keywords_comparison_HEDGES_CURRENT.xlsx": summary_current,
+        }
 
-        # Collect data from all summary tables
-        all_performance_data.append(add_metrics(summary_any_deriv_current.to_dict('records'), "keywords_comp_ALL_DERIVATIVES_CURRENT.xlsx"))
-        all_performance_data.append(add_metrics(summary_any_deriv_all.to_dict('records'), "keywords_comp_ALL_DERIVATIVES_FULL.xlsx"))
-        all_performance_data.append(add_metrics(summary_all.to_dict('records'), "keywords_comparison_HEDGES_ALL.xlsx"))
-        all_performance_data.append(add_metrics(summary_current.to_dict('records'), "keywords_comparison_HEDGES_CURRENT.xlsx"))
+        for file_name, df_source in sources.items():
+            # Make a copy to avoid modifying the original DataFrame
+            df = df_source.copy()
+            # Add the 'File Name' column
+            df["File Name"] = file_name
+            all_performance_data.append(df)
 
-        # Combine all data into a single DataFrame
+        # Combine all the individual DataFrames into one
         model_performance_summary = pd.concat(all_performance_data, ignore_index=True)
 
-        # Clean up the 'Sub-Category' column for clarity
-        model_performance_summary['Sub-Category'] = model_performance_summary['Sub-Category'].str.replace(r' \(Hedges Only: IR/FX/CP\)', '', regex=True)
-        model_performance_summary = model_performance_summary[[
-            'Category', 'File Name', 'Accuracy', 'Precision', 'Recall', 'F1_Score'
-        ]]
+        # Clean up the 'Category' names for consistency and readability
+        model_performance_summary['Category'] = model_performance_summary['Category'].str.replace(
+            r' \(All Derivatives: Hedges \+ Liabilities \+ Embedded\)',
+            ' (All Derivatives)',
+            regex=True
+        ).str.replace(
+            r' \(Hedges Only: IR/FX/CP\)',
+            ' (Hedges Only)',
+            regex=True
+        )
+
+        # Ensure the columns are in the desired final order
+        desired_columns = ['Category', 'File Name', 'Accuracy', 'Precision', 'Recall', 'F1_Score']
+        model_performance_summary = model_performance_summary[desired_columns]
 
         return {
             # Current only - Hedges (IR/FX/CP)
