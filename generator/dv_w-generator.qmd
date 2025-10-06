@@ -740,7 +740,6 @@ fx_ir_context_templates = [
     "{company} operates in numerous international markets, which subjects us to risks from changes in currency exchange rates and interest rates",
     "{company}’s multinational operations are impacted by foreign currency movements and interest rate changes in various markets",
     "As a global entity, {company} faces exposure to exchange rate volatility and interest rate risks in its operations",
-    "Our operations across multiple countries expose us to foreign exchange rate changes and interest rate variability",
     "Operating in various jurisdictions, {company} are exposed to fluctuations in foreign currencies and interest rate movements",
     "Our global business model results in exposure to foreign exchange rate changes and interest rate fluctuations",
     "As a multinational company, {company} are subject to risks from currency movements and interest rate volatility across regions",
@@ -5658,7 +5657,7 @@ def generate(size_per_label=100):
 ```
 
 ```{python}
-generate(1000)
+generate(100)
 ```
 
 ```{python}
