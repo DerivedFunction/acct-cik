@@ -3965,18 +3965,13 @@ def generate_labeled_hedge_paragraph(
                 prev_notional = random.randint(100, 1000)
                 if random.random() < 0.5:  # Have previous years with amount
                     year = current_year - 1
-                    prev_year = current_year - 2
-                    old_year = random.choice(past_years) - 1 if past_years else prev_year
-                    future_year = random.randint(old_year, year)
                     notional = random.randint(100, 1000)
                 else:  # Have current year have 0 amount
                     year = current_year
-                    prev_year = current_year - 1
-                    old_year = random.choice(past_years) - 1 if past_years else prev_year
-                    future_year = random.randint(old_year, year)
-                    swap_type = random.choice(swap_types)
                     notional = random.choice(["0", "nil"])
-                    prev_notional = random.randint(100, 1000)
+                prev_year = year - 1
+                old_year = random.choice(past_years) - 1 if past_years else prev_year
+                future_year = random.randint(old_year, year)
                 sentence = template.format(
                     company=company_name,
                     verb=verb,
