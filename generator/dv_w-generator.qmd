@@ -5586,42 +5586,43 @@ def generate(size_per_label=100):
     # Collect all generated samples
     all_samples = []
     swap_types = ["ir", "fx", "cp", "gen"]
+    numSwaps = len(swap_types)
     for prefix in swap_types:
-        for _ in range(size_per_label / len(swap_types)):
+        for _ in range(size_per_label // numSwaps):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=True, swapType=prefix
             )
             all_samples.append((paragraph, label))
 
-        for _ in range(size_per_label / len(swap_types)):
+        for _ in range(size_per_label // numSwaps):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=False, swapType=prefix
             )
             all_samples.append((paragraph, label))
-        for _ in range(size_per_label / len(swap_types)):
+        for _ in range(size_per_label // numSwaps):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=None, swapType=prefix
             )
             all_samples.append((paragraph, label))
-    for _ in range(size_per_label / len(swap_types)):
+    for _ in range(size_per_label // numSwaps):
         paragraph, label = generate_labeled_hedge_paragraph(has_active_derivative=None)
         all_samples.append((paragraph, label))
-    for _ in range(size_per_label/2):
+    for _ in range(size_per_label // 2):
         paragraph, label = generate_derivative_liability_paragraph(label_type=4)
         all_samples.append((paragraph, label))
-    for _ in range(size_per_label/2):
+    for _ in range(size_per_label // 2):
         paragraph, label = generate_derivative_liability_paragraph(label_type=5)
         all_samples.append((paragraph, label))
-    for _ in range(size_per_label/2):
+    for _ in range(size_per_label // 2):
         paragraph, label = generate_derivative_liability_paragraph(label_type=6)
         all_samples.append((paragraph, label))
-    for _ in range(size_per_label/2):
+    for _ in range(size_per_label // 2):
         paragraph, label = generate_derivative_liability_paragraph(label_type=7)
         all_samples.append((paragraph, label))
-    for _ in range(size_per_label/2):
+    for _ in range(size_per_label // 2):
         paragraph, label = generate_derivative_liability_paragraph(label_type=3)
         all_samples.append((paragraph, label))
-    for _ in range(size_per_label/2):
+    for _ in range(size_per_label // 2):
         paragraph, label = generate_accounting_noise_paragraph()
         all_samples.append((paragraph, label))
     # Create a DataFrame
