@@ -2507,8 +2507,8 @@ clawback_templates = [
 def generate_derivative_liability_paragraph(
     label_type,
     max_past_years=random.randint(1, 3),
-    year_range=(1999, 2025),
-    max_len=random.randint(4, 7),
+    year_range=(1990, 2025),
+    max_len=random.randint(3, 5),
     company_name=None,
 ):
     """
@@ -3151,9 +3151,9 @@ def generate_derivative_liability_paragraph(
 def generate_labeled_hedge_paragraph(
     has_active_derivative,
     swapType=None,  # Added parameter
-    year_range=(1999, 2025),
+    year_range=(1990, 2025),
     max_past_years=3,
-    max_len=random.randint(4, 7),
+    max_len=random.randint(3, 5),
     include_policy=None,
     company_name=None,
 ):
@@ -3187,7 +3187,7 @@ def generate_labeled_hedge_paragraph(
 
     # If label 2 (policy only), override to ensure policy is included
     if has_active_derivative is None:
-        include_policy = True
+        include_policy = False
 
     if company_name is None:
         # ~ 75% chance of company name
@@ -3384,7 +3384,7 @@ def generate_labeled_hedge_paragraph(
         # Add policy statements if needed
         if include_policy:
             # Accounting policy (0-1)
-            if random.random() < 0.6:
+            if random.random() < 0.1:
                 template = random.choice(hedge_policy_templates)
                 swap_type = random.choice(swap_types)
                 hedge_type = random.choice(hedge_types)
@@ -3396,7 +3396,7 @@ def generate_labeled_hedge_paragraph(
                     )
                 )
             # May use hedge
-            if random.random() < 0.5:
+            if random.random() < 0.1:
                 template = random.choice(hedge_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
@@ -3408,7 +3408,7 @@ def generate_labeled_hedge_paragraph(
                     )
                 )
             # No trading policy (0-1)
-            if random.random() < 0.5:
+            if random.random() < 0.1:
                 template = random.choice(hedge_no_trading_templates)
                 all_sentences.append(
                     template.format(
@@ -3416,7 +3416,7 @@ def generate_labeled_hedge_paragraph(
                     )
                 )
         # Hedge transaction
-        if random.random() < 0.05:
+        if random.random() < 0.1:
             template = random.choice(hedge_transaction_templates)
             swap_type = random.choice(swap_types)
             notional = random.randint(1, 50)
@@ -3431,7 +3431,7 @@ def generate_labeled_hedge_paragraph(
             )
         if not has_active_derivative:
             # Past event (0-1)
-            if random.random() < 0.6 and len(past_years) > 0:
+            if random.random() < 0.3 and len(past_years) > 0:
                 template = random.choice(hedge_past_event_template)
                 swap_type = random.choice(swap_types)
                 past_year = random.choice(past_years)
@@ -3486,7 +3486,7 @@ def generate_labeled_hedge_paragraph(
                     )
                 )
             # May use hedge
-            if random.random() < 0.5:
+            if random.random() < 0.25:
                 template = random.choice(fx_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
@@ -3832,7 +3832,7 @@ def generate_labeled_hedge_paragraph(
                     )
                 )
             # May use hedge
-            if random.random() < 0.5:
+            if random.random() < 0.25:
                 template = random.choice(ir_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
@@ -4105,7 +4105,7 @@ def generate_labeled_hedge_paragraph(
                 )
 
             # May use hedge
-            if random.random() < 0.5:
+            if random.random() < 0.25:
                 template = random.choice(cp_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
@@ -4482,7 +4482,7 @@ def generate_labeled_hedge_paragraph(
 ```{python}
 
 def generate_accounting_noise_paragraph(
-    year_range=(1999, 2025), max_len=random.randint(4, 7), company_name=None
+    year_range=(1990, 2025), max_len=random.randint(3, 5), company_name=None
 ):
     """
     Generate synthetic accounting paragraphs that are pure noise - nothing to do with derivatives.
