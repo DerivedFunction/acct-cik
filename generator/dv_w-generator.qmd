@@ -854,6 +854,7 @@ hedge_effectiveness_templates = [
     "Hedge effectiveness is {verb} {frequency} to ensure {swap_type} offset {metric} as required",
     "{company} {verb} hedge effectiveness {frequency} for {swap_type} in accordance with {standard}",
     "{company} {verb} {swap_type} effectiveness {frequency} to confirm compliance with {standard}",
+    "Each {swap_type} guarantees a return equal to the actual return, and as such, effectively acts as a hedge",
 ]
 hedge_ineffectiveness_templates = [
     "{company} assess hedge ineffectiveness {frequency} and record the gain or loss related to the ineffective portion of derivative instruments, if any, to current earnings",
