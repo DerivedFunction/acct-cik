@@ -3706,12 +3706,6 @@ def generate_labeled_hedge_paragraph(
                 all_sentences.append(sentence)
         # Foreign Exchange specific logic
         if swapType == "fx":
-            if include_policy:
-                sentences = generate_fx_policy()
-                # Pick only 1-2 sentences
-                random.shuffle(sentences)
-                sentences = sentences[:random.randint(1, 2)]
-                all_sentences.extend(sentences)
             # Currency description (0-1)
             if random.random() < 0.6:
                 selected_currencies = []
@@ -3944,12 +3938,7 @@ def generate_labeled_hedge_paragraph(
 
         # Interest Rate specific logic
         elif swapType == "ir":
-            if include_policy:
-                sentences = generate_ir_policy()
-                # Pick only 1-2 sentences
-                random.shuffle(sentences)
-                sentences = sentences[:random.randint(1, 2)]
-                all_sentences.extend(sentences)
+
             # Label 0: Active derivative positions
             if has_active_derivative:
                 # Entry sentence (0-1)
@@ -4159,13 +4148,6 @@ def generate_labeled_hedge_paragraph(
         # Commodity Price specific logic
         elif swapType == "cp":
             commodity = random.choice(commodities)
-            # Context sentences
-            if include_policy:
-                sentences = generate_cp_policy(commodity)
-                # Pick only 1-2 sentences
-                random.shuffle(sentences)
-                sentences = sentences[:random.randint(1, 2)]
-                all_sentences.extend(sentences)
             # Label 0: Active derivative positions
             if has_active_derivative:
                 # Commodity event (0-1)
@@ -4490,6 +4472,26 @@ def generate_labeled_hedge_paragraph(
     # Shuffle and select sentences
     random.shuffle(all_sentences)
     selected_sentences = all_sentences[:max_len]
+                # Context sentences
+    if include_policy:
+        if swapType == "cp":
+            sentences = generate_cp_policy(commodity)
+            # Pick only 1-2 sentences
+            random.shuffle(sentences)
+            sentences = sentences[:random.randint(1, 2)]
+            all_sentences.extend(sentences)
+        if swapType == "ir":
+            sentences = generate_ir_policy()
+            # Pick only 1-2 sentences
+            random.shuffle(sentences)
+            sentences = sentences[:random.randint(1, 2)]
+            all_sentences.extend(sentences)
+        if include_policy:
+            sentences = generate_fx_policy()
+            # Pick only 1-2 sentences
+            random.shuffle(sentences)
+            sentences = sentences[:random.randint(1, 2)]
+            all_sentences.extend(sentences)
     # Capitalize first letter of each sentence
     selected_sentences = [
         s[0].upper() + s[1:] if s and len(s) > 0 else "" for s in selected_sentences
