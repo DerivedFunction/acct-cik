@@ -163,6 +163,7 @@ GEN_REGEX = re.compile(
     r"|change in fair value of derivative"
     r"|(gain|loss) on derivative"
     r"|embedded derivative"
+    r"|bifurcation"
     r"|(hedg(e|ing)|hedge(s|d)) (of|instrument|contract|derivative|relationship|accounting|program|transaction|activity)"
     r"|designated as (a |an )?((cash flow|fair value|net investment) )?hedg(e|ing)(s)?"
     r"|(instruments|contracts) are designated"
@@ -613,10 +614,11 @@ def process_url(url: str):
 
 
 def filter_by_keywords(
-    content: str, min_char_length: int = 400, max_char_length=2000
+    content: str, min_char_length: int = 500, max_char_length=2000
 ) -> dict:
     """
     OPTIMIZED: Pre-filter sentences by category before expansion.
+    'gen' category can now expand with ANY other category.
     """
     ignore_keywords = [kw.lower() for kw in IGNORE_KEYWORDS]
 
@@ -655,11 +657,17 @@ def filter_by_keywords(
 
             added = False
 
+            # --- LEFT expansion ---
             if left_idx >= 0:
                 left_sentence = all_sentences[left_idx]
                 left_category = get_keyword_category(left_sentence)
 
-                if left_category is None or left_category == target_category:
+                # ✅ Allow "gen" to merge with ANY category
+                if (
+                    target_category == "gen"
+                    or left_category == target_category
+                    or left_category == "gen"
+                ):
                     candidate = [left_sentence] + merged
                     if measure_merged_length(candidate) <= max_char_length:
                         merged.insert(0, left_sentence)
@@ -670,11 +678,16 @@ def filter_by_keywords(
                 else:
                     left_idx = -1
 
+            # --- RIGHT expansion ---
             if right_idx < len(all_sentences):
                 right_sentence = all_sentences[right_idx]
                 right_category = get_keyword_category(right_sentence)
 
-                if right_category is None or right_category == target_category:
+                if (
+                    target_category == "gen"
+                    or right_category == target_category
+                    or right_category == "gen"
+                ):
                     candidate = merged + [right_sentence]
                     if measure_merged_length(candidate) <= max_char_length:
                         merged.append(right_sentence)
@@ -693,35 +706,33 @@ def filter_by_keywords(
             excess = len(final_text) - max_char_length
             trim_left = excess // 2
             trim_right = excess - trim_left
-            final_text = final_text[trim_left: len(
-                final_text) - trim_right].strip()
+            final_text = final_text[trim_left: len(final_text) - trim_right].strip()
 
         return final_text
 
+    # --- Sentence preprocessing ---
     text = re.sub(r"\s+", " ", content.strip())
     raw_sentences = [
         s.strip()
         for s in re.split(r"(?<![A-Z0-9])\s*\.\s*(?![a-zA-Z0-9])", text)
         if s.strip()
     ]
-
     all_sentences = [clean_sentence(sentence) for sentence in raw_sentences]
 
-    # Pre-categorize all sentences (KEY OPTIMIZATION)
+    # --- Pre-categorize ---
     sentence_categories = []
     for i, sentence in enumerate(all_sentences):
         if len(sentence.split()) < 4:
             sentence_categories.append((i, None))
             continue
-
         category = get_keyword_category(sentence)
         sentence_categories.append((i, category))
 
     categorized_matches = {"ir": [], "fx": [], "cp": [], "spec": [], "gen": []}
-    seen_matches = {"ir": set(), "fx": set(), "cp": set(),
-                    "spec": set(), "gen": set()}
+    seen_matches = {"ir": set(), "fx": set(), "cp": set(), "spec": set(), "gen": set()}
     seen_sentences_global = set()
-    # First pass: specific categories
+
+    # --- Pass 1: non-gen categories ---
     for i, category in sentence_categories:
         if category and category != "gen":
             if i in seen_sentences_global:
@@ -738,13 +749,14 @@ def filter_by_keywords(
                 categorized_matches[category].append(final_sentence)
                 seen_sentences_global.add(i)
 
-    # Second pass: generic
+    # --- Pass 2: 'gen' category (can attach anywhere) ---
     for i, category in sentence_categories:
         if category == "gen":
             if len(all_sentences[i].split()) < 6 or i in seen_sentences_global:
                 continue
 
-            final_sentence = expand_context(all_sentences, i, category)
+            # ✅ Will expand freely due to logic above
+            final_sentence = expand_context(all_sentences, i, "gen")
             normalized = final_sentence.lower().strip()
 
             if should_ignore(normalized):
@@ -755,12 +767,10 @@ def filter_by_keywords(
                 categorized_matches["gen"].append(final_sentence)
 
     debug_print(
-        "Done generating sentences", sum(len(v)
-                                         for v in categorized_matches.values())
+        "Done generating sentences", sum(len(v) for v in categorized_matches.values())
     )
 
     return categorized_matches
-
 
 # =============================================================================
 # PARALLEL PROCESSING FUNCTIONS (OPTIMIZED FOR PARALLEL CORES)
