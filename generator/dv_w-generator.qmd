@@ -217,7 +217,7 @@ warrant_events = [
 # Warrant fair value measurement templates
 warrant_fv_templates = [
     "The fair value of the warrants classifed as liabilities was determined to be {currency_code}{amount} {money_unit} using the  as of {month} {end_day}, {year}",
-    "At issuance, the warrant liabilities were valued at {currency_code}{amount} {money_unit} using a ",
+    "At issuance, the warrant liabilities were valued at {currency_code}{amount} {money_unit} using a {model}",
     "{company} estimated the fair value of the warrants at {currency_code}{amount} {money_unit} as of {month} {end_day}, {year} using the {model} methodology",
     "Using a {model}, the warrant liabilities were fair valued at {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "The fair value of outstanding liability-classified warrants totaled {currency_code}{amount} {money_unit} at year-end {year}, {verb} using {model}",
@@ -2522,7 +2522,7 @@ def generate_derivative_liability_paragraph(
     label_type,
     max_past_years=random.randint(1, 3),
     year_range=(1990, 2025),
-    max_len=random.randint(2, 4),
+    max_len=random.randint(2, 3),
     company_name=None,
 ):
     """
@@ -3169,7 +3169,7 @@ def generate_labeled_hedge_paragraph(
     swapType=None,  # Added parameter
     year_range=(1990, 2025),
     max_past_years=3,
-    max_len=random.randint(2, 4),
+    max_len=random.randint(2, 3),
     include_policy=None,
     company_name=None,
 ):
@@ -3681,7 +3681,7 @@ def generate_labeled_hedge_paragraph(
             if random.random() < 0.6:
                 selected_currencies = []
                 selected_currencies.extend(
-                    random.sample(major_currencies, random.randint(2, 4))
+                    random.sample(major_currencies, random.randint(2, 3))
                 )
                 if random.random() < 0.5:
                     selected_currencies.extend(
@@ -4475,7 +4475,7 @@ def generate_labeled_hedge_paragraph(
 ```{python}
 
 def generate_accounting_noise_paragraph(
-    year_range=(1990, 2025), max_len=random.randint(2, 4), company_name=None
+    year_range=(1990, 2025), max_len=random.randint(2, 3), company_name=None
 ):
     """
     Generate synthetic accounting paragraphs that are pure noise - nothing to do with derivatives.
