@@ -28,7 +28,7 @@ import json
 
 ```{python}
 EXCEL_PATH = "./training_data.xlsx"
-MODEL_PATH = "finbert-derivative-type-classifier"
+MODEL_PATH = "derivative-type-classifier"
 MODEL_USER = "DerivedFunction"
 MODEL_NAME = f"{MODEL_USER}/{MODEL_PATH}"
 KEYWORDS_FILE = "./keywords_find.json"
