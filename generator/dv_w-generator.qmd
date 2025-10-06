@@ -3279,8 +3279,6 @@ def generate_labeled_hedge_paragraph(
         elif swapType == "cp":
             label = 8
 
-
-
     # Label 2: Policy/disclosure only (no specific positions)
     if has_active_derivative is None:
         # Context (0-1)
@@ -3540,7 +3538,10 @@ def generate_labeled_hedge_paragraph(
                 all_sentences.append(sentence)
         elif swapType == "ir":
             # Context sentences
-            if random.random() < 0.25:
+            if random.random() < 0.10:
+                template = random.choice(ir_context_templates)
+                all_sentences.append(template.format(company=company_name))
+            if random.random() < 0.05:
                 template = random.choice(fx_ir_context_templates)
                 all_sentences.append(template.format(company=company_name))
 
@@ -3677,6 +3678,14 @@ def generate_labeled_hedge_paragraph(
                 all_sentences.append(sentence)
         # Foreign Exchange specific logic
         if swapType == "fx":
+            # Context sentences
+            if random.random() < 0.10:
+                template = random.choice(fx_context_templates)
+                all_sentences.append(template.format(company=company_name))
+            # Context sentences
+            if random.random() < 0.05:
+                template = random.choice(fx_ir_context_templates)
+                all_sentences.append(template.format(company=company_name))
             # Currency description (0-1)
             if random.random() < 0.6:
                 selected_currencies = []
@@ -3909,7 +3918,13 @@ def generate_labeled_hedge_paragraph(
 
         # Interest Rate specific logic
         elif swapType == "ir":
-
+            # Context sentences
+            if random.random() < 0.10:
+                template = random.choice(ir_context_templates)
+                all_sentences.append(template.format(company=company_name))
+            if random.random() < 0.05:
+                template = random.choice(fx_ir_context_templates)
+                all_sentences.append(template.format(company=company_name))
             # Label 0: Active derivative positions
             if has_active_derivative:
                 # Entry sentence (0-1)
@@ -4119,6 +4134,17 @@ def generate_labeled_hedge_paragraph(
         # Commodity Price specific logic
         elif swapType == "cp":
             commodity = random.choice(commodities)
+            # Context sentences
+            if random.random() < 0.15:
+                template = random.choice(cp_context_templates)
+                verb = random.choice(hedge_use_verbs)
+                all_sentences.append(
+                    template.format(
+                        company=pick_company_name(company_name),
+                        verb=verb,
+                        commodity=commodity,
+                    )
+                )
             # Label 0: Active derivative positions
             if has_active_derivative:
                 # Commodity event (0-1)
