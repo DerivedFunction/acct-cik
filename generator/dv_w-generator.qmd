@@ -3174,7 +3174,7 @@ def generate_labeled_hedge_paragraph(
     swapType=None,  # Added parameter
     year_range=(1990, 2025),
     max_past_years=3,
-    max_len=random.randint(2, 4),
+    max_len=random.randint(2, 3),
     include_policy=None,
     company_name=None,
 ):
@@ -3247,7 +3247,7 @@ def generate_labeled_hedge_paragraph(
     )
 
     commodity = random.choice(commodities)
-    
+
     all_sentences = []
 
     # Determine label
