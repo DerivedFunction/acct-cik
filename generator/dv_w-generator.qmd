@@ -3280,7 +3280,7 @@ def generate_labeled_hedge_paragraph(
         elif swapType == "cp":
             label = 8
 
-    def generate_fx_policy(current):
+    def generate_fx_policy(current=False):
         sentences = []
         if current:
             verbs = hedge_use_verbs
@@ -3407,7 +3407,7 @@ def generate_labeled_hedge_paragraph(
         sentences.append(sentence)
         return sentences
     
-    def generate_ir_policy(current):
+    def generate_ir_policy(current=False):
         sentences = []
         if current:
             verbs = hedge_use_verbs
@@ -3476,7 +3476,7 @@ def generate_labeled_hedge_paragraph(
         )
         sentences.append(sentence)
         return sentences
-    def generate_cp_policy(commodity="commodity", current):
+    def generate_cp_policy(commodity="commodity", current=False):
         sentences = []
         if current:
             verbs = hedge_use_verbs
