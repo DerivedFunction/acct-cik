@@ -565,7 +565,7 @@ hedge_position_template = [
     "In {month} {prev_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}, which are set to expire in {month} {future_year}",
     "As of {month} {year}, {company} {verb} {swap_type} {verb} in {prev_year}, with total notional of {currency_code}{notional} {money_unit}, expiring in {future_year}",
     # --- NEW TWO-YEAR DISCLOSURE ADDITIONS (with {month} and {end_day}) ---
-    "At {month} {end_day}, {year} and {prev_year}, {company} {Verb} {swap_type} with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated as hedging instruments",
+    "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated as hedging instruments",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} outstanding with aggregate notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
     "At {month} {end_day}, {year} and {prev_year}, {company}’s derivative portfolio included {swap_type} with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} contracts totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used for hedging purposes",
