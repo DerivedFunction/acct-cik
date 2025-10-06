@@ -3640,7 +3640,7 @@ def generate_labeled_hedge_paragraph(
     # Labels 0 and 1: Specific positions
     else:
         # Hedge transaction
-        if random.random() < 0.1:
+        if random.random() < 0.05:
             template = random.choice(hedge_transaction_templates)
             swap_type = random.choice(swap_types)
             notional = random.randint(1, 50)
