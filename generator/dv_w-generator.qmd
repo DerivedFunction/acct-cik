@@ -3484,7 +3484,7 @@ def generate_labeled_hedge_paragraph(
             )
             sentences.append(sentence)
         return sentences
-    def generate_cp_policy(commodity="commodity")
+    def generate_cp_policy(commodity="commodity"):
         sentences = []
         # Context sentences
         if random.random() < 0.6:
