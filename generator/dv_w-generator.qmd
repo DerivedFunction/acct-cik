@@ -2527,7 +2527,7 @@ def generate_derivative_liability_paragraph(
     label_type,
     max_past_years=random.randint(1, 3),
     year_range=(1990, 2025),
-    max_len=random.randint(2, 3),
+    max_len=random.randint(2, 4),
     company_name=None,
 ):
     """
@@ -3174,7 +3174,7 @@ def generate_labeled_hedge_paragraph(
     swapType=None,  # Added parameter
     year_range=(1990, 2025),
     max_past_years=3,
-    max_len=random.randint(2, 3),
+    max_len=random.randint(2, 4),
     include_policy=None,
     company_name=None,
 ):
@@ -4522,7 +4522,7 @@ def generate_labeled_hedge_paragraph(
 ```{python}
 
 def generate_accounting_noise_paragraph(
-    year_range=(1990, 2025), max_len=random.randint(2, 3), company_name=None
+    year_range=(1990, 2025), max_len=random.randint(2, 4), company_name=None
 ):
     """
     Generate synthetic accounting paragraphs that are pure noise - nothing to do with derivatives.
