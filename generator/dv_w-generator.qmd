@@ -5587,19 +5587,23 @@ def generate(size_per_label=100):
     all_samples = []
     swap_types = ["ir", "fx", "cp", "gen"]
     for prefix in swap_types:
-        for _ in range(size_per_label):
+        for _ in range(size_per_label / len(swap_types)):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=True, swapType=prefix
             )
             all_samples.append((paragraph, label))
 
-        for _ in range(size_per_label):
+        for _ in range(size_per_label / len(swap_types)):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=False, swapType=prefix
             )
             all_samples.append((paragraph, label))
-
-    for _ in range(size_per_label):
+        for _ in range(size_per_label / len(swap_types)):
+            paragraph, label = generate_labeled_hedge_paragraph(
+                has_active_derivative=None, swapType=prefix
+            )
+            all_samples.append((paragraph, label))
+    for _ in range(size_per_label / len(swap_types)):
         paragraph, label = generate_labeled_hedge_paragraph(has_active_derivative=None)
         all_samples.append((paragraph, label))
     for _ in range(size_per_label):
