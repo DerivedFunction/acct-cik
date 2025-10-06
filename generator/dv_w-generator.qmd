@@ -231,7 +231,7 @@ warrant_liability_templates = [
     "The warrants are classified as liabilities and marked to market each reporting period with changes in fair value recorded in {location}",
     "These warrants are recorded as liabilities at fair value, with subsequent changes recognized in {location}",
     "{company} accounts for the warrants as liabilities rather than equity measured at fair value through {location}",
-    "After all relevant assessments, {company} determined that the warrants issued under the {event} require classification as a liability pursuant to ASC 840"
+    "After all relevant assessments, {company} determined that the warrants issued under the {event} require classification as a liability pursuant to ASC 840",
     "Warrant liabilities are remeasured to fair value at each balance sheet date with gains and losses recorded in {location}",
     "As the warrants contain certain provisions, they are classified as liabilities and adjusted to fair value quarterly through {location}",
     "Warrants accounted for as liabilities have the potential to be settled in cash or are not indexed to {company}'s own stock",
@@ -284,7 +284,7 @@ embedded_identification_templates = [
     "Embedded derivatives have been identified within {host_contract} and are accounted for separately from the host instrument",
     "{company} {verb} {host_contract} and determined that certain embedded features require bifurcation under derivative accounting guidance",
     '{company} adopted SFAS 155, "Accounting for Certain Hybrid Instruments" to identify all embedded derivative features',
-    "{company} measures a hybrid financial instrument in its entirety at fair value after having identified all embedded derivative features"
+    "{company} measures a hybrid financial instrument in its entirety at fair value after having identified all embedded derivative features",
     "{company} identified and documented the embedded derivative features, and the irrevocably elected to measure and carry the {host_contract} at fair value",
     "This standard requires the conversion feature of {host_contract} be separated from the host contract and presented as a derivative instrument if certain conditions are met",
 ]
@@ -802,7 +802,7 @@ hedge_policy_templates = [
     "Derivatives are measured at fair value, with changes recorded in earnings or other comprehensive income depending on hedge accounting",
     "{company} recognizes derivative fair value changes in either net income or OCI, based on the hedging relationship",
     "Changes in derivative fair values are recorded in current earnings or OCI, depending on the hedge type and accounting treatment",
-    "All derivative instruments, other than those that satisfy specific exceptions, are recorded at fair value. {company} record changes in the fair value of our derivative positions based on the value for which the derivative instrument could be exchanged between willing parties"
+    "All derivative instruments, other than those that satisfy specific exceptions, are recorded at fair value. {company} record changes in the fair value of our derivative positions based on the value for which the derivative instrument could be exchanged between willing parties",
     "If market quotes are not available to estimate fair value, management’s best estimate of fair value is based on the quoted market price of derivatives with similar characteristics or determined through industry-standard valuation techniques",
     "{company} value our {swap_type} using observable inputs including interest rate curves, risk adjusted discount rates, credit spreads and other relevant data",
     "Gains and losses on derivative instruments are recognized currently in earnings",
@@ -1223,7 +1223,7 @@ cp_impact_templates = [
     "{company}'s exposure to {commodity} prices {verb} operating costs and financial statements",
     "Price changes in key commodities {verb} the cost of {cost_type} and gross margins",
     "Price changes in key commodities such as {commodity} {verb} the cost of {cost_type} and gross margins",
-    "{company} purchase the majority of our {commodity} at prevailing market prices, and seek to manage market risk through execution of a documented hedging strategy and other means"
+    "{company} purchase the majority of our {commodity} at prevailing market prices, and seek to manage market risk through execution of a documented hedging strategy and other means",
     "{company} have market sensitive instruments in the form of fixed-rate debt instruments and financial derivative instruments {verb} to hedge our exposure to {commodity} price increases",
     "Volatility in {commodity} markets {verb} the translated value of procurement and derivative positions",
     "Sudden {commodity} price swings {verb} {company}'s production costs and earnings stability",
@@ -1677,7 +1677,7 @@ litigation_assessment_templates = [
     "Management believes that the ultimate resolution of these matters will not have a material adverse effect on {company}'s financial position, results of operations, or cash flows",
     "While the outcome of these proceedings cannot be predicted with certainty, management does not believe they will materially impact the consolidated financial statements",
     "{company} believes it has meritorious defenses and intends to vigorously defend against these claims",
-    "{company} intend to vigorously defend against these claims. At this time, {company} cannot predict the outcome, or provide a reasonable estimate or range of estimates of the possible outcome or loss, if any, in this matter"
+    "{company} intend to vigorously defend against these claims. At this time, {company} cannot predict the outcome, or provide a reasonable estimate or range of estimates of the possible outcome or loss, if any, in this matter",
     "Based on currently available information, management does not expect these matters to result in a material loss",
     "{company} has {verb} the likelihood of loss as remote and has not recorded any provisions related to these contingencies",
 ]
@@ -1763,7 +1763,7 @@ equity_warrant_activity_templates = [
     "{company} repurchased and cancelled warrants for {shares} shares during {month} {year} for cash consideration of {currency_code}{amount} {money_unit}",
     "In {month} {year}, warrant holders exercised their rights to acquire {shares} shares, resulting in gross proceeds of {currency_code}{amount} {money_unit}",
     "The additional cost of the warrants of {currency_code}{amount} was recorded as a debit and a credit to additional paid in capital",
-    "Any issuance of common stock by {company} may result in a reduction in the book value per share"
+    "Any issuance of common stock by {company} may result in a reduction in the book value per share",
     "The reduction on market price per share of {company}'s outstanding shares of common stock will reduce the proportionate ownership and voting power of such shares",
     "In addition, {company} has reserved {shares} shares of the common stock for issuance upon the exercise of outstanding warrants",
 ]
@@ -2236,7 +2236,7 @@ warrant_debt_issuance_templates = [
     "{company} issued warrants to purchase {shares} shares of common stock (valued at {currency_code}{value}) in conjunction with {financing_type} in {month} {year}",
     "Warrants to purchase {shares} shares of common stock were issued as part of the financing arrangement, valued at {currency_code}{value} and recorded as debt issuance costs",
     "In connection with {financing_type}, {company} granted warrants for {shares} shares valued at {currency_code}{value}, with the value recorded as debt issue costs",
-    "Additional warrants to purchase {shares} shares of {company} common stock were issued on {month} {year} in consideration for the extension to that date"
+    "Additional warrants to purchase {shares} shares of {company} common stock were issued on {month} {year} in consideration for the extension to that date",
     "In connection with the extension to {month} {year}, {company} offered two alternatives of consideration. Holders of {shares1} common stock of the notes elected to reduce the exercise price of their warrants, or to to receive additional warrants to purchase {shares2} shares of common stock",
     "{company} reduced the exercise price by {currency_code}{value1} per share for all warrants issued in connection with the issuance or extensions of the notes",
     "In consideration of this extension, {company} issued {shares} shares of common stock at a price of {value} per share and warrants to purchase {shares1} shares of common stock at a price to be determined in the future, between {currency_code}{value1} and {currency_code}{value2} per share, on or before {month} {year}",
