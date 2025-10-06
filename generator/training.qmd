@@ -30,7 +30,8 @@ import json
 EXCEL_PATH = "./training_data.xlsx"
 MODEL_PATH = "derivative-type-classifier"
 MODEL_USER = "DerivedFunction"
-MODEL_NAME = f"{MODEL_USER}/{MODEL_PATH}"
+FINE_TUNE_MODEL = "ProsusAI/finbert"
+MODEL_NAME = f"{MODEL_USER}/{MODEL_PATH}" if not FINE_TUNE_MODEL else FINE_TUNE_MODEL
 KEYWORDS_FILE = "./keywords_find.json"
 ```
 
@@ -109,7 +110,7 @@ id2label = {int(k): v for k, v in keyword_data["id2label"].items()}
 label2id = {v: int(k) for k, v in keyword_data["id2label"].items()}
 
 model = AutoModelForSequenceClassification.from_pretrained(
-    MODEL_NAME,
+    FINE_TUNE_MODEL,
     num_labels=len(id2label),
     id2label=id2label,
     label2id=label2id,
@@ -163,4 +164,25 @@ trainer.train() # resume_from_checkpoint=True
 ## from huggingface_hub import notebook_login
 # notebook_login()
 # trainer.push_to_hub(MODEL_CHECKPOINT)
+```
+
+```{python}
+string = '''
+
+'''
+model.eval()
+inputs = tokenizer(
+    string.strip(),
+    return_tensors="pt",
+    truncation=True,
+    padding=True,
+)
+inputs = {k: v.to(device) for k, v in inputs.items()}
+outputs = model(**inputs)
+
+with torch.no_grad():
+    outputs = model(**inputs)
+    logits = outputs.logits
+    predicted_ids = torch.argmax(logits, dim=1).tolist()
+    print([id2label[i] for i in predicted_ids])
 ```
