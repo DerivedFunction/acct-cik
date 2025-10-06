@@ -1065,7 +1065,7 @@ derivative_template = {
         "collar contract",
         "NDF",
     ],
-    "CP_PLACEHOLDER": ["commodity price"],
+    "CP_PLACEHOLDER": ["commodity price", "commodity-related"],
     "CP_TYPES": [
         "swap",
         "forward",
@@ -1129,7 +1129,7 @@ derivative_keywords = {
         derivative_template["FX_STANDALONE"],
     ),
     "cp": expand_derivative_terms(
-        derivative_template["CP_PLACEHOLDER"], derivative_template["CP_TYPES"], []
+        derivative_template["CP_PLACEHOLDER"], derivative_template["CP_TYPES"], derivative_template["CP_STANDALONE"]
     ),
     "gen": expand_derivative_terms([], [], derivative_template["GEN_STANDALONE"]),
 }
@@ -1259,6 +1259,7 @@ commodities = [
     "gasoline",
     "raw materials",
     "commodity",
+    "energy",
 ]
 cost_types = [
     "input costs",
