@@ -35,16 +35,16 @@ months = [
     "October",
     "November",
     "December",
-    "Jan.",
-    "Feb.",
-    "Mar.",
-    "Apr.",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
     "May",
-    "Aug.",
-    "Sep.",
-    "Oct.",
-    "Nov.",
-    "Dec.",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
 ]
 
 quarters = ["first", "second", "third", "fourth", "last", "1st", "2nd", "3rd", "4th"]
@@ -577,31 +577,31 @@ hedge_position_templates = [
 ]
 
 eq_position_templates = [
-    "As of {month} {end_day}, {year}, {company} {verb} {swap_type} to manage exposure to changes in the market price of its common stock and related equity-based compensation costs.",
-    "At year-end {year}, {company} {verb} {swap_type} outstanding to hedge variability in compensation expense associated with changes in the company’s share price.",
-    "As of {month} {year}, outstanding {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain in effect to mitigate exposure to equity price movements.",
-    "{company}’s derivative portfolio at {month} {end_day}, {year} includes {swap_type} used to manage market risks associated with fluctuations in the company’s stock price.",
-    "At the end of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active, hedging exposures tied to equity-based programs.",
-    "As of {month} {end_day}, {year}, {company} has {swap_type} outstanding with a notional amount of {currency_code}{notional} {money_unit} to offset potential volatility from changes in its share price.",
-    "At year-end {year}, {company}’s derivative portfolio includes {swap_type} executed to reduce variability in reported expenses arising from equity-linked compensation.",
-    "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} remain designated as economic hedges of the company’s share price exposure.",
-    "{company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} at {month} {end_day}, {year}, to hedge the market price risk associated with stock-based compensation plans.",
-    "At the close of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active to mitigate equity-related market risk.",
-    "As of {month} {year}, {company}’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit} linked to the value of its common stock or market indices.",
-    "{company}’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit} to manage risks related to equity-linked compensation obligations.",
-    "{company}’s {swap_type} contracted in {old_year} remain outstanding as of {year}, with a notional balance of {currency_code}{notional} {money_unit}, intended to hedge changes in equity market values.",
-    "To manage share price exposure, {company} {verb} {swap_type} in {old_year}, with an inception notional of {currency_code}{notional} {money_unit} and a stated maturity in {future_year}.",
-    "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}, which are set to expire in {month} {future_year}, to offset volatility in stock-based compensation expense.",
-    "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{notional} {money_unit}, expiring in {future_year}, to hedge changes in equity valuation.",
+    "As of {month} {end_day}, {year}, {company} {verb} {swap_type} to manage exposure to changes in the market price of its common stock and related equity-based compensation costs",
+    "At year-end {year}, {company} {verb} {swap_type} outstanding to hedge variability in compensation expense associated with changes in the company’s share price",
+    "As of {month} {year}, outstanding {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain in effect to mitigate exposure to equity price movements",
+    "{company}’s derivative portfolio at {month} {end_day}, {year} includes {swap_type} used to manage market risks associated with fluctuations in the company’s stock price",
+    "At the end of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active, hedging exposures tied to equity-based programs",
+    "As of {month} {end_day}, {year}, {company} has {swap_type} outstanding with a notional amount of {currency_code}{notional} {money_unit} to offset potential volatility from changes in its share price",
+    "At year-end {year}, {company}’s derivative portfolio includes {swap_type} executed to reduce variability in reported expenses arising from equity-linked compensation",
+    "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} remain designated as economic hedges of the company’s share price exposure",
+    "{company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} at {month} {end_day}, {year}, to hedge the market price risk associated with stock-based compensation plans",
+    "At the close of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active to mitigate equity-related market risk",
+    "As of {month} {year}, {company}’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit} linked to the value of its common stock or market indices",
+    "{company}’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit} to manage risks related to equity-linked compensation obligations",
+    "{company}’s {swap_type} contracted in {old_year} remain outstanding as of {year}, with a notional balance of {currency_code}{notional} {money_unit}, intended to hedge changes in equity market values",
+    "To manage share price exposure, {company} {verb} {swap_type} in {old_year}, with an inception notional of {currency_code}{notional} {money_unit} and a stated maturity in {future_year}",
+    "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}, which are set to expire in {month} {future_year}, to offset volatility in stock-based compensation expense",
+    "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{notional} {money_unit}, expiring in {future_year}, to hedge changes in equity valuation",
     # --- Two-year comparative disclosures ---
-    "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge exposure to its common stock value.",
-    "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} outstanding with aggregate notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, related to equity-based compensation programs.",
-    "At {month} {end_day}, {year} and {prev_year}, {company}’s derivative portfolio included {swap_type} with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used to manage equity-linked exposures.",
-    "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} contracts totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to mitigate volatility in stock-based compensation costs.",
-    "At {month} {end_day}, {year} and {prev_year}, {company}’s outstanding {swap_type} had notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, remaining in effect as hedges of equity price risk.",
-    "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} active {swap_type} positions with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to manage changes in the value of its shares.",
-    "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} instruments with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, as part of its equity risk management strategy.",
-    "As of {month} {end_day}, {year} and {prev_year}, {company}’s {swap_type} portfolio included outstanding contracts with aggregate notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge share price fluctuations.",
+    "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge exposure to its common stock value",
+    "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} outstanding with aggregate notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, related to equity-based compensation programs",
+    "At {month} {end_day}, {year} and {prev_year}, {company}’s derivative portfolio included {swap_type} with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used to manage equity-linked exposures",
+    "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} contracts totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to mitigate volatility in stock-based compensation costs",
+    "At {month} {end_day}, {year} and {prev_year}, {company}’s outstanding {swap_type} had notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, remaining in effect as hedges of equity price risk",
+    "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} active {swap_type} positions with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to manage changes in the value of its shares",
+    "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} instruments with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, as part of its equity risk management strategy",
+    "As of {month} {end_day}, {year} and {prev_year}, {company}’s {swap_type} portfolio included outstanding contracts with aggregate notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge share price fluctuations",
 ]
 
 
@@ -626,6 +626,10 @@ hedge_optional_templates = [
     "{company} {verb} {swap_type} with notional amounts of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} in the prior year",
     "As of {month} {end_day}, {year}, {company}’s {swap_type} for revenue hedging had a notional value of {currency_code}{notional1} {money_unit}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
     "{company} {verb} {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
+    "Each transaction requires quarterly settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
+    "Each transaction requires annual settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
+    "Each {swap_type} requires quarterly settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
+    "Each {swap_type} requires annual settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
 ]
 hedge_termination_templates = [
     "In the {quarter} quarter of {year}, {company} terminated all remaining {swap_type} agreements. {company} has no outstanding derivative positions as of year-end {year}",
@@ -3132,7 +3136,7 @@ def generate_derivative_liability_paragraph(
     paragraph = pattern_we_is.sub("We are", paragraph)
     paragraph = pattern_nil.sub("nil", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
-    paragraph = pattern_dots.sub(".", paragraph)  # Remove double periods
+    paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
 
     if paragraph.find("{") != -1 or paragraph.find("[") != -1:
         print("Error in format", paragraph)
@@ -4447,7 +4451,7 @@ def generate_labeled_hedge_paragraph(
     paragraph = pattern_we_is.sub("We are", paragraph)
     paragraph = pattern_nil.sub("nil", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
-    paragraph = pattern_dots.sub(".", paragraph)  # Remove double periods
+    paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
 
     # Error checking for unformatted placeholders
     if "{" in paragraph or "}" in paragraph:
@@ -5544,7 +5548,7 @@ def generate_accounting_noise_paragraph(
     paragraph = pattern_we_is.sub("We are", paragraph)
     paragraph = pattern_nil.sub("nil", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)   # Remove extra whitespace
-    paragraph = pattern_dots.sub(".", paragraph)     # Remove double periods
+    paragraph = pattern_dots.sub("", paragraph)     # Remove double periods
     
     if paragraph.find("{") != -1:
         print("Error in format", paragraph)
