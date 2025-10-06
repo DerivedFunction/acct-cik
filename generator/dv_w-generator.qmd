@@ -1066,7 +1066,11 @@ derivative_template = {
         "collar contract",
         "NDF",
     ],
-    "CP_PLACEHOLDER": ["commodity price", "commodity-related"],
+    "CP_PLACEHOLDER": [
+        "commodity price",
+        "commodity-related",
+        "weighted average commodity",
+    ],
     "CP_TYPES": [
         "swap",
         "forward",
@@ -1093,7 +1097,9 @@ derivative_template = {
         "put option",
         "put contract",
         "option contract",
+        "over-the-counter contract",
         "swap",
+        "weighted average swap",
         "swaption",
         "equity swap",
         "receive-equity return, pay-fixed equity swap",
