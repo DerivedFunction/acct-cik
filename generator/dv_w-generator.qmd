@@ -4435,11 +4435,11 @@ def generate_labeled_hedge_paragraph(
     if include_policy:
         if swapType == "cp":
             sentences = generate_cp_policy(commodity)
-        if swapType == "ir":
+        elif swapType == "ir":
             sentences = generate_ir_policy()
             # Pick only 1-2 sentences
             random.shuffle(sentences)
-        if swapType == "fx":
+        elif swapType == "fx":
             sentences = generate_fx_policy()            
         else:
             sentences = generate_hedge_policy()
