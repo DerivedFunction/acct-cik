@@ -3553,7 +3553,8 @@ def generate_labeled_hedge_paragraph(
 
                 template = random.choice(ir_context_templates)
                 all_sentences.append(
-                    template.format(company=company_name, swap_types=selected_ir_list)
+                    template.format(company=company_name, 
+                    verb=verb, swap_types=selected_ir_list)
                 )
             if random.random() < 0.05:
                 template = random.choice(fx_ir_context_templates)
