@@ -1568,7 +1568,7 @@ ir_context_templates = [
     "{company} is exposed to interest rate risk associated with fluctuations in interest rates on our variable rate debt",
     "{company} recognize the gains and losses on our derivative instruments as an adjustment to interest expense in the period the hedged interest payment affects earnings",
     "{company} manage interest costs by using a mix of fixed- and floating-rate debt",
-    "{company} {verb} two derivative financial instruments to manage our variable interest rate exposure",
+    "{company} {verb} derivative financial instruments to manage our variable interest rate exposure",
 ]
 # Interest Rate (IR) Debt Optimization Templates
 ir_debt_optimization_templates = [
