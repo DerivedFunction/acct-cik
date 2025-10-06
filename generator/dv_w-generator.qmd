@@ -4458,7 +4458,7 @@ def generate_labeled_hedge_paragraph(
         else:
             sentences = generate_hedge_policy()
         sentences = sentences[:random.randint(1, 2)]
-        all_sentences.extend(sentences)
+        selected_sentences.extend(sentences)
     # Capitalize first letter of each sentence
     selected_sentences = [
         s[0].upper() + s[1:] if s and len(s) > 0 else "" for s in selected_sentences
