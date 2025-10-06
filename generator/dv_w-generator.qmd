@@ -1129,7 +1129,7 @@ derivative_keywords = {
         derivative_template["FX_STANDALONE"],
     ),
     "cp": expand_derivative_terms(
-        derivative_template["CP_PLACEHOLDER"], derivative_template["CP_TYPES"], derivative_template["CP_STANDALONE"]
+        derivative_template["CP_PLACEHOLDER"], derivative_template["CP_TYPES"], []
     ),
     "gen": expand_derivative_terms([], [], derivative_template["GEN_STANDALONE"]),
 }
