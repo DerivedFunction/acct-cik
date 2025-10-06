@@ -604,6 +604,12 @@ eq_position_templates = [
     "As of {month} {end_day}, {year} and {prev_year}, {company}’s {swap_type} portfolio included outstanding contracts with aggregate notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge share price fluctuations",
 ]
 
+hedge_transaction_templates = [
+    "Each transaction requires quarterly settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
+    "Each transaction requires annual settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
+    "Each {swap_type} requires quarterly settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
+    "Each {swap_type} requires annual settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
+]
 
 hedge_optional_templates = [
     "{company} also have {verb} {swap_type} to hedge forecasted revenue which were not part of a collar strategy. Such {swap_type} had a notional value of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {month} {end_day}, {prev_year}, respectively",
@@ -626,7 +632,6 @@ hedge_optional_templates = [
     "{company} {verb} {swap_type} with notional amounts of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} in the prior year",
     "As of {month} {end_day}, {year}, {company}’s {swap_type} for revenue hedging had a notional value of {currency_code}{notional1} {money_unit}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
     "{company} {verb} {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
-
 ]
 hedge_termination_templates = [
     "In the {quarter} quarter of {year}, {company} terminated all remaining {swap_type} agreements. {company} has no outstanding derivative positions as of year-end {year}",
@@ -3410,6 +3415,20 @@ def generate_labeled_hedge_paragraph(
                         company=company_name, verb=random.choice(hedge_use_verbs)
                     )
                 )
+        # Hedge transaction
+        if random.random() < 0.05:
+            template = random.choice(hedge_transaction_templates)
+            swap_type = random.choice(swap_types)
+            notional = random.randint(1, 50)
+            all_sentences.append(
+                template.format(
+                    company=company_name,
+                    swap_type=swap_type,
+                    notional=notional,
+                    currency_code=currency_code,
+                    money_unit=money_units,
+                )
+            )
         if not has_active_derivative:
             # Past event (0-1)
             if random.random() < 0.6 and len(past_years) > 0:
@@ -4425,6 +4444,7 @@ def generate_labeled_hedge_paragraph(
                         year=exp_year,
                     )
                     all_sentences.append(sentence)
+        
     if len(all_sentences) < max_len:
         return generate_labeled_hedge_paragraph(
             has_active_derivative=has_active_derivative, swapType=swapType, max_len=3
