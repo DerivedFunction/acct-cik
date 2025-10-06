@@ -5599,14 +5599,11 @@ def generate(size_per_label=100):
                 has_active_derivative=False, swapType=prefix
             )
             all_samples.append((paragraph, label))
-        for _ in range(size_per_label // numSwaps):
+        for _ in range(size_per_label // (numSwaps * 2)):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=None, swapType=prefix
             )
             all_samples.append((paragraph, label))
-    for _ in range(size_per_label // numSwaps):
-        paragraph, label = generate_labeled_hedge_paragraph(has_active_derivative=None)
-        all_samples.append((paragraph, label))
     for _ in range(size_per_label // 2):
         paragraph, label = generate_derivative_liability_paragraph(label_type=4)
         all_samples.append((paragraph, label))
