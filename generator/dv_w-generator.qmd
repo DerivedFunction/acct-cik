@@ -1069,7 +1069,6 @@ derivative_template = {
     "CP_PLACEHOLDER": [
         "commodity price",
         "commodity-related",
-        "weighted average commodity",
     ],
     "CP_TYPES": [
         "swap",
@@ -1086,22 +1085,28 @@ derivative_template = {
         "option contract",
         "futures contract",
     ],
-    "GEN_STANDALONE": [
-        "futures contract",
-        "purchased put option contracts",
-        "collar strategies",
-        "purchased call option contracts",
-        "forward contract",
+    "GEN_PLACEHOLDER": [
+        "",
+    ],
+    "GEN_TYPES": [
+        "equity swap",
+        "swap",
+        "future",
+        "forward",
         "call option",
         "call contract",
         "put option",
         "put contract",
         "option contract",
-        "over-the-counter contract",
-        "swap",
-        "weighted average swap",
+        "forward contract",
+        "futures contract",
         "swaption",
-        "equity swap",
+    ]
+    "GEN_STANDALONE": [
+        "purchased put option contracts",
+        "collar strategies",
+        "purchased call option contracts",
+        "over-the-counter contract",
         "receive-equity return, pay-fixed equity swap",
         "receive-equity return, pay-floating equity swap",
         "equity collar",
@@ -1138,7 +1143,7 @@ derivative_keywords = {
     "cp": expand_derivative_terms(
         derivative_template["CP_PLACEHOLDER"], derivative_template["CP_TYPES"], []
     ),
-    "gen": expand_derivative_terms([], [], derivative_template["GEN_STANDALONE"]),
+    "gen": expand_derivative_terms(derivative_template["GEN_PLACEHOLDER"], derivative_template["GEN_TYPES"], derivative_template["GEN_STANDALONE"]),
 }
 
 ```
