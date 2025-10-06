@@ -3657,6 +3657,7 @@ def generate_labeled_hedge_paragraph(
                     swap_type = random.choice(swap_types)
                     notional1 = random.randint(50, 1000)
                     notional2 = random.randint(50, 1000)
+                    notional = random.randint(5, 50)
                     prev_year = past_years[-1]
                     sentence = template.format(
                         company=company_name,
@@ -3667,6 +3668,7 @@ def generate_labeled_hedge_paragraph(
                         year=current_year,
                         prev_year=prev_year,
                         currency_code=currency_code,
+                        notional=notional,
                         notional1=notional1,
                         notional2=notional2,
                         money_unit=money_units,
@@ -3885,6 +3887,7 @@ def generate_labeled_hedge_paragraph(
                     template = random.choice(hedge_optional_templates)
                     verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
+                    notional = random.randint(5, 50)
                     notional1 = random.randint(100, 1000)
                     notional2 = random.randint(100, 1000)
                     prev_year = past_years[-1]
@@ -3897,6 +3900,7 @@ def generate_labeled_hedge_paragraph(
                         year=current_year,
                         prev_year=prev_year,
                         currency_code=currency_code,
+                        notional=notional,
                         notional1=notional1,
                         notional2=notional2,
                         money_unit=money_units,
