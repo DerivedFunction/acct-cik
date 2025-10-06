@@ -3472,49 +3472,46 @@ def generate_labeled_hedge_paragraph(
     def generate_cp_policy(commodity="commodity"):
         sentences = []
         # Context sentences
-        if random.random() < 0.6:
-            template = random.choice(cp_context_templates)
-            verb = random.choice(hedge_use_verbs)
+        template = random.choice(cp_context_templates)
+        verb = random.choice(hedge_use_verbs)
 
-            sentences.append(
-                template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    commodity=commodity,
-                )
+        sentences.append(
+            template.format(
+                company=pick_company_name(company_name),
+                verb=verb,
+                commodity=commodity,
             )
+        )
 
         # Impact sentences
-        if random.random() < 0.7:
-            template = random.choice(cp_impact_templates)
-            verb = random.choice(hedge_change_verbs)
+        template = random.choice(cp_impact_templates)
+        verb = random.choice(hedge_change_verbs)
 
-            cost_type = random.choice(cost_types)
-            sentences.append(
-                template.format(
-                    company=pick_company_name(company_name),
-                    commodity=commodity,
-                    verb=verb,
-                    cost_type=cost_type,
-                )
+        cost_type = random.choice(cost_types)
+        sentences.append(
+            template.format(
+                company=pick_company_name(company_name),
+                commodity=commodity,
+                verb=verb,
+                cost_type=cost_type,
             )
+        )
 
         # May use hedge
-        if random.random() < 0.25:
-            template = random.choice(cp_may_use_templates)
-            verb = random.choice(hedge_use_verbs)
-            swap_type = random.choice(swap_types)
+        template = random.choice(cp_may_use_templates)
+        verb = random.choice(hedge_use_verbs)
+        swap_type = random.choice(swap_types)
 
-            if random.random() < 0.3:  # Chance to replace with actual commodity
-                swap_type = re.sub("commodity", commodity, swap_type)
-            sentences.append(
-                template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    commodity=commodity,
-                )
+        if random.random() < 0.3:  # Chance to replace with actual commodity
+            swap_type = re.sub("commodity", commodity, swap_type)
+        sentences.append(
+            template.format(
+                company=pick_company_name(company_name),
+                verb=verb,
+                swap_type=swap_type,
+                commodity=commodity,
             )
+        )
         return sentences
     def generate_hedge_policy():
         sentences = []
@@ -3630,16 +3627,6 @@ def generate_labeled_hedge_paragraph(
         if random.random() < 0.6:
             template = random.choice(hedge_counterparty_templates)
             all_sentences.append(template.format(company=company_name))
-
-        if swapType == "fx":
-            all_sentences.extend(generate_fx_policy())
-        elif swapType == "ir":
-            all_sentences.extend(generate_ir_policy())
-        elif swapType == "cp":
-            commodity = random.choice(commodities)
-            all_sentences.extend(generate_cp_policy(commodity))
-        else:
-            all_sentences.extend(generate_hedge_policy())
     # Labels 0 and 1: Specific positions
     else:
         # Hedge transaction
@@ -5630,11 +5617,6 @@ def generate(size_per_label=100):
         for _ in range(size_per_label // numSwaps):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=False, swapType=prefix
-            )
-            all_samples.append((paragraph, label))
-        for _ in range(size_per_label // (numSwaps * 2)):
-            paragraph, label = generate_labeled_hedge_paragraph(
-                has_active_derivative=None, swapType=prefix
             )
             all_samples.append((paragraph, label))
     for _ in range(size_per_label // 2):
