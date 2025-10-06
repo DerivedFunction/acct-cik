@@ -3197,7 +3197,6 @@ def generate_labeled_hedge_paragraph(
     Returns:
         tuple: (paragraph_text, label) where label is 0, 1, or 2
     """
-    
     # Decide whether to include policy statements for labels 0 and 1
     if include_policy is None:
         include_policy = random.random() < 0.7
@@ -3329,7 +3328,14 @@ def generate_labeled_hedge_paragraph(
                 swap_type=swap_type,
             )
         )
-
+        # No trading policy (always)
+        nt_template = random.choice(hedge_no_trading_templates)
+        all_sentences.append(
+            nt_template.format(
+                company=pick_company_name(company_name),
+                verb=random.choice(hedge_may_use_verbs),
+            )
+        )
         # Documentation (0-1)
         if random.random() < 0.6:
             template = random.choice(hedge_documentation_templates)
@@ -3459,14 +3465,6 @@ def generate_labeled_hedge_paragraph(
                         company=pick_company_name(company_name),
                     )
                 )
-            # No trading policy (always)
-            nt_template = random.choice(hedge_no_trading_templates)
-            all_sentences.append(
-                nt_template.format(
-                    company=pick_company_name(company_name),
-                    verb=random.choice(hedge_may_use_verbs),
-                )
-            )
             # Generic hedge (0-1)
             if random.random() < 0.5:
                 template = random.choice(fx_generic_hedge_templates)
