@@ -3250,25 +3250,36 @@ def generate_labeled_hedge_paragraph(
 
     # Determine label
     if has_active_derivative is None:
-        label = 2
+        if swapType == "gen":
+            label = 12
+        elif swapType == "ir":
+            label = 3
+        elif swapType == "fx":
+            label = 6
+        elif swapType == "cp":
+            label = 9
+
     elif has_active_derivative is True:
         if swapType == "gen":
-            label = 0
-        elif swapType == "ir":
-            label = 8
-        elif swapType == "fx":
             label = 10
+        elif swapType == "ir":
+            label = 1
+        elif swapType == "fx":
+            label = 4
         elif swapType == "cp":
-            label = 12
+            label = 7
+
     else:
         if swapType == "gen":
-            label = 1
-        elif swapType == "ir":
-            label = 9
-        elif swapType == "fx":
             label = 11
+        elif swapType == "ir":
+            label = 2
+        elif swapType == "fx":
+            label = 5
         elif swapType == "cp":
-            label = 13
+            label = 8
+
+
 
     # Label 2: Policy/disclosure only (no specific positions)
     if has_active_derivative is None:
