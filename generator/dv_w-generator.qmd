@@ -15,6 +15,7 @@ parquet_file = "./training_data.parquet"
 pattern_we_s = re.compile(r"We's", flags=re.IGNORECASE)
 pattern_we_is = re.compile(r"We is", flags=re.IGNORECASE)
 pattern_nil = re.compile(r"nil (thousand|million|billion)", flags=re.IGNORECASE)
+pattern_notional = re.compile(f"notional", flags=re.IGNORECASE)
 pattern_spaces = re.compile(r"\s+")
 pattern_dots = re.compile(r"\.\.")
 ```
@@ -3145,6 +3146,8 @@ def generate_derivative_liability_paragraph(
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
     paragraph = pattern_nil.sub("nil", paragraph)
+    if random.random() < 0.5:
+        paragraph = pattern_notional.sub("", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
     paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
 
@@ -4439,6 +4442,8 @@ def generate_labeled_hedge_paragraph(
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
     paragraph = pattern_nil.sub("nil", paragraph)
+    if random.random() < 0.5:
+        paragraph = pattern_notional.sub("", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
     paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
 
@@ -5536,6 +5541,8 @@ def generate_accounting_noise_paragraph(
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
     paragraph = pattern_nil.sub("nil", paragraph)
+    if random.random() < 0.5:
+        paragraph = pattern_notional.sub("", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)   # Remove extra whitespace
     paragraph = pattern_dots.sub("", paragraph)     # Remove double periods
     
