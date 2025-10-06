@@ -71,6 +71,6 @@ ff.head()
 ## Execute INSERT/DELETE/UPDATE Statements
 
 ```{python}
-dd = execute_sql("DELETE FROM webpage_result", fetch=False)
+dd = execute_sql("DELETE FROM server_result", fetch=False)
 print(dd)
 ```
