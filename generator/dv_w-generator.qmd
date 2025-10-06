@@ -3197,11 +3197,7 @@ def generate_labeled_hedge_paragraph(
     Returns:
         tuple: (paragraph_text, label) where label is 0, 1, or 2
     """
-
-    # Set max_len if not provided
-    if max_len is None:
-        max_len = random.randint(4, 7)
-
+    
     # Decide whether to include policy statements for labels 0 and 1
     if include_policy is None:
         include_policy = random.random() < 0.7
