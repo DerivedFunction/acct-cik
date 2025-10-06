@@ -110,7 +110,7 @@ id2label = {int(k): v for k, v in keyword_data["id2label"].items()}
 label2id = {v: int(k) for k, v in keyword_data["id2label"].items()}
 
 model = AutoModelForSequenceClassification.from_pretrained(
-    FINE_TUNE_MODEL,
+    MODEL_NAME,
     num_labels=len(id2label),
     id2label=id2label,
     label2id=label2id,
