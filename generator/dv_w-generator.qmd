@@ -4486,7 +4486,7 @@ def generate_labeled_hedge_paragraph(
             random.shuffle(sentences)
             sentences = sentences[:random.randint(1, 2)]
             all_sentences.extend(sentences)
-        if include_policy:
+        if swapType == "fx":
             sentences = generate_fx_policy()
             # Pick only 1-2 sentences
             random.shuffle(sentences)
