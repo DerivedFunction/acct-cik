@@ -4360,7 +4360,6 @@ def generate_labeled_hedge_paragraph(
                         year=current_year,
                         prev_year=prev_year,
                         currency_code=currency_code,
-                        notional=notional,
                         notional1=notional1,
                         notional2=notional2,
                         money_unit=money_units,
