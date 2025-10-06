@@ -74,6 +74,7 @@ The templates used in this generator are based on a qualitative analysis of real
 *   **Not exhaustive:** The templates do not cover every possible variation of financial disclosure. There will be instances of real-world financial text that are not represented in the generated data.
 *   **Simplified context:** The generated text is created from individual templates and does not capture the broader context of a full financial report.
 *   **No novel language:** The generator can only produce text based on the templates and placeholders it has been given. It cannot generate truly novel or creative language.
+*   **Potentially nonsensical combinations:** Due to the random nature of placeholder replacement, some generated sentences may appear nonsensical from a human perspective. For example, a sentence might mention a valuation model that is not typically used for a specific financial instrument, or combine monetary units in an illogical way. However, for the purpose of training an NLP model, these sentences still provide valuable syntactic and structural information, and help the model to generalize to a wider range of inputs.
 
 Despite these limitations, the generated data provides a valuable resource for training and evaluating NLP models on financial text, especially for tasks like classification and named entity recognition.
 
