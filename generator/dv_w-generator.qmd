@@ -4310,6 +4310,7 @@ def generate_labeled_hedge_paragraph(
                 else:
                     template = random.choice(eq_position_templates)
                 swap_type = random.choice(swap_types)
+                notional = random.randint(50, 1000)
                 prev_notional = random.randint(50, 1000)
                 verb = random.choice(hedge_use_verbs)
                 prev_year = current_year - 1
