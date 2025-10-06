@@ -4198,18 +4198,15 @@ def generate_labeled_hedge_paragraph(
                     if random.random() < 0.3:  # Chance to replace with actual commodity
                         swap_type = re.sub("commodity", commodity, swap_type)
                     prev_notional = random.randint(5, 50)
-
-                    if random.random() < 
-
-                    old_year = (
-                        random.choice(past_years) - 1
-                        if past_years
-                        else current_year - 1
-                    )
+                    if random.random() < 0.5: # Set notional for prev year
+                        year = current_year - 1
+                        notional = random.randint(5, 50)
+                    else: # Or set current year as 0
+                        year = current_year
+                        notional = random.choice(["0", "nil"])
+                    prev_year = year - 1
+                    old_year = random.choice(past_years) - 1 if past_years else prev_year
                     future_year = random.randint(old_year, prev_year)
-                    
-                    notional = random.randint(5, 50)
-                    
                     sentence = template.format(
                         company=company_name,
                         verb=verb,
