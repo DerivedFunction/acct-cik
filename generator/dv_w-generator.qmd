@@ -3537,11 +3537,24 @@ def generate_labeled_hedge_paragraph(
                 )
                 all_sentences.append(sentence)
         elif swapType == "ir":
+            selected_ir = []
+            for _ in range(3):
+                selected_ir.append(random.choice(swap_types))
+                if random.random() < 0.5:
+                    break
+            selected_ir_list = (
+                ", ".join(selected_ir[:-1]) + " and " + selected_ir[-1]
+                if len(selected_ir) > 1
+                else selected_ir[0]
+            )
             # Context sentences
             if random.random() < 0.10:
                 verb = random.choice(hedge_use_verbs)
+
                 template = random.choice(ir_context_templates)
-                all_sentences.append(template.format(company=company_name))
+                all_sentences.append(
+                    template.format(company=company_name, swap_types=selected_ir_list)
+                )
             if random.random() < 0.05:
                 template = random.choice(fx_ir_context_templates)
                 all_sentences.append(template.format(company=company_name))
@@ -3919,11 +3932,21 @@ def generate_labeled_hedge_paragraph(
 
         # Interest Rate specific logic
         elif swapType == "ir":
+            selected_ir = []
+            for _ in range(3):
+                selected_ir.append(random.choice(swap_types))
+                if random.random() < 0.5:
+                    break
+            selected_ir_list = (
+                ", ".join(selected_ir[:-1]) + " and " + selected_ir[-1]
+                if len(selected_ir) > 1
+                else selected_ir[0]
+            )
             # Context sentences
             if random.random() < 0.10:
                 verb = random.choice(hedge_use_verbs)
                 template = random.choice(ir_context_templates)
-                all_sentences.append(template.format(company=company_name, verb=verb))
+                all_sentences.append(template.format(company=company_name, verb=verb, swap_types=selected_ir_list))
             if random.random() < 0.05:
                 template = random.choice(fx_ir_context_templates)
                 all_sentences.append(template.format(company=company_name))
