@@ -3539,6 +3539,7 @@ def generate_labeled_hedge_paragraph(
         elif swapType == "ir":
             # Context sentences
             if random.random() < 0.10:
+                verb = random.choice(hedge_may_use_verbs)
                 template = random.choice(ir_context_templates)
                 all_sentences.append(template.format(company=company_name))
             if random.random() < 0.05:
