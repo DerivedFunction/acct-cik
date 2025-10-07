@@ -546,10 +546,14 @@ hedge_past_event_template = [
     "In the {quarter} quarter of {year}, {company} {verb} {swap_type} agreements with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
     "During {month} {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
     "During the {quarter} of {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
+]
+
+hedge_no_such_outstanding_template = [
     # --- One-year ---
     "As of {month} {end_day}, {year}, {company} {verb} no outstanding {swap_type} positions"
     "At year-end {year}, {company} reported no outstanding {swap_type}, as all derivative instruments were closed out before {month} {year}",
     "As of {month} {year}, there were no {swap_type} remaining",
+    "In the {quarter} quarter of {year}, there were no {swap_type} remaining",
     # --- Two-year ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {Verb} no outstanding {swap_type}",
     "As of {month} {end_day}, {year} and {prev_year}, there were no active {swap_type} positions, following the full settlement of prior hedge instruments",
@@ -560,7 +564,6 @@ hedge_past_event_template = [
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} no outstanding {swap_type}",
     "For {year}, {prev_year}, and {prev2_year}, {company} reported no outstanding {swap_type}, as all derivative positions were either settled or allowed to expire",
 ]
-
 
 hedge_position_templates = [
     "As of {month} {end_day}, {year}, {company} {verb} {swap_type} with notional amounts totaling {currency_code}{notional} {money_unit}",
@@ -3896,6 +3899,25 @@ def generate_labeled_hedge_paragraph(
                     amount=amount,
                     money_unit=money_units,
                     hedge_type=hedge_type,
+                )
+                all_sentences.append(sentence)
+            # Past event (0-1)
+            if random.random() < 0.10:
+                template = random.choice(hedge_no_such_outstanding_template)
+                swap_type = random.choice(swap_types)
+                verb = random.choice(hedge_use_verbs)
+                year = current_year
+                prev_year = year - 1
+                prev2_year = prev_year - 1
+                sentence = template.format(
+                    company=pick_company_name(company_name),
+                    verb=verb,
+                    swap_type=swap_type,
+                    month=random.choice(months),
+                    year=year,
+                    prev_year=prev_year,
+                    prev2_year=prev2_year,
+                    quarter=random.choice(quarters),
                 )
                 all_sentences.append(sentence)
         # Foreign Exchange specific logic
