@@ -4175,7 +4175,7 @@ def generate_labeled_hedge_paragraph(
                     )  # Use event templates
                     verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
-
+                    old_notional  = random.randint(5, 50)
                     if random.random() < 0.3:  # Chance to replace with actual commodity
                         swap_type = re.sub("commodity", commodity, swap_type)
                     prev_notional = random.randint(0, 50)
@@ -4204,6 +4204,7 @@ def generate_labeled_hedge_paragraph(
                         currency_code=currency_code,
                         notional=notional,
                         prev_notional=prev_notional,
+                        old_notional=old_notional,
                         money_unit=money_units,
                     )
                     all_sentences.append(sentence)
