@@ -257,7 +257,7 @@ deriv_liability_general_templates = [
     "As of {month} {end_day}, {year}, derivative liabilities totaled {currency_code}{amount} {money_unit} compared to {currency_code}{prev_amount} {money_unit} in the prior year",
     "Changes in the fair value of derivative liabilities during {year} resulted in a {gain_loss} of {currency_code}{amount} {money_unit}",
     "{company} recognized derivative liabilities of {currency_code}{amount} {money_unit} related to warrants issued in connection with financing transactions during {year}",
-    "{company}’s warrant liability is based on  utilizing management judgment and pricing inputs from observable and unobservable markets with less volume and transaction frequency than active markets",
+    "{company} ’s warrant liability is based on  utilizing management judgment and pricing inputs from observable and unobservable markets with less volume and transaction frequency than active markets",
     "The following table presents information about {company}'s warrant liabilities that are measured at fair value on a recurring basis at {month} {end_day}, {year} and indicates the fair value hierarchy of the valuation inputs",
 ]
 
@@ -433,7 +433,7 @@ embedded_fx_templates = [
     "The embedded foreign exchange feature is deemed to be clearly and closely related to the host contract and remains within the host’s accounting treatment",
     # Contract variations
     "{company}'s long-term debt agreements denominated in {currency_pair} contain embedded FX derivatives requiring analysis under ASC 815",
-    "Lease agreements with rental payments linked to {currency_pair} expose the Company to embedded foreign exchange derivative features",
+    "Lease agreements with rental payments linked to {currency_pair} expose {company} to embedded foreign exchange derivative features",
     "Supplier agreements denominated in {currency_pair} include embedded currency features subject to bifurcation assessment",
     "Customer contracts requiring settlement in {currency_pair} create embedded FX derivatives under the host revenue arrangement",
     "Royalty agreements denominated in foreign currency contain embedded foreign exchange features subject to ASC 815 analysis",
@@ -490,7 +490,7 @@ embedded_past_templates = [
     # Explicit none outstanding / balance sheet focus
     "No embedded derivative liabilities were outstanding as of {month} {end_day}, {current_year}, as all bifurcated instruments had been settled or converted",
     "All previously bifurcated embedded derivatives were derecognized, and no amounts remain recorded on the consolidated balance sheet",
-    "Management notes that as of {month} {end_day}, {current_year}, the Company no longer maintains any embedded derivative positions",
+    "Management notes that as of {month} {end_day}, {current_year}, {company} no longer maintains any embedded derivative positions",
 ]
 
 convertible_debt_redemption_templates = [
@@ -570,55 +570,55 @@ hedge_position_templates = [
     "At year-end {year}, {company} {verb} {swap_type} outstanding with aggregate notional values of {currency_code}{notional} {money_unit} designated as hedges",
     "As of {month} {year}, outstanding {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain in effect",
     "{company}'s derivative portfolio at {month} {end_day}, {year} consists of {swap_type} with combined notional values of {currency_code}{notional} {money_unit}",
-    "At the end of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active in {company}’s derivative portfolio",
+    "At the end of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active in {company} ’s derivative portfolio",
     "As of {month} {end_day}, {year}, {company} {verb} {swap_type} outstanding with a notional amount of {currency_code}{notional} {money_unit}",
-    "At year-end {year}, {company}’s derivative portfolio includes {swap_type} with a notional value of {currency_code}{notional} {money_unit}",
+    "At year-end {year}, {company} ’s derivative portfolio includes {swap_type} with a notional value of {currency_code}{notional} {money_unit}",
     "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} remain designated as hedges",
     "{company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} at {month} {end_day}, {year}, as part of its hedging strategy",
     "At the close of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain designated as hedges",
-    "As of {month} {year}, {company}’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit}",
-    "{company}’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}",
-    "{company}’s {swap_type} contracted in {old_year} remain outstanding as of {year}, with a notional balance of {currency_code}{old_notional} {money_unit}, scheduled to mature in {future_year}",
+    "As of {month} {year}, {company} ’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit}",
+    "{company} ’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}",
+    "{company} ’s {swap_type} contracted in {old_year} remain outstanding as of {year}, with a notional balance of {currency_code}{old_notional} {money_unit}, scheduled to mature in {future_year}",
     "To manage exposure, {company} {verb} {swap_type} in {old_year}, with an inception notional of {currency_code}{old_notional} {money_unit} and a stated maturity in {future_year}",
     "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{old_notional} {money_unit}, which are set to expire in {month} {future_year}",
     "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{old_notional} {money_unit}, expiring in {future_year}",
     # --- NEW TWO-YEAR DISCLOSURE ADDITIONS (with {month} and {end_day}) ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated as hedging instruments",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} outstanding with aggregate notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
-    "At {month} {end_day}, {year} and {prev_year}, {company}’s derivative portfolio included {swap_type} with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
+    "At {month} {end_day}, {year} and {prev_year}, {company} ’s derivative portfolio included {swap_type} with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} contracts totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used for hedging purposes",
-    "At {month} {end_day}, {year} and {prev_year}, {company}’s outstanding {swap_type} had notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, remaining designated as hedges",
+    "At {month} {end_day}, {year} and {prev_year}, {company} ’s outstanding {swap_type} had notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, remaining designated as hedges",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} active {swap_type} positions with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, within its hedging program",
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} instruments with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, as part of its risk management strategy",
-    "As of {month} {end_day}, {year} and {prev_year}, {company}’s {swap_type} portfolio included outstanding contracts with aggregate notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
+    "As of {month} {end_day}, {year} and {prev_year}, {company} ’s {swap_type} portfolio included outstanding contracts with aggregate notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
 ]
 
 eq_position_templates = [
     "As of {month} {end_day}, {year}, {company} {verb} {swap_type} to manage exposure to changes in the market price of its common stock and related equity-based compensation costs",
     "At year-end {year}, {company} {verb} {swap_type} outstanding to hedge variability in compensation expense associated with changes in the company’s share price",
     "As of {month} {year}, outstanding {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain in effect to mitigate exposure to equity price movements",
-    "{company}’s derivative portfolio at {month} {end_day}, {year} includes {swap_type} used to manage market risks associated with fluctuations in the company’s stock price",
+    "{company} ’s derivative portfolio at {month} {end_day}, {year} includes {swap_type} used to manage market risks associated with fluctuations in the company’s stock price",
     "At the end of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active, hedging exposures tied to equity-based programs",
     "As of {month} {end_day}, {year}, {company} {verb} {swap_type} outstanding with a notional amount of {currency_code}{notional} {money_unit} to offset potential volatility from changes in its share price",
-    "At year-end {year}, {company}’s derivative portfolio includes {swap_type} executed to reduce variability in reported expenses arising from equity-linked compensation",
+    "At year-end {year}, {company} ’s derivative portfolio includes {swap_type} executed to reduce variability in reported expenses arising from equity-linked compensation",
     "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} remain designated as economic hedges of the company’s share price exposure",
     "{company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} at {month} {end_day}, {year}, to hedge the market price risk associated with stock-based compensation plans",
     "At the close of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active to mitigate equity-related market risk",
-    "As of {month} {year}, {company}’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit} linked to the value of its common stock or market indices",
-    "{company}’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit} to manage risks related to equity-linked compensation obligations",
-    "{company}’s {swap_type} contracted in {old_year} remain outstanding as of {year}, with a notional balance of {currency_code}{notional} {money_unit}, intended to hedge changes in equity market values",
+    "As of {month} {year}, {company} ’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit} linked to the value of its common stock or market indices",
+    "{company} ’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit} to manage risks related to equity-linked compensation obligations",
+    "{company} ’s {swap_type} contracted in {old_year} remain outstanding as of {year}, with a notional balance of {currency_code}{notional} {money_unit}, intended to hedge changes in equity market values",
     "To manage share price exposure, {company} {verb} {swap_type} in {old_year}, with an inception notional of {currency_code}{old_notional} {money_unit} and a stated maturity in {future_year}",
     "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{old_notional} {money_unit}, which are set to expire in {month} {future_year}, to offset volatility in stock-based compensation expense",
     "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{old_notional} {money_unit}, expiring in {future_year}, to hedge changes in equity valuation",
     # --- Two-year comparative disclosures ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge exposure to its common stock value",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} outstanding with aggregate notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, related to equity-based compensation programs",
-    "At {month} {end_day}, {year} and {prev_year}, {company}’s derivative portfolio included {swap_type} with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used to manage equity-linked exposures",
+    "At {month} {end_day}, {year} and {prev_year}, {company} ’s derivative portfolio included {swap_type} with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used to manage equity-linked exposures",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} contracts totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to mitigate volatility in stock-based compensation costs",
-    "At {month} {end_day}, {year} and {prev_year}, {company}’s outstanding {swap_type} had notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, remaining in effect as hedges of equity price risk",
+    "At {month} {end_day}, {year} and {prev_year}, {company} ’s outstanding {swap_type} had notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, remaining in effect as hedges of equity price risk",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} active {swap_type} positions with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to manage changes in the value of its shares",
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} instruments with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, as part of its equity risk management strategy",
-    "As of {month} {end_day}, {year} and {prev_year}, {company}’s {swap_type} portfolio included outstanding contracts with aggregate notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge share price fluctuations",
+    "As of {month} {end_day}, {year} and {prev_year}, {company} ’s {swap_type} portfolio included outstanding contracts with aggregate notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge share price fluctuations",
 ]
 
 hedge_transaction_templates = [
@@ -641,18 +641,18 @@ hedge_optional_templates = [
     "As of {month} {end_day}, {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were in place, down from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
     "{company} {verb} {swap_type} to hedge revenue streams, with notional amounts of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year} compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
     "In {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were active, compared to {currency_code}{notional2} {money_unit} in {prev_year}",
-    "As of {month} {end_day}, {year}, {company}’s {swap_type} portfolio had a notional value of {currency_code}{notional1} {money_unit}, reduced from {currency_code}{notional2} {money_unit} in {prev_year}",
-    "{company}’s {swap_type} for hedging forecasted revenue had notional values of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {prev_year}, respectively",
+    "As of {month} {end_day}, {year}, {company} ’s {swap_type} portfolio had a notional value of {currency_code}{notional1} {money_unit}, reduced from {currency_code}{notional2} {money_unit} in {prev_year}",
+    "{company} ’s {swap_type} for hedging forecasted revenue had notional values of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {prev_year}, respectively",
     "At year-end {year}, {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} were {verb} to hedge transactions, compared to {currency_code}{notional2} {money_unit} in {prev_year}",
     "{company} {verb} {swap_type} with a notional value of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, down from {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
     "As of {month} {end_day}, {year}, {swap_type} to hedge forecasted revenue totaled {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} in the prior year",
-    "{company}’s {swap_type} portfolio for revenue hedging had a notional value of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
+    "{company} ’s {swap_type} portfolio for revenue hedging had a notional value of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
     "In {year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{notional1} {money_unit}, reduced from {currency_code}{notional2} {money_unit} in {prev_year}",
     "As of {month} {end_day}, {year}, {swap_type} {verb} for hedging had a notional value of {currency_code}{notional1} {money_unit}, compared to {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
-    "{company}’s {swap_type} for transaction hedging totaled {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
+    "{company} ’s {swap_type} for transaction hedging totaled {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
     "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were active, compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
     "{company} {verb} {swap_type} with notional amounts of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}, versus {currency_code}{notional2} {money_unit} in the prior year",
-    "As of {month} {end_day}, {year}, {company}’s {swap_type} for revenue hedging had a notional value of {currency_code}{notional1} {money_unit}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
+    "As of {month} {end_day}, {year}, {company} ’s {swap_type} for revenue hedging had a notional value of {currency_code}{notional1} {money_unit}, down from {currency_code}{notional2} {money_unit} in {prev_year}",
     "{company} {verb} {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{notional2} {money_unit} at {month} {end_day}, {prev_year}",
 ]
 hedge_termination_templates = [
@@ -685,26 +685,26 @@ hedge_expiration_templates = [
     "Outstanding hedge positions matured throughout {year}, and {company} elected not to enter into new derivative contracts during the period",
     "During {month} {year}, all existing {swap_type} reached maturity, and no new hedging instruments were established for the fiscal year",
     "in the {quarter} quarter of {year}, all {swap_type} contracts matured, with no new derivative positions initiated",
-    "{company}’s {swap_type} portfolio fully expired in {month} {year}, with no new hedges entered during the year",
+    "{company} ’s {swap_type} portfolio fully expired in {month} {year}, with no new hedges entered during the year",
     "During {year}, all outstanding {swap_type} reached maturity, and {company} did not execute new derivative contracts",
-    "In {month} {year}, {company}’s {swap_type} positions expired, with no replacement hedges established",
+    "In {month} {year}, {company} ’s {swap_type} positions expired, with no replacement hedges established",
     "All {swap_type} matured in the {quarter} quarter of {year}, and no new derivative instruments were {verb} during the fiscal year",
-    "During {month} {year}, {company}’s derivative portfolio of {swap_type} was fully settled, with no new positions taken",
+    "During {month} {year}, {company} ’s derivative portfolio of {swap_type} was fully settled, with no new positions taken",
     "In {year}, all {swap_type} contracts reached maturity, and {company} chose not to initiate new hedges",
-    "{company}’s {swap_type} portfolio expired in {month} {year}, with no new derivative contracts executed",
+    "{company} ’s {swap_type} portfolio expired in {month} {year}, with no new derivative contracts executed",
     "during the {quarter} quarter of {year}, all outstanding {swap_type} matured, leaving no active hedges for the remainder of the year",
     "In {month} {year}, all {swap_type} reached their expiration date, with no new hedges established",
-    "{company}’s derivative instruments, including {swap_type}, fully matured in {year}, with no new positions entered",
+    "{company} ’s derivative instruments, including {swap_type}, fully matured in {year}, with no new positions entered",
     "During {month} {year}, all {swap_type} contracts expired, and {company} did not replace them with new hedges",
-    "in the {quarter} quarter of {year}, {company}’s {swap_type} portfolio reached maturity, with no new derivative contracts initiated",
+    "in the {quarter} quarter of {year}, {company} ’s {swap_type} portfolio reached maturity, with no new derivative contracts initiated",
     "All outstanding {swap_type} expired in {month} {year}, and no further hedging instruments were established",
-    "During {year}, {company}’s {swap_type} contracts fully matured, with no new hedges entered into",
+    "During {year}, {company} ’s {swap_type} contracts fully matured, with no new hedges entered into",
     "In {month} {year}, all derivative positions, including {swap_type}, expired, with no new contracts {verb}",
 ]
 
 hedge_quarterly_event_templates = [
     "In the {quarter} quarter of {year}, {company} settled {currency_code}{notional} {money_unit} in {swap_type} agreements, resulting in cash proceeds of {currency_code}{settlement} {money_unit}",
-    "During the {quarter} quarter of {year}, {swap_type} with notional amounts of {currency_code}{notional} {money_unit} were terminated, generating {currency_code}{settlement} {money_unit} in settlement payments to {company}",
+    "During the {quarter} quarter of {year}, {swap_type} with notional amounts of {currency_code}{notional} {money_unit} were terminated, generating {currency_code}{settlement} {money_unit} in settlement payments to {company} ",
     "{company} unwound {currency_code}{notional} {money_unit} notional of {swap_type} in the {quarter} quarter of {year}, recognizing {currency_code}{settlement} {money_unit} in cash settlements",
     "In the {quarter} quarter of {year}, {company} terminated {swap_type} totaling {currency_code}{notional} {money_unit} notional value, with net settlement receipts of {currency_code}{settlement} {money_unit}",
     "During {month} {year}, {company} settled {currency_code}{notional} {money_unit} in {swap_type}, resulting in {currency_code}{settlement} {money_unit} in cash proceeds",
@@ -751,8 +751,8 @@ hedge_dedesignation_templates = [
 hedge_context_templates = [
     "Our international operations are subject to government-imposed constraints, including laws on pricing, reimbursement, and access to our products",
     "Our global presence exposes {company} to foreign exchange rate volatility and regulatory risks across multiple jurisdictions",
-    "{company}’s global footprint subjects it to currency exchange risks and market-specific regulatory challenges",
-    "{company}’s operations in international markets expose it to foreign currency risks and regulatory constraints",
+    "{company} ’s global footprint subjects it to currency exchange risks and market-specific regulatory challenges",
+    "{company} ’s operations in international markets expose it to foreign currency risks and regulatory constraints",
 ]
 
 
@@ -760,7 +760,7 @@ fx_ir_context_templates = [
     "{company}'s global operations expose it to various market risks, including fluctuations in foreign currency exchange rates and interest rates",
     "Our business operations in multiple countries result in exposure to foreign currency exchange rate movements and interest rate volatility",
     "{company} operates in numerous international markets, which subjects us to risks from changes in currency exchange rates and interest rates",
-    "{company}’s multinational operations are impacted by foreign currency movements and interest rate changes in various markets",
+    "{company} ’s multinational operations are impacted by foreign currency movements and interest rate changes in various markets",
     "As a global entity, {company} faces exposure to exchange rate volatility and interest rate risks in its operations",
     "Operating in various jurisdictions, {company} are exposed to fluctuations in foreign currencies and interest rate movements",
     "Our global business model results in exposure to foreign exchange rate changes and interest rate fluctuations",
@@ -1194,11 +1194,11 @@ cp_position_template = [
     "During {year}, {company} {verb} {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to hedge volatility in {commodity} costs",
     "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} are {verb} to mitigate {commodity} price exposure",
     "Outstanding {swap_type} at year-end {year} effectively hedged volatility in {commodity} costs",
-    "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as hedges for {commodity} procurement",
-    "On {month} {end_day}, {year}, {company}’s {swap_type} portfolio includes notional amounts of {currency_code}{notional} {money_unit} to stabilize {commodity} costs",
+    "{company} ’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as hedges for {commodity} procurement",
+    "On {month} {end_day}, {year}, {company} ’s {swap_type} portfolio includes notional amounts of {currency_code}{notional} {money_unit} to stabilize {commodity} costs",
     "As of {month} {year}, {company} {verb} {swap_type} with a notional value of {currency_code}{notional} {money_unit} to manage {commodity} price volatility",
     "{company} {verb} {swap_type} as of {month} {end_day}, {year}, with notional values of {currency_code}{notional} {money_unit} to hedge {commodity} exposures",
-    "At {month} {year}, {company}’s {swap_type} cover {currency_code}{notional} {money_unit} in notional value to mitigate risks from {commodity} price swings",
+    "At {month} {year}, {company} ’s {swap_type} cover {currency_code}{notional} {money_unit} in notional value to mitigate risks from {commodity} price swings",
     "During {year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to protect against {commodity} market fluctuations",
     "In {old_year}, {company} {verb} {swap_type} with a notional volume equivalent of {currency_code}{old_notional} {money_unit}, set to expire in {future_year}",
     "During {old_year}, {company} {verb} {swap_type} to manage {commodity} exposure, with a notional of {currency_code}{old_notional} {money_unit}, terminating in {future_year}",
@@ -1207,16 +1207,16 @@ cp_position_template = [
     # --- NEW TWO-YEAR DISCLOSURE ADDITIONS (with {month} and {end_day}) ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated to hedge {commodity} price risk",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} contracts totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to manage raw material cost volatility",
-    "At {month} {end_day}, {year} and {prev_year}, {company}’s outstanding {swap_type} had aggregate notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used to hedge forecasted {commodity} purchases",
+    "At {month} {end_day}, {year} and {prev_year}, {company} ’s outstanding {swap_type} had aggregate notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used to hedge forecasted {commodity} purchases",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} positions with total notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, mitigating exposure to {commodity} price fluctuations",
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} outstanding totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, protecting against changes in {commodity} prices",
-    "As of {month} {end_day}, {year} and {prev_year}, {company}’s {swap_type} portfolio included notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated for hedging {commodity} exposures",
+    "As of {month} {end_day}, {year} and {prev_year}, {company} ’s {swap_type} portfolio included notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated for hedging {commodity} exposures",
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} active {swap_type} contracts with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to stabilize input costs",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} outstanding {swap_type} totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used to hedge {commodity} procurement risks",
     # --- TWO-YEAR DISCLOSURES WITH NO PRIOR-YEAR OUTSTANDINGS ---
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}; no such instruments were outstanding at {prev_year}",
     "As of {month} {end_day}, {year}, {company} {verb} active {swap_type} with a notional value of {currency_code}{notional} {money_unit}, while no comparable {swap_type} existed during {prev_year}",
-    "At year-end {year}, {company}’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year}",
+    "At year-end {year}, {company} ’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year}",
     "As of {month} {year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}; there were no such {swap_type}  reported in {prev_year}",
     "During {year}, {company} {verb} {swap_type} positions totaling {currency_code}{notional} {money_unit}, with no comparable {swap_type}  outstanding in {prev_year}",
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} serving as commodity price hedges, with no {swap_type} outstanding during {prev_year}",
@@ -1225,16 +1225,16 @@ cp_position_template = [
     # --- NEW THREE-YEAR DISCLOSURE ADDITIONS ---
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated to hedge {commodity} price risk",
     "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, to manage volatility in {commodity} costs",
-    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company}’s outstanding {swap_type} had aggregate notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, used to hedge forecasted {commodity} purchases",
+    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} ’s outstanding {swap_type} had aggregate notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, used to hedge forecasted {commodity} purchases",
     "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} positions with total notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, mitigating exposure to {commodity} price fluctuations",
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} outstanding totaling {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, protecting against {commodity} market volatility",
-    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company}’s {swap_type} portfolio included notional balances of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated for hedging {commodity} exposures",
+    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} ’s {swap_type} portfolio included notional balances of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated for hedging {commodity} exposures",
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} active {swap_type} contracts with notional values of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, to stabilize raw material costs",
     "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} outstanding {swap_type} totaling {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, to hedge {commodity} procurement risk",
     # --- THREE-YEAR DISCLOSURES WITH NO PRIOR-YEAR OUTSTANDINGS ---
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}; no such instruments were outstanding at {prev_year} or {prev2_year}",
     "As of {month} {end_day}, {year}, {company} {verb} active {swap_type} with a notional value of {currency_code}{notional} {money_unit}, while no comparable {swap_type} existed during {prev_year} or {prev2_year}",
-    "At year-end {year}, {company}’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year} or {prev2_year}",
+    "At year-end {year}, {company} ’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year} or {prev2_year}",
     "As of {month} {year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}; there were no such {swap_type} reported in {prev_year} or {prev2_year}",
     "During {year}, {company} {verb} {swap_type} positions totaling {currency_code}{notional} {money_unit}, with no comparable {swap_type} outstanding in {prev_year} or {prev2_year}",
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} serving as {commodity} price hedges, with no {swap_type} outstanding during {prev_year} or {prev2_year}",
@@ -1356,8 +1356,8 @@ fx_strategy_templates = [
 fx_context_templates = [
     "As a multinational corporation, {company} face exposure to changes in foreign currency values that can affect our financial position and operating results",
     "Our business is subject to risks from foreign currency fluctuations due to operations in diverse international markets",
-    "{company}’s international activities result in exposure to currency exchange risks and government regulations",
-    "{company}’s international operations face risks from currency exchange rate volatility and local market conditions",
+    "{company} ’s international activities result in exposure to currency exchange risks and government regulations",
+    "{company} ’s international operations face risks from currency exchange rate volatility and local market conditions",
     "Foreign currency transaction exposures arising on external and internal trade flows are selectively hedged",
 ]
 
@@ -1366,12 +1366,12 @@ fx_position_template = [
     "During {prev_year}, {company} {verb} {swap_type} to manage translation exposure, with an inception notional of {currency_code}{prev_notional} {money_unit}, set to expire in {future_year}",
     "{company} {verb} {swap_type} in {prev_year}, designed to hedge foreign borrowings with notional values of {currency_code}{prev_notional} {money_unit}, terminating in {future_year}",
     "As of {year}, {company} continues to hold {swap_type} contracted in {old_year}, with outstanding notional balances of {currency_code}{old_notional} {money_unit}, expiring in {future_year}",
-    "Outstanding {swap_type} at year-end {year} hedge {company}’s exposure to foreign currency fluctuations on cross-border transactions",
+    "Outstanding {swap_type} at year-end {year} hedge {company} ’s exposure to foreign currency fluctuations on cross-border transactions",
     "As of {month} {end_day}, {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are designated as cash flow hedges of forecasted foreign currency revenues",
     "As of {month} {end_day}, {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are designated as cash flow hedges due to changes in foreign exchange rates and are recorded at fair value",
     "At year-end {year}, {company} holds {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to manage translation risk of foreign subsidiaries",
-    "As of {month} {year}, {company}’s outstanding {swap_type} have a notional value of {currency_code}{notional} {money_unit}, hedging intercompany loans denominated in foreign currencies",
-    "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated to hedge anticipated foreign currency purchases",
+    "As of {month} {year}, {company} ’s outstanding {swap_type} have a notional value of {currency_code}{notional} {money_unit}, hedging intercompany loans denominated in foreign currencies",
+    "{company} ’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated to hedge anticipated foreign currency purchases",
     "As of {month} {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are in place to protect against volatility in foreign currency receivables",
     "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} are active to hedge forecasted foreign currency cash flows",
     "In {month} {old_year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{old_notional} {money_unit}, scheduled to expire in {month} {future_year} to manage currency risk",
@@ -1381,16 +1381,16 @@ fx_position_template = [
     # --- NEW TWO-YEAR DISCLOSURE ADDITIONS ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, of {swap_type} outstanding to hedge foreign currency exposures",
     "As of {month} {end_day}, {year} and {prev_year}, {company} maintained {swap_type} positions totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated as cash flow hedges of forecasted transactions",
-    "At {month} {end_day}, {year} and {prev_year}, {company}’s outstanding {swap_type} had notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used to hedge foreign exchange exposures",
+    "At {month} {end_day}, {year} and {prev_year}, {company} ’s outstanding {swap_type} had notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used to hedge foreign exchange exposures",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} contracts with notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, protecting against currency fluctuations",
     "At {month} {end_day}, {year} and {prev_year}, {company} had {swap_type} outstanding with total notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge intercompany transactions",
-    "As of {month} {end_day}, {year} and {prev_year}, {company}’s {swap_type} had fair values corresponding to notional exposures of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
+    "As of {month} {end_day}, {year} and {prev_year}, {company} ’s {swap_type} had fair values corresponding to notional exposures of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} active {swap_type} contracts totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, hedging foreign-denominated cash flows",
-    "As of {month} {end_day}, {year} and {prev_year}, {company}’s {swap_type} portfolio consisted of contracts with notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, mitigating foreign exchange risk",
+    "As of {month} {end_day}, {year} and {prev_year}, {company} ’s {swap_type} portfolio consisted of contracts with notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, mitigating foreign exchange risk",
     # --- TWO-YEAR DISCLOSURES WITH NO PRIOR-YEAR OUTSTANDINGS ---
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}; no such instruments were outstanding at {prev_year}",
     "As of {month} {end_day}, {year}, {company} maintained active {swap_type} with a notional value of {currency_code}{notional} {money_unit}, while no comparable {swap_type} existed during {prev_year}",
-    "At year-end {year}, {company}’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year}",
+    "At year-end {year}, {company} ’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year}",
     "As of {month} {year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}; there were no such {swap_type}  reported in {prev_year}",
     "During {year}, {company} initiated {swap_type} positions totaling {currency_code}{notional} {money_unit}, with no comparable {swap_type}  outstanding in {prev_year}",
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} serving as cash flow hedges of forecasted currency transactions, with no {swap_type} outstanding during {prev_year}",
@@ -1399,16 +1399,16 @@ fx_position_template = [
     # --- NEW THREE-YEAR DISCLOSURE ADDITIONS ---
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated as cash flow hedges of forecasted foreign currency transactions",
     "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} maintained {swap_type} positions totaling {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, mitigating translation risk of foreign operations",
-    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company}’s outstanding {swap_type} had notional values of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, used to hedge foreign currency exposures",
+    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} ’s outstanding {swap_type} had notional values of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, used to hedge foreign currency exposures",
     "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} contracts with notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, protecting against exchange rate movements",
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} had {swap_type} outstanding with total notional balances of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated as hedges of intercompany exposures",
-    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company}’s {swap_type} portfolio consisted of contracts with notional balances of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, mitigating foreign exchange risk",
+    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} ’s {swap_type} portfolio consisted of contracts with notional balances of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, mitigating foreign exchange risk",
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} active {swap_type} positions totaling {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, hedging forecasted foreign-currency transactions",
     "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} maintained {swap_type} contracts with notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated to manage currency-denominated cash flows",
     # --- THREE-YEAR DISCLOSURES WITH NO PRIOR-YEAR OUTSTANDINGS ---
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}; no such instruments were outstanding at {prev_year} or {prev2_year}",
     "As of {month} {end_day}, {year}, {company} maintained active {swap_type} with a notional value of {currency_code}{notional} {money_unit}, while no comparable {swap_type} existed during {prev_year} or {prev2_year}",
-    "At year-end {year}, {company}’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year} or {prev2_year}",
+    "At year-end {year}, {company} ’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year} or {prev2_year}",
     "As of {month} {year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}; there were no such {swap_type}  reported in {prev_year} or {prev2_year}",
     "During {year}, {company} initiated {swap_type} positions totaling {currency_code}{notional} {money_unit}, with no comparable {swap_type} outstanding in {prev_year} or {prev2_year}",
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} serving as cash flow hedges of forecasted currency transactions, with no {swap_type} outstanding during {prev_year} or {prev2_year}",
@@ -1589,8 +1589,8 @@ ir_position_template = [
     "Outstanding {swap_type} at year-end {year} effectively convert the hedged portion of debt to floating rates",
     "As of {month} {end_day}, {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are designated as fair value hedges",
     "At year-end {year}, {company} holds {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to manage debt-related interest rate risk",
-    "As of {month} {year}, {company}’s outstanding {swap_type} have a notional value of {currency_code}{notional} {money_unit}, hedging fixed-rate obligations",
-    "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as fair value hedges",
+    "As of {month} {year}, {company} ’s outstanding {swap_type} have a notional value of {currency_code}{notional} {money_unit}, hedging fixed-rate obligations",
+    "{company} ’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as fair value hedges",
     "As of {month} {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are in place to convert fixed-rate debt to floating rates",
     "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} are active to hedge fixed-rate debt obligations",
     "In {month} {old_year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{old_notional} {money_unit}, scheduled to expire in {month} {future_year}",
@@ -1600,16 +1600,16 @@ ir_position_template = [
     # --- NEW TWO-YEAR DISCLOSURE ADDITIONS (with {month} and {end_day}) ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated as fair value hedges of fixed-rate debt",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to convert fixed-rate obligations to floating rates",
-    "At {month} {end_day}, {year} and {prev_year}, {company}’s outstanding {swap_type} had notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to manage exposure to interest rate movements",
+    "At {month} {end_day}, {year} and {prev_year}, {company} ’s outstanding {swap_type} had notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to manage exposure to interest rate movements",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} active {swap_type} contracts with notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge long-term debt",
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} outstanding with total notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, effectively converting portions of fixed-rate borrowings to floating",
-    "As of {month} {end_day}, {year} and {prev_year}, {company}’s {swap_type} portfolio consisted of contracts with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated as fair value hedges of debt instruments",
+    "As of {month} {end_day}, {year} and {prev_year}, {company} ’s {swap_type} portfolio consisted of contracts with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated as fair value hedges of debt instruments",
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} positions totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, mitigating exposure to benchmark interest rate changes",
-    "As of {month} {end_day}, {year} and {prev_year}, {company}’s outstanding {swap_type} effectively converted portions of debt from fixed to floating, with notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
+    "As of {month} {end_day}, {year} and {prev_year}, {company} ’s outstanding {swap_type} effectively converted portions of debt from fixed to floating, with notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
     # --- TWO-YEAR DISCLOSURES WITH NO PRIOR-YEAR OUTSTANDINGS ---
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}; no such instruments were outstanding at {prev_year}",
     "As of {month} {end_day}, {year}, {company} {verb} active {swap_type} with a notional value of {currency_code}{notional} {money_unit}, while no comparable {swap_type} existed during {prev_year}",
-    "At year-end {year}, {company}’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year}",
+    "At year-end {year}, {company} ’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year}",
     "As of {month} {year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}; there were no such {swap_type} reported in {prev_year}",
     "During {year}, {company} {verb} {swap_type} positions totaling {currency_code}{notional} {money_unit}, with no comparable {swap_type} outstanding in {prev_year}",
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} serving as fair value hedges of fixed-rate debt, with no {swap_type} outstanding during {prev_year}",
@@ -1618,16 +1618,16 @@ ir_position_template = [
     # --- NEW THREE-YEAR DISCLOSURE ADDITIONS ---
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated as fair value hedges of fixed-rate debt",
     "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, to convert fixed-rate obligations to floating rates",
-    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company}’s outstanding {swap_type} had notional values of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, managing exposure to interest rate fluctuations",
+    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} ’s outstanding {swap_type} had notional values of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, managing exposure to interest rate fluctuations",
     "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} active {swap_type} contracts with notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, used to hedge long-term borrowings",
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} outstanding with total notional balances of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, effectively converting portions of fixed-rate borrowings to floating",
-    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company}’s {swap_type} portfolio consisted of contracts with notional values of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated as fair value hedges of debt instruments",
+    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} ’s {swap_type} portfolio consisted of contracts with notional values of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated as fair value hedges of debt instruments",
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} positions totaling {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, mitigating exposure to benchmark interest rate changes",
-    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company}’s outstanding {swap_type} effectively converted portions of debt from fixed to floating, with notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively",
+    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} ’s outstanding {swap_type} effectively converted portions of debt from fixed to floating, with notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively",
     # --- THREE-YEAR DISCLOSURES WITH NO PRIOR-YEAR OUTSTANDINGS ---
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}; no such instruments were outstanding at {prev_year} or {prev2_year}",
     "As of {month} {end_day}, {year}, {company} had active {swap_type} with a notional value of {currency_code}{notional} {money_unit}, whereas no comparable {swap_type} existed during {prev_year} or {prev2_year}",
-    "At year-end {year}, {company}’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year} or {prev2_year}",
+    "At year-end {year}, {company} ’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year} or {prev2_year}",
     "As of {month} {year}, {company} maintained {swap_type} with notional amounts of {currency_code}{notional} {money_unit}; there were no such {swap_type} reported in {prev_year} or {prev2_year}",
     "During {year}, {company} initiated {swap_type} positions totaling {currency_code}{notional} {money_unit}, with no comparable {swap_type} outstanding in {prev_year} or {prev2_year}",
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} serving as fair value hedges of fixed-rate debt, with no {swap_type} outstanding during {prev_year} or {prev2_year}",
@@ -1722,14 +1722,18 @@ hedged_items = [
 
 # Common SEC patterns
 headers = [
-    "FORM 10-K", "FORM 10-Q", "FORM 8-K", "PROSPECTUS",
-    "Table of Contents", "UNITED STATES SECURITIES AND EXCHANGE COMMISSION",
+    "FORM 10-K",
+    "FORM 10-Q",
+    "FORM 8-K",
+    "PROSPECTUS",
+    "Table of Contents",
+    "UNITED STATES SECURITIES AND EXCHANGE COMMISSION",
 ]
 
 # Table of Contents patterns with placeholders for page numbers
 sec_toc_patterns = [
     "Item 1. Business {page}",
-    "A. History and Development of the Company {page}",
+    "A. History and Development of {company} {page}",
     "B. Business Overview {page}",
     "C. Organizational Structure {page}",
     "Item 1A. Risk Factors {page}",
@@ -1745,7 +1749,7 @@ sec_toc_patterns = [
     "E. Exchange Controls {page}",
     "F. Taxation {page}",
     "G. Sale of Unregistered Securities {page}",
-    "H. Purchases of Equity Securities by the Company and Affiliated Purchases {page}",
+    "H. Purchases of Equity Securities by {company} and Affiliated Purchases {page}",
     "Item 6. Selected Financial Data {page}",
     "Item 7. Management's Discussion and Analysis of Financial Condition and Results of Operation {page}",
     "Item 7A. Quantitative and Qualitative Disclosures About Market Risk {page}",
@@ -1767,10 +1771,10 @@ litigation_templates = [
     "{company} is involved in various legal proceedings and claims arising in the ordinary course of business, including {case_types}",
     "As of {month} {end_day}, {year}, {company} is a defendant in several lawsuits related to {case_types}",
     "{company} is subject to litigation and regulatory inquiries concerning {case_types} in the normal course of operations",
-    "Various legal actions, proceedings, and claims are pending or may be instituted against {company}, including {case_types}",
+    "Various legal actions, proceedings, and claims are pending or may be instituted against {company} , including {case_types}",
     "As of {month} {end_day}, {year}, {company} is a defending against several derivative lawsuits related to {case_types}",
     'All securities holders of {company} are hereby notified that a settlement (the "Settlement") has been reached as to claims asserted in the above-captioned consolidated shareholder derivative action pending in a {court} (the "Derivative Action") on behalf of {company} against certain of its current or former directors and officers',
-    "On {month} {end_day}, {year}, a shareholder derivative suit was filed in the {court} for the against {company}",
+    "On {month} {end_day}, {year}, a shareholder derivative suit was filed in the {court} for the against {company} ",
 ]
 
 case_types = [
@@ -2350,7 +2354,7 @@ warrant_debt_issuance_templates = [
     "In consideration of this extension, {company} issued {shares} shares of common stock at a price of {value} per share and warrants to purchase {shares1} shares of common stock at a price to be determined in the future, between {currency_code}{value1} and {currency_code}{value2} per share, on or before {month} {year}",
     "Also in {month} {year}, {company} exchanged a {currency_code}{value} note payable for units of common stock and warrants to purchase common stock at a price of {currency_code}{value1} per unit",
     "In addition, the financial advisor on the debt offering received an additional {shares} warrants with the {month} offering for a total of approximately {value}",
-    "If all of the warrants are exercised and the debt is fully converted to {company} stock, current stockholders will experience a significant dilution in their ownership of {company}",
+    "If all of the warrants are exercised and the debt is fully converted to {company} stock, current stockholders will experience a significant dilution in their ownership of {company} ",
     "Based on the terms of the debt offering both the notes and warrants are subject to anti-dilution provisions and can potentially become more dilutive to {company} stock. Further dilution may occur in the event of a default {currency_code}{value} payable",
 ]
 
@@ -2606,7 +2610,300 @@ clawback_templates = [
     "Executive compensation is subject to recoupment under {company}'s clawback policy in cases of misconduct or financial restatement",
     "The Board may require reimbursement of performance-based compensation under the clawback policy if performance goals are not actually achieved",
     "Incentive compensation paid to executives is subject to clawback provisions as required by the Dodd-Frank Act and SEC regulations",
-]   
+]
+# ========== MARKET PRICES AND TRADING ==========
+stock_price_templates = [
+    '{company} \'s common stock trades on the {exchange} under the ticker symbol "{ticker}"',
+    "Shares of common stock closed at {currency_code}{price} on {month} {end_day}, {year}, compared to {currency_code}{prev_price} at {month} {end_day}, {prev_year}",
+    "{company}'s stock price ranged from a low of {currency_code}{low} to a high of {currency_code}{high} during {year}",
+    "Average daily trading volume was approximately {volume} shares during {year}",
+    "{company}'s market capitalization was approximately {currency_code}{market_cap} {money_unit} as of {month} {end_day}, {year}",
+    "Shares outstanding totaled {shares} as of {month} {end_day}, {year}",
+    "The closing stock price on {month} {end_day}, {year} represented a {direction} of {pct}% from the prior year-end closing price",
+]
+
+exchanges = [
+    "New York Stock Exchange",
+    "NASDAQ Global Select Market",
+    "NASDAQ Capital Market",
+    "NYSE American",
+    "London Stock Exchange",
+]
+
+
+trading_volume_templates = [
+    "During {year}, approximately {volume} shares were traded on public exchanges",
+    "{company}'s shares experienced {volatility} trading activity during {year}",
+    "Average daily trading volume increased {pct}% in {year} compared to {prev_year}",
+    "Trading liquidity {improved_decreased} during {year}, with average daily volume of {volume} shares",
+]
+
+volatility_levels = ["elevated", "moderate", "reduced", "increased", "stable"]
+
+# ========== ABOUT {company} / BUSINESS DESCRIPTION ==========
+company_description_templates = [
+    "{company} is a {industry} company that {business_activity}",
+    "{company} operates in the {industry} sector, providing {products_services} to customers in {geography}",
+    "{company} was founded in {founding_year} and is headquartered in {city}, {state}",
+    "{company} is a leading provider of {products_services} serving the {market_segment} market",
+    "{company}'s principal business activities include {activities}",
+    "{company} employs approximately {employees} people across {locations} locations worldwide as of {month} {end_day}, {year}",
+    "{company} operates through {segments} reportable segments: {segment_names}",
+    "{company}'s mission is to {mission_statement}",
+]
+
+industries = [
+    "technology",
+    "healthcare",
+    "manufacturing",
+    "consumer goods",
+    "financial services",
+    "biotechnology",
+    "telecommunications",
+    "energy",
+    "retail",
+    "industrial",
+]
+
+business_activities = [
+    "develops, manufactures, and sells innovative products",
+    "provides technology solutions and services to enterprise customers",
+    "manufactures and distributes consumer products globally",
+    "delivers healthcare services and medical devices",
+    "operates a diversified portfolio of businesses",
+]
+
+geographies = [
+    "North America, Europe, and Asia",
+    "over 50 countries worldwide",
+    "the United States and international markets",
+    "global markets",
+    "developed and emerging markets",
+]
+
+cities = [
+    "San Francisco",
+    "New York",
+    "Boston",
+    "Chicago",
+    "Austin",
+    "Seattle",
+    "Atlanta",
+]
+states = [
+    "California",
+    "New York",
+    "Massachusetts",
+    "Illinois",
+    "Texas",
+    "Washington",
+    "Georgia",
+]
+
+segment_examples = [
+    "Commercial, Consumer, and International",
+    "Products, Services, and Solutions",
+    "Domestic and International Operations",
+    "Technology, Healthcare, and Industrial",
+]
+
+# ========== HEDGE FUNDS AND INSTITUTIONAL OWNERSHIP ==========
+institutional_ownership_templates = [
+    "As of {month} {end_day}, {year}, institutional investors held approximately {pct}% of {company}'s outstanding shares",
+    "{fund_name} reported a {pct}% ownership stake in {company} as of {month} {end_day}, {year}",
+    "{company}'s largest shareholders include {fund_name} ({pct}%), {fund_name2} ({pct2}%), and other institutional investors",
+    "Beneficial ownership by institutional investors increased to {pct}% as of {month} {end_day}, {year}",
+    "Hedge funds and asset managers collectively own approximately {pct}% of outstanding common stock",
+    "{fund_name} disclosed a {pct}% position in {company} in its {form} filing dated {month} {year}",
+    "Institutional ownership decreased from {prev_pct}% to {pct}% during {year}",
+    "{company}'s top ten institutional shareholders hold approximately {pct}% of outstanding shares",
+]
+
+
+
+sec_forms = ["Schedule 13G", "Schedule 13D", "Form 13F"]
+
+insider_ownership_templates = [
+    "Directors and executive officers collectively beneficially own approximately {pct}% of outstanding common stock as of {month} {end_day}, {year}",
+    "{company}'s Chief Executive Officer owns {shares} shares, representing {pct}% of shares outstanding",
+    "Insider transactions during {year} included {action} of {shares} shares by executive officers and directors",
+    "As of {month} {end_day}, {year}, executive officers and directors held options to purchase {shares} shares of common stock",
+]
+
+insider_actions = [
+    "purchases",
+    "sales",
+    "exercises",
+    "grants",
+    "net purchases",
+    "net sales",
+]
+
+# ========== FORWARD-LOOKING STATEMENTS ==========
+forward_looking_templates = [
+    "This report contains forward-looking statements within the meaning of the Private Securities Litigation Reform Act of 1995",
+    "Forward-looking statements include, but are not limited to, statements regarding {topics}",
+    'Words such as "{words}" and similar expressions identify forward-looking statements',
+    "These forward-looking statements are subject to risks and uncertainties that could cause actual results to differ materially from those projected",
+    "{company} cautions that forward-looking statements are not guarantees of future performance and involve known and unknown risks",
+    "{company} undertakes no obligation to update or revise forward-looking statements, whether as a result of new information, future events, or otherwise",
+    "Forward-looking statements are based on management's current expectations and assumptions as of the date of this report",
+    "Factors that could cause actual results to differ from forward-looking statements include {risk_factors}",
+    "Investors should not place undue reliance on forward-looking statements, which speak only as of {month} {end_day}, {year}",
+    "All forward-looking statements are qualified in their entirety by reference to the risk factors discussed in Item 1A of this report",
+]
+
+forward_looking_topics = [
+    "expected financial performance, growth strategies, and market opportunities",
+    "anticipated product launches, regulatory approvals, and business development initiatives",
+    "projected capital expenditures, cost reduction initiatives, and operational improvements",
+    "expected market conditions, competitive dynamics, and customer demand",
+]
+
+forward_looking_words = [
+    "expects, anticipates, intends, plans, believes, seeks, estimates, may, will, should, would, could",
+    "projects, forecasts, targets, goals, likely, potential, continue, future, outlook",
+    "positioned, strategy, opportunity, momentum, trajectory",
+]
+
+risk_factors_examples = [
+    "economic conditions, competitive pressures, regulatory changes, and operational challenges",
+    "market volatility, supply chain disruptions, technological changes, and geopolitical events",
+    "customer demand fluctuations, pricing pressures, and execution risks",
+    "cybersecurity threats, intellectual property risks, and litigation uncertainties",
+]
+
+safe_harbor_templates = [
+    "Statements in this report that are not historical facts constitute forward-looking statements subject to the safe harbor provisions of the Private Securities Litigation Reform Act",
+    "{company} includes forward-looking statements to provide investors with its current expectations and projections, but cautions that such statements involve risks",
+    "Safe harbor statement: Except for historical information, this report contains forward-looking statements that involve substantial risks and uncertainties",
+    "This document contains forward-looking statements that are protected by the safe harbor provisions for such statements",
+]
+
+# ========== ANALYST COVERAGE AND ESTIMATES ==========
+analyst_coverage_templates = [
+    "{company} is currently covered by {number} equity research analysts",
+    "Analyst consensus estimates for {year} project earnings per share of {currency_code}{eps} and revenue of {currency_code}{revenue} {money_unit}",
+    "The average analyst price target is {currency_code}{target}, representing {direction} of {pct}% from current levels",
+    "{number} analysts have buy ratings, {number2} have hold ratings, and {number3} have sell ratings on the stock",
+    "Analyst estimates for {year} range from {currency_code}{low} to {currency_code}{high} per share",
+    "{company} does not provide guidance but is followed by several sell-side analysts who publish earnings estimates",
+]
+
+# ========== CREDIT RATINGS ==========
+credit_rating_templates = [
+    "{company}'s senior unsecured debt is rated {rating} by {agency} and {rating2} by {agency2}",
+    "{agency} maintains a {rating} credit rating on {company} with a {outlook} outlook",
+    "As of {month} {end_day}, {year}, {company} holds investment-grade credit ratings from major rating agencies",
+    "{company}'s credit ratings are {rating} ({agency}), {rating2} ({agency2}), and {rating3} ({agency3})",
+    "In {month} {year}, {agency} {action} {company}'s credit rating to {rating}",
+    "{company} targets maintaining investment-grade credit metrics and ratings",
+]
+
+credit_agencies = ["Standard & Poor's", "Moody's", "Fitch Ratings"]
+credit_ratings = ["BBB+", "BBB", "BBB-", "A-", "A", "Baa1", "Baa2", "Baa3"]
+rating_outlooks = ["stable", "positive", "negative", "under review"]
+rating_actions = ["upgraded", "downgraded", "affirmed", "revised"]
+
+# ========== DIVIDEND AND CAPITAL ALLOCATION ==========
+dividend_policy_templates = [
+    "{company} has paid consecutive quarterly dividends since {year}",
+    "In {month} {year}, the Board of Directors declared a quarterly dividend of {currency_code}{amount} per share, payable on {month} {end_day}, {year}",
+    "The dividend payout ratio was {pct}% for {year}, compared to {prev_pct}% in {prev_year}",
+    "{company} targets returning {pct}% to {pct2}% of free cash flow to shareholders through dividends and share repurchases",
+    "Annual dividends totaled {currency_code}{amount} per share in {year}, representing a yield of {pct}% based on year-end stock price",
+    "{company} does not currently pay a dividend and retains earnings to fund growth initiatives",
+    "Dividend policy is reviewed annually by the Board of Directors based on earnings, cash flows, and capital allocation priorities",
+]
+
+share_repurchase_templates = [
+    "During {year}, {company} repurchased {shares} shares of common stock for {currency_code}{amount} {money_unit}",
+    "The Board of Directors authorized a {currency_code}{amount} {money_unit} share repurchase program in {month} {year}",
+    "As of {month} {end_day}, {year}, {currency_code}{remaining} {money_unit} remained available under the current repurchase authorization",
+    "Share repurchases totaled {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in {prev_year}",
+    "{company} opportunistically repurchases shares based on market conditions, capital requirements, and alternative investment opportunities",
+    "No shares were repurchased during {year} as {company} prioritized debt reduction and organic growth investments",
+]
+
+# ========== COMPETITIVE LANDSCAPE ==========
+competition_templates = [
+    "{company} operates in a highly competitive industry characterized by {characteristics}",
+    "Principal competitors include {competitor1}, {competitor2}, and {competitor3}",
+    "{company} competes based on {factors}",
+    "Market share in {company}'s primary markets remained relatively stable at approximately {pct}% during {year}",
+    "Competitive pressures have intensified due to {reasons}",
+    "{company} believes it maintains competitive advantages through {advantages}",
+    "Industry consolidation during {year} included the merger of {competitor1} and {competitor2}",
+]
+
+competitive_characteristics = [
+    "rapid technological change, evolving customer preferences, and new market entrants",
+    "price competition, product innovation, and service quality",
+    "consolidation, globalization, and regulatory complexity",
+    "low barriers to entry and commoditization pressures",
+]
+
+competitive_factors = [
+    "product quality, innovation, customer service, and brand reputation",
+    "pricing, technology, distribution capabilities, and scale",
+    "breadth of product portfolio, technical expertise, and customer relationships",
+    "operational efficiency, time to market, and total cost of ownership",
+]
+
+competitive_advantages = [
+    "proprietary technology, strong brand recognition, and established customer relationships",
+    "economies of scale, operational excellence, and global footprint",
+    "intellectual property portfolio, innovation capabilities, and market leadership",
+    "vertically integrated operations, cost structure, and distribution network",
+]
+
+# ========== REGULATORY AND COMPLIANCE ==========
+regulatory_templates = [
+    "{company} is subject to extensive regulation by {regulators} governing {areas}",
+    "Compliance with environmental, health, and safety regulations resulted in costs of approximately {currency_code}{amount} {money_unit} during {year}",
+    "Changes in regulatory requirements could materially impact {company}'s business operations and financial results",
+    "{company} maintains compliance programs and internal controls to ensure adherence to applicable laws and regulations",
+    "Regulatory approvals obtained during {year} include {approvals}",
+    "Pending regulatory matters include {matters}",
+    "{company} incurred {currency_code}{amount} {money_unit} in regulatory compliance costs during {year}",
+]
+
+regulators = [
+    "the SEC, FDA, and EPA",
+    "federal, state, and international regulatory authorities",
+    "the FTC, DOJ, and industry-specific agencies",
+    "various governmental and regulatory bodies",
+]
+
+regulatory_areas = [
+    "product safety, environmental protection, and consumer protection",
+    "data privacy, cybersecurity, and financial reporting",
+    "employment practices, antitrust, and trade compliance",
+    "marketing practices, product labeling, and quality standards",
+]
+
+# ========== INSURANCE AND RISK MANAGEMENT ==========
+insurance_templates = [
+    "{company} maintains insurance coverage for property, casualty, general liability, and other risks in amounts considered adequate",
+    "Self-insurance reserves totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
+    "{company} self-insures certain risks including {risks} and purchases insurance for catastrophic losses",
+    "Insurance recoveries during {year} totaled {currency_code}{amount} {money_unit} related to {incident}",
+    "{company}'s insurance program includes coverage for {coverage_types} with policy limits and deductibles based on industry practices",
+    "Risk retention levels are evaluated annually based on claims experience and insurance market conditions",
+]
+
+self_insured_risks = [
+    "workers' compensation, general liability, and employee health benefits",
+    "product liability, auto liability, and property damage below certain thresholds",
+    "employment practices liability and certain cyber risks",
+]
+
+coverage_types = [
+    "property damage, business interruption, product liability, and directors and officers liability",
+    "cyber liability, errors and omissions, fiduciary liability, and environmental liability",
+    "general liability, auto liability, workers' compensation, and excess umbrella coverage",
+]
+ 
 ```
 
 # Main functions
@@ -4422,6 +4719,7 @@ def generate_labeled_hedge_paragraph(
 ## Accounting Noise
 ```{python}
 
+
 def generate_accounting_noise_paragraph(
     year_range=(1990, 2025), max_len=random.randint(2, 4), company_name=None
 ):
@@ -4474,7 +4772,9 @@ def generate_accounting_noise_paragraph(
         elif random.random() < 0.6:
             template = random.choice(litigation_assessment_templates)
             verb = random.choice(assessment_verbs)
-            sentence = template.format(company=pick_company_name(company_name), verb=verb)
+            sentence = template.format(
+                company=pick_company_name(company_name), verb=verb
+            )
         else:
             template = random.choice(guarantee_templates)
             amount = round(random.uniform(10, 100), 1)
@@ -4691,7 +4991,7 @@ def generate_accounting_noise_paragraph(
         else:
             template = random.choice(inventory_writedown_templates)
             amount = round(random.uniform(2, 20), 1)
-            prev_amount =  round(random.uniform(amount, amount + 20), 1)
+            prev_amount = round(random.uniform(amount, amount + 20), 1)
             sentence = template.format(
                 year=current_year,
                 amount=amount,
@@ -4701,7 +5001,7 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
                 month=random.choice(months),
                 end_day=random.randint(28, 31),
-                prev_amount=prev_amount
+                prev_amount=prev_amount,
             )
         all_sentences.append(sentence)
 
@@ -4781,11 +5081,11 @@ def generate_accounting_noise_paragraph(
         else:
             template = random.choice(lease_commitment_templates)
             amount = round(random.uniform(100, 800), 1)
-            amount2=round(random.uniform(100, 600), 1)
-            amount3=round(random.uniform(100, 400), 1)
+            amount2 = round(random.uniform(100, 600), 1)
+            amount3 = round(random.uniform(100, 400), 1)
             pv_amount = round(random.uniform(100, 900), 1)
             years = round(random.uniform(3, 8), 1)
-            rate = round(random.uniform(3.0, 7.0), 1),
+            rate = (round(random.uniform(3.0, 7.0), 1),)
             sentence = template.format(
                 amount=amount,
                 amount2=amount2,
@@ -4801,7 +5101,7 @@ def generate_accounting_noise_paragraph(
                 major_currency=major_currency,
                 money_unit=money_units,
                 end_day=random.randint(28, 31),
-                pv_amount=pv_amount
+                pv_amount=pv_amount,
             )
         all_sentences.append(sentence)
 
@@ -4821,7 +5121,7 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
                 month=random.choice(months),
                 end_day=random.randint(28, 31),
-                verb=random.choice(assessment_verbs)
+                verb=random.choice(assessment_verbs),
             )
         else:
             template = random.choice(intangible_templates)
@@ -4947,7 +5247,7 @@ def generate_accounting_noise_paragraph(
         else:
             template = random.choice(stock_comp_valuation_templates)
             amount = round(random.uniform(5, 25), 2)
-            model=random.choice(valuation_models)
+            model = random.choice(valuation_models)
             sentence = template.format(
                 year=current_year,
                 month=random.choice(months),
@@ -4956,7 +5256,7 @@ def generate_accounting_noise_paragraph(
                 currency_code=currency_code,
                 major_currency=major_currency,
                 money_unit=money_units,
-                model=model
+                model=model,
             )
         all_sentences.append(sentence)
 
@@ -5488,8 +5788,392 @@ def generate_accounting_noise_paragraph(
             template = random.choice(clawback_templates)
             sentence = template.format(company=company_name)
         all_sentences.append(sentence)
+
+    # Market prices and trading (0-1)
+    if random.random() < 0.2:
+        category = random.choice(["stock_price", "trading_volume"])
+
+        if category == "stock_price":
+            template = random.choice(stock_price_templates)
+            exchange = random.choice(exchanges)
+            ticker = string.ascii_letters[: random.randint(3, 4)].capitalize
+            price = round(random.uniform(10, 200), 2)
+            prev_price = round(price * random.uniform(0.7, 1.3), 2)
+            low = round(price * random.uniform(0.6, 0.9), 2)
+            high = round(price * random.uniform(1.1, 1.5), 2)
+            volume = random.choice([500000, 1000000, 2000000, 5000000])
+            market_cap = round(random.uniform(500, 5000), 0)
+            shares = random.choice([50, 75, 100, 150, 200])
+            direction = "increase" if price > prev_price else "decrease"
+            pct = abs(round(((price - prev_price) / prev_price) * 100, 1))
+            month = random.choice(months)
+            end_day = random.randint(28, 31)
+
+            sentence = template.format(
+                exchange=exchange,
+                ticker=ticker,
+                currency_code=currency_code,
+                price=price,
+                prev_price=prev_price,
+                low=low,
+                high=high,
+                volume=f"{volume:,}",
+                market_cap=f"{market_cap:,}",
+                money_unit=money_units,
+                shares=f"{shares:,}",
+                direction=direction,
+                pct=pct,
+                month=month,
+                end_day=end_day,
+                year=current_year,
+                prev_year=current_year - 1,
+                company=pick_company_name(),
+            )
+        else:
+            template = random.choice(trading_volume_templates)
+            volume = random.choice([500000, 1000000, 2000000, 3000000])
+            volatility = random.choice(volatility_levels)
+            pct = round(random.uniform(5, 50), 1)
+            improved_decreased = random.choice(["improved", "decreased"])
+
+            sentence = template.format(
+                year=current_year,
+                prev_year=current_year - 1,
+                volume=f"{volume:,}",
+                volatility=volatility,
+                pct=pct,
+                improved_decreased=improved_decreased,
+                company=pick_company_name(),
+            )
+
+        all_sentences.append(sentence)
+
+    # Company description (0-1)
+    if random.random() < 0.2:
+        template = random.choice(company_description_templates)
+        industry = random.choice(industries)
+        business_activity = random.choice(business_activities)
+        products_services = random.choice(
+            ["products and services", "solutions", "technology platforms"]
+        )
+        geography = random.choice(geographies)
+        founding_year = random.randint(1950, 2010)
+        city = random.choice(cities)
+        state = random.choice(states)
+        market_segment = random.choice(
+            ["enterprise", "consumer", "industrial", "healthcare"]
+        )
+        activities = random.choice(business_activities)
+        employees = random.choice([5000, 10000, 25000, 50000, 100000])
+        locations = random.randint(50, 500)
+        segments = random.choice([2, 3, 4])
+        segment_names = random.choice(segment_examples)
+        mission = "deliver innovative solutions that create value for customers and shareholders"
+        month = random.choice(months)
+        end_day = random.randint(28, 31)
+
+        sentence = template.format(
+            industry=industry,
+            business_activity=business_activity,
+            company=pick_company_name(),
+            products_services=products_services,
+            geography=geography,
+            founding_year=founding_year,
+            city=city,
+            state=state,
+            market_segment=market_segment,
+            activities=activities,
+            employees=f"{employees:,}",
+            locations=locations,
+            month=month,
+            end_day=end_day,
+            year=current_year,
+            segments=segments,
+            segment_names=segment_names,
+            mission_statement=mission,
+        )
+
+        all_sentences.append(sentence)
+
+    # Institutional/hedge fund ownership (0-1)
+    if random.random() < 0.15:
+        category = random.choice(["institutional", "insider"])
+
+        if category == "institutional":
+            template = random.choice(institutional_ownership_templates)
+            fund_name = random.choice(target_companies)
+            fund_name2 = random.choice([f for f in target_companies if f != fund_name])
+            pct = round(random.uniform(5, 15), 1)
+            pct2 = round(random.uniform(3, 10), 1)
+            prev_pct = round(pct * random.uniform(0.8, 1.2), 1)
+            form = random.choice(sec_forms)
+            month = random.choice(months)
+            end_day = random.randint(28, 31)
+
+            sentence = template.format(
+                month=month,
+                end_day=end_day,
+                year=current_year,
+                pct=pct,
+                pct2=pct2,
+                prev_pct=prev_pct,
+                fund_name=fund_name,
+                fund_name2=fund_name2,
+                form=form,
+                company=pick_company_name(),
+            )
+        else:
+            template = random.choice(insider_ownership_templates)
+            pct = round(random.uniform(1, 8), 1)
+            shares = random.choice([500000, 1000000, 2000000])
+            action = random.choice(insider_actions)
+            month = random.choice(months)
+            end_day = random.randint(28, 31)
+
+            sentence = template.format(
+                pct=pct,
+                shares=f"{shares:,}",
+                action=action,
+                month=month,
+                end_day=end_day,
+                year=current_year,
+                company=pick_company_name(),
+            )
+
+        all_sentences.append(sentence)
+
+    # Forward-looking statements (0-1)
+    if random.random() < 0.25:
+        category = random.choice(["forward_looking", "safe_harbor"])
+
+        if category == "forward_looking":
+            template = random.choice(forward_looking_templates)
+            topics = random.choice(forward_looking_topics)
+            words = random.choice(forward_looking_words)
+            risk_factors = random.choice(risk_factors_examples)
+            month = random.choice(months)
+            end_day = random.randint(28, 31)
+
+            sentence = template.format(
+                topics=topics,
+                words=words,
+                company=pick_company_name(),
+                risk_factors=risk_factors,
+                month=month,
+                end_day=end_day,
+                year=current_year,
+            )
+        else:
+            sentence = random.choice(
+                safe_harbor_templates.format(company=pick_company_name())
+            )
+
+        all_sentences.append(sentence)
+
+    # Analyst coverage (0-1)
+    if random.random() < 0.1:
+        template = random.choice(analyst_coverage_templates)
+        number = random.randint(8, 25)
+        number2 = random.randint(3, 12)
+        number3 = random.randint(0, 5)
+        eps = round(random.uniform(1.50, 8.00), 2)
+        revenue = round(random.uniform(500, 5000), 0)
+        target = round(random.uniform(50, 200), 2)
+        direction = random.choice(["upside", "downside"])
+        pct = round(random.uniform(10, 40), 1)
+        low = round(eps * 0.8, 2)
+        high = round(eps * 1.2, 2)
+
+        sentence = template.format(
+            number=number,
+            number2=number2,
+            number3=number3,
+            year=current_year,
+            currency_code=currency_code,
+            eps=eps,
+            revenue=f"{revenue:,}",
+            money_unit=money_units,
+            target=target,
+            direction=direction,
+            pct=pct,
+            low=low,
+            high=high,
+            company=pick_company_name(),
+        )
+
+        all_sentences.append(sentence)
+
+    # Credit ratings (0-1)
+    if random.random() < 0.15:
+        template = random.choice(credit_rating_templates)
+        agency = random.choice(credit_agencies)
+        agency2 = random.choice([a for a in credit_agencies if a != agency])
+        agency3 = random.choice(
+            [a for a in credit_agencies if a not in [agency, agency2]]
+        )
+        rating = random.choice(credit_ratings)
+        rating2 = random.choice(credit_ratings)
+        rating3 = random.choice(credit_ratings)
+        outlook = random.choice(rating_outlooks)
+        action = random.choice(rating_actions)
+        month = random.choice(months)
+        end_day = random.randint(28, 31)
+
+        sentence = template.format(
+            rating=rating,
+            rating2=rating2,
+            rating3=rating3,
+            agency=agency,
+            agency2=agency2,
+            agency3=agency3,
+            outlook=outlook,
+            action=action,
+            month=month,
+            end_day=end_day,
+            year=current_year,
+            company=pick_company_name(),
+        )
+
+        all_sentences.append(sentence)
+
+    # Dividend/capital allocation (0-1)
+    if random.random() < 0.2:
+        category = random.choice(["dividend", "repurchase"])
+
+        if category == "dividend":
+            template = random.choice(dividend_policy_templates)
+            amount = round(random.uniform(0.25, 2.00), 2)
+            pct = round(random.uniform(20, 60), 1)
+            pct2 = round(random.uniform(30, 70), 1)
+            prev_pct = round(pct * random.uniform(0.9, 1.1), 1)
+            yield_pct = round(random.uniform(1.5, 4.5), 1)
+            month = random.choice(months)
+            end_day = random.randint(1, 28)
+            start_year = random.randint(1990, 2010)
+
+            sentence = template.format(
+                year=start_year,
+                month=month,
+                end_day=end_day,
+                currency_code=currency_code,
+                amount=amount,
+                pct=pct,
+                pct2=pct2,
+                prev_pct=prev_pct,
+                prev_year=current_year - 1,
+                company=pick_company_name(),
+            )
+        else:
+            template = random.choice(share_repurchase_templates)
+            shares = random.choice([1000000, 2000000, 5000000, 10000000])
+            amount = round(random.uniform(50, 500), 0)
+            prev_amount = round(amount * random.uniform(0.7, 1.3), 0)
+            remaining = round(random.uniform(100, 400), 0)
+            month = random.choice(months)
+            end_day = random.randint(28, 31)
+
+            sentence = template.format(
+                year=current_year,
+                shares=f"{shares:,}",
+                currency_code=currency_code,
+                amount=f"{amount:,}",
+                prev_amount=f"{prev_amount:,}",
+                remaining=f"{remaining:,}",
+                money_unit=money_units,
+                month=month,
+                end_day=end_day,
+                prev_year=current_year - 1,
+                company=pick_company_name(),
+            )
+
+        all_sentences.append(sentence)
+
+    # Competition (0-1)
+    if random.random() < 0.15:
+        template = random.choice(competition_templates)
+        characteristics = random.choice(competitive_characteristics)
+        competitor1 = random.choice(target_companies)
+        competitor2 = random.choice([c for c in target_companies if c != competitor1])
+        competitor3 = random.choice(
+            [c for c in target_companies if c not in [competitor1, competitor2]]
+        )
+        factors = random.choice(competitive_factors)
+        pct = round(random.uniform(10, 35), 1)
+        reasons = "new market entrants, pricing pressures, and technological disruption"
+        advantages = random.choice(competitive_advantages)
+
+        sentence = template.format(
+            characteristics=characteristics,
+            competitor1=competitor1,
+            competitor2=competitor2,
+            competitor3=competitor3,
+            factors=factors,
+            pct=pct,
+            year=current_year,
+            reasons=reasons,
+            advantages=advantages,
+            company=pick_company_name()
+        )
+
+        all_sentences.append(sentence)
+
+    # Regulatory (0-1)
+    if random.random() < 0.15:
+        template = random.choice(regulatory_templates)
+        regulators_list = random.choice(regulators)
+        areas = random.choice(regulatory_areas)
+        amount = round(random.uniform(5, 50), 1)
+        approvals = "product registrations and environmental permits"
+        matters = "regulatory audits and compliance reviews"
+
+        sentence = template.format(
+            regulators=regulators_list,
+            areas=areas,
+            currency_code=currency_code,
+            amount=amount,
+            money_unit=money_units,
+            year=current_year,
+            approvals=approvals,
+            matters=matters,
+            company=pick_company_name()
+        )
+
+        all_sentences.append(sentence)
+
+    # Insurance (0-1)
+    if random.random() < 0.1:
+        template = random.choice(insurance_templates)
+        amount = round(random.uniform(10, 100), 1)
+        risks = random.choice(self_insured_risks)
+        incident = random.choice(
+            ["property damage", "business interruption", "product liability claims"]
+        )
+        coverage_types_list = random.choice(coverage_types)
+        month = random.choice(months)
+        end_day = random.randint(28, 31)
+
+        sentence = template.format(
+            currency_code=currency_code,
+            amount=amount,
+            money_unit=money_units,
+            month=month,
+            end_day=end_day,
+            year=current_year,
+            risks=risks,
+            incident=incident,
+            coverage_types=coverage_types_list,
+            company=pick_company_name()
+        )
+
+        all_sentences.append(sentence)
+
     if random.random() < 0.05:  # Generat of text and numbers
-        noise = generate_sec_noise(company=pick_company_name(company_name), currency_unit=money_units, month=random.choice(months), year=current_year)
+        noise = generate_sec_noise(
+            company=pick_company_name(company_name),
+            currency_unit=money_units,
+            month=random.choice(months),
+            year=current_year,
+        )
         all_sentences = noise
 
     # Shuffle and select
@@ -5509,18 +6193,20 @@ def generate_accounting_noise_paragraph(
         paragraph = pattern_nil.sub(random.choice([" nil", " 0"]), paragraph)
     if random.random() < 0.5:
         paragraph = pattern_notional.sub("", paragraph)
-    paragraph = pattern_spaces.sub(" ", paragraph)   # Remove extra whitespace
-    paragraph = pattern_dots.sub("", paragraph)     # Remove double periods
-    
+    paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
+    paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
+
     if paragraph.find("{") != -1:
         print("Error in format", paragraph)
-    return paragraph, 3  
+    return paragraph, 3
+
 
 def generate_sec_noise(company, currency_unit, month, year):
     def generate_toc_line():
         template = random.choice(sec_toc_patterns)
         page_num = random.randint(1, 200)  # simulate TOC page numbers
         return template.format(page=page_num) + " "
+
     phrases = [
         "Commission file number " + str(random.randint(1, 99999)).zfill(5),
         f"ANNUAL REPORT PURSUANT TO SECTION {random.choice(['13','15(d)'])} OF THE SECURITIES EXCHANGE ACT OF 1934",
@@ -5535,13 +6221,17 @@ def generate_sec_noise(company, currency_unit, month, year):
         f'Indicate by check mark whether the registrant is a large accelerated filer, an accelerated filer, a non-accelerated filer, or a smaller reporting company. See the definitions of "large accelerated filer," "accelerated filer" and "smaller reporting company" in Rule 12b-2 of the Exchange Act Yes {random.choice(['[x]','[]'])} No {random.choice(['[x]','[]'])}',
         f"The aggregate market value of the common shares held by non-affiliates was {currency_unit}{random.randint(10**6,10**9):,}",
         f"{random.randint(50_000_000,200_000_000):,} common shares outstanding as of {random.randint(1,12)}/{random.randint(1,28)}/{random.randint(2000,2024)}",
-        f"Part III incorporates certain information by reference from the registrant's proxy statement for the {year} Annual Meeting of Shareholders expected to be held on {month} {random.randint(1,28)}, {year + 1} . Such proxy statement will be filed no later than 120 days after the close of the registrant's fiscal year ended {month} {random.randint(1,28)},  {year}."
+        f"Part III incorporates certain information by reference from the registrant's proxy statement for the {year} Annual Meeting of Shareholders expected to be held on {month} {random.randint(1,28)}, {year + 1} . Such proxy statement will be filed no later than 120 days after the close of the registrant's fiscal year ended {month} {random.randint(1,28)},  {year}.",
     ]
 
-    gibberish = ''.join(random.choices(string.ascii_lowercase + string.digits, k=random.randint(6,12))) + random.choice([".htm", ".txt"])
-    
+    gibberish = "".join(
+        random.choices(string.ascii_lowercase + string.digits, k=random.randint(6, 12))
+    ) + random.choice([".htm", ".txt"])
+
     # Randomly choose 8–15 fragments
-    chunks = random.sample(headers + phrases + [gibberish] + [generate_toc_line()], k=random.randint(8, 15))
+    chunks = random.sample(
+        headers + phrases + [gibberish] + [generate_toc_line()], k=random.randint(8, 15)
+    )
     return chunks
   
 ```
