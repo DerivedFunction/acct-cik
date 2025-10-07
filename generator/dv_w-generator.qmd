@@ -4158,7 +4158,7 @@ def generate_labeled_hedge_paragraph(
         volume_unit = random.choice(volume_units)
         months_ahead = random.randint(6, 24)
         price = generate_value(False, 100)
-        pct = random.randint(40, 90)
+        pct = generate_value(False, 99)
         sentences.append(
             template.format(
                 company=pick_company_name(company_name),
