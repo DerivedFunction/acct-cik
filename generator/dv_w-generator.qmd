@@ -4181,6 +4181,7 @@ def generate_labeled_hedge_paragraph(
                     verb=verb,
                     swap_type=swap_type,
                     month=random.choice(months),
+                    quarter=random.choice(quarters),
                     end_day=random.randint(28, 31),
                     year=year,
                     prev_year=prev_year,
@@ -5605,7 +5606,7 @@ def generate(size_per_label=100):
 ```
 
 ```{python}
-generate(2000)
+generate(500)
 ```
 
 ```{python}
