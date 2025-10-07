@@ -3662,6 +3662,32 @@ def generate_labeled_hedge_paragraph(
                 commodity=commodity,
             )
         )
+
+        template = random.choice(cp_strategy_templates)
+        verb = random.choice(hedge_use_verbs)
+        swap_type = random.choice(swap_types)
+
+        if random.random() < 0.3:  # Chance to replace with actual commodity
+            swap_type = re.sub("commodity", commodity, swap_type)
+        amount = random.randint(5, 50)
+        notional = random.randint(50, 500)
+        event_year = random.choice(past_years) if past_years else current_year
+        cost_type = random.choice(cost_types)
+        sentence = template.format(
+            company=pick_company_name(company_name),
+            verb=verb,
+            swap_type=swap_type,
+            commodity=commodity,
+            month=random.choice(months),
+            year=event_year,
+            quarter=random.choice(quarters),
+            currency_code=currency_code,
+            amount=amount,
+            notional=notional,
+            money_unit=money_units,
+            cost_type=cost_type,
+        )
+        sentences.append(sentence)
         return sentences
 
     def generate_hedge_policy(current=False):
@@ -4169,36 +4195,6 @@ def generate_labeled_hedge_paragraph(
         elif swapType == "cp":
             # Label 0: Active derivative positions
             if has_active_derivative:
-                # Commodity event (0-1)
-                if random.random() < 0.7:
-                    template = random.choice(cp_strategy_templates)
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-
-                    if random.random() < 0.3:  # Chance to replace with actual commodity
-                        swap_type = re.sub("commodity", commodity, swap_type)
-                    amount = random.randint(5, 50)
-                    notional = random.randint(50, 500)
-                    event_year = (
-                        random.choice(past_years) if past_years else current_year
-                    )
-                    cost_type = random.choice(cost_types)
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        commodity=commodity,
-                        month=random.choice(months),
-                        year=event_year,
-                        quarter=random.choice(quarters),
-                        currency_code=currency_code,
-                        amount=amount,
-                        notional=notional,
-                        money_unit=money_units,
-                        cost_type=cost_type,
-                    )
-                    all_sentences.append(sentence)
-
                 # Active position (always for label 0)
                 template = random.choice(cp_position_template)  # Use position templates
                 verb = random.choice(hedge_use_verbs)
@@ -4238,49 +4234,44 @@ def generate_labeled_hedge_paragraph(
             else:
                 commodity = random.choice(commodities)
                 # Past event (0-1)
-                if random.random() < 0.6:
-                    template = random.choice(
-                        cp_position_template
-                    )  # Use event templates
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-                    old_notional = random.randint(5, 50)
-                    if random.random() < 0.3:  # Chance to replace with actual commodity
-                        swap_type = re.sub("commodity", commodity, swap_type)
-                    prev_notional = random.randint(0, 50)
-                    prev2_notional = random.randint(0, 50)
-                    if random.random() < 0.5:  # Set notional for prev year
-                        year = current_year - 1
-                        notional = random.randint(5, 50)
-                    else:  # Or set current year as 0
-                        year = current_year
-                        notional = 0
-                    prev_year = year - 1
-                    prev2_year = prev_year - 1
-                    old_year = (
-                        random.choice(past_years) - 1 if past_years else prev_year
-                    )
-                    future_year = random.randint(old_year, prev_year)
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        commodity=commodity,
-                        month=random.choice(months),
-                        end_day=random.randint(28, 31),
-                        year=year,
-                        prev_year=prev_year,
-                        prev2_year=prev2_year,
-                        old_year=old_year,
-                        future_year=future_year,
-                        currency_code=currency_code,
-                        notional=notional,
-                        prev_notional=prev_notional,
-                        prev2_notional=prev2_notional,
-                        old_notional=old_notional,
-                        money_unit=money_units,
-                    )
-                    all_sentences.append(sentence)
+                template = random.choice(cp_position_template)  # Use event templates
+                verb = random.choice(hedge_use_verbs)
+                swap_type = random.choice(swap_types)
+                old_notional = random.randint(5, 50)
+                if random.random() < 0.3:  # Chance to replace with actual commodity
+                    swap_type = re.sub("commodity", commodity, swap_type)
+                prev_notional = random.randint(0, 50)
+                prev2_notional = random.randint(0, 50)
+                if random.random() < 0.5:  # Set notional for prev year
+                    year = current_year - 1
+                    notional = random.randint(5, 50)
+                else:  # Or set current year as 0
+                    year = current_year
+                    notional = 0
+                prev_year = year - 1
+                prev2_year = prev_year - 1
+                old_year = random.choice(past_years) - 1 if past_years else prev_year
+                future_year = random.randint(old_year, prev_year)
+                sentence = template.format(
+                    company=pick_company_name(company_name),
+                    verb=verb,
+                    swap_type=swap_type,
+                    commodity=commodity,
+                    month=random.choice(months),
+                    end_day=random.randint(28, 31),
+                    year=year,
+                    prev_year=prev_year,
+                    prev2_year=prev2_year,
+                    old_year=old_year,
+                    future_year=future_year,
+                    currency_code=currency_code,
+                    notional=notional,
+                    prev_notional=prev_notional,
+                    prev2_notional=prev2_notional,
+                    old_notional=old_notional,
+                    money_unit=money_units,
+                )
+                all_sentences.append(sentence)
 
                 all_sentences.extend(expire_hedge())
 
