@@ -14,7 +14,7 @@ parquet_file = "./training_data.parquet"
 # Precompile regex patterns
 pattern_we_s = re.compile(r"We's", flags=re.IGNORECASE)
 pattern_we_is = re.compile(r"We is", flags=re.IGNORECASE)
-pattern_nil = re.compile(r" 0 (thousand|million|billion)", flags=re.IGNORECASE)
+pattern_nil = re.compile(r" (0|0.0) (thousand|million|billion)", flags=re.IGNORECASE)
 pattern_notional = re.compile(f"notional", flags=re.IGNORECASE)
 pattern_spaces = re.compile(r"\s+")
 pattern_dots = re.compile(r"\.\.")
@@ -3129,7 +3129,7 @@ def generate_value(haveZero=True, upperlimit=1000):
         chance = 0.1
     else:
         chance = 0
-    value = 0 if random.random() < chance else random.randint(1, upperlimit)
+    value = 0.0 if random.random() < chance else random.randint(1, upperlimit)
 
     if random.random() < 0.5:
         divisor = random.choice([10, 100])
