@@ -3253,33 +3253,34 @@ def generate_labeled_hedge_paragraph(
     # Determine label
     if has_active_derivative is None:
         if swapType == "gen":
-            label = 12
+            label = 2   # Gen/Unknown Hedge Der. Speculative/Policy
         elif swapType == "ir":
-            label = 3
+            label = 10  # IR Hedge Speculative/Policy
         elif swapType == "fx":
-            label = 6
+            label = 13  # FX Hedge Speculative/Policy
         elif swapType == "cp":
-            label = 9
+            label = 16  # CP Hedge Speculative/Policy
 
     elif has_active_derivative is True:
         if swapType == "gen":
-            label = 10
+            label = 0   # Gen/Unknown Hedge Der.
         elif swapType == "ir":
-            label = 1
+            label = 8   # IR Hedge
         elif swapType == "fx":
-            label = 4
+            label = 11  # FX Hedge
         elif swapType == "cp":
-            label = 7
+            label = 14  # CP Hedge
 
     else:
         if swapType == "gen":
-            label = 11
+            label = 1   # Gen/Unknown Hedge Der. Historic
         elif swapType == "ir":
-            label = 2
+            label = 9   # IR Hedge Historic
         elif swapType == "fx":
-            label = 5
+            label = 12  # FX Hedge Historic
         elif swapType == "cp":
-            label = 8
+            label = 15  # CP Hedge Historic
+
 
     def generate_fx_policy(current=False):
         sentences = []
