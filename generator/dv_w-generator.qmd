@@ -562,10 +562,10 @@ hedge_position_templates = [
     "At the close of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain designated as hedges",
     "As of {month} {year}, {company}’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit}",
     "{company}’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}",
-    "{company}’s {swap_type} contracted in {old_year} remain outstanding as of {year}, with a notional balance of {currency_code}{prev_notional} {money_unit}, scheduled to mature in {future_year}",
-    "To manage exposure, {company} {verb} {swap_type} in {old_year}, with an inception notional of {currency_code}{prev_notional} {money_unit} and a stated maturity in {future_year}",
-    "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{prev_notional} {money_unit}, which are set to expire in {month} {future_year}",
-    "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{prev_notional} {money_unit}, expiring in {future_year}",
+    "{company}’s {swap_type} contracted in {old_year} remain outstanding as of {year}, with a notional balance of {currency_code}{old_notional} {money_unit}, scheduled to mature in {future_year}",
+    "To manage exposure, {company} {verb} {swap_type} in {old_year}, with an inception notional of {currency_code}{old_notional} {money_unit} and a stated maturity in {future_year}",
+    "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{old_notional} {money_unit}, which are set to expire in {month} {future_year}",
+    "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{old_notional} {money_unit}, expiring in {future_year}",
     # --- NEW TWO-YEAR DISCLOSURE ADDITIONS (with {month} and {end_day}) ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated as hedging instruments",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} outstanding with aggregate notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively",
@@ -591,9 +591,9 @@ eq_position_templates = [
     "As of {month} {year}, {company}’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit} linked to the value of its common stock or market indices",
     "{company}’s derivative instruments as of {month} {end_day}, {year}, include {swap_type} with a total notional amount of {currency_code}{notional} {money_unit} to manage risks related to equity-linked compensation obligations",
     "{company}’s {swap_type} contracted in {old_year} remain outstanding as of {year}, with a notional balance of {currency_code}{notional} {money_unit}, intended to hedge changes in equity market values",
-    "To manage share price exposure, {company} {verb} {swap_type} in {old_year}, with an inception notional of {currency_code}{prev_notional} {money_unit} and a stated maturity in {future_year}",
-    "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{prev_notional} {money_unit}, which are set to expire in {month} {future_year}, to offset volatility in stock-based compensation expense",
-    "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{prev_notional} {money_unit}, expiring in {future_year}, to hedge changes in equity valuation",
+    "To manage share price exposure, {company} {verb} {swap_type} in {old_year}, with an inception notional of {currency_code}{old_notional} {money_unit} and a stated maturity in {future_year}",
+    "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{old_notional} {money_unit}, which are set to expire in {month} {future_year}, to offset volatility in stock-based compensation expense",
+    "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{old_notional} {money_unit}, expiring in {future_year}, to hedge changes in equity valuation",
     # --- Two-year comparative disclosures ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to hedge exposure to its common stock value",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} outstanding with aggregate notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, related to equity-based compensation programs",
@@ -1182,10 +1182,10 @@ cp_position_template = [
     "{company} holds {swap_type} as of {month} {end_day}, {year}, with notional values of {currency_code}{notional} {money_unit} to hedge {commodity} exposures",
     "At {month} {year}, {company}’s {swap_type} cover {currency_code}{notional} {money_unit} in notional value to mitigate risks from commodity price swings",
     "During {year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to protect against commodity market fluctuations",
-    "In {old_year}, {company} {verb} {swap_type} with a notional volume equivalent of {currency_code}{prev_notional} {money_unit}, set to expire in {future_year}",
-    "During {old_year}, {company} {verb} {swap_type} to manage raw material exposure, with a notional of {currency_code}{prev_notional} {money_unit}, terminating in {future_year}",
-    "{company} {verb} {swap_type} in {month} {old_year} to lock in pricing, covering {currency_code}{prev_notional} {money_unit}, expiring in {month} {future_year}",
-    "At year-end {year}, {company} held {swap_type} initiated in {old_year}, with outstanding notional amounts of {currency_code}{prev_notional} {money_unit}, maturing in {future_year}",
+    "In {old_year}, {company} {verb} {swap_type} with a notional volume equivalent of {currency_code}{old_notional} {money_unit}, set to expire in {future_year}",
+    "During {old_year}, {company} {verb} {swap_type} to manage {commodity} exposure, with a notional of {currency_code}{old_notional} {money_unit}, terminating in {future_year}",
+    "{company} {verb} {swap_type} in {month} {old_year} to lock in pricing, covering {currency_code}{old_notional} {money_unit}, expiring in {month} {future_year}",
+    "At year-end {year}, {company} held {swap_type} initiated in {old_year}, with outstanding notional amounts of {currency_code}{old_notional} {money_unit}, maturing in {future_year}",
     # --- NEW TWO-YEAR DISCLOSURE ADDITIONS (with {month} and {end_day}) ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated to hedge commodity price risk",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} contracts totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to manage raw material cost volatility",
@@ -1318,10 +1318,10 @@ fx_context_templates = [
 ]
 
 fx_position_template = [
-    "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{prev_notional} {money_unit}, maturing in {month} {future_year}",
+    "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{old_notional} {money_unit}, maturing in {month} {future_year}",
     "During {prev_year}, {company} {verb} {swap_type} to manage translation exposure, with an inception notional of {currency_code}{prev_notional} {money_unit}, set to expire in {future_year}",
     "{company} {verb} {swap_type} in {prev_year}, designed to hedge foreign borrowings with notional values of {currency_code}{prev_notional} {money_unit}, terminating in {future_year}",
-    "As of {year}, {company} continues to hold {swap_type} contracted in {old_year}, with outstanding notional balances of {currency_code}{prev_notional} {money_unit}, expiring in {future_year}",
+    "As of {year}, {company} continues to hold {swap_type} contracted in {old_year}, with outstanding notional balances of {currency_code}{old_notional} {money_unit}, expiring in {future_year}",
     "Outstanding {swap_type} at year-end {year} hedge {company}’s exposure to foreign currency fluctuations on cross-border transactions",
     "As of {month} {end_day}, {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are designated as cash flow hedges of forecasted foreign currency revenues",
     "As of {month} {end_day}, {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are designated as cash flow hedges due to changes in foreign exchange rates and are recorded at fair value",
@@ -1330,10 +1330,10 @@ fx_position_template = [
     "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated to hedge anticipated foreign currency purchases",
     "As of {month} {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are in place to protect against volatility in foreign currency receivables",
     "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} are active to hedge forecasted foreign currency cash flows",
-    "In {month} {old_year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit}, scheduled to expire in {month} {future_year} to manage currency risk",
-    "During {old_year}, {company} {verb} {swap_type} to hedge forecasted foreign currency expenditures, with an initial notional of {currency_code}{prev_notional} {money_unit}, maturing in {future_year}",
-    "As part of its treasury risk management program, {company} {verb} {swap_type} in {old_year}, which carry notional amounts of {currency_code}{prev_notional} {money_unit} and terminate in {future_year}, mitigating exposure to foreign currency fluctuations",
-    "In {month} {old_year}, {company} {verb} {swap_type} with a starting notional of {currency_code}{prev_notional} {money_unit}, reducing over time until expiration in {month} {future_year}, designated as hedges of currency-denominated obligations",
+    "In {month} {old_year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{old_notional} {money_unit}, scheduled to expire in {month} {future_year} to manage currency risk",
+    "During {old_year}, {company} {verb} {swap_type} to hedge forecasted foreign currency expenditures, with an initial notional of {currency_code}{old_notional} {money_unit}, maturing in {future_year}",
+    "As part of its treasury risk management program, {company} {verb} {swap_type} in {old_year}, which carry notional amounts of {currency_code}{old_notional} {money_unit} and terminate in {future_year}, mitigating exposure to foreign currency fluctuations",
+    "In {month} {old_year}, {company} {verb} {swap_type} with a starting notional value of {currency_code}{old_notional} {money_unit}, reducing over time until expiration in {month} {future_year}, designated as hedges of currency-denominated obligations",
     # --- NEW TWO-YEAR DISCLOSURE ADDITIONS ---
     "At {month} {end_day}, {year} and {prev_year}, {company} held {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, of {swap_type} outstanding to hedge foreign currency exposures",
     "As of {month} {end_day}, {year} and {prev_year}, {company} maintained {swap_type} positions totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated as cash flow hedges of forecasted transactions",
@@ -1525,10 +1525,10 @@ ir_position_template = [
     "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as fair value hedges",
     "As of {month} {year}, {swap_type} with a notional amount of {currency_code}{notional} {money_unit} are in place to convert fixed-rate debt to floating rates",
     "At year-end {year}, {swap_type} with a notional value of {currency_code}{notional} {money_unit} are active to hedge fixed-rate debt obligations",
-    "In {month} {old_year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{prev_notional} {money_unit}, scheduled to expire in {month} {future_year}",
-    "During {old_year}, {company} {verb} {swap_type} to hedge debt obligations, with an initial notional of {currency_code}{prev_notional} {money_unit}, maturing in {future_year}",
-    "As part of its bond financing strategy, {company} {verb} {swap_type} in {old_year}, which carry notional amounts of {currency_code}{prev_notional} {money_unit} and terminate in {future_year}",
-    "In {month} {old_year}, {company} {verb} {swap_type} with a starting notional of {currency_code}{prev_notional} {money_unit}, declining annually until expiration in {month} {future_year}",
+    "In {month} {old_year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{old_notional} {money_unit}, scheduled to expire in {month} {future_year}",
+    "During {old_year}, {company} {verb} {swap_type} to hedge debt obligations, with an initial notional of {currency_code}{old_notional} {money_unit}, maturing in {future_year}",
+    "As part of its bond financing strategy, {company} {verb} {swap_type} in {old_year}, which carry notional amounts of {currency_code}{old_notional} {money_unit} and terminate in {future_year}",
+    "In {month} {old_year}, {company} {verb} {swap_type} with a starting notional value of {currency_code}{old_notional} {money_unit}, declining annually until expiration in {month} {future_year}",
     # --- NEW TWO-YEAR DISCLOSURE ADDITIONS (with {month} and {end_day}) ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated as fair value hedges of fixed-rate debt",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to convert fixed-rate obligations to floating rates",
@@ -3847,6 +3847,7 @@ def generate_labeled_hedge_paragraph(
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 1000)
                 prev_notional = random.randint(0, 1000)
+                old_notional = random.randint(50, 1000)
                 verb = random.choice(hedge_use_verbs)
                 prev_year = current_year - 1
                 old_year = random.choice(past_years) - 1 if past_years else prev_year
@@ -3864,6 +3865,7 @@ def generate_labeled_hedge_paragraph(
                     currency_code=currency_code,
                     notional=notional,
                     prev_notional=prev_notional,
+                    old_notional=old_notional,
                     money_unit=money_units,
                 )
                 all_sentences.append(sentence)
@@ -3898,6 +3900,7 @@ def generate_labeled_hedge_paragraph(
                 template = random.choice(fx_position_template)
                 swap_type = random.choice(swap_types)
                 prev_notional = random.randint(0, 1000)
+                old_notional = random.randint(50, 1000)
                 verb = random.choice(hedge_use_verbs)
                 if random.random() < 0.5:  # Pick prev year
                     year = current_year - 1
@@ -3921,6 +3924,7 @@ def generate_labeled_hedge_paragraph(
                     currency_code=currency_code,
                     notional=notional,
                     prev_notional=prev_notional,
+                    old_notional=old_notional,
                     money_unit=money_units,
                 )
                 all_sentences.append(sentence)
@@ -3965,6 +3969,7 @@ def generate_labeled_hedge_paragraph(
                 swap_type = random.choice(swap_types)
                 notional = random.randint(100, 1000)
                 prev_notional = random.randint(0, 1000)
+                old_notional = random.randint(50, 1000)
                 sentence = template.format(
                     company=pick_company_name(company_name),
                     verb=verb,
@@ -3978,6 +3983,7 @@ def generate_labeled_hedge_paragraph(
                     currency_code=currency_code,
                     notional=notional,
                     prev_notional=prev_notional,
+                    old_notional=old_notional,
                     money_unit=money_units,
                 )
                 all_sentences.append(sentence)
@@ -4034,6 +4040,7 @@ def generate_labeled_hedge_paragraph(
                 verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
                 prev_notional = random.randint(0, 1000)
+                old_notional = random.randint(50, 1000)
                 if random.random() < 0.5:  # Have previous years with amount
                     year = current_year - 1
                     notional = random.randint(100, 1000)
@@ -4056,6 +4063,7 @@ def generate_labeled_hedge_paragraph(
                     currency_code=currency_code,
                     notional=notional,
                     prev_notional=prev_notional,
+                    old_notional=old_notional,
                     money_unit=money_units,
                 )
                 all_sentences.append(sentence)
@@ -4101,7 +4109,7 @@ def generate_labeled_hedge_paragraph(
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 500)
                 prev_notional = random.randint(0, 500)
-
+                old_notional = random.randint(5, 500)
                 prev_year = current_year - 1
                 old_year = random.choice(past_years) if past_years else prev_year
                 future_year = random.randint(current_year + 1, current_year + 5)
@@ -4120,6 +4128,7 @@ def generate_labeled_hedge_paragraph(
                     currency_code=currency_code,
                     notional=notional,
                     prev_notional=prev_notional,
+                    old_notional=old_notional,
                     money_unit=money_units,
                     commodity=commodity,
                 )
@@ -4214,6 +4223,7 @@ def generate_labeled_hedge_paragraph(
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 1000)
                 prev_notional = random.randint(0, 1000)
+                old_notional = random.randint(5, 1000)
                 verb = random.choice(hedge_use_verbs)
                 prev_year = current_year - 1
                 old_year = random.choice(past_years) if past_years else prev_year
@@ -4231,6 +4241,7 @@ def generate_labeled_hedge_paragraph(
                     currency_code=currency_code,
                     notional=notional,
                     prev_notional=prev_notional,
+                    old_notional=old_notional,
                     money_unit=money_units,
                 )
                 all_sentences.append(sentence)
@@ -4267,6 +4278,7 @@ def generate_labeled_hedge_paragraph(
                     template = random.choice(eq_position_templates)
                 swap_type = random.choice(swap_types)
                 prev_notional = random.randint(0, 1000)
+                old_notional = random.randint(5, 1000)
                 verb = random.choice(hedge_use_verbs)
                 if random.random() < 0.5:
                     year = current_year - 1
@@ -4290,6 +4302,7 @@ def generate_labeled_hedge_paragraph(
                     currency_code=currency_code,
                     notional=notional,
                     prev_notional=prev_notional,
+                    old_notional=old_notional,
                     money_unit=money_units,
                 )
                 all_sentences.append(sentence)
