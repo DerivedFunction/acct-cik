@@ -3615,6 +3615,7 @@ def generate_labeled_hedge_paragraph(
             if len(selected_co) > 1
             else selected_co[0]
         )
+        selected_co_list = selected_co_list if random.random() < 0.85 else "commodity"
         if current:
             verbs = hedge_use_verbs
         else:
@@ -3662,8 +3663,6 @@ def generate_labeled_hedge_paragraph(
         template = random.choice(cp_may_use_templates)
         verb = random.choice(verbs)
         swap_type = random.choice(swap_types)
-        if random.random() < 0.3:  # Chance to replace with actual commodity
-            swap_type = re.sub("commodity", commodity, swap_type)
         sentences.append(
             template.format(
                 company=pick_company_name(company_name),
@@ -3676,9 +3675,6 @@ def generate_labeled_hedge_paragraph(
         template = random.choice(cp_strategy_templates)
         verb = random.choice(hedge_use_verbs)
         swap_type = random.choice(swap_types)
-
-        if random.random() < 0.3:  # Chance to replace with actual commodity
-            swap_type = re.sub("commodity", commodity, swap_type)
         amount = random.randint(5, 50)
         notional = random.randint(50, 500)
         event_year = random.choice(past_years) if past_years else current_year
