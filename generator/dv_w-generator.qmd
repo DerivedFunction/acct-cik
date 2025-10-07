@@ -3126,7 +3126,7 @@ def generate_value(haveZero=True, upperlimit=1000):
     """Generate a random previous notional value with chance of being zero,
     and optional rounding for variability. Returns int if whole, else float."""
     if haveZero:
-        chance = 0.05
+        chance = 0.1
     else:
         chance = 0
     value = 0 if random.random() < chance else random.randint(0, upperlimit)
