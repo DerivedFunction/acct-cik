@@ -5503,7 +5503,7 @@ def generate(size_per_label=100):
 ```
 
 ```{python}
-generate(500)
+generate(1000)
 ```
 
 ```{python}
