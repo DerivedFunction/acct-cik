@@ -3122,14 +3122,14 @@ def pick_company_name(company_name: str) -> str:
     return random.choices([company_name, "The Company"], weights=[0.75, 0.25], k=1)[0]
 
 
-def generate_value(haveZero=True):
+def generate_value(haveZero=True, upperlimit=1000):
     """Generate a random previous notional value with chance of being zero,
     and optional rounding for variability. Returns int if whole, else float."""
     if haveZero:
         chance = 0.05
     else:
         chance = 0
-    value = 0 if random.random() < chance else random.randint(0, 1000)
+    value = 0 if random.random() < chance else random.randint(0, upperlimit)
 
     if random.random() < 0.5:
         divisor = random.choice([10, 100])
@@ -3991,7 +3991,7 @@ def generate_labeled_hedge_paragraph(
         template = random.choice(fx_specific_hedge_templates)
         swap_type = random.choice(swap_types)
         notional_currency = random.choice(currency_codes)
-        notional_amount = random.randint(100, 500)
+        notional_amount = generate_value(False)
         expiry_year = current_year + 1
         currency_pair = random.choice(currency_pairs)
         hedged_item = random.choice(hedged_items)
@@ -4154,10 +4154,10 @@ def generate_labeled_hedge_paragraph(
         verb = random.choice(verbs)
         swap_type = random.choice(swap_types)
         cost_type = random.choice(cost_types)
-        volume = random.randint(100, 10000)
+        volume = generate_value(False)
         volume_unit = random.choice(volume_units)
         months_ahead = random.randint(6, 24)
-        price = random.randint(20, 200)
+        price = generate_value(False, 100)
         pct = random.randint(40, 90)
         sentences.append(
             template.format(
@@ -4204,8 +4204,8 @@ def generate_labeled_hedge_paragraph(
         template = random.choice(cp_strategy_templates)
         verb = random.choice(hedge_use_verbs)
         swap_type = random.choice(swap_types)
-        amount =  generate_value(False)
-        notional = generate_value(False)50, 500)
+        amount = generate_value(False)
+        notional = generate_value(False)
         event_year = random.choice(past_years) if past_years else current_year
         cost_type = random.choice(cost_types)
         sentence = template.format(
@@ -4351,8 +4351,8 @@ def generate_labeled_hedge_paragraph(
         template = random.choice(hedge_fv_position_templates)
         swap_type = random.choice(swap_types)
         position_type = random.choice(position_types)
-        amount =  generate_value(False)
-        oci_amount =  generate_value(False)
+        amount = generate_value(False)
+        oci_amount = generate_value(False)
         oci_action = random.choice(oci_actions)
         sentence = template.format(
             company=pick_company_name(company_name),
@@ -4476,7 +4476,7 @@ def generate_labeled_hedge_paragraph(
                 template = random.choice(hedge_past_event_template)
                 swap_type = random.choice(swap_types)
                 past_year = random.choice(past_years)
-                amount = random.randint(10, 100)
+                amount = generate_value(False)
                 hedge_type = random.choice(hedge_types)
                 verb = random.choice(hedge_use_verbs)
                 sentence = template.format(
@@ -4672,7 +4672,7 @@ def generate_labeled_hedge_paragraph(
                     swap_type = random.choice(swap_types)
                     past_year = random.choice(past_years)
                     next_year = past_year + 1
-                    amount = random.randint(10, 100)
+                    amount = generate_value(False)
                     hedge_type = random.choice(hedge_types)
                     sentence = template.format(
                         company=pick_company_name(company_name),
@@ -4773,7 +4773,7 @@ def generate_labeled_hedge_paragraph(
                 template = random.choice(cp_position_template)  # Use event templates
                 verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
-                old_notional =  generate_value(False)
+                old_notional = generate_value(False)
                 if random.random() < 0.3:  # Chance to replace with actual commodity
                     swap_type = re.sub("commodity", commodity, swap_type)
                 prev_notional = generate_value()
