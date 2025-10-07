@@ -5827,7 +5827,7 @@ def generate_accounting_noise_paragraph(
                 end_day=end_day,
                 year=current_year,
                 prev_year=current_year - 1,
-                company=pick_company_name(),
+                company=pick_company_name(company_name),
             )
         else:
             template = random.choice(trading_volume_templates)
@@ -5843,7 +5843,7 @@ def generate_accounting_noise_paragraph(
                 volatility=volatility,
                 pct=pct,
                 improved_decreased=improved_decreased,
-                company=pick_company_name(),
+                company=pick_company_name(company_name),
             )
 
         all_sentences.append(sentence)
@@ -5875,7 +5875,7 @@ def generate_accounting_noise_paragraph(
         sentence = template.format(
             industry=industry,
             business_activity=business_activity,
-            company=pick_company_name(),
+            company=pick_company_name(company_name),
             products_services=products_services,
             geography=geography,
             founding_year=founding_year,
@@ -5920,7 +5920,7 @@ def generate_accounting_noise_paragraph(
                 fund_name=fund_name,
                 fund_name2=fund_name2,
                 form=form,
-                company=pick_company_name(),
+                company=pick_company_name(company_name),
             )
         else:
             template = random.choice(insider_ownership_templates)
@@ -5937,7 +5937,7 @@ def generate_accounting_noise_paragraph(
                 month=month,
                 end_day=end_day,
                 year=current_year,
-                company=pick_company_name(),
+                company=pick_company_name(company_name),
             )
 
         all_sentences.append(sentence)
@@ -5957,7 +5957,7 @@ def generate_accounting_noise_paragraph(
             sentence = template.format(
                 topics=topics,
                 words=words,
-                company=pick_company_name(),
+                company=pick_company_name(company_name),
                 risk_factors=risk_factors,
                 month=month,
                 end_day=end_day,
@@ -5965,7 +5965,7 @@ def generate_accounting_noise_paragraph(
             )
         else:
             sentence = random.choice(
-                safe_harbor_templates.format(company=pick_company_name())
+                safe_harbor_templates.format(company=pick_company_name(company_name))
             )
 
         all_sentences.append(sentence)
@@ -5998,7 +5998,7 @@ def generate_accounting_noise_paragraph(
             pct=pct,
             low=low,
             high=high,
-            company=pick_company_name(),
+            company=pick_company_name(company_name),
         )
 
         all_sentences.append(sentence)
@@ -6031,7 +6031,7 @@ def generate_accounting_noise_paragraph(
             month=month,
             end_day=end_day,
             year=current_year,
-            company=pick_company_name(),
+            company=pick_company_name(company_name),
         )
 
         all_sentences.append(sentence)
@@ -6061,7 +6061,7 @@ def generate_accounting_noise_paragraph(
                 pct2=pct2,
                 prev_pct=prev_pct,
                 prev_year=current_year - 1,
-                company=pick_company_name(),
+                company=pick_company_name(company_name),
             )
         else:
             template = random.choice(share_repurchase_templates)
@@ -6083,7 +6083,7 @@ def generate_accounting_noise_paragraph(
                 month=month,
                 end_day=end_day,
                 prev_year=current_year - 1,
-                company=pick_company_name(),
+                company=pick_company_name(company_name),
             )
 
         all_sentences.append(sentence)
@@ -6112,7 +6112,7 @@ def generate_accounting_noise_paragraph(
             year=current_year,
             reasons=reasons,
             advantages=advantages,
-            company=pick_company_name()
+            company=pick_company_name(company_name)
         )
 
         all_sentences.append(sentence)
@@ -6135,7 +6135,7 @@ def generate_accounting_noise_paragraph(
             year=current_year,
             approvals=approvals,
             matters=matters,
-            company=pick_company_name()
+            company=pick_company_name(company_name)
         )
 
         all_sentences.append(sentence)
@@ -6162,7 +6162,7 @@ def generate_accounting_noise_paragraph(
             risks=risks,
             incident=incident,
             coverage_types=coverage_types_list,
-            company=pick_company_name()
+            company=pick_company_name(company_name)
         )
 
         all_sentences.append(sentence)
