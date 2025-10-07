@@ -3120,6 +3120,23 @@ coverage_types = [
 ```{python}
 def pick_company_name(company_name: str) -> str:
     return random.choices([company_name, "The Company"], weights=[0.75, 0.25], k=1)[0]
+
+def generate_prev_notional():
+    """Generate a random previous notional value with ~5% chance of being zero,
+    and optional rounding for variability. Returns int if whole, else float."""
+    prev_notional = 0 if random.random() < 0.05 else random.randint(0, 1000)
+
+    if random.random() < 0.5:
+        divisor = random.choice([10, 100])
+        decimals = random.randint(1, 2)
+        prev_notional = round(prev_notional / divisor, decimals)
+
+    # Cast to int if it's a whole number
+    if isinstance(prev_notional, float) and prev_notional.is_integer():
+        prev_notional = int(prev_notional)
+
+    return prev_notional
+
 ```
 
 ## Derivative Liabilties/Warrants
@@ -4533,8 +4550,8 @@ def generate_labeled_hedge_paragraph(
                 template = random.choice(fx_position_template)
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 1000)
-                prev_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
-                prev2_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
+                prev_notional = generate_prev_notional()
+                prev2_notional = generate_prev_notional()
                 old_notional = random.randint(50, 1000)
                 verb = random.choice(hedge_use_verbs)
                 prev_year = current_year - 1
@@ -4566,8 +4583,8 @@ def generate_labeled_hedge_paragraph(
                 # Past position (always for label 1)
                 template = random.choice(fx_position_template)
                 swap_type = random.choice(swap_types)
-                prev_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
-                prev2_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
+                prev_notional = generate_prev_notional()
+                prev2_notional = generate_prev_notional()
                 old_notional = random.randint(50, 1000)
                 verb = random.choice(hedge_use_verbs)
                 if random.random() < 0.5:  # Pick prev year
@@ -4615,8 +4632,8 @@ def generate_labeled_hedge_paragraph(
                 future_year = random.randint(current_year + 1, current_year + 5)
                 swap_type = random.choice(swap_types)
                 notional = random.randint(100, 1000)
-                prev_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
-                prev2_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
+                prev_notional = generate_prev_notional()
+                prev2_notional = generate_prev_notional()
                 old_notional = random.randint(50, 1000)
                 cost_type = random.choice(cost_types)
                 sentence = template.format(
@@ -4670,8 +4687,8 @@ def generate_labeled_hedge_paragraph(
                 template = random.choice(ir_position_template)
                 verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
-                prev_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
-                prev2_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
+                prev_notional = generate_prev_notional()
+                prev2_notional = generate_prev_notional()
                 old_notional = random.randint(50, 1000)
                 if random.random() < 0.5:  # Have previous years with amount
                     year = current_year - 1
@@ -4714,8 +4731,8 @@ def generate_labeled_hedge_paragraph(
                 verb = random.choice(hedge_use_verbs)
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 500)
-                prev_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
-                prev2_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
+                prev_notional = generate_prev_notional()
+                prev2_notional = generate_prev_notional()
                 old_notional = random.randint(5, 500)
                 prev_year = current_year - 1
                 prev2_year = prev_year - 1
@@ -4801,8 +4818,8 @@ def generate_labeled_hedge_paragraph(
                     template = random.choice(eq_position_templates)
                 swap_type = random.choice(swap_types)
                 notional = random.randint(50, 1000)
-                prev_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
-                prev2_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
+                prev_notional = generate_prev_notional()
+                prev2_notional = generate_prev_notional()
                 old_notional = random.randint(5, 1000)
                 verb = random.choice(hedge_use_verbs)
                 prev_year = current_year - 1
@@ -4837,8 +4854,8 @@ def generate_labeled_hedge_paragraph(
                 else:
                     template = random.choice(eq_position_templates)
                 swap_type = random.choice(swap_types)
-                prev_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
-                prev2_notional = 0 if random.random() < 0.15 else random.randint(0, 100)
+                prev_notional = generate_prev_notional()
+                prev2_notional = generate_prev_notional()
                 old_notional = random.randint(5, 1000)
                 verb = random.choice(hedge_use_verbs)
                 if random.random() < 0.5:
