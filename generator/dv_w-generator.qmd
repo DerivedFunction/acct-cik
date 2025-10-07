@@ -6204,7 +6204,7 @@ def generate_sec_noise(company, currency_unit, month, year):
     def generate_toc_line():
         template = random.choice(sec_toc_patterns)
         page_num = random.randint(1, 200)  # simulate TOC page numbers
-        return template.format(page=page_num) + " "
+        return template.format(page=page_num, company=company) + " "
 
     phrases = [
         "Commission file number " + str(random.randint(1, 99999)).zfill(5),
