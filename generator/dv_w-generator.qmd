@@ -1256,7 +1256,7 @@ cp_context_templates = [
     "{company} {verb} {swap_types} to hedge exposure to {commodity} price volatility affecting {cost_type}",
     "{company} {verb} {swap_types} to manage the financial impact of fluctuations in {commodity} prices",
     "{swap_types} are {verb} to hedge anticipated {commodity} purchases totaling {volume} {volume_unit} over the next {months} months",
-    "In {month} {year}, {company} {verb} {swap_types} to lock in {commodity} prices for {volume} {volume_unit} of forecasted consumption",
+    "{company} {verb} {swap_types} to lock in {commodity} prices for {volume} {volume_unit} of forecasted consumption",
     "Commodity price risk related to {commodity} is managed through {swap_types} with notional volumes of {volume} {volume_unit}",
     "{company} {verb} {swap_types} to hedge {commodity} price exposure on production inputs",
     "{company} {verb} {swap_types} to stabilize {cost_type} by hedging approximately {pct}% of anticipated {commodity} requirements",
@@ -4273,6 +4273,7 @@ def generate_labeled_hedge_paragraph(
                     if random.random() < 0.3:  # Chance to replace with actual commodity
                         swap_type = re.sub("commodity", commodity, swap_type)
                     prev_notional = random.randint(0, 50)
+                    prev2_notional = random.randint(0, 50)
                     if random.random() < 0.5:  # Set notional for prev year
                         year = current_year - 1
                         notional = random.randint(5, 50)
