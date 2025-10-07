@@ -1577,26 +1577,26 @@ ir_context_templates = [
 ]
 # Interest Rate (IR) Debt Optimization Templates
 ir_debt_optimization_templates = [
-    "{company} {verb} {swap_type} to optimize the interest rate profile of its debt portfolio, converting portions of fixed-rate debt to floating-rate instruments",
-    "To manage borrowing costs, {company} {verb} {swap_type} to adjust the effective interest rate composition of outstanding debt",
-    "{company} implements {swap_type} to reduce interest rate volatility on its debt obligations",
-    "As part of its debt strategy, {company} {verb} {swap_type} to transform fixed-rate debt into variable-rate debt where appropriate",
-    "To hedge against rising interest rates, {company} {verb} {swap_type} to modify the interest rate characteristics of its borrowings",
-    "{company} {verb} {swap_type} to manage the interest rate exposure of its long-term debt portfolio",
-    "{company} {verb} {swap_type} to convert portions of debt into instruments with more favorable interest rate terms",
-    "{company} optimizes its debt by using {swap_type} to balance fixed and floating rate obligations",
-    "To stabilize interest expense, {company} {verb} {swap_type} to its debt portfolio, managing cash flow risk",
-    "{company} manages interest rate risk on forecasted debt issuances using {swap_type} to adjust the effective interest profile",
-    "{company}'s objectives in interest rate risk management are to limit the negative impact of interest rates by using {swap_type}",
+    "{company} {verb} {swap_types} to optimize the interest rate profile of its debt portfolio, converting portions of fixed-rate debt to floating-rate instruments",
+    "To manage borrowing costs, {company} {verb} {swap_types} to adjust the effective interest rate composition of outstanding debt",
+    "{company} {verb} {swap_types} to reduce interest rate volatility on its debt obligations",
+    "As part of its debt strategy, {company} {verb} {swap_types} to transform fixed-rate debt into variable-rate debt where appropriate",
+    "To hedge against rising interest rates, {company} {verb} {swap_types} to modify the interest rate characteristics of its borrowings",
+    "{company} {verb} {swap_types} to manage the interest rate exposure of its long-term debt portfolio",
+    "{company} {verb} {swap_types} to convert portions of debt into instruments with more favorable interest rate terms",
+    "{company} optimizes its debt by using {swap_types} to balance fixed and floating rate obligations",
+    "To stabilize interest expense, {company} {verb} {swap_types} to its debt portfolio, managing cash flow risk",
+    "{company} manages interest rate risk on forecasted debt issuances using {swap_types} to adjust the effective interest profile",
+    "{company}'s objectives in interest rate risk management are to limit the negative impact of interest rates by using {swap_types}",
 ]
 
 ir_may_use_templates = [
-    "{company} {verb} {swap_type} to hedge against fluctuations in interest rates",
-    "{company} {verb} {swap_type} to manage exposure to changes in benchmark interest rates",
-    "{company} {verb} {swap_type} to reduce cash flow variability from interest-bearing debt",
-    "{company} {verb} {swap_type} to stabilize the cost of borrowing",
-    "{company} {verb} {swap_type} to protect against unfavorable changes in long-term debt obligations",
-    "{company} {verb} {swap_type} to hedge interest rate risk on forecasted debt issuances",
+    "{company} {verb} {swap_types} to hedge against fluctuations in interest rates",
+    "{company} {verb} {swap_types} to manage exposure to changes in benchmark interest rates",
+    "{company} {verb} {swap_types} to reduce cash flow variability from interest-bearing debt",
+    "{company} {verb} {swap_types} to stabilize the cost of borrowing",
+    "{company} {verb} {swap_types} to protect against unfavorable changes in long-term debt obligations",
+    "{company} {verb} {swap_types} to hedge interest rate risk on forecasted debt issuances",
 ]
 
 hedge_methods = [
@@ -3452,7 +3452,7 @@ def generate_labeled_hedge_paragraph(
             template.format(
                 company=pick_company_name(company_name),
                 verb=verb,
-                swap_type=swap_type,
+                swap_types=selected_ir_list,
             )
         )
         # Optional hedging template (0-1)
@@ -3471,11 +3471,10 @@ def generate_labeled_hedge_paragraph(
         # Debt optimization (0-1)
         template = random.choice(ir_debt_optimization_templates)
         verb = random.choice(verbs)
-        swap_type = random.choice(swap_types)
         sentence = template.format(
             company=pick_company_name(company_name),
             verb=verb,
-            swap_type=swap_type,
+            swap_types=selected_ir_list,
         )
         sentences.append(sentence)
         return sentences
