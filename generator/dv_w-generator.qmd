@@ -982,7 +982,7 @@ hedge_no_trading_templates = [
 ]
 
 hedge_fv_position_templates = [
-    'As of {month} {end_day}, {year}, the fair value of the swaps was a {position_type} of {currency_code}{amount} {money_unit}, the opposite entry for {currency_code}{oci_amount} {money_unit} of which was {oci_action} to "Other comprehensive income" under the cost of hedging accounting treatment',
+    'As of {month} {end_day}, {year}, the fair value of the {swap_type} was a {position_type} of {currency_code}{amount} {money_unit}, the opposite entry for {currency_code}{oci_amount} {money_unit} of which was {oci_action} to "Other comprehensive income" under the cost of hedging accounting treatment',
     'As of {month} {end_day}, {year}, the fair value of these {swap_type} represented a {position_type} of {currency_code}{amount} {money_unit}; the opposite entry was recognized in "Other comprehensive income", with the impact on financial income and expense being immaterial',
     "The fair value of {swap_type} as of {month} {end_day}, {year} was a {position_type} of {currency_code}{amount} {money_unit}, with {currency_code}{oci_amount} {money_unit} {oci_action} to other comprehensive income",
     "As of year-end {year}, outstanding {swap_type} had a fair value {position_type} of {currency_code}{amount} {money_unit}, the offsetting entry being recorded in accumulated other comprehensive income",
