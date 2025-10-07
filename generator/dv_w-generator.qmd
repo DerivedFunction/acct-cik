@@ -14,7 +14,7 @@ parquet_file = "./training_data.parquet"
 # Precompile regex patterns
 pattern_we_s = re.compile(r"We's", flags=re.IGNORECASE)
 pattern_we_is = re.compile(r"We is", flags=re.IGNORECASE)
-pattern_nil = re.compile(r"nil (thousand|million|billion)", flags=re.IGNORECASE)
+pattern_nil = re.compile(r"0 (thousand|million|billion)", flags=re.IGNORECASE)
 pattern_notional = re.compile(f"notional", flags=re.IGNORECASE)
 pattern_spaces = re.compile(r"\s+")
 pattern_dots = re.compile(r"\.\.")
@@ -3156,7 +3156,10 @@ def generate_derivative_liability_paragraph(
     # Clean up common formatting issues
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
-    paragraph = pattern_nil.sub("nil", paragraph)
+    if random.random() < 0.25
+        paragraph = pattern_nil.sub(random.choice([" nil"]), paragraph)
+    elif random.random() < 0.25:
+        paragraph = pattern_nil.sub("0", paragraph)
     if random.random() < 0.5:
         paragraph = pattern_notional.sub("", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
@@ -3902,7 +3905,7 @@ def generate_labeled_hedge_paragraph(
                     notional = random.randint(50, 1000)
                 else:  # Set current year's value as 0
                     year = current_year
-                    notional = random.choice(["0", "nil"])
+                    notional =0
                 prev_year = year - 1
                 old_year = random.choice(past_years) - 1 if past_years else prev_year
                 future_year = random.randint(prev_year, year)
@@ -4037,7 +4040,7 @@ def generate_labeled_hedge_paragraph(
                     notional = random.randint(100, 1000)
                 else:  # Have current year have 0 amount
                     year = current_year
-                    notional = random.choice(["0", "nil"])
+                    notional =0
                 prev_year = year - 1
                 old_year = random.choice(past_years) - 1 if past_years else prev_year
                 future_year = random.randint(old_year, year)
@@ -4173,7 +4176,7 @@ def generate_labeled_hedge_paragraph(
                         notional = random.randint(5, 50)
                     else:  # Or set current year as 0
                         year = current_year
-                        notional = random.choice(["0", "nil"])
+                        notional =0
                     prev_year = year - 1
                     old_year = (
                         random.choice(past_years) - 1 if past_years else prev_year
@@ -4271,7 +4274,7 @@ def generate_labeled_hedge_paragraph(
                     notional = random.randint(50, 1000)
                 else:
                     year = current_year
-                    notional = random.choice(["0", "nil"])
+                    notional =0
                 prev_year = year - 1
                 old_year = random.choice(past_years) - 1 if past_years else prev_year
                 future_year = random.randint(old_year, prev_year)
@@ -4330,7 +4333,10 @@ def generate_labeled_hedge_paragraph(
     # Clean up common formatting issues
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
-    paragraph = pattern_nil.sub("nil", paragraph)
+    if random.random() < 0.25
+        paragraph = pattern_nil.sub(random.choice([" nil"]), paragraph)
+    elif random.random() < 0.25:
+        paragraph = pattern_nil.sub("0", paragraph)
     if random.random() < 0.5:
         paragraph = pattern_notional.sub("", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
@@ -5429,7 +5435,10 @@ def generate_accounting_noise_paragraph(
     # Clean up common formatting issues
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
-    paragraph = pattern_nil.sub("nil", paragraph)
+    if random.random() < 0.25
+        paragraph = pattern_nil.sub(random.choice([" nil"]), paragraph)
+    elif random.random() < 0.25:
+        paragraph = pattern_nil.sub("0", paragraph)
     if random.random() < 0.5:
         paragraph = pattern_notional.sub("", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)   # Remove extra whitespace
