@@ -3129,15 +3129,15 @@ def generate_value(haveZero=True, upperlimit=1000):
         chance = 0.1
     else:
         chance = 0
-    value = 0 if random.random() < chance else random.randint(0, upperlimit)
+    value = 0 if random.random() < chance else random.randint(1, upperlimit)
 
     if random.random() < 0.5:
         divisor = random.choice([10, 100])
         decimals = random.randint(1, 2)
         value = round(value / divisor, decimals)
 
-    # Cast to int if it's a whole number
-    if isinstance(value, float) and value.is_integer():
+    # Cast to int if it's a whole number with 50% chance
+    if isinstance(value, float) and value.is_integer() and random.random() < 0.5:
         value = int(value)
 
     return value
