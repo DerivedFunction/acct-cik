@@ -3613,8 +3613,8 @@ def generate_labeled_hedge_paragraph(
                 month=random.choice(months),
                 year=exp_year,
             )
-        elif random.random() < 0.05:
             sentences.append(sentence)
+        elif random.random() < 0.05:
             template = random.choice(hedge_dedesignation_templates)
             swap_type = random.choice(swap_types)
             dedes_year = (
