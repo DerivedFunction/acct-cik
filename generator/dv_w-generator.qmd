@@ -3724,7 +3724,7 @@ def generate_labeled_hedge_paragraph(
                 settlement=settlement,
                 money_unit=money_units,
             )
-        all_sentences.append(sentence)
+            all_sentences.append(sentence)
         # Hedge transaction
         if random.random() < 0.05:
             template = random.choice(hedge_transaction_templates)
