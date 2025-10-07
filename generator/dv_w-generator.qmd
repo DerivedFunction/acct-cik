@@ -1226,21 +1226,6 @@ cp_position_template = [
 ]
 
 
-cp_specific_templates = [
-    "{company} {verb} {swap_type} to hedge exposure to {commodity} price volatility affecting {cost_type}",
-    "{company} {verb} {swap_type} to manage the financial impact of fluctuations in {commodity} prices",
-    "{swap_type} are {verb} to hedge anticipated {commodity} purchases totaling {volume} {volume_unit} over the next {months} months",
-    "In {month} {year}, {company} {verb} {swap_type} to lock in {commodity} prices for {volume} {volume_unit} of forecasted consumption",
-    "Commodity price risk related to {commodity} is managed through {swap_type} with notional volumes of {volume} {volume_unit}",
-    "{company} {verb} {swap_type} to hedge {commodity} price exposure on production inputs",
-    "{company} {verb} {swap_type} to stabilize {cost_type} by hedging approximately {pct}% of anticipated {commodity} requirements",
-    "{swap_type} are designated as cash flow hedges of forecasted {commodity} purchases at fixed prices averaging {currency_code}{price} per {volume_unit}",
-    "{company} {verb} {swap_type} to mitigate {commodity} price risks impacting {cost_type} for {volume} {volume_unit}",
-    "To secure stable {cost_type}, {company} {verb} {swap_type} for {commodity} with maturities extending to {months} months",
-    "{company}'s {swap_type} cover {pct}% of {commodity} needs, reducing exposure to price swings in {cost_type}",
-    "In response to {commodity} market trends, {company} adjusts {swap_type} positions for {volume} {volume_unit} to manage {cost_type}",
-    "{company} hedges {commodity} price risk through {swap_type}, targeting {pct}% of projected {cost_type} over {months} months",
-]
 cp_context_templates = [
     "{company} {verb} {swap_types} and derivatives to manage price exposure to {commodity}",
     "Changes in {commodity} prices affect {company}'s cost of goods sold and gross margins",
@@ -1252,6 +1237,19 @@ cp_context_templates = [
     "{company}'s financial results are sensitive to global {commodity} market trends and supply chain disruptions",
     "To mitigate risks, {company} monitors {commodity} price indices and adjusts derivative positions accordingly",
     "{company} {verb} {swap_types} to lock in costs for critical commodities and reduce volatility",
+    "{company} {verb} {swap_types} to hedge exposure to {commodity} price volatility affecting {cost_type}",
+    "{company} {verb} {swap_types} to manage the financial impact of fluctuations in {commodity} prices",
+    "{swap_types} are {verb} to hedge anticipated {commodity} purchases totaling {volume} {volume_unit} over the next {months} months",
+    "In {month} {year}, {company} {verb} {swap_types} to lock in {commodity} prices for {volume} {volume_unit} of forecasted consumption",
+    "Commodity price risk related to {commodity} is managed through {swap_types} with notional volumes of {volume} {volume_unit}",
+    "{company} {verb} {swap_types} to hedge {commodity} price exposure on production inputs",
+    "{company} {verb} {swap_types} to stabilize {cost_type} by hedging approximately {pct}% of anticipated {commodity} requirements",
+    "{swap_types} are designated as cash flow hedges of forecasted {commodity} purchases at fixed prices averaging {currency_code}{price} per {volume_unit}",
+    "{company} {verb} {swap_types} to mitigate {commodity} price risks impacting {cost_type} for {volume} {volume_unit}",
+    "To secure stable {cost_type}, {company} {verb} {swap_types} for {commodity} with maturities extending to {months} months",
+    "{company}'s {swap_types} cover {pct}% of {commodity} needs, reducing exposure to price swings in {cost_type}",
+    "In response to {commodity} market trends, {company} adjusts {swap_types} positions for {volume} {volume_unit} to manage {cost_type}",
+    "{company} hedges {commodity} price risk through {swap_types}, targeting {pct}% of projected {cost_type} over {months} months",
 ]
 cp_impact_templates = [
     "Fluctuations in {commodity} prices {verb} the reported cost of goods sold and operating margins",
@@ -4204,37 +4202,6 @@ def generate_labeled_hedge_paragraph(
                     commodity=commodity,
                 )
                 all_sentences.append(sentence)
-
-                # CP specific template (0-1)
-                if random.random() < 0.6:
-                    template = random.choice(cp_specific_templates)
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-
-                    if random.random() < 0.3:  # Chance to replace with actual commodity
-                        swap_type = re.sub("commodity", commodity, swap_type)
-                    cost_type = random.choice(cost_types)
-                    volume = random.randint(100, 10000)
-                    volume_unit = random.choice(volume_units)
-                    months_ahead = random.randint(6, 24)
-                    price = random.randint(20, 200)
-                    pct = random.randint(40, 90)
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        commodity=commodity,
-                        cost_type=cost_type,
-                        volume=volume,
-                        volume_unit=volume_unit,
-                        months=months_ahead,
-                        month=random.choice(months),
-                        year=current_year,
-                        currency_code=currency_code,
-                        price=price,
-                        pct=pct,
-                    )
-                    all_sentences.append(sentence)
 
             # Label 1: No active derivative
             else:
