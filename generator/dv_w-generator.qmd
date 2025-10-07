@@ -5964,11 +5964,9 @@ def generate_accounting_noise_paragraph(
                 year=current_year,
             )
         else:
-            sentence = random.choice(
-                safe_harbor_templates.format(company=pick_company_name(company_name))
-            )
+            sentence = random.choice(safe_harbor_templates)
 
-        all_sentences.append(sentence)
+        all_sentences.append(sentence.format(company=pick_company_name(company_name)))
 
     # Analyst coverage (0-1)
     if random.random() < 0.1:
