@@ -905,6 +905,12 @@ hedge_mitigation_verbs = [
     "pursue",
     "undertake",
 ]
+hedge_may_mitigation_verbs = [
+    "may attempt",
+    "may seek",
+    "may pursue",
+    "may undertake",
+]
 
 hedge_use_verbs = [
     "entered into",
@@ -971,20 +977,6 @@ hedge_impact_templates = [
     "{company}'s exposure to market risks {verb} operating costs and financial statements",
     "Price changes in key markets {verb} the cost structure and margins",
     "Volatility in financial markets {verb} the reported value of positions",
-]
-
-# Generic Debt Optimization Templates
-fx_ir_debt_optimization_templates = [
-    "{company} {verb} {swap_type} to optimize the cost and risk profile of its debt portfolio, adjusting both interest rate and currency exposures",
-    "To manage borrowing costs and currency risk, {company} {verb} {swap_type} to modify the effective interest rate and currency mix of outstanding debt",
-    "{company} implements {swap_type} to reduce volatility from interest rate fluctuations and foreign exchange movements on its borrowings",
-    "As part of its debt strategy, {company} {verb} {swap_type} to transform debt characteristics, including both fixed/floating rate and currency composition",
-    "To hedge against interest rate and foreign exchange risks, {company} {verb} {swap_type} to optimize its debt obligations",
-    "{company} {verb} {swap_type} to manage exposure to both interest rate changes and currency fluctuations across its debt portfolio",
-    "{company} {verb} {swap_type} to balance interest rate and currency risk, converting portions of debt as needed",
-    "{company} optimizes its borrowings by using {swap_type} to adjust interest rate terms and currency allocations simultaneously",
-    "To stabilize debt costs, {company} {verb} {swap_type} to manage both cash flow interest rate risk and foreign exchange risk",
-    "{company} manages risk on forecasted and existing borrowings using {swap_type} to optimize interest rate and currency profiles",
 ]
 
 
