@@ -3787,6 +3787,84 @@ def generate_labeled_hedge_paragraph(
             sentences.append(sentence)
         return sentences
 
+    def generate_additional_events():
+        sentences = []
+        template = random.choice(hedge_quarterly_event_templates)
+        swap_type = random.choice(swap_types)
+        past_year = random.choice(past_years)
+        notional = random.randint(100, 500)
+        settlement = random.randint(10, 50)
+        sentence = template.format(
+            company=pick_company_name(company_name),
+            swap_type=swap_type,
+            quarter=random.choice(quarters),
+            month=random.choice(months),
+            year=past_year,
+            currency_code=currency_code,
+            notional=notional,
+            settlement=settlement,
+            money_unit=money_units,
+        )
+        sentences.append(sentence)
+        # Hedge transaction
+        template = random.choice(hedge_transaction_templates)
+        swap_type = random.choice(swap_types)
+        notional = random.randint(1, 50)
+        sentences.append(
+            template.format(
+                company=pick_company_name(company_name),
+                swap_type=swap_type,
+                notional=notional,
+                currency_code=currency_code,
+                money_unit=money_units,
+            )
+        )
+        template = random.choice(hedge_fv_position_templates)
+        swap_type = random.choice(swap_types)
+        position_type = random.choice(position_types)
+        amount = random.randint(5, 50)
+        oci_amount = random.randint(5, 50)
+        oci_action = random.choice(oci_actions)
+        sentence = template.format(
+            company=pick_company_name(company_name),
+            swap_type=swap_type,
+            month=random.choice(months),
+            end_day=random.randint(28, 31),
+            year=current_year if has_active_derivative else current_year - 1,
+            currency_code=currency_code,
+            amount=amount,
+            oci_amount=oci_amount,
+            oci_action=oci_action,
+            position_type=position_type,
+            money_unit=money_units,
+        )
+        sentences.append(sentence)
+        # Optional comparative (0-1)
+        template = random.choice(hedge_optional_templates)
+        verb = random.choice(hedge_use_verbs)
+        swap_type = random.choice(swap_types)
+        notional1 = random.randint(0, 100) if has_active_derivative else 0
+        notional2 = random.randint(0, 100)
+        year = current_year if has_active_derivative else current_year - 1
+        prev_year = year - 1
+        prev2_year = prev_year - 1
+        sentence = template.format(
+            company=pick_company_name(company_name),
+            verb=verb,
+            swap_type=swap_type,
+            month=random.choice(months),
+            end_day=random.randint(28, 31),
+            year=year,
+            prev_year=prev_year,
+            prev2_year=prev2_year,
+            currency_code=currency_code,
+            notional1=notional1,
+            notional2=notional2,
+            money_unit=money_units,
+        )
+        sentences.append(sentence)
+        return sentences
+
     # Label 2: Policy/disclosure only (no specific positions)
     if has_active_derivative is None:
         # Accounting policy (always)
@@ -3863,84 +3941,6 @@ def generate_labeled_hedge_paragraph(
         all_sentences.append(template.format(company=company_name))
     # Labels 0 and 1: Specific positions
     else:
-        if random.random() < 0.05:
-            template = random.choice(hedge_quarterly_event_templates)
-            swap_type = random.choice(swap_types)
-            past_year = random.choice(past_years)
-            notional = random.randint(100, 500)
-            settlement = random.randint(10, 50)
-            sentence = template.format(
-                company=pick_company_name(company_name),
-                swap_type=swap_type,
-                quarter=random.choice(quarters),
-                month=random.choice(months),
-                year=past_year,
-                currency_code=currency_code,
-                notional=notional,
-                settlement=settlement,
-                money_unit=money_units,
-            )
-            all_sentences.append(sentence)
-        # Hedge transaction
-        if random.random() < 0.05:
-            template = random.choice(hedge_transaction_templates)
-            swap_type = random.choice(swap_types)
-            notional = random.randint(1, 50)
-            all_sentences.append(
-                template.format(
-                    company=pick_company_name(company_name),
-                    swap_type=swap_type,
-                    notional=notional,
-                    currency_code=currency_code,
-                    money_unit=money_units,
-                )
-            )
-        if random.random() < 0.2:
-            template = random.choice(hedge_fv_position_templates)
-            swap_type = random.choice(swap_types)
-            position_type = random.choice(position_types)
-            amount = random.randint(5, 50)
-            oci_amount = random.randint(5, 50)
-            oci_action = random.choice(oci_actions)
-            sentence = template.format(
-                company=pick_company_name(company_name),
-                swap_type=swap_type,
-                month=random.choice(months),
-                end_day=random.randint(28, 31),
-                year=current_year if has_active_derivative else current_year - 1,
-                currency_code=currency_code,
-                amount=amount,
-                oci_amount=oci_amount,
-                oci_action=oci_action,
-                position_type=position_type,
-                money_unit=money_units,
-            )
-            all_sentences.append(sentence)
-        # Optional comparative (0-1)
-        if random.random() < 0.5 and len(past_years) > 0:
-            template = random.choice(hedge_optional_templates)
-            verb = random.choice(hedge_use_verbs)
-            swap_type = random.choice(swap_types)
-            notional1 = random.randint(0, 100) if has_active_derivative else 0
-            notional2 = random.randint(0, 100)
-            year = current_year if has_active_derivative else current_year - 1
-            prev_year = year - 1
-            prev2_year = prev_year - 1
-            sentence = template.format(
-                company=pick_company_name(company_name),
-                verb=verb,
-                swap_type=swap_type,
-                month=random.choice(months),
-                end_day=random.randint(28, 31),
-                year=year,
-                prev_year=prev_year,
-                prev2_year=prev2_year,
-                currency_code=currency_code,
-                notional1=notional1,
-                notional2=notional2,
-                money_unit=money_units,
-            )
-            all_sentences.append(sentence)
         if not has_active_derivative:
             # Past event (0-1)
             if random.random() < 0.15 and len(past_years) > 0:
@@ -4374,16 +4374,19 @@ def generate_labeled_hedge_paragraph(
     selected_sentences = all_sentences[:max_len]
     # Context sentences
     if include_policy:
-        if swapType == "cp":
-            sentences = generate_cp_policy(commodity, has_active_derivative)
-        elif swapType == "ir":
-            sentences = generate_ir_policy(has_active_derivative)
-            # Pick only 1-2 sentences
-            random.shuffle(sentences)
-        elif swapType == "fx":
-            sentences = generate_fx_policy(has_active_derivative)
+        if random.random() < 0.5:
+            if swapType == "cp":
+                sentences = generate_cp_policy(commodity, has_active_derivative)
+            elif swapType == "ir":
+                sentences = generate_ir_policy(has_active_derivative)
+                # Pick only 1-2 sentences
+                random.shuffle(sentences)
+            elif swapType == "fx":
+                sentences = generate_fx_policy(has_active_derivative)
+            else:
+                sentences = generate_hedge_policy(has_active_derivative)
         else:
-            sentences = generate_hedge_policy(has_active_derivative)
+            sentences = generate_additional_events()
         sentences = sentences[: random.randint(1, 2)]
         selected_sentences.extend(sentences)
         random.shuffle(selected_sentences)
