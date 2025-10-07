@@ -1,21 +1,21 @@
 {
   "id2label": {
-    "0": "Irrelevant / Unrelated Context",
-    "1": "IR Der.",
-    "2": "IR Der. Historic",
-    "3": "IR Der. Speculative/Policy",
-    "4": "FX Der.",
-    "5": "FX Der. Historic",
-    "6": "FX Der. Speculative/Policy",
-    "7": "CP Der.",
-    "8": "CP Der. Historic",
-    "9": "CP Der. Speculative/Policy",
-    "10": "Gen/Unknown Der.",
-    "11": "Gen/Unknown Der. Historic",
-    "12": "Gen/Unknown Der. Speculative/Policy",
-    "13": "Der. Liabilities / Warrants",
-    "14": "Der. Liabilities / Warrants Historic",
-    "15": "Embedded Der. / Other",
-    "16": "Embedded Der. / Other Historic"
+    "0": "Gen/Unknown Hedge Der.",
+    "1": "Gen/Unknown Hedge Der. Historic",
+    "2": "Gen/Unknown Hedge Der. Speculative/Policy",
+    "3": "Irrelevant / Unrelated Context",
+    "4": "Der. Liabilities / Warrants",
+    "5": "Der. Liabilities / Warrants Historic",
+    "6": "Embedded Der. / Other",
+    "7": "Embedded Der. / Other Historic",
+    "8": "IR Hedge",
+    "9": "IR Hedge Historic",
+    "10": "IR Hedge Speculative/Policy",
+    "11": "FX Hedge",
+    "12": "FX Hedge Historic",
+    "13": "FX Hedge Speculative/Policy",
+    "14": "CP Hedge",
+    "15": "CP Hedge Historic",
+    "16": "CP Hedge Speculative/Policy"
   }
 }
