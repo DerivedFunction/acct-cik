@@ -1194,7 +1194,7 @@ cp_position_template = [
 
 cp_specific_templates = [
     "{company} {verb} {swap_type} to hedge exposure to {commodity} price volatility affecting {cost_type}",
-    "{company} enters into {swap_type} to manage the financial impact of fluctuations in {commodity} prices",
+    "{company} {verb} {swap_type} to manage the financial impact of fluctuations in {commodity} prices",
     "{swap_type} are {verb} to hedge anticipated {commodity} purchases totaling {volume} {volume_unit} over the next {months} months",
     "In {month} {year}, {company} {verb} {swap_type} to lock in {commodity} prices for {volume} {volume_unit} of forecasted consumption",
     "Commodity price risk related to {commodity} is managed through {swap_type} with notional volumes of {volume} {volume_unit}",
@@ -1208,16 +1208,16 @@ cp_specific_templates = [
     "{company} hedges {commodity} price risk through {swap_type}, targeting {pct}% of projected {cost_type} over {months} months",
 ]
 cp_context_templates = [
-    "{company} {verb} commodity contracts and derivatives to manage price exposure to {commodity}",
-    "Changes in commodity prices affect {company}'s cost of goods sold and gross margins",
-    "To hedge commodity price fluctuations, {company} enters into forwards, futures, and swaps on key {commodity}",
-    "Volatility in commodity markets can influence {company}'s procurement costs and operational results",
+    "{company} {verb} {swap_types} and derivatives to manage price exposure to {commodity}",
+    "Changes in {commodity} prices affect {company}'s cost of goods sold and gross margins",
+    "To hedge {commodity} price fluctuations, {company} {verb} {swap_types} on key {commodity}",
+    "Volatility in {commodity} markets can influence {company}'s procurement costs and operational results",
     "{company} is exposed to changes in energy, metals, and agricultural prices that may impact financial performance",
-    "{company} {verb} commodity hedging strategies to stabilize input costs and protect profit margins",
-    "Fluctuations in raw material prices may lead to adjustments in {company}'s pricing strategies",
-    "{company}'s financial results are sensitive to global commodity market trends and supply chain disruptions",
-    "To mitigate risks, {company} monitors commodity price indices and adjusts derivative positions accordingly",
-    "{company} {verb} fixed-price contracts to lock in costs for critical commodities and reduce volatility",
+    "{company} {verb} {commodity} hedging strategies to stabilize input costs and protect profit margins",
+    "Fluctuations in {commodity} prices may lead to adjustments in {company}'s pricing strategies",
+    "{company}'s financial results are sensitive to global {commodity} market trends and supply chain disruptions",
+    "To mitigate risks, {company} monitors {commodity} price indices and adjusts derivative positions accordingly",
+    "{company} {verb} {swap_types} to lock in costs for critical commodities and reduce volatility",
 ]
 cp_impact_templates = [
     "Fluctuations in {commodity} prices {verb} the reported cost of goods sold and operating margins",
@@ -3474,6 +3474,16 @@ def generate_labeled_hedge_paragraph(
         return sentences
     def generate_cp_policy(commodity="commodity", current=False):
         sentences = []
+        selected_cp = []
+        for _ in range(3):
+            selected_cp.append(random.choice(swap_types))
+            if random.random() < 0.5:
+                break
+        selected_cp_list = (
+            ", ".join(selected_cp[:-1]) + " and " + selected_cp[-1]
+            if len(selected_cp) > 1
+            else selected_cp[0]
+        )
         if current:
             verbs = hedge_use_verbs
         else:
@@ -3481,11 +3491,13 @@ def generate_labeled_hedge_paragraph(
         # Context sentences
         template = random.choice(cp_context_templates)
         verb = random.choice(verbs)
+        swap_type = random.choice(swap_types)
         sentences.append(
             template.format(
                 company=pick_company_name(company_name),
                 verb=verb,
                 commodity=commodity,
+                swap_types=swap_types
             )
         )
 
