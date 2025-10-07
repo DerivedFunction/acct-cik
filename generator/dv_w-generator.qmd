@@ -3270,7 +3270,7 @@ def generate_labeled_hedge_paragraph(
     swapType=None,  # Added parameter
     year_range=(1990, 2025),
     max_past_years=3,
-    max_len=random.randint(1, 2),
+    max_len=1,
     include_policy=None,
     company_name=None,
 ):
@@ -4364,11 +4364,6 @@ def generate_labeled_hedge_paragraph(
                 )
                 all_sentences.append(sentence)
                 all_sentences.extend(expire_hedge())
-
-    if len(all_sentences) < max_len:
-        return generate_labeled_hedge_paragraph(
-            has_active_derivative=has_active_derivative, swapType=swapType, max_len=1
-        )
     # Shuffle and select sentences
     random.shuffle(all_sentences)
     selected_sentences = all_sentences[:max_len]
