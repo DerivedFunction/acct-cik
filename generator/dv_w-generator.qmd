@@ -3739,6 +3739,27 @@ def generate_labeled_hedge_paragraph(
                     money_unit=money_units,
                 )
             )
+        if random.random() < 0.2:
+            template = random.choice(hedge_fv_position_templates)
+            swap_type = random.choice(swap_types)
+            position_type = random.choice(position_types)
+            amount = random.randint(5, 50)
+            oci_amount = random.randint(5, 50)
+            oci_action = random.choice(oci_actions) 
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                swap_type=swap_type,
+                month=random.choice(months),
+                end_day=random.randint(28, 31),
+                year=current_year if has_active_derivative else current_year - 1,
+                currency_code=currency_code,
+                amount=amount,
+                oci_amount=oci_amount,
+                oci_action=oci_action,
+                position_type=position_type,
+                money_unit=money_units,
+            )
+            all_sentences.append(sentence)
         if not has_active_derivative:
             # Past event (0-1)
             if random.random() < 0.15 and len(past_years) > 0:
@@ -3816,7 +3837,7 @@ def generate_labeled_hedge_paragraph(
                     major_currency=major_currency,
                 )
                 all_sentences.append(sentence)
-
+            
             # Label 0: Active derivative positions
             if has_active_derivative:
                 # Active position (always for label 0)
@@ -3868,28 +3889,6 @@ def generate_labeled_hedge_paragraph(
                     )
                     all_sentences.append(sentence)
 
-                # Fair value position (0-1)
-                if random.random() < 0.4:
-                    template = random.choice(hedge_fv_position_templates)
-                    swap_type = random.choice(swap_types)
-                    position_type = random.choice(position_types)
-                    amount = random.randint(5, 50)
-                    oci_amount = random.randint(5, 50)
-                    oci_action = random.choice(oci_actions)
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        swap_type=swap_type,
-                        month=random.choice(months),
-                        end_day=random.randint(28, 31),
-                        year=current_year,
-                        currency_code=currency_code,
-                        amount=amount,
-                        oci_amount=oci_amount,
-                        oci_action=oci_action,
-                        position_type=position_type,
-                        money_unit=money_units,
-                    )
-                    all_sentences.append(sentence)
 
             # Label 1: No active derivative
             else:
@@ -4003,34 +4002,10 @@ def generate_labeled_hedge_paragraph(
                         money_unit=money_units,
                     )
                     all_sentences.append(sentence)
-
-                # Fair value position (0-1)
-                if random.random() < 0.4:
-                    template = random.choice(hedge_fv_position_templates)
-                    swap_type = random.choice(swap_types)
-                    position_type = random.choice(position_types)
-                    amount = random.randint(5, 50)
-                    oci_amount = random.randint(5, 50)
-                    oci_action = random.choice(oci_actions)
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        swap_type=swap_type,
-                        month=random.choice(months),
-                        end_day=random.randint(28, 31),
-                        year=current_year,
-                        currency_code=currency_code,
-                        amount=amount,
-                        oci_amount=oci_amount,
-                        oci_action=oci_action,
-                        position_type=position_type,
-                        money_unit=money_units,
-                    )
-                    all_sentences.append(sentence)
-
             # Label 1: No active derivative
             else:
                 # Past event (0-1)
-                if random.random() < 0.6 and len(past_years) > 0:
+                if random.random() < 0.15 and len(past_years) > 0:
                     template = random.choice(ir_past_event_templates)
                     verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
@@ -4176,29 +4151,6 @@ def generate_labeled_hedge_paragraph(
                         currency_code=currency_code,
                         price=price,
                         pct=pct,
-                    )
-                    all_sentences.append(sentence)
-
-                # Fair value position (0-1)
-                if random.random() < 0.4:
-                    template = random.choice(hedge_fv_position_templates)
-                    swap_type = random.choice(swap_types)
-                    position_type = random.choice(position_types)
-                    amount = random.randint(5, 50)
-                    oci_amount = random.randint(5, 50)
-                    oci_action = random.choice(oci_actions)
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        swap_type=swap_type,
-                        month=random.choice(months),
-                        end_day=random.randint(28, 31),
-                        year=current_year,
-                        currency_code=currency_code,
-                        amount=amount,
-                        oci_amount=oci_amount,
-                        oci_action=oci_action,
-                        position_type=position_type,
-                        money_unit=money_units,
                     )
                     all_sentences.append(sentence)
 
