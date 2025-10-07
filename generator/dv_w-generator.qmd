@@ -4369,6 +4369,8 @@ def generate_labeled_hedge_paragraph(
     random.shuffle(all_sentences)
     if has_active_derivative is None:
         selected_sentences = all_sentences[:max_len]
+    else:
+        selected_sentences = all_sentences
     # Context sentences
     if include_policy:
         if random.random() < 0.5:
