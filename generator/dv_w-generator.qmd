@@ -3762,6 +3762,29 @@ def generate_labeled_hedge_paragraph(
                 money_unit=money_units,
             )
             all_sentences.append(sentence)
+        # Optional comparative (0-1)
+        if random.random() < 0.5 and len(past_years) > 0:
+            template = random.choice(hedge_optional_templates)
+            verb = random.choice(hedge_use_verbs)
+            swap_type = random.choice(swap_types)
+            notional1 = random.randint(0, 100) if has_active_derivative else 0
+            notional2 = random.randint(0, 100)
+            year = current_year if has_active_derivative else current_year - 1
+            prev_year = year - 1
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                verb=verb,
+                swap_type=swap_type,
+                month=random.choice(months),
+                end_day=random.randint(28, 31),
+                year=year,
+                prev_year=prev_year,
+                currency_code=currency_code,
+                notional1=notional1,
+                notional2=notional2,
+                money_unit=money_units,
+            )
+            all_sentences.append(sentence)
         if not has_active_derivative:
             # Past event (0-1)
             if random.random() < 0.15 and len(past_years) > 0:
@@ -3870,30 +3893,6 @@ def generate_labeled_hedge_paragraph(
                 )
                 all_sentences.append(sentence)
 
-                # Optional comparative (0-1)
-                if random.random() < 0.5 and len(past_years) > 0:
-                    template = random.choice(hedge_optional_templates)
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-                    notional1 = random.randint(50, 1000)
-                    notional2 = random.randint(50, 1000)
-                    prev_year = past_years[-1]
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        month=random.choice(months),
-                        end_day=random.randint(28, 31),
-                        year=current_year,
-                        prev_year=prev_year,
-                        currency_code=currency_code,
-                        notional1=notional1,
-                        notional2=notional2,
-                        money_unit=money_units,
-                    )
-                    all_sentences.append(sentence)
-
-
             # Label 1: No active derivative
             else:
                 # Past position (always for label 1)
@@ -3988,28 +3987,6 @@ def generate_labeled_hedge_paragraph(
                 )
                 all_sentences.append(sentence)
 
-                # Optional comparative (0-1)
-                if random.random() < 0.5 and len(past_years) > 0:
-                    template = random.choice(hedge_optional_templates)
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-                    notional1 = random.randint(100, 1000)
-                    notional2 = random.randint(100, 1000)
-                    prev_year = past_years[-1]
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        month=random.choice(months),
-                        end_day=random.randint(28, 31),
-                        year=current_year,
-                        prev_year=prev_year,
-                        currency_code=currency_code,
-                        notional1=notional1,
-                        notional2=notional2,
-                        money_unit=money_units,
-                    )
-                    all_sentences.append(sentence)
             # Label 1: No active derivative
             else:
                 # Past event (0-1)
@@ -4246,29 +4223,6 @@ def generate_labeled_hedge_paragraph(
                     money_unit=money_units,
                 )
                 all_sentences.append(sentence)
-
-                # Optional comparative (0-1)
-                if random.random() < 0.5 and len(past_years) > 0:
-                    template = random.choice(hedge_optional_templates)
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-                    notional1 = random.randint(50, 1000)
-                    notional2 = random.randint(50, 1000)
-                    prev_year = past_years[-1]
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        month=random.choice(months),
-                        end_day=random.randint(28, 31),
-                        year=current_year,
-                        prev_year=prev_year,
-                        currency_code=currency_code,
-                        notional1=notional1,
-                        notional2=notional2,
-                        money_unit=money_units,
-                    )
-                    all_sentences.append(sentence)
 
             # Label 1: No active derivative
             else:
