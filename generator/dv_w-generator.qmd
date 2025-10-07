@@ -4880,7 +4880,9 @@ def generate_labeled_hedge_paragraph(
         selected_sentences = all_sentences
     # Context sentences
     if include_policy:
-        if random.random() < 0.5:
+        if has_active_derivative is not None and random.random() < 0.5:
+            sentences = generate_additional_events()
+        else:
             if swapType == "cp":
                 sentences = generate_cp_policy(commodity, has_active_derivative)
             elif swapType == "ir":
@@ -4891,8 +4893,6 @@ def generate_labeled_hedge_paragraph(
                 sentences = generate_fx_policy(has_active_derivative)
             else:
                 sentences = generate_hedge_policy(has_active_derivative)
-        else:
-            sentences = generate_additional_events()
         sentences = sentences[: random.randint(1, 2)]
         selected_sentences.extend(sentences)
         random.shuffle(selected_sentences)
