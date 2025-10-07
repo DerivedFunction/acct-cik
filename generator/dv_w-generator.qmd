@@ -3580,6 +3580,57 @@ def generate_labeled_hedge_paragraph(
         )
         return sentences
 
+    def expire_hedge():
+        sentences = []
+        # Termination (0-1)
+        if random.random() < 0.05:
+            template = random.choice(hedge_termination_templates)
+            swap_type = random.choice(swap_types)
+            term_year = (
+                random.choice(past_years) if past_years else current_year
+            )
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                swap_type=swap_type,
+                quarter=random.choice(quarters),
+                month=random.choice(months),
+                year=term_year,
+                end_day=random.randint(28, 31),
+            )
+            sentences.append(sentence)
+
+        # Expiration (0-1)
+        elif random.random() < 0.05:
+            template = random.choice(hedge_expiration_templates)
+            verb = random.choice(hedge_use_verbs)
+            swap_type = random.choice(swap_types)
+            exp_year = random.choice(past_years) if past_years else current_year
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                verb=verb,
+                swap_type=swap_type,
+                quarter=random.choice(quarters),
+                month=random.choice(months),
+                year=exp_year,
+            )
+        elif random.random() < 0.05:
+            sentences.append(sentence)
+            template = random.choice(hedge_dedesignation_templates)
+            swap_type = random.choice(swap_types)
+            dedes_year = (
+                random.choice(past_years) if past_years else current_year
+            )
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                swap_type=swap_type,
+                quarter=random.choice(quarters),
+                month=random.choice(months),
+                year=dedes_year,
+                end_day=random.randint(28, 31),
+            )
+            all_sentences.append(sentence)
+        return sentences
+
     # Label 2: Policy/disclosure only (no specific positions)
     if has_active_derivative is None:
         # Accounting policy (always)
@@ -3656,6 +3707,24 @@ def generate_labeled_hedge_paragraph(
         all_sentences.append(template.format(company=company_name))
     # Labels 0 and 1: Specific positions
     else:
+        if random.random() < 0.05:
+            template = random.choice(hedge_quarterly_event_templates)
+            swap_type = random.choice(swap_types)
+            past_year = random.choice(past_years)
+            notional = random.randint(100, 500)
+            settlement = random.randint(10, 50)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                swap_type=swap_type,
+                quarter=random.choice(quarters),
+                month=random.choice(months),
+                year=past_year,
+                currency_code=currency_code,
+                notional=notional,
+                settlement=settlement,
+                money_unit=money_units,
+            )
+        sentences.append(sentence)
         # Hedge transaction
         if random.random() < 0.05:
             template = random.choice(hedge_transaction_templates)
@@ -3672,7 +3741,7 @@ def generate_labeled_hedge_paragraph(
             )
         if not has_active_derivative:
             # Past event (0-1)
-            if random.random() < 0.3 and len(past_years) > 0:
+            if random.random() < 0.15 and len(past_years) > 0:
                 template = random.choice(hedge_past_event_template)
                 swap_type = random.choice(swap_types)
                 past_year = random.choice(past_years)
@@ -3854,75 +3923,8 @@ def generate_labeled_hedge_paragraph(
                     money_unit=money_units,
                 )
                 all_sentences.append(sentence)
-                # Termination (0-1)
-                if random.random() < 0.15:
-                    template = random.choice(hedge_termination_templates)
-                    swap_type = random.choice(swap_types)
-                    term_year = (
-                        random.choice(past_years) if past_years else current_year
-                    )
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=term_year,
-                        end_day=random.randint(28, 31),
-                    )
-                    all_sentences.append(sentence)
-
-                # Expiration (0-1)
-                elif random.random() < 0.15:
-                    template = random.choice(hedge_expiration_templates)
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-                    exp_year = random.choice(past_years) if past_years else current_year
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=exp_year,
-                    )
-                    all_sentences.append(sentence)
-
-                # Dedesignation (0-1)
-                if random.random() < 0.4:
-                    template = random.choice(hedge_dedesignation_templates)
-                    swap_type = random.choice(swap_types)
-                    dedes_year = (
-                        random.choice(past_years) if past_years else current_year
-                    )
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=dedes_year,
-                        end_day=random.randint(28, 31),
-                    )
-                    all_sentences.append(sentence)
-
-                # Past event with settlement (0-1)
-                if random.random() < 0.5 and len(past_years) > 0:
-                    template = random.choice(hedge_quarterly_event_templates)
-                    swap_type = random.choice(swap_types)
-                    past_year = random.choice(past_years)
-                    notional = random.randint(50, 500)
-                    settlement = random.randint(5, 50)
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=past_year,
-                        currency_code=currency_code,
-                        notional=notional,
-                        settlement=settlement,
-                        money_unit=money_units,
-                    )
-                    all_sentences.append(sentence)
+                all_sentences.extend(expire_hedge())
+                   
 
         # Interest Rate specific logic
         elif swapType == "ir":
@@ -4080,58 +4082,7 @@ def generate_labeled_hedge_paragraph(
                     money_unit=money_units,
                 )
                 all_sentences.append(sentence)
-                # Termination (0-1)
-                if random.random() < 0.15:
-                    template = random.choice(hedge_termination_templates)
-                    swap_type = random.choice(swap_types)
-                    term_year = (
-                        random.choice(past_years) if past_years else current_year
-                    )
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=term_year,
-                        end_day=random.randint(28, 31),
-                    )
-                    all_sentences.append(sentence)
-
-                # Expiration (0-1)
-                elif random.random() < 0.15:
-                    template = random.choice(hedge_expiration_templates)
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-                    exp_year = random.choice(past_years) if past_years else current_year
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=exp_year,
-                    )
-                    all_sentences.append(sentence)
-
-                # Settlement event (0-1)
-                if random.random() < 0.5 and len(past_years) > 0:
-                    template = random.choice(hedge_quarterly_event_templates)
-                    swap_type = random.choice(swap_types)
-                    past_year = random.choice(past_years)
-                    notional = random.randint(100, 500)
-                    settlement = random.randint(10, 50)
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=past_year,
-                        currency_code=currency_code,
-                        notional=notional,
-                        settlement=settlement,
-                        money_unit=money_units,
-                    )
-                    all_sentences.append(sentence)
+                all_sentences.extend(expire_hedge())
 
         # Commodity Price specific logic
         elif swapType == "cp":
@@ -4294,38 +4245,7 @@ def generate_labeled_hedge_paragraph(
                     )
                     all_sentences.append(sentence)
 
-                # Termination (0-1)
-                if random.random() < 0.15:
-                    template = random.choice(hedge_termination_templates)
-                    swap_type = random.choice(swap_types)
-                    term_year = (
-                        random.choice(past_years) if past_years else current_year
-                    )
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=term_year,
-                        end_day=random.randint(28, 31),
-                    )
-                    all_sentences.append(sentence)
-
-                # Expiration (0-1)
-                elif random.random() < 0.15:
-                    template = random.choice(hedge_expiration_templates)
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-                    exp_year = random.choice(past_years) if past_years else current_year
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=exp_year,
-                    )
-                    all_sentences.append(sentence)
+                all_sentences.extend(expire_hedge())
 
         # Generic derivative logic (for 'gen' type or fallback)
         else:
@@ -4419,38 +4339,7 @@ def generate_labeled_hedge_paragraph(
                     money_unit=money_units,
                 )
                 all_sentences.append(sentence)
-                # Termination (0-1)
-                if random.random() < 0.15:
-                    template = random.choice(hedge_termination_templates)
-                    swap_type = random.choice(swap_types)
-                    term_year = (
-                        random.choice(past_years) if past_years else current_year
-                    )
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=term_year,
-                        end_day=random.randint(28, 31),
-                    )
-                    all_sentences.append(sentence)
-
-                # Expiration (0-1)
-                elif random.random() < 0.15:
-                    template = random.choice(hedge_expiration_templates)
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-                    exp_year = random.choice(past_years) if past_years else current_year
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        quarter=random.choice(quarters),
-                        month=random.choice(months),
-                        year=exp_year,
-                    )
-                    all_sentences.append(sentence)
+                all_sentences.extend(expire_hedge())
 
     if len(all_sentences) < max_len:
         return generate_labeled_hedge_paragraph(
