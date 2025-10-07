@@ -4112,7 +4112,7 @@ def generate_labeled_hedge_paragraph(
             if len(selected_cp) > 1
             else selected_cp[0]
         )
-        selected_co = [commodity]
+        selected_co = [commodity if not commodity == "commodity" else commodity]
         for _ in range(2):
             selected_co.append(random.choice(commodities))
             if random.random() < 0.5:
