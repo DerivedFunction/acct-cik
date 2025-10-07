@@ -3777,7 +3777,7 @@ def generate_labeled_hedge_paragraph(
     swapType=None,  # Added parameter
     year_range=(1990, 2025),
     max_past_years=3,
-    max_len=random.randint(2,3),
+    max_len=random.randint(2, 3),
     include_policy=None,
     company_name=None,
 ):
@@ -4562,7 +4562,7 @@ def generate_labeled_hedge_paragraph(
                 all_sentences.append(sentence)
 
             # Label 1: No active derivative
-            else:
+            elif has_active_derivative == False:
                 # Past position (always for label 1)
                 template = random.choice(fx_position_template)
                 swap_type = random.choice(swap_types)
@@ -4642,7 +4642,7 @@ def generate_labeled_hedge_paragraph(
                 all_sentences.append(sentence)
 
             # Label 1: No active derivative
-            else:
+            elif has_active_derivative == False:
                 # Past event (0-1)
                 if random.random() < 0.15 and len(past_years) > 0:
                     template = random.choice(ir_past_event_templates)
@@ -4745,7 +4745,7 @@ def generate_labeled_hedge_paragraph(
                 all_sentences.append(sentence)
 
             # Label 1: No active derivative
-            else:
+            elif has_active_derivative == False:
                 commodity = random.choice(commodities)
                 # Past event (0-1)
                 template = random.choice(cp_position_template)  # Use event templates
@@ -4830,7 +4830,7 @@ def generate_labeled_hedge_paragraph(
                 all_sentences.append(sentence)
 
             # Label 1: No active derivative
-            else:
+            elif has_active_derivative == False:
                 # Past position
                 if random.random() < 0.85:
                     template = random.choice(hedge_position_templates)
