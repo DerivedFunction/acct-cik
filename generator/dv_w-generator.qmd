@@ -1167,19 +1167,20 @@ cp_strategy_templates = [
     "{company}'s {swap_type} strategy for {commodity} in {month} {year} led to {currency_code}{amount} {money_unit} in deferred gains/losses in equity",
     "{swap_type} were {verb} by {company} to hedge {commodity} costs, with {currency_code}{amount} {money_unit} recorded as mark-to-market adjustments in {year}",
 ]
+
 cp_position_template = [
     "As of {month} {end_day}, {year}, {company} {verb} {swap_type} with notional amounts totaling {currency_code}{notional} {money_unit} to hedge commodity price risk",
-    "At year-end {year}, {company} had {swap_type} outstanding with aggregate notional values of {currency_code}{notional} {money_unit} designated to manage commodity exposures",
+    "At year-end {year}, {company} {verb} {swap_type} outstanding with aggregate notional values of {currency_code}{notional} {money_unit} designated to manage commodity exposures",
     "{company}'s commodity derivative portfolio at {month} {end_day}, {year} consists of {swap_type} with combined notional values of {currency_code}{notional} {money_unit}",
     "As of {month} {year}, {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain active to hedge forecasted commodity purchases or sales",
-    "At year-end {year}, {company} holds {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to manage fluctuations in commodity prices",
+    "At year-end {year}, {company} {verb} {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to manage fluctuations in commodity prices",
     "{company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} at {month} {end_day}, {year}, designated for commodity risk management",
     "During {year}, {company} {verb} {swap_type} with a total notional value of {currency_code}{notional} {money_unit} to hedge volatility in raw material costs",
     "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} are {verb} to mitigate commodity price exposure",
     "{company}’s active {swap_type} at year-end {year} have a total notional value of {currency_code}{notional} {money_unit}, designated as hedges for commodity procurement",
     "On {month} {end_day}, {year}, {company}’s {swap_type} portfolio includes notional amounts of {currency_code}{notional} {money_unit} to stabilize commodity costs",
     "As of {month} {year}, {company} {verb} {swap_type} with a notional value of {currency_code}{notional} {money_unit} to manage {commodity} price volatility",
-    "{company} holds {swap_type} as of {month} {end_day}, {year}, with notional values of {currency_code}{notional} {money_unit} to hedge {commodity} exposures",
+    "{company} {verb} {swap_type} as of {month} {end_day}, {year}, with notional values of {currency_code}{notional} {money_unit} to hedge {commodity} exposures",
     "At {month} {year}, {company}’s {swap_type} cover {currency_code}{notional} {money_unit} in notional value to mitigate risks from commodity price swings",
     "During {year}, {company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} to protect against commodity market fluctuations",
     "In {old_year}, {company} {verb} {swap_type} with a notional volume equivalent of {currency_code}{old_notional} {money_unit}, set to expire in {future_year}",
@@ -1195,7 +1196,35 @@ cp_position_template = [
     "As of {month} {end_day}, {year} and {prev_year}, {company}’s {swap_type} portfolio included notional balances of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, designated for hedging commodity exposures",
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} active {swap_type} contracts with notional values of {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, to stabilize input costs",
     "As of {month} {end_day}, {year} and {prev_year}, {company} {verb} outstanding {swap_type} totaling {currency_code}{notional} {money_unit} and {currency_code}{prev_notional} {money_unit}, respectively, used to hedge {commodity} procurement risks",
+    # --- TWO-YEAR DISCLOSURES WITH NO PRIOR-YEAR OUTSTANDINGS ---
+    "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}; no such instruments were outstanding at {prev_year}",
+    "As of {month} {end_day}, {year}, {company} held active {swap_type} with a notional value of {currency_code}{notional} {money_unit}, while no comparable contracts existed during {prev_year}",
+    "At year-end {year}, {company}’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year}",
+    "As of {month} {year}, {company} maintained {swap_type} with notional amounts of {currency_code}{notional} {money_unit}; there were no such positions reported in {prev_year}",
+    "During {year}, {company} initiated {swap_type} positions totaling {currency_code}{notional} {money_unit}, with no comparable positions outstanding in {prev_year}",
+    "At {month} {end_day}, {year}, {company} {verb} {swap_type} serving as commodity price hedges, with no {swap_type} outstanding during {prev_year}",
+    "As of {month} {end_day}, {year}, {company} held {swap_type} notional of {currency_code}{notional} {money_unit}; no {swap_type} remained outstanding at the end of {prev_year}",
+    "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}. There were no outstanding {swap_type} balances at {prev_year}",
+    # --- NEW THREE-YEAR DISCLOSURE ADDITIONS ---
+    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated to hedge commodity price risk",
+    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} maintained {swap_type} totaling {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, to manage volatility in commodity costs",
+    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company}’s outstanding {swap_type} had aggregate notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, used to hedge forecasted {commodity} purchases",
+    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} positions with total notional amounts of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, mitigating exposure to {commodity} price fluctuations",
+    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} {swap_type} outstanding totaling {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, protecting against {commodity} market volatility",
+    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company}’s {swap_type} portfolio included notional balances of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, designated for hedging commodity exposures",
+    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} active {swap_type} contracts with notional values of {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, to stabilize raw material costs",
+    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} outstanding {swap_type} totaling {currency_code}{notional} {money_unit}, {currency_code}{prev_notional} {money_unit}, and {currency_code}{prev2_notional} {money_unit}, respectively, to hedge {commodity} procurement risk",
+    # --- THREE-YEAR DISCLOSURES WITH NO PRIOR-YEAR OUTSTANDINGS ---
+    "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}; no such instruments were outstanding at {prev_year} or {prev2_year}",
+    "As of {month} {end_day}, {year}, {company} held active {swap_type} with a notional value of {currency_code}{notional} {money_unit}, while no comparable contracts existed during {prev_year} or {prev2_year}",
+    "At year-end {year}, {company}’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year} or {prev2_year}",
+    "As of {month} {year}, {company} maintained {swap_type} with notional amounts of {currency_code}{notional} {money_unit}; there were no such positions reported in {prev_year} or {prev2_year}",
+    "During {year}, {company} initiated {swap_type} positions totaling {currency_code}{notional} {money_unit}, with no comparable positions outstanding in {prev_year} or {prev2_year}",
+    "At {month} {end_day}, {year}, {company} {verb} {swap_type} serving as commodity price hedges, with no {swap_type} outstanding during {prev_year} or {prev2_year}",
+    "As of {month} {end_day}, {year}, {company} held {swap_type} notional of {currency_code}{notional} {money_unit}; no {swap_type} remained outstanding at the end of {prev_year} or {prev2_year}",
+    "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}. There were no outstanding {swap_type} balances at {prev_year} or {prev2_year}",
 ]
+
 
 cp_specific_templates = [
     "{company} {verb} {swap_type} to hedge exposure to {commodity} price volatility affecting {cost_type}",
