@@ -2552,10 +2552,10 @@ def generate_derivative_liability_paragraph(
     major_currency = random.choice(all_currencies)
     if company_name is None:
         # ~ 75% chance of company name
-        if random.random() < 0.75:
+        if random.random() < 0.85:
             company_name = random.choice(company_names)
         else:
-            company_name = random.choice(["The Company", "We"])
+            company_name = "The Company"
     target_companies = [name for name in company_names if name != company_name]
 
     # ============ LABELS 4 & 5: DERIVATIVE LIABILITIES AND WARRANTS ============
@@ -3210,7 +3210,7 @@ def generate_labeled_hedge_paragraph(
         if random.random() < 0.75:
             company_name = random.choice(company_names)
         else:
-            company_name = random.choice(["The Company", "We"])
+            company_name = "The Company"
 
     # Determine swap type if not provided
     if swapType is None:
@@ -4363,10 +4363,10 @@ def generate_accounting_noise_paragraph(
     """
 
     if company_name is None:
-        if random.random() < 0.75:
+        if random.random() < 0.85:
             company_name = random.choice(company_names)
         else:
-            company_name = random.choice(["The Company", "We"])
+            company_name = "The Company"
 
     acquisition_targets = [name for name in company_names if name != company_name]
     current_year = random.randint(year_range[0], year_range[1])
