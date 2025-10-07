@@ -4749,6 +4749,7 @@ def generate_accounting_noise_paragraph(
     money_units = random.choice(money_unit_list)
     currency_code = random.choice(currency_codes)
     major_currency = random.choice(all_currencies)
+    target_companies = [name for name in company_names if name != company_name]
     # ================== SENTENCE GENERATION ==================
 
     # Litigation (0-2 sentences)
@@ -6110,7 +6111,7 @@ def generate_accounting_noise_paragraph(
             year=current_year,
             reasons=reasons,
             advantages=advantages,
-            company=pick_company_name(company_name)
+            company=pick_company_name(company_name),
         )
 
         all_sentences.append(sentence)
@@ -6133,7 +6134,7 @@ def generate_accounting_noise_paragraph(
             year=current_year,
             approvals=approvals,
             matters=matters,
-            company=pick_company_name(company_name)
+            company=pick_company_name(company_name),
         )
 
         all_sentences.append(sentence)
@@ -6160,7 +6161,7 @@ def generate_accounting_noise_paragraph(
             risks=risks,
             incident=incident,
             coverage_types=coverage_types_list,
-            company=pick_company_name(company_name)
+            company=pick_company_name(company_name),
         )
 
         all_sentences.append(sentence)
@@ -6297,7 +6298,7 @@ def generate(size_per_label=100):
 ```
 
 ```{python}
-generate(500)
+generate(1000)
 ```
 
 ```{python}
