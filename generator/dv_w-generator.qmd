@@ -3612,7 +3612,11 @@ def generate_labeled_hedge_paragraph(
                 swap_types=selected_cp_list,
                 cost_type=cost_type,
                 currency_code=currency_code,
-                months=months
+                months=months_ahead,
+                volume=volume,
+                volume_unit=volume_unit,
+                price=price,
+                pct=pct,
             )
         )
 
