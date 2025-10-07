@@ -3628,7 +3628,7 @@ def generate_labeled_hedge_paragraph(
                 year=dedes_year,
                 end_day=random.randint(28, 31),
             )
-            all_sentences.append(sentence)
+            sentences.append(sentence)
         return sentences
 
     # Label 2: Policy/disclosure only (no specific positions)
