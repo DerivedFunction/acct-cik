@@ -3156,7 +3156,7 @@ def generate_derivative_liability_paragraph(
     # Clean up common formatting issues
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
-    if random.random() < 0.25
+    if random.random() < 0.25:
         paragraph = pattern_nil.sub(random.choice([" nil"]), paragraph)
     elif random.random() < 0.25:
         paragraph = pattern_nil.sub("0", paragraph)
@@ -4333,7 +4333,7 @@ def generate_labeled_hedge_paragraph(
     # Clean up common formatting issues
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
-    if random.random() < 0.25
+    if random.random() < 0.25:
         paragraph = pattern_nil.sub(random.choice([" nil"]), paragraph)
     elif random.random() < 0.25:
         paragraph = pattern_nil.sub("0", paragraph)
@@ -5435,7 +5435,7 @@ def generate_accounting_noise_paragraph(
     # Clean up common formatting issues
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
-    if random.random() < 0.25
+    if random.random() < 0.25:
         paragraph = pattern_nil.sub(random.choice([" nil"]), paragraph)
     elif random.random() < 0.25:
         paragraph = pattern_nil.sub("0", paragraph)
