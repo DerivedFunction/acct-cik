@@ -606,9 +606,16 @@ eq_position_templates = [
 ]
 
 hedge_transaction_templates = [
-    "Each {swap_type} requires quarterly settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
-    "Each {swap_type} requires annual settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
+    "Under each {swap_type}, settlements occur quarterly for {currency_code}{notional} {money_unit}, with all gains and losses recognized upon payment",
+    "Each {swap_type} settles annually for {currency_code}{notional} {money_unit}, with the resulting gains and losses fully recorded",
+    "Quarterly payments of {currency_code}{notional} {money_unit} are required under each {swap_type}, and all gains and losses are realized as they occur",
+    "For every {swap_type}, annual payments of {currency_code}{notional} {money_unit} are made, with all resulting gains and losses reflected in earnings",
+    "Each {swap_type} involves quarterly settlements of {currency_code}{notional} {money_unit}, ensuring that all gains and losses are recognized at the time of settlement",
+    "Annual settlements under each {swap_type} for {currency_code}{notional} {money_unit} result in full recognition of realized gains and losses",
+    "Each {swap_type} calls for quarterly payments of {currency_code}{notional} {money_unit}, and all associated gains and losses are recorded when realized",
+    "Each {swap_type} entails annual settlement of {currency_code}{notional} {money_unit}, with realized gains and losses recorded accordingly",
 ]
+
 
 hedge_optional_templates = [
     "{company} also have {verb} {swap_type} to hedge forecasted revenue which were not part of a collar strategy. Such {swap_type} had a notional value of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {month} {end_day}, {prev_year}, respectively",
@@ -653,7 +660,7 @@ hedge_termination_templates = [
     "During {month} {year}, all {swap_type} were settled or expired, resulting in no active hedge positions",
     "In the {quarter} quarter of {year}, {company} ended all {swap_type} agreements, leaving no derivative contracts at period end",
     "All {swap_type} were terminated in {month} {year}, with no outstanding hedges as of {month} {end_day}, {year}",
-    "As of {month} {end_day}, {year}, there were no such {swap_type} outstanding"
+    "As of {month} {end_day}, {year}, there were no such {swap_type} outstanding",
 ]
 
 hedge_expiration_templates = [
@@ -928,7 +935,7 @@ hedge_use_verbs = [
     "uses",
     "maintains",
     "has",
-    "applies"
+    "applies",
 ]
 hedge_may_use_verbs = [
     "may engage in",
@@ -938,7 +945,7 @@ hedge_may_use_verbs = [
     "may utilize",
     "may employ",
     "may use",
-    "may apply"
+    "may apply",
 ]
 
 hedge_change_verbs = ["increase", "decrease", "affect", "impact"]
