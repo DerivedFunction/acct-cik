@@ -655,6 +655,7 @@ hedge_termination_templates = [
     "During {month} {year}, all {swap_type} were settled or expired, resulting in no active hedge positions",
     "In the {quarter} quarter of {year}, {company} ended all {swap_type} agreements, leaving no derivative contracts at period end",
     "All {swap_type} were terminated in {month} {year}, with no outstanding hedges as of {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, there were no such {swap_type} outstanding"
 ]
 
 hedge_expiration_templates = [
