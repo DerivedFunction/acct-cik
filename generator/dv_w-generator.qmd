@@ -4367,7 +4367,7 @@ def generate_labeled_hedge_paragraph(
 
     if len(all_sentences) < max_len:
         return generate_labeled_hedge_paragraph(
-            has_active_derivative=has_active_derivative, swapType=swapType, max_len=2
+            has_active_derivative=has_active_derivative, swapType=swapType, max_len=1
         )
     # Shuffle and select sentences
     random.shuffle(all_sentences)
