@@ -14,7 +14,7 @@ parquet_file = "./training_data.parquet"
 # Precompile regex patterns
 pattern_we_s = re.compile(r"We's", flags=re.IGNORECASE)
 pattern_we_is = re.compile(r"We is", flags=re.IGNORECASE)
-pattern_nil = re.compile(r"0 (thousand|million|billion)", flags=re.IGNORECASE)
+pattern_nil = re.compile(r" 0 (thousand|million|billion)", flags=re.IGNORECASE)
 pattern_notional = re.compile(f"notional", flags=re.IGNORECASE)
 pattern_spaces = re.compile(r"\s+")
 pattern_dots = re.compile(r"\.\.")
@@ -3157,9 +3157,8 @@ def generate_derivative_liability_paragraph(
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
     if random.random() < 0.25:
-        paragraph = pattern_nil.sub(random.choice([" nil"]), paragraph)
-    elif random.random() < 0.25:
-        paragraph = pattern_nil.sub("0", paragraph)
+        paragraph = pattern_nil.sub(random.choice([" nil", " 0"]), paragraph)
+
     if random.random() < 0.5:
         paragraph = pattern_notional.sub("", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
@@ -4334,9 +4333,7 @@ def generate_labeled_hedge_paragraph(
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
     if random.random() < 0.25:
-        paragraph = pattern_nil.sub(random.choice([" nil"]), paragraph)
-    elif random.random() < 0.25:
-        paragraph = pattern_nil.sub("0", paragraph)
+        paragraph = pattern_nil.sub(random.choice([" nil", " 0"]), paragraph)
     if random.random() < 0.5:
         paragraph = pattern_notional.sub("", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
@@ -5436,9 +5433,7 @@ def generate_accounting_noise_paragraph(
     paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
     if random.random() < 0.25:
-        paragraph = pattern_nil.sub(random.choice([" nil"]), paragraph)
-    elif random.random() < 0.25:
-        paragraph = pattern_nil.sub("0", paragraph)
+        paragraph = pattern_nil.sub(random.choice([" nil", " 0"]), paragraph)
     if random.random() < 0.5:
         paragraph = pattern_notional.sub("", paragraph)
     paragraph = pattern_spaces.sub(" ", paragraph)   # Remove extra whitespace
