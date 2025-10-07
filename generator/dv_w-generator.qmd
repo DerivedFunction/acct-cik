@@ -3174,7 +3174,7 @@ def generate_labeled_hedge_paragraph(
     swapType=None,  # Added parameter
     year_range=(1990, 2025),
     max_past_years=3,
-    max_len=random.randint(2, 3),
+    max_len=random.randint(1, 2),
     include_policy=None,
     company_name=None,
 ):
@@ -3855,7 +3855,7 @@ def generate_labeled_hedge_paragraph(
                 )
                 all_sentences.append(sentence)
                 # Termination (0-1)
-                if random.random() < 0.6:
+                if random.random() < 0.15:
                     template = random.choice(hedge_termination_templates)
                     swap_type = random.choice(swap_types)
                     term_year = (
@@ -3872,7 +3872,7 @@ def generate_labeled_hedge_paragraph(
                     all_sentences.append(sentence)
 
                 # Expiration (0-1)
-                elif random.random() < 0.5:
+                elif random.random() < 0.15:
                     template = random.choice(hedge_expiration_templates)
                     verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
@@ -4081,7 +4081,7 @@ def generate_labeled_hedge_paragraph(
                 )
                 all_sentences.append(sentence)
                 # Termination (0-1)
-                if random.random() < 0.6:
+                if random.random() < 0.15:
                     template = random.choice(hedge_termination_templates)
                     swap_type = random.choice(swap_types)
                     term_year = (
@@ -4098,7 +4098,7 @@ def generate_labeled_hedge_paragraph(
                     all_sentences.append(sentence)
 
                 # Expiration (0-1)
-                elif random.random() < 0.5:
+                elif random.random() < 0.15:
                     template = random.choice(hedge_expiration_templates)
                     verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
@@ -4295,7 +4295,7 @@ def generate_labeled_hedge_paragraph(
                     all_sentences.append(sentence)
 
                 # Termination (0-1)
-                if random.random() < 0.6:
+                if random.random() < 0.15:
                     template = random.choice(hedge_termination_templates)
                     swap_type = random.choice(swap_types)
                     term_year = (
@@ -4312,7 +4312,7 @@ def generate_labeled_hedge_paragraph(
                     all_sentences.append(sentence)
 
                 # Expiration (0-1)
-                elif random.random() < 0.5:
+                elif random.random() < 0.15:
                     template = random.choice(hedge_expiration_templates)
                     verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
@@ -4420,7 +4420,7 @@ def generate_labeled_hedge_paragraph(
                 )
                 all_sentences.append(sentence)
                 # Termination (0-1)
-                if random.random() < 0.6:
+                if random.random() < 0.15:
                     template = random.choice(hedge_termination_templates)
                     swap_type = random.choice(swap_types)
                     term_year = (
@@ -4437,7 +4437,7 @@ def generate_labeled_hedge_paragraph(
                     all_sentences.append(sentence)
 
                 # Expiration (0-1)
-                elif random.random() < 0.5:
+                elif random.random() < 0.15:
                     template = random.choice(hedge_expiration_templates)
                     verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
@@ -5690,7 +5690,7 @@ def generate(size_per_label=100):
 ```
 
 ```{python}
-generate(1000)
+generate(200)
 ```
 
 ```{python}
