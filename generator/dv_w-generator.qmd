@@ -1460,7 +1460,13 @@ cost_types = [
     "input costs",
     "energy costs",
     "fuel costs",
-    "{commodity} costs",
+    "raw material costs",
+    "manufacturing costs",
+    "mining costs",
+    "extraction costs",
+    "transportation costs",
+    "storage costs",
+    "commodity costs",
     "production costs",
 ]
 ```
