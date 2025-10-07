@@ -6470,18 +6470,18 @@ def generate(size_per_label=100):
     numSwaps = len(swap_types)
     count = size_per_label // numSwaps
     for prefix in swap_types:
-        for _ in range(count):
+        for _ in range(count * 2):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=True, swapType=prefix
             )
             all_samples.append((paragraph, label))
 
-        for _ in range(count):
+        for _ in range(count * 2):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=False, swapType=prefix
             )
             all_samples.append((paragraph, label))
-        for _ in range(count):
+        for _ in range(count * 2):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=None, swapType=prefix
             )
