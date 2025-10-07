@@ -4880,7 +4880,7 @@ def generate_labeled_hedge_paragraph(
         selected_sentences = all_sentences
     # Context sentences
     if include_policy:
-        if has_active_derivative is not None and random.random() < 0.5:
+        if has_active_derivative is not None and random.random() < 0.33:
             sentences = generate_additional_events()
         else:
             if swapType == "cp":
