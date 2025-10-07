@@ -3143,7 +3143,7 @@ def generate_value(haveZero=True, upperlimit=1000):
     return value
 
 
-def cleanup(paragraph: str):
+def cleanup(paragraph: str, checkBracket: bool = True):
     pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
     if random.random() < 0.25: # Chance to replace values with nil
@@ -3156,7 +3156,7 @@ def cleanup(paragraph: str):
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
     paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
 
-    if paragraph.find("{") != -1 or paragraph.find("[") != -1:
+    if paragraph.find("{") != -1 or (paragraph.find("[") != -1 and checkBracket):
         print("Error in format", paragraph)
     return paragraph
 ```
@@ -6412,7 +6412,7 @@ def generate_accounting_noise_paragraph(
         + "."
     )
     # Clean up common formatting issues
-    paragraph = cleanup(paragraph)
+    paragraph = cleanup(paragraph, False)
     return paragraph, 3
 
 
