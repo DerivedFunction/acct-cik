@@ -915,6 +915,7 @@ hedge_use_verbs = [
     "maintained",
     "committed",
     "implemented",
+    "applied",
     "engaged in",
     "pursued",
     "utilizes",
@@ -922,6 +923,7 @@ hedge_use_verbs = [
     "uses",
     "maintains",
     "has",
+    "applies"
 ]
 hedge_may_use_verbs = [
     "may engage in",
@@ -931,6 +933,7 @@ hedge_may_use_verbs = [
     "may utilize",
     "may employ",
     "may use",
+    "may apply"
 ]
 
 hedge_change_verbs = ["increase", "decrease", "affect", "impact"]
@@ -975,11 +978,11 @@ fx_ir_debt_optimization_templates = [
     "To manage borrowing costs and currency risk, {company} {verb} {swap_type} to modify the effective interest rate and currency mix of outstanding debt",
     "{company} implements {swap_type} to reduce volatility from interest rate fluctuations and foreign exchange movements on its borrowings",
     "As part of its debt strategy, {company} {verb} {swap_type} to transform debt characteristics, including both fixed/floating rate and currency composition",
-    "To hedge against interest rate and foreign exchange risks, {company} applies {swap_type} to optimize its debt obligations",
+    "To hedge against interest rate and foreign exchange risks, {company} {verb} {swap_type} to optimize its debt obligations",
     "{company} {verb} {swap_type} to manage exposure to both interest rate changes and currency fluctuations across its debt portfolio",
     "{company} {verb} {swap_type} to balance interest rate and currency risk, converting portions of debt as needed",
     "{company} optimizes its borrowings by using {swap_type} to adjust interest rate terms and currency allocations simultaneously",
-    "To stabilize debt costs, {company} applies {swap_type} to manage both cash flow interest rate risk and foreign exchange risk",
+    "To stabilize debt costs, {company} {verb} {swap_type} to manage both cash flow interest rate risk and foreign exchange risk",
     "{company} manages risk on forecasted and existing borrowings using {swap_type} to optimize interest rate and currency profiles",
 ]
 
@@ -1444,12 +1447,12 @@ fx_cash_pooling_templates = [
 fx_debt_optimization_templates = [
     "{company} {verb} {swap_types} to adjust the currency composition of its debt portfolio, managing exposure to {currency_code} fluctuations",
     "To hedge foreign exchange risk, {company} {verb} {swap_types} to convert borrowings from {currency_code} into its functional currency",
-    "{company} applies {swap_types} to manage foreign exchange exposure on international debt, mitigating translation and transaction risk",
+    "{company} {verb} {swap_types} to manage foreign exchange exposure on international debt, mitigating translation and transaction risk",
     "Foreign currency borrowings are optimized using {swap_type} to reduce volatility from {currency_code} exchange rate movements",
     "To manage currency risk, {company} {verb} {swap_types} to modify the currency mix of its debt obligations",
     "{company} {verb} {swap_types} to convert debt from {currency_code} into other currencies as part of its foreign exchange risk management strategy",
     "{company} {verb} {swap_types} to hedge foreign currency exposure on its international debt portfolio",
-    "To stabilize the currency profile of debt, {company} applies {swap_types} converting obligations into {currency_code} where beneficial",
+    "To stabilize the currency profile of debt, {company} {verb} {swap_types} converting obligations into {currency_code} where beneficial",
     "{company} manages foreign exchange risk on long-term borrowings by using {swap_type} to adjust the currency allocation",
     "To reduce foreign exchange volatility, {company} {verb} {swap_types} to optimize the composition of multi-currency debt",
 ]
@@ -1580,11 +1583,11 @@ ir_debt_optimization_templates = [
     "To manage borrowing costs, {company} {verb} {swap_type} to adjust the effective interest rate composition of outstanding debt",
     "{company} implements {swap_type} to reduce interest rate volatility on its debt obligations",
     "As part of its debt strategy, {company} {verb} {swap_type} to transform fixed-rate debt into variable-rate debt where appropriate",
-    "To hedge against rising interest rates, {company} applies {swap_type} to modify the interest rate characteristics of its borrowings",
+    "To hedge against rising interest rates, {company} {verb} {swap_type} to modify the interest rate characteristics of its borrowings",
     "{company} {verb} {swap_type} to manage the interest rate exposure of its long-term debt portfolio",
     "{company} {verb} {swap_type} to convert portions of debt into instruments with more favorable interest rate terms",
     "{company} optimizes its debt by using {swap_type} to balance fixed and floating rate obligations",
-    "To stabilize interest expense, {company} applies {swap_type} to its debt portfolio, managing cash flow risk",
+    "To stabilize interest expense, {company} {verb} {swap_type} to its debt portfolio, managing cash flow risk",
     "{company} manages interest rate risk on forecasted debt issuances using {swap_type} to adjust the effective interest profile",
     "{company}'s objectives in interest rate risk management are to limit the negative impact of interest rates by using {swap_type}",
 ]
@@ -3521,7 +3524,7 @@ def generate_labeled_hedge_paragraph(
             )
         )
         return sentences
-    def generate_hedge_policy():
+    def generate_hedge_policy(current=False):
         sentences = []
         if current:
             verbs = hedge_use_verbs
@@ -5625,6 +5628,11 @@ def generate(size_per_label=100):
         for _ in range(size_per_label // numSwaps):
             paragraph, label = generate_labeled_hedge_paragraph(
                 has_active_derivative=False, swapType=prefix
+            )
+            all_samples.append((paragraph, label))
+        for _ in range(size_per_label // numSwaps):
+            paragraph, label = generate_labeled_hedge_paragraph(
+                has_active_derivative=None, swapType=prefix
             )
             all_samples.append((paragraph, label))
     for _ in range(size_per_label // 2):
