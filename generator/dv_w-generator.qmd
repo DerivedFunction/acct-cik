@@ -546,6 +546,19 @@ hedge_past_event_template = [
     "In the {quarter} quarter of {year}, {company} {verb} {swap_type} agreements with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
     "During {month} {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
     "During the {quarter} of {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
+    # --- One-year ---
+    "As of {month} {end_day}, {year}, {company} {verb} no outstanding {swap_type} positions"
+    "At year-end {year}, {company} reported no outstanding {swap_type}, as all derivative instruments were closed out before {month} {year}",
+    "As of {month} {year}, there were no {swap_type} remaining",
+    # --- Two-year ---
+    "At {month} {end_day}, {year} and {prev_year}, {company} {Verb} no outstanding {swap_type}",
+    "As of {month} {end_day}, {year} and {prev_year}, there were no active {swap_type} positions, following the full settlement of prior hedge instruments",
+    "At the close of both {year} and {prev_year}, {company} reported no outstanding {swap_type}",
+    # --- Three-year ---
+    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} no outstanding {swap_type}",
+    "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, there were no {swap_type} remaining",
+    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} no outstanding {swap_type}",
+    "For {year}, {prev_year}, and {prev2_year}, {company} reported no outstanding {swap_type}, as all derivative positions were either settled or allowed to expire",
 ]
 
 
