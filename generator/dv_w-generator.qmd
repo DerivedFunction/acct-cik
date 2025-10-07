@@ -754,17 +754,17 @@ fx_ir_context_templates = [
 ]
 
 fx_ir_mitigation_templates = [
-    "{company} {verb} to reduce the impact of currency and interest rate movements through natural hedging strategies and the use of derivative contracts",
+    "{company} {verb} to reduce the impact of currency and interest rate movements through natural hedging strategies and the use of {swap_types}",
     "To mitigate these risks, {company} {verb} various hedging strategies including the use of derivative instruments",
     "{company} {verb} to minimize exposure to adverse movements in exchange rates and interest rates through both operational measures and financial derivatives",
     "{company} {verb} to limit currency and interest rate risks through operational adjustments and derivative contracts",
     "{company} {verb} to offset the impact of foreign exchange volatility using derivatives and operational hedging strategies",
-    "To manage currency and interest rate risks, {company} {verb} a combination of financial instruments and operational tactics",
+    "To manage currency and interest rate risks, {company} {verb} a combination of {swap_types} and operational tactics",
     "{company} {verb} to protect against adverse currency and interest rate movements with derivatives and strategic operations",
-    "{company} {verb} to stabilize financial results by using derivatives and operational hedging techniques",
-    "{company} {verb} to reduce currency and interest rate exposure through strategic operations and derivative contracts",
+    "{company} {verb} to stabilize financial results by using {swap_types} and operational hedging techniques",
+    "{company} {verb} to reduce currency and interest rate exposure through strategic operations and {swap_types}",
     "{company} {verb} to manage foreign currency and interest rate risks through hedging and operational strategies",
-    "{company} {verb} to offset currency and interest rate volatility with derivative instruments and operational adjustments",
+    "{company} {verb} to offset currency and interest rate volatility with {swap_types} and other derivatives",
 ]
 hedge_mitigation_templates = [
     "To mitigate market risks, {company} {verb} a combination of derivatives and operational risk management",
@@ -1381,16 +1381,16 @@ fx_mitigation_templates = [
     "{company} operates a central matching system for internal trade flows to reduce gross foreign currency exposures",
     "{company} centrally manages intercompany trading positions and payment schedules to mitigate currency risk",
     "Where possible, {company} manages the cash surpluses or borrowing requirements of subsidiary companies centrally using {swap_type} to hedge future repayments back into the originating currency",
-    "{company} centrally manages subsidiary liquidity and {swap_verb} {swap_type} to hedge foreign exchange exposure on intercompany funding arrangements",
+    "{company} centrally manages subsidiary liquidity and {swap_verb} {swap_types} to hedge foreign exchange exposure on intercompany funding arrangements",
     "Subsidiary cash positions are managed centrally with {swap_type} hedging the repatriation of funds to originating currencies",
-    "{company} {swap_verb} {swap_type} to hedge foreign currency risk on centrally managed subsidiary funding and cash movements",
-    "{company} may use {swap_type} to adjust the currency profile of its debt portfolio as needed",
-    "{company} {swap_verb} {swap_type} to modify the currency composition of borrowings based on operational needs",
-    "{swap_type} are {swap_verb} to convert borrowings into {major_currency} when strategically beneficial",
-    "{swap_type} not designated as hedges, failing to be hedges or failing to continue as effective hedges are included in operations as {swap_type} gains or losses",
-    "Discounts or premiums on {swap_type} designated and effective as hedges are amortized or accreted to expense using the straight-line method over the term of the related contract",
-    "Discounts or premiums on {swap_type} not designated or effective as hedges are included in the mark to market adjustment and recognized in income as {swap_type} gains or losses",
-    "{swap_type} are marked-to-market with the resulting gains or losses reflected in Accumulated other comprehensive income (loss)",
+    "{company} {swap_verb} {swap_types} to hedge foreign currency risk on centrally managed subsidiary funding and cash movements",
+    "{company} may use {swap_types} to adjust the currency profile of its debt portfolio as needed",
+    "{company} {swap_verb} {swap_types} to modify the currency composition of borrowings based on operational needs",
+    "{swap_types} are {swap_verb} to convert borrowings into {major_currency} when strategically beneficial",
+    "{swap_types} not designated as hedges, failing to be hedges or failing to continue as effective hedges are included in operations as {swap_types} gains or losses",
+    "Discounts or premiums on {swap_types} designated and effective as hedges are amortized or accreted to expense using the straight-line method over the term of the related contract",
+    "Discounts or premiums on {swap_types} not designated or effective as hedges are included in the mark to market adjustment and recognized in income as {swap_types} gains or losses",
+    "{swap_types} are marked-to-market with the resulting gains or losses reflected in Accumulated other comprehensive income (loss)",
 ]
 
 
@@ -1407,24 +1407,24 @@ fx_currency_templates = [
 ]
 
 fx_alternative_management_templates = [
-    "Depending on market conditions, foreign currency risk is also managed through the use of foreign currency debt",
+    "Depending on market conditions, foreign currency risk is also managed through the use of {swap_types}",
     "{company} {may_verb} foreign currency-denominated debt as a natural hedge against foreign currency exposure",
     "In certain circumstances, {company} {may_verb} foreign currency borrowings to offset translation exposure",
     "Foreign currency debt may be {use_verb} strategically to create natural hedging relationships",
     "{company} may issue debt in foreign currencies to reduce the impact of exchange rate fluctuations",
-    "{company} may designate foreign currency-denominated debt as a hedge of net investments in foreign subsidiaries",
-    "To manage foreign exchange risk, {company} {may_verb} {swap_type} to align debt currency with underlying cash flow exposures",
+    "{company} may designate {swap_types} as a hedge of net investments in foreign subsidiaries",
+    "To manage foreign exchange risk, {company} {may_verb} {swap_types} to align debt currency with underlying cash flow exposures",
     "{company} may borrow in currencies that match expected revenues to reduce volatility in reported earnings",
     "Foreign currency liabilities may be {use_verb} to provide a natural hedge against balance sheet exposures",
-    "As part of its risk management strategy, {company} {may_verb} {swap_type} to fund operations with foreign-denominated debt to mitigate translation risk",
+    "As part of its risk management strategy, {company} {may_verb} {swap_types} to fund operations with foreign-denominated debt to mitigate translation risk",
 ]
 
 fx_generic_hedge_templates = [
-    '{company} may choose to hedge against possible fluctuations in foreign subsidiaries net assets ("{hedge_type} hedge") and {verb} {swap_type} and {swap_type2} in the past in order to hedge such an exposure',
-    "From time to time, {company} {verb} {swap_type} to hedge {hedge_type} in foreign operations",
+    '{company} may choose to hedge against possible fluctuations in foreign subsidiaries net assets ("{hedge_type} hedge") and {verb} {swap_types} in the past in order to hedge such an exposure',
+    "From time to time, {company} {verb} {swap_types} to hedge {hedge_type} in foreign operations",
     "{hedge_type} hedges protect the value of {company}'s investments in foreign subsidiaries from adverse currency movements",
     "{company} {verb} derivative instruments designated as {hedge_type} hedges to mitigate currency translation risk on foreign operations",
-    "These {swap_type} are designated as {hedge_type} hedges of the variability of the cash flows due to changes in foreign currency exchange rates",
+    "{swap_types} are designated as {hedge_type} hedges of the variability of the cash flows due to changes in foreign currency exchange rates",
 ]
 
 fx_specific_hedge_templates = [
@@ -1457,11 +1457,11 @@ fx_debt_optimization_templates = [
 
 # Foreign Exchange Hedge Templates
 fx_may_use_templates = [
-    "{company} {verb} {swap_type} to mitigate exposure to foreign currency movements",
-    "{company} {verb} {swap_type} to manage risks related to forecasted foreign transactions",
-    "{company} {verb} {swap_type} to offset volatility from translating foreign subsidiaries’ results",
-    "{company} {verb} {swap_type} to reduce the impact of exchange rate fluctuations on cash flows",
-    "{company} {verb} {swap_type} to protect against adverse changes in cross-border financing costs",
+    "{company} {verb} {swap_types} to mitigate exposure to foreign currency movements",
+    "{company} {verb} {swap_types} to manage risks related to forecasted foreign transactions",
+    "{company} {verb} {swap_types} to offset volatility from translating foreign subsidiaries’ results",
+    "{company} {verb} {swap_types} to reduce the impact of exchange rate fluctuations on cash flows",
+    "{company} {verb} {swap_types} to protect against adverse changes in cross-border financing costs",
 ]
 ```
 
@@ -3289,6 +3289,16 @@ def generate_labeled_hedge_paragraph(
         else:
             verbs = hedge_may_use_verbs
             mit_verbs = hedge_may_mitigation_verbs
+        selected_fx = []
+        for _ in range(3):
+            selected_fx.append(random.choice(swap_types))
+            if random.random() < 0.5:
+                break
+        selected_fx_list = (
+            ", ".join(selected_fx[:-1]) + " and " + selected_fx[-1]
+            if len(selected_fx) > 1
+            else selected_fx[0]
+        )
         # Context sentences
         template = random.choice(fx_context_templates)
         sentences.append(template.format(company=company_name))
@@ -3308,12 +3318,11 @@ def generate_labeled_hedge_paragraph(
         template = random.choice(fx_mitigation_templates)
         verb = random.choice(mit_verbs)
         swap_verb = random.choice(verbs)
-        swap_type = random.choice(swap_types)
         sentences.append(
             template.format(
                 company=pick_company_name(company_name),
                 verb=verb,
-                swap_type=swap_type,
+                swap_types=selected_fx_list,
                 swap_verb=swap_verb,
                 major_currency=major_currency,
             )
@@ -3321,24 +3330,22 @@ def generate_labeled_hedge_paragraph(
         # May use hedge
         template = random.choice(fx_may_use_templates)
         verb = random.choice(verbs)
-        swap_type = random.choice(swap_types)
         sentences.append(
             template.format(
                 company=pick_company_name(company_name),
                 verb=verb,
-                swap_type=swap_type,
+                swap_types=selected_fx_list,
             )
         )
         # Alternative management (0-1)
         template = random.choice(fx_alternative_management_templates)
         may_verb = random.choice(hedge_may_use_verbs)
         use_verb = random.choice(verbs)
-        swap_type = random.choice(swap_types)
         sentences.append(
             template.format(
                 may_verb=may_verb,
                 use_verb=use_verb,
-                swap_type=swap_type,
+                swap_types=selected_fx_list,
                 company=pick_company_name(company_name),
             )
         )
@@ -3351,8 +3358,7 @@ def generate_labeled_hedge_paragraph(
                 company=pick_company_name(company_name),
                 verb=verb,
                 hedge_type=hedge_type,
-                swap_type=random.choice(swap_types),
-                swap_type2=random.choice(swap_types),
+                swap_types=selected_fx_list,
             )
         )
 
@@ -3388,16 +3394,6 @@ def generate_labeled_hedge_paragraph(
         )
 
         # Debt optimization strategies (0-1)
-        selected_fx = []
-        for _ in range(3):
-            selected_fx.append(random.choice(swap_types))
-            if random.random() < 0.5:
-                break
-        selected_fx_list = (
-            ", ".join(selected_fx[:-1]) + " and " + selected_fx[-1]
-            if len(selected_fx) > 1
-            else selected_fx[0]
-        )
         template = random.choice(fx_debt_optimization_templates)
         verb = random.choice(verbs)
         sentence = template.format(
@@ -3445,6 +3441,7 @@ def generate_labeled_hedge_paragraph(
             template.format(
                 company=pick_company_name(company_name),
                 verb=verb,
+                swap_types=selected_ir_list,
             )
         )
         # May use hedge
