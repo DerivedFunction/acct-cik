@@ -3142,6 +3142,23 @@ def generate_value(haveZero=True, upperlimit=1000):
 
     return value
 
+
+def cleanup(paragraph: str):
+    pattern_we_s.sub("Our", paragraph)
+    paragraph = pattern_we_is.sub("We are", paragraph)
+    if random.random() < 0.25: # Chance to replace values with nil
+        paragraph = pattern_nil.sub(
+            random.choice([" nil", " 0", " 0.0", " 0.00"]), paragraph
+        )
+
+    if random.random() < 0.5:
+        paragraph = pattern_notional.sub("", paragraph)
+    paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
+    paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
+
+    if paragraph.find("{") != -1 or paragraph.find("[") != -1:
+        print("Error in format", paragraph)
+    return paragraph
 ```
 
 ## Derivative Liabilties/Warrants
@@ -3777,18 +3794,7 @@ def generate_derivative_liability_paragraph(
         + "."
     )
     # Clean up common formatting issues
-    paragraph = pattern_we_s.sub("Our", paragraph)
-    paragraph = pattern_we_is.sub("We are", paragraph)
-    if random.random() < 0.25:
-        paragraph = pattern_nil.sub(random.choice([" nil", " 0"]), paragraph)
-
-    if random.random() < 0.5:
-        paragraph = pattern_notional.sub("", paragraph)
-    paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
-    paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
-
-    if paragraph.find("{") != -1 or paragraph.find("[") != -1:
-        print("Error in format", paragraph)
+    paragraph = cleanup(paragraph)
     return paragraph, label
 ```
 
@@ -4931,18 +4937,7 @@ def generate_labeled_hedge_paragraph(
     )
 
     # Clean up common formatting issues
-    paragraph = pattern_we_s.sub("Our", paragraph)
-    paragraph = pattern_we_is.sub("We are", paragraph)
-    if random.random() < 0.25:
-        paragraph = pattern_nil.sub(random.choice([" nil", " 0"]), paragraph)
-    if random.random() < 0.5:
-        paragraph = pattern_notional.sub("", paragraph)
-    paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
-    paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
-
-    # Error checking for unformatted placeholders
-    if "{" in paragraph or "}" in paragraph:
-        print(f"Error in format: {paragraph}")
+    paragraph = cleanup(paragraph)
 
     return paragraph, label
 ```
@@ -6417,17 +6412,7 @@ def generate_accounting_noise_paragraph(
         + "."
     )
     # Clean up common formatting issues
-    paragraph = pattern_we_s.sub("Our", paragraph)
-    paragraph = pattern_we_is.sub("We are", paragraph)
-    if random.random() < 0.25:
-        paragraph = pattern_nil.sub(random.choice([" nil", " 0"]), paragraph)
-    if random.random() < 0.5:
-        paragraph = pattern_notional.sub("", paragraph)
-    paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
-    paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
-
-    if paragraph.find("{") != -1:
-        print("Error in format", paragraph)
+    paragraph = cleanup(paragraph)
     return paragraph, 3
 
 
