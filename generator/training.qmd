@@ -62,8 +62,8 @@ The `transformers` library works best with its own `Dataset` format.
 ```{python}
 train_dataset = Dataset.from_pandas(train_df)
 val_dataset = Dataset.from_pandas(val_df)
-batch_size = 8
-num_epochs = batch_size / 2
+batch_size = 4
+num_epochs = min(1, batch_size // 4)
 print(f"Number of epochs: {num_epochs}")
 ```
 
