@@ -1247,11 +1247,11 @@ cp_impact_templates = [
 
 # Commodity Hedge Templates
 cp_may_use_templates = [
-    "{company} {verb} {swap_type} to manage the volatility of {commodity} prices",
-    "{company} {verb} {swap_type} to reduce the risk of fluctuations in raw material costs",
-    "{company} {verb} {swap_type} to stabilize operating costs tied to {commodity} inputs",
-    "{company} {verb} {swap_type} to protect margins from unexpected {commodity} price movements",
-    "{company} {verb} {swap_type} to lock in pricing for forecasted {commodity} purchases",
+    "{company} {verb} {swap_types} to manage the volatility of {commodity} prices",
+    "{company} {verb} {swap_types} to reduce the risk of fluctuations in raw material costs",
+    "{company} {verb} {swap_types} to stabilize operating costs tied to {commodity} inputs",
+    "{company} {verb} {swap_types} to protect margins from unexpected {commodity} price movements",
+    "{company} {verb} {swap_types} to lock in pricing for forecasted {commodity} purchases",
 ]
 
 commodities = [
@@ -3255,7 +3255,7 @@ def generate_labeled_hedge_paragraph(
     # Determine label
     if has_active_derivative is None:
         if swapType == "gen":
-            label = 2   # Gen/Unknown Hedge Der. Speculative/Policy
+            label = 2  # Gen/Unknown Hedge Der. Speculative/Policy
         elif swapType == "ir":
             label = 10  # IR Hedge Speculative/Policy
         elif swapType == "fx":
@@ -3265,9 +3265,9 @@ def generate_labeled_hedge_paragraph(
 
     elif has_active_derivative is True:
         if swapType == "gen":
-            label = 0   # Gen/Unknown Hedge Der.
+            label = 0  # Gen/Unknown Hedge Der.
         elif swapType == "ir":
-            label = 8   # IR Hedge
+            label = 8  # IR Hedge
         elif swapType == "fx":
             label = 11  # FX Hedge
         elif swapType == "cp":
@@ -3275,14 +3275,13 @@ def generate_labeled_hedge_paragraph(
 
     else:
         if swapType == "gen":
-            label = 1   # Gen/Unknown Hedge Der. Historic
+            label = 1  # Gen/Unknown Hedge Der. Historic
         elif swapType == "ir":
-            label = 9   # IR Hedge Historic
+            label = 9  # IR Hedge Historic
         elif swapType == "fx":
             label = 12  # FX Hedge Historic
         elif swapType == "cp":
             label = 15  # CP Hedge Historic
-
 
     def generate_fx_policy(current=False):
         sentences = []
@@ -3507,7 +3506,7 @@ def generate_labeled_hedge_paragraph(
                 company=pick_company_name(company_name),
                 verb=verb,
                 commodity=commodity,
-                swap_types=swap_types,
+                swap_types=selected_cp_list,
             )
         )
 
@@ -3534,7 +3533,7 @@ def generate_labeled_hedge_paragraph(
             template.format(
                 company=pick_company_name(company_name),
                 verb=verb,
-                swap_type=swap_type,
+                swap_types=selected_cp_list,
                 commodity=commodity,
             )
         )
@@ -3588,9 +3587,7 @@ def generate_labeled_hedge_paragraph(
         if random.random() < 0.05:
             template = random.choice(hedge_termination_templates)
             swap_type = random.choice(swap_types)
-            term_year = (
-                random.choice(past_years) if past_years else current_year
-            )
+            term_year = random.choice(past_years) if past_years else current_year
             sentence = template.format(
                 company=pick_company_name(company_name),
                 swap_type=swap_type,
@@ -3619,9 +3616,7 @@ def generate_labeled_hedge_paragraph(
         elif random.random() < 0.05:
             template = random.choice(hedge_dedesignation_templates)
             swap_type = random.choice(swap_types)
-            dedes_year = (
-                random.choice(past_years) if past_years else current_year
-            )
+            dedes_year = random.choice(past_years) if past_years else current_year
             sentence = template.format(
                 company=pick_company_name(company_name),
                 swap_type=swap_type,
@@ -3747,7 +3742,7 @@ def generate_labeled_hedge_paragraph(
             position_type = random.choice(position_types)
             amount = random.randint(5, 50)
             oci_amount = random.randint(5, 50)
-            oci_action = random.choice(oci_actions) 
+            oci_action = random.choice(oci_actions)
             sentence = template.format(
                 company=pick_company_name(company_name),
                 swap_type=swap_type,
@@ -3862,7 +3857,7 @@ def generate_labeled_hedge_paragraph(
                     major_currency=major_currency,
                 )
                 all_sentences.append(sentence)
-            
+
             # Label 0: Active derivative positions
             if has_active_derivative:
                 # Active position (always for label 0)
@@ -3906,7 +3901,7 @@ def generate_labeled_hedge_paragraph(
                     notional = random.randint(50, 1000)
                 else:  # Set current year's value as 0
                     year = current_year
-                    notional =0
+                    notional = 0
                 prev_year = year - 1
                 old_year = random.choice(past_years) - 1 if past_years else prev_year
                 future_year = random.randint(prev_year, year)
@@ -3928,7 +3923,6 @@ def generate_labeled_hedge_paragraph(
                 )
                 all_sentences.append(sentence)
                 all_sentences.extend(expire_hedge())
-                   
 
         # Interest Rate specific logic
         elif swapType == "ir":
@@ -4023,7 +4017,7 @@ def generate_labeled_hedge_paragraph(
                     notional = random.randint(100, 1000)
                 else:  # Have current year have 0 amount
                     year = current_year
-                    notional =0
+                    notional = 0
                 prev_year = year - 1
                 old_year = random.choice(past_years) - 1 if past_years else prev_year
                 future_year = random.randint(old_year, year)
@@ -4152,7 +4146,7 @@ def generate_labeled_hedge_paragraph(
                     )  # Use event templates
                     verb = random.choice(hedge_use_verbs)
                     swap_type = random.choice(swap_types)
-                    old_notional  = random.randint(5, 50)
+                    old_notional = random.randint(5, 50)
                     if random.random() < 0.3:  # Chance to replace with actual commodity
                         swap_type = re.sub("commodity", commodity, swap_type)
                     prev_notional = random.randint(0, 50)
@@ -4161,7 +4155,7 @@ def generate_labeled_hedge_paragraph(
                         notional = random.randint(5, 50)
                     else:  # Or set current year as 0
                         year = current_year
-                        notional =0
+                        notional = 0
                     prev_year = year - 1
                     old_year = (
                         random.choice(past_years) - 1 if past_years else prev_year
@@ -4240,7 +4234,7 @@ def generate_labeled_hedge_paragraph(
                     notional = random.randint(50, 1000)
                 else:
                     year = current_year
-                    notional =0
+                    notional = 0
                 prev_year = year - 1
                 old_year = random.choice(past_years) - 1 if past_years else prev_year
                 future_year = random.randint(old_year, prev_year)
