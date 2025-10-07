@@ -606,8 +606,6 @@ eq_position_templates = [
 ]
 
 hedge_transaction_templates = [
-    "Each transaction requires quarterly settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
-    "Each transaction requires annual settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
     "Each {swap_type} requires quarterly settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
     "Each {swap_type} requires annual settlement of {currency_code}{notional} {money_unit} resulting in all gains and losses being realized and recorded",
 ]
