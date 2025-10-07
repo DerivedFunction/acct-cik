@@ -3598,12 +3598,14 @@ def generate_labeled_hedge_paragraph(
         template = random.choice(cp_context_templates)
         verb = random.choice(verbs)
         swap_type = random.choice(swap_types)
+        cost_type = random.choice(cost_types)
         sentences.append(
             template.format(
                 company=pick_company_name(company_name),
                 verb=verb,
                 commodity=commodity,
                 swap_types=selected_cp_list,
+                cost_type=cost_type,
             )
         )
 
