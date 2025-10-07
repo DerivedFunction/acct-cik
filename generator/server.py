@@ -6,7 +6,7 @@ import json
 app = Flask(__name__)
 
 # Paths
-MODEL_PATH = "DerivedFunction/finbert-derivative-type-classifier"  # your saved Hugging Face model
+MODEL_PATH = "DerivedFunction/derivative-type-classifier"  # your saved Hugging Face model
 KEYWORDS_FILE = "./keywords_find.json"
 # Load tokenizer & model
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
