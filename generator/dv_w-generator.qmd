@@ -3280,8 +3280,10 @@ def generate_labeled_hedge_paragraph(
         sentences = []
         if current:
             verbs = hedge_use_verbs
+            mit_verbs = hedge_mitigation_verbs
         else:
             verbs = hedge_may_use_verbs
+            mit_verbs = hedge_may_mitigation_verbs
         # Context sentences
         template = random.choice(fx_context_templates)
         sentences.append(template.format(company=company_name))
@@ -3299,7 +3301,7 @@ def generate_labeled_hedge_paragraph(
 
         # Mitigation sentences
         template = random.choice(fx_mitigation_templates)
-        verb = random.choice(hedge_mitigation_verbs)
+        verb = random.choice(mit_verbs)
         swap_verb = random.choice(verbs)
         swap_type = random.choice(swap_types)
         sentences.append(
@@ -3402,13 +3404,15 @@ def generate_labeled_hedge_paragraph(
         )
         sentences.append(sentence)
         return sentences
-    
+
     def generate_ir_policy(current=False):
         sentences = []
         if current:
             verbs = hedge_use_verbs
+            mit_verbs = hedge_mitigation_verbs
         else:
             verbs = hedge_may_use_verbs
+            mit_verbs = hedge_may_mitigation_verbs
         selected_ir = []
         for _ in range(3):
             selected_ir.append(random.choice(swap_types))
@@ -3423,21 +3427,22 @@ def generate_labeled_hedge_paragraph(
         verb = random.choice(verbs)
         template = random.choice(ir_context_templates)
         sentences.append(
-            template.format(company=company_name, 
-            verb=verb, swap_types=selected_ir_list)
+            template.format(
+                company=company_name, verb=verb, swap_types=selected_ir_list
+            )
         )
         template = random.choice(fx_ir_context_templates)
         sentences.append(template.format(company=company_name))
         # Mitigation sentences
         template = random.choice(fx_ir_mitigation_templates)
-        verb = random.choice(hedge_mitigation_verbs)
+        verb = random.choice(mit_verbs)
         sentences.append(
             template.format(
                 company=pick_company_name(company_name),
                 verb=verb,
             )
         )
-        # May use hedge       
+        # May use hedge
         template = random.choice(ir_may_use_templates)
         verb = random.choice(verbs)
         swap_type = random.choice(swap_types)
@@ -3472,6 +3477,7 @@ def generate_labeled_hedge_paragraph(
         )
         sentences.append(sentence)
         return sentences
+
     def generate_cp_policy(commodity="commodity", current=False):
         sentences = []
         selected_cp = []
@@ -3497,7 +3503,7 @@ def generate_labeled_hedge_paragraph(
                 company=pick_company_name(company_name),
                 verb=verb,
                 commodity=commodity,
-                swap_types=swap_types
+                swap_types=swap_types,
             )
         )
 
@@ -3529,12 +3535,15 @@ def generate_labeled_hedge_paragraph(
             )
         )
         return sentences
+
     def generate_hedge_policy(current=False):
         sentences = []
         if current:
             verbs = hedge_use_verbs
+            mit_verbs = hedge_mitigation_verbs
         else:
             verbs = hedge_may_use_verbs
+            mit_verbs = hedge_may_mitigation_verbs
         # Context (0-1)
         template = random.choice(hedge_context_templates)
         sentences.append(template.format(company=company_name))
@@ -3551,7 +3560,7 @@ def generate_labeled_hedge_paragraph(
 
         # Mitigation (0-1)
         template = random.choice(hedge_mitigation_templates)
-        verb = random.choice(hedge_mitigation_verbs)
+        verb = random.choice(mit_verbs)
         sentences.append(
             template.format(company=pick_company_name(company_name), verb=verb)
         )
@@ -3568,6 +3577,7 @@ def generate_labeled_hedge_paragraph(
             )
         )
         return sentences
+
     # Label 2: Policy/disclosure only (no specific positions)
     if has_active_derivative is None:
         # Accounting policy (always)
@@ -4447,7 +4457,7 @@ def generate_labeled_hedge_paragraph(
     # Shuffle and select sentences
     random.shuffle(all_sentences)
     selected_sentences = all_sentences[:max_len]
-                # Context sentences
+    # Context sentences
     if include_policy:
         if swapType == "cp":
             sentences = generate_cp_policy(commodity, has_active_derivative)
@@ -4456,10 +4466,10 @@ def generate_labeled_hedge_paragraph(
             # Pick only 1-2 sentences
             random.shuffle(sentences)
         elif swapType == "fx":
-            sentences = generate_fx_policy(has_active_derivative)            
+            sentences = generate_fx_policy(has_active_derivative)
         else:
             sentences = generate_hedge_policy(has_active_derivative)
-        sentences = sentences[:random.randint(1, 3)]
+        sentences = sentences[: random.randint(1, 3)]
         selected_sentences.extend(sentences)
         random.shuffle(selected_sentences)
     # Capitalize first letter of each sentence
