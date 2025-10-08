@@ -7120,7 +7120,7 @@ def generate(size_per_label=100, max_workers=8):
                 )
 
         # Parallel accounting noise
-        for _ in range(count * numSwaps):
+        for _ in range(size_per_label * 2):
             futures.append(executor.submit(generate_accounting_noise_paragraph))
 
         return futures
