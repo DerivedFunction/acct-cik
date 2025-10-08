@@ -1929,7 +1929,7 @@ fx_debt_optimization_templates = [
 ]
 
 # Foreign Exchange Hedge Templates
-    fx_may_use_templates = [
+fx_may_use_templates = [
     "{company} {verb} {swap_types} to mitigate exposure to foreign currency movements",
     "{company} {verb} {swap_types} to manage risks related to forecasted foreign transactions",
     "{company} {verb} {swap_types} to offset volatility from translating foreign subsidiaries’ results",
