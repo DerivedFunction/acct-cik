@@ -45,10 +45,12 @@ This step loads your labeled Excel file and prepares it for the model.
 # Load the labeled data
 df = pd.read_excel(EXCEL_PATH)
 # Drop rows where 'final_output' or 'label' might be empty
-df.dropna(subset=['sentence', 'label'], inplace=True)
+df.dropna(subset=["sentence", "label"], inplace=True)
 
 # Split the data into training and validation sets
-train_df, val_df = train_test_split(df, test_size=0.2, random_state=42, stratify=df['label'])
+train_df, val_df = train_test_split(
+    df, test_size=0.2, random_state=42
+)  #  stratify=df['label']
 
 print(f"Training set size: {len(train_df)}")
 print(f"Validation set size: {len(val_df)}")
