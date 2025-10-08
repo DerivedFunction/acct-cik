@@ -1445,6 +1445,8 @@ derivative_template = {
         "forward foreign exchange cross-currency",
         "cross-currency",
         "cross currency",
+        "cross currency interest rate",
+        "cross-currency interest rate",
         "foreign currency forward",
         "FX",
     ],
