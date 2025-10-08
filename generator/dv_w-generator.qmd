@@ -7016,7 +7016,7 @@ def generate_accounting_noise_paragraph(
 
     # Shuffle and select
     random.shuffle(all_sentences)
-    selected_sentences = all_sentences[0]
+    selected_sentences = all_sentences[:max_len] if random.random() < 0.5 else all_sentences[0]
     selected_sentences = [s[0].upper() + s[1:] if s else "" for s in selected_sentences]
     # Create paragraph
     paragraph = (
