@@ -2440,17 +2440,17 @@ deferred_revenue_templates = [
 # ============ INVENTORY ============
 
 inventory_templates = [
-    "Inventories are stated at the lower of cost or net realizable value, with cost determined using the {method} method",
+    "{items} inventories are stated at the lower of cost or net realizable value, with cost determined using the {method} method",
     "{company} values inventory using the {method} cost method and regularly reviews for obsolescence",
     "Inventory consists of {items} valued at the lower of cost (determined by {method}) or net realizable value",
-    "As of {month} {end_day}, {year}, inventory totaled {currency_code}{amount} {money_unit}, net of obsolescence reserves of {currency_code}{reserve} {money_unit}",
+    "As of {month} {end_day}, {year}, {items} inventories totaled {currency_code}{amount} {money_unit}, net of obsolescence reserves of {currency_code}{reserve} {money_unit}",
     "{items} inventories are reviewed periodically for slow-moving or obsolete items, with reserves recorded when necessary to reduce carrying values",
-    "Finished goods and work in progress are stated at standard cost (approximating actual cost) under the {method} method, adjusted to net realizable value if necessary",
+    "{items} inventories are stated at standard cost (approximating actual cost) under the {method} method, adjusted to net realizable value if necessary",
     "{items} are valued at purchase cost while manufactured inventories include labor and overhead allocated using the {method} method",
-    "Inventory is written down to market value when estimated selling prices are less than cost",
+    "{items} inventory is written down to market value when estimated selling prices are less than cost",
     "As of {month} {end_day}, {year}, {company} maintained obsolescence reserves of {currency_code}{reserve} {money_unit} against total inventories of {currency_code}{amount} {money_unit}",
-    "Inventories include {items} valued at the lower of cost (determined by {method}) or net realizable value",
-    "{company} records provisions for excess and obsolete inventories based on expected future demand, market conditions, and product life cycles",
+    "{items} inventory include {items} valued at the lower of cost (determined by {method}) or net realizable value",
+    "{company} records provisions for excess and obsolete {items} inventories based on expected future demand, market conditions, and {items} life cycles",
 ]
 
 inventory_methods = [
@@ -2464,16 +2464,16 @@ inventory_methods = [
 ]
 
 inventory_writedown_templates = [
-    "During {year}, {company} recorded inventory write-downs of {currency_code}{amount} {money_unit} due to obsolescence and excess quantities",
-    "Inventory reserves increased by {currency_code}{amount} {money_unit} in {year} to reflect lower of cost or market adjustments",
-    "{company} recognized {currency_code}{amount} {money_unit} in charges related to slow-moving and obsolete inventory during {year}",
-    "Inventory obsolescence charges totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
-    "As of {month} {end_day}, {year}, {company} maintained reserves of {currency_code}{amount} {money_unit} for excess and obsolete inventories",
+    "During {year}, {company} recorded {items} inventory write-downs of {currency_code}{amount} {money_unit} due to obsolescence and excess quantities",
+    "{items} inventory reserves increased by {currency_code}{amount} {money_unit} in {year} to reflect lower of cost or market adjustments",
+    "{company} recognized {currency_code}{amount} {money_unit} in charges related to slow-moving and obsolete {items} inventory during {year}",
+    "{items} inventory obsolescence charges totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, {company} maintained {items} reserves of {currency_code}{amount} {money_unit} for excess and obsolete inventories",
     "Write-downs of {currency_code}{amount} {money_unit} were recorded in {year} primarily related to discontinued product lines",
     "{company} recorded {currency_code}{amount} {money_unit} in inventory write-downs due to declining market demand during {year}",
     "Charges for inventory valuation adjustments were {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in the prior year",
     "{company} recorded inventory write-downs associated with aging components and spare parts totaling {currency_code}{amount} {money_unit} during {year}",
-    "Inventory reserves increased to {currency_code}{amount} {money_unit} at year-end {year}, reflecting adjustments for lower selling prices and product obsolescence",
+    " {items} inventory reserves increased to {currency_code}{amount} {money_unit} at year-end {year}, reflecting adjustments for lower selling prices and product obsolescence",
     "Total charges of {currency_code}{amount} {money_unit} were recognized in cost of goods sold for inventory write-downs in {year}",
     "Inventory write-downs of {currency_code}{amount} {money_unit} were partially offset by recoveries of {currency_code}{prev_amount} {money_unit} related to previously reserved items",
     "{company} established new reserves of {currency_code}{amount} {money_unit} in {year} for excess quantities, reflecting updated demand forecasts",
@@ -5883,6 +5883,7 @@ def generate_accounting_noise_paragraph(
             month=random.choice(months),
             end_day=random.randint(28, 31),
             prev_amount=prev_amount,
+            items=selected_co_list,
         )
         sentences.append(sentence)
     all_sentences.append(sentences)
