@@ -640,7 +640,7 @@ hedge_position_templates = [
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} totaling {currency_code}{notional} {money_unit}; no such instruments were outstanding at {prev_year} or {prev2_year}",
     "As of {month} {end_day}, {year}, {company} had active {swap_type} with a notional value of {currency_code}{notional} {money_unit}, whereas no comparable {swap_type} existed during {prev_year} or {prev2_year}",
     "At year-end {year}, {company} ’s {swap_type} totaled {currency_code}{notional} {money_unit}. There were no {swap_type} outstanding at the close of {prev_year} or {prev2_year}",
-    "As of {month} {year}, {company} maintained {swap_type} with notional amounts of {currency_code}{notional} {money_unit}; there were no such {swap_type} reported in {prev_year} or {prev2_year}",
+    "As of {month} {year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{notional} {money_unit}; there were no such {swap_type} reported in {prev_year} or {prev2_year}",
     "During {year}, {company} initiated {swap_type} positions totaling {currency_code}{notional} {money_unit}, with no comparable {swap_type} outstanding in {prev_year} or {prev2_year}",
     "At {month} {end_day}, {year}, {company} {verb} {swap_type} serving as fair value hedges, with no {swap_type} outstanding during {prev_year} or {prev2_year}",
     "As of {month} {end_day}, {year}, {company} {verb} {swap_type} notional of {currency_code}{notional} {money_unit}; no {swap_type} remained outstanding at the end of {prev_year} or {prev2_year}",
