@@ -4,6 +4,7 @@ import pandas as pd
 from openpyxl import load_workbook
 import re
 import string
+from concurrent.futures import ThreadPoolExecutor, as_completed
 ```
 
 # Init
@@ -7072,62 +7073,76 @@ def generate_sec_noise(company, currency_unit, month, year):
 
 
 ```{python}
-def generate(size_per_label=100):
-    # Collect all generated samples
+
+def generate(size_per_label=100, max_workers=8):
     all_samples = []
     swap_types = ["ir", "fx", "cp", "gen"]
     numSwaps = len(swap_types)
     count = size_per_label // numSwaps
     swap_counts = count * 3
-    # for prefix in swap_types:
-    #     for _ in range(swap_counts):
-    #         paragraph, label = generate_labeled_hedge_paragraph(
-    #             has_active_derivative=True, swapType=prefix
-    #         )
-    #         all_samples.append((paragraph, label))
 
-    #     for _ in range(swap_counts):
-    #         paragraph, label = generate_labeled_hedge_paragraph(
-    #             has_active_derivative=False, swapType=prefix
-    #         )
-    #         all_samples.append((paragraph, label))
-    #     for _ in range(count):
-    #         paragraph, label = generate_labeled_hedge_paragraph(
-    #             has_active_derivative=None, swapType=prefix
-    #         )
-    #         all_samples.append((paragraph, label))
-    # for _ in range(count):
-    #     paragraph, label = generate_derivative_liability_paragraph(label_type=4)
-    #     all_samples.append((paragraph, label))
-    # for _ in range(count):
-    #     paragraph, label = generate_derivative_liability_paragraph(label_type=5)
-    #     all_samples.append((paragraph, label))
-    # for _ in range(count):
-    #     paragraph, label = generate_derivative_liability_paragraph(label_type=6)
-    #     all_samples.append((paragraph, label))
-    # for _ in range(count):
-    #     paragraph, label = generate_derivative_liability_paragraph(label_type=7)
-    #     all_samples.append((paragraph, label))
-    # for _ in range(count):
-    #     paragraph, label = generate_derivative_liability_paragraph(label_type=3)
-    #     all_samples.append((paragraph, label))
-    for _ in range(count * numSwaps):
-        paragraph, label = generate_accounting_noise_paragraph()
-        all_samples.append((paragraph, label))
-    # Create a DataFrame
+    def submit_tasks(executor):
+        futures = []
+        # Parallel hedge generation
+        for prefix in swap_types:
+            for _ in range(swap_counts):
+                futures.append(
+                    executor.submit(
+                        generate_labeled_hedge_paragraph,
+                        has_active_derivative=True,
+                        swapType=prefix,
+                    )
+                )
+            for _ in range(swap_counts):
+                futures.append(
+                    executor.submit(
+                        generate_labeled_hedge_paragraph,
+                        has_active_derivative=False,
+                        swapType=prefix,
+                    )
+                )
+            for _ in range(count):
+                futures.append(
+                    executor.submit(
+                        generate_labeled_hedge_paragraph,
+                        has_active_derivative=None,
+                        swapType=prefix,
+                    )
+                )
+
+        # Parallel liability paragraphs
+        for label_type in [4, 5, 6, 7, 3]:
+            for _ in range(count):
+                futures.append(
+                    executor.submit(
+                        generate_derivative_liability_paragraph, label_type=label_type
+                    )
+                )
+
+        # Parallel accounting noise
+        for _ in range(count * numSwaps):
+            futures.append(executor.submit(generate_accounting_noise_paragraph))
+
+        return futures
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = submit_tasks(executor)
+        for future in as_completed(futures):
+            try:
+                paragraph, label = future.result()
+                all_samples.append((paragraph, label))
+            except Exception as e:
+                print(f"Error during generation: {e}")
+
     df_new = pd.DataFrame(all_samples, columns=["sentence", "label"])
 
-    # Write or append to Excel
     try:
-        # If the file exists, append to it
         book = load_workbook(output_file)
         with pd.ExcelWriter(
             output_file, engine="openpyxl", mode="a", if_sheet_exists="overlay"
         ) as writer:
-            # Write to a new sheet with a timestamp or name
             df_new.to_excel(writer, sheet_name="Generated_Data", index=False)
     except FileNotFoundError:
-        # If file doesn't exist, create a new one
         df_new.to_excel(output_file, sheet_name="Generated_Data", index=False)
 
     print(f"\n{len(all_samples)} samples written/appended to {output_file}")
