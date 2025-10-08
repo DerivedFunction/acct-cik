@@ -5582,7 +5582,7 @@ def generate_accounting_noise_paragraph(
     if random.random() < 0.5:
         # Litigation (0-2 sentences)
         num_litigation = random.randint(0, 2)
-        sentence = []
+        sentences = []
         for _ in range(num_litigation):
             if random.random() < 0.7:
                 template = random.choice(litigation_templates)
