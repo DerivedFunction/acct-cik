@@ -5561,6 +5561,16 @@ def generate_accounting_noise_paragraph(
             )
             sentences.append(pronouncement)
 
+        # Risk
+        materiality_choice = random.choice(materiality)
+        template = random.choice(risk_templates)
+        item = random.choice(risk_items_other)
+        sentence = template.format(
+            item=item,
+            company=pick_company_name(company_name),
+            materiality=materiality_choice,
+        )
+        sentences.append(sentence)
         return sentences
 
     # ================== SENTENCE GENERATION ==================
@@ -6425,17 +6435,6 @@ def generate_accounting_noise_paragraph(
                 company=pick_company_name(company_name),
             )
 
-        all_sentences.append(sentence)
-    # Risk
-    if random.random() < 0.1:
-        materiality_choice = random.choice(materiality)
-        template = random.choice(risk_templates)
-        item = random.choice(risk_items_other)
-        sentence = template.format(
-            item=item,
-            company=pick_company_name(company_name),
-            materiality=materiality_choice,
-        )
         all_sentences.append(sentence)
     # CEO and executive compensation (0-2 sentences)
     num_exec_comp = random.randint(0, 2)
