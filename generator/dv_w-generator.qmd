@@ -6097,7 +6097,7 @@ def generate_accounting_noise_paragraph(
 
         # --- Merge into a single coherent text block ---
         merged_text = ". ".join(sentences)
-        all_sentences.append(merged_text)
+        all_sentences.append([merged_text])
 
 
     # Income taxes (0-1)
