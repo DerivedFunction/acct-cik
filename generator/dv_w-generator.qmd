@@ -1180,33 +1180,33 @@ hedge_may_use_templates = [
 ]
 
 hedge_policy_templates = [
-    "Changes in the fair value of derivative instruments are recorded each period in current earnings or other comprehensive income (loss), depending on whether a derivative instrument is designated as part of a hedging transaction and, if it is, the type of hedging transaction",
+    "Changes in the fair value of {swap_type} are recorded each period in current earnings or other comprehensive income (loss), depending on whether a derivative instrument is designated as part of a hedging transaction and, if it is, the type of hedging transaction",
     "{swap_type} are measured at fair value with gains and losses recorded in earnings or accumulated other comprehensive income based on hedge designation",
-    "{company} accounts for derivatives at fair value, with changes in fair value recognized in either net income or other comprehensive income depending on the nature of the hedging relationship",
-    "Fair value changes in derivatives are reflected in the financial statements through either the income statement or other comprehensive income, based on whether hedge accounting is applied",
+    "{company} accounts for {swap_type} at fair value, with changes in fair value recognized in either net income or other comprehensive income depending on the nature of the hedging relationship",
+    "Fair value changes in {swap_type} are reflected in the financial statements through either the income statement or other comprehensive income, based on whether hedge accounting is applied",
     "{company} records {swap_type} at fair value, with changes recognized in earnings or OCI depending on hedge designation",
     "Changes in derivative fair values are recorded in net income or accumulated OCI, based on the type of hedge and its designation",
-    "Derivatives are accounted for at fair value, with gains or losses recorded in earnings or other comprehensive income per hedge accounting rules",
-    "{company} recognizes fair value changes of derivatives in either current earnings or OCI, depending on the hedging relationship",
+    "{swap_type} are accounted for at fair value, with gains or losses recorded in earnings or other comprehensive income per hedge accounting rules",
+    "{company} recognizes fair value changes of {swap_type} in either current earnings or OCI, depending on the hedging relationship",
     "{swap_type} are measured at fair value, with changes reflected in net income or accumulated OCI based on hedge designation",
     "Fair value adjustments for derivatives are recorded in earnings or OCI, depending on whether the instrument qualifies for hedge accounting",
-    "{company} accounts for derivatives at fair value, recognizing changes in either the income statement or other comprehensive income",
-    "Changes in the fair value of derivatives are recorded in earnings or OCI, based on the nature of the hedging relationship",
-    "Derivatives are valued at fair value, with gains and losses recognized in net income or OCI depending on hedge accounting treatment",
-    "{company} records fair value changes in derivatives in either earnings or accumulated OCI, based on hedge designation",
+    "{company} accounts for {swap_type} at fair value, recognizing changes in either the income statement or other comprehensive income",
+    "Changes in the fair value of {swap_type} are recorded in earnings or OCI, based on the nature of the hedging relationship",
+    "{swap_type} are valued at fair value, with gains and losses recognized in net income or OCI depending on hedge accounting treatment",
+    "{company} records fair value changes in {swap_type} in either earnings or accumulated OCI, based on hedge designation",
     "Derivative fair value changes are recognized in the income statement or OCI, depending on the type of hedging relationship",
-    "{company} accounts for derivatives at fair value, with changes recorded in earnings or OCI per applicable accounting standards",
+    "{company} accounts for {swap_type} at fair value, with changes recorded in earnings or OCI per applicable accounting standards",
     "Fair value changes in {swap_type} are reflected in net income or OCI, based on their hedge designation",
-    "Derivatives are measured at fair value, with changes recorded in earnings or other comprehensive income depending on hedge accounting",
+    "{swap_type} are measured at fair value, with changes recorded in earnings or other comprehensive income depending on hedge accounting",
     "{company} recognizes derivative fair value changes in either net income or OCI, based on the hedging relationship",
     "Changes in derivative fair values are recorded in current earnings or OCI, depending on the hedge type and accounting treatment",
     "All {swap_type}, other than those that satisfy specific exceptions, are recorded at fair value. {company} record changes in the fair value of our derivative positions based on the value for which the derivative instrument could be exchanged between willing parties",
-    "If market quotes are not available to estimate fair value, management’s best estimate of fair value is based on the quoted market price of derivatives with similar characteristics or determined through industry-standard valuation techniques",
+    "If market quotes are not available to estimate fair value, management’s best estimate of fair value is based on the quoted market price of {swap_type} with similar characteristics or determined through industry-standard valuation techniques",
     "{company} value our {swap_type} using observable inputs including interest rate curves, risk adjusted discount rates, credit spreads and other relevant data",
     "Gains and losses on {swap_type} are recognized currently in earnings",
     "The ultimate fair value of our {swap_type} is uncertain, and {company} believe that it is reasonably possible that a change in the estimated fair value could occur in the near future",
-    "The accounting for the changes in the fair value of the derivative depends on the intended use of the derivative and the resulting designation",
-    "For a derivative that does not qualify as a {hedge_type} hedge, the change in {hedge_type} is recognized currently in net income",
+    "The accounting for the changes in the fair value of the {swap_type} depends on the intended use of the {swap_type} and the resulting designation",
+    "For a {swap_type} that does not qualify as a {hedge_type} hedge, the change in {hedge_type} is recognized currently in net income",
     "Based upon certain factors, including a review of the {swap_type} for {company}'s counterparties, {company} determined its counterparty credit risk to be immaterial",
     "Based upon certain factors, including a review of the {swap_type} for {company}'s counterparties, {company} determined its counterparty credit risk to be material",
 ]
@@ -4902,7 +4902,7 @@ def generate_labeled_hedge_paragraph(
     if has_active_derivative is None:
         # Accounting policy (always)
         act_template = random.choice(hedge_policy_templates)
-        swap_type = random.choice(swap_types)
+        swap_type = random.choice(swap_types) if random.random() < 0.5 else "derivatives"
         hedge_type = random.choice(hedge_types)
         all_sentences.append(
             act_template.format(
