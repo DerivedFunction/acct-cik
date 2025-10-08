@@ -3454,7 +3454,7 @@ def generate_derivative_liability_paragraph(
             sentence = template.format(
                 company=pick_company_name(company_name),
                 currency_code=currency_code,
-                shares=f"{shares:,}",   
+                shares=f"{shares:,}",
                 price=price,
                 month=month,
                 year=year,
@@ -3487,7 +3487,9 @@ def generate_derivative_liability_paragraph(
         template = random.choice(warrant_liability_templates)
         location = random.choice(fv_change_locations)
         event = random.choice(warrant_events)
-        sentence = template.format(location=location, company=pick_company_name(company_name), event=event)
+        sentence = template.format(
+            location=location, company=pick_company_name(company_name), event=event
+        )
         all_sentences.append(sentence)
 
         # Add general derivative liability (0-1) - only for label 4
@@ -3633,7 +3635,7 @@ def generate_derivative_liability_paragraph(
                 end_day = random.randint(28, 31)
                 year = random.choice(past_years)
                 gain_loss = random.choice(["gain", "loss"])
-                maturity_year=random.randint(current_year, current_year + 5)
+                maturity_year = random.randint(current_year, current_year + 5)
                 sentence = template.format(
                     principal=principal,
                     embedded_fv=embedded_fv,
@@ -3646,7 +3648,7 @@ def generate_derivative_liability_paragraph(
                     company=pick_company_name(company_name),
                     currency_code=currency_code,
                     money_unit=money_units,
-                    gain_loss=gain_loss
+                    gain_loss=gain_loss,
                 )
             else:
                 # Use issuance template for label 6
@@ -3905,7 +3907,9 @@ def generate_derivative_liability_paragraph(
                 template = random.choice(market_impact_templates)
                 shares = random.choice([500000, 1000000, 2000000, 3000000])
 
-                sentence = template.format(company=pick_company_name(company_name), shares=f"{shares:,}")
+                sentence = template.format(
+                    company=pick_company_name(company_name), shares=f"{shares:,}"
+                )
 
             elif noncash_type == "warrant_adjustment":
                 template = random.choice(warrant_adjustment_templates)
@@ -3998,7 +4002,9 @@ def generate_derivative_liability_paragraph(
                 template = random.choice(capital_raising_impact_templates)
                 shares = random.choice([1000000, 2000000, 3000000])
 
-                sentence = template.format(company=pick_company_name(company_name), shares=f"{shares:,}")
+                sentence = template.format(
+                    company=pick_company_name(company_name), shares=f"{shares:,}"
+                )
 
             all_sentences.append(sentence)
 
@@ -4493,25 +4499,24 @@ def generate_labeled_hedge_paragraph(
                 swap_type=swap_type,
             )
         )
+        return sentences
 
-        # --- Common shared pools (simplified names) ---
-        issuers = shared_issuers
-        purposes = shared_purposes
-        adoption_methods = shared_adoption_methods
-        eval_templates = shared_evaluation_templates
-        adoption_status_templates = shared_adoption_status_templates
-        eff_months = random.choice(months)
+    def generate_hedge_policy_update():
+        sentences = []
 
         # ==============================
         # 1. ISSUANCE STATEMENT
         # ==============================
         template = random.choice(hedge_change_policy_templates)
-        issuer = random.choice(issuers)
+        issuer = random.choice(shared_issuers)
         standard = random.choice(hedge_standards)
-        topic = random.choice(
-            ["derivatives and hedging", "hedging activities", "cash flow hedges", "fair value hedges"]
-        )
-        purpose = random.choice(purposes)
+        topic = random.choice([
+            "derivatives and hedging",
+            "hedging activities",
+            "cash flow hedges",
+            "fair value hedges",
+        ])
+        purpose = random.choice(shared_purposes)
         description = random.choice(hedging_descriptions)
         extra = random.choice(hedging_additional_features)
 
@@ -4537,12 +4542,47 @@ def generate_labeled_hedge_paragraph(
         )
         sentences.append(issuance_sentence)
 
+        # Optional: Add effective date
+        if random.random() < 0.25:
+            eff_line = random.choice(shared_effective_date_templates).format(
+                month=eff_month,
+                day=random.randint(15, 31),
+                end_day=random.randint(15, 31),
+                year=effective_year,
+            )
+            sentences.append(eff_line)
+
+        # Optional: Add transition/disclosure/practical expedient
+        if random.random() < 0.2:
+            trans_line = random.choice(shared_transition_templates).format(
+                company=company_name,
+                method=random.choice(shared_adoption_methods),
+                feature=random.choice(shared_transition_features),
+            )
+            sentences.append(trans_line)
+
+        if random.random() < 0.2:
+            disclosure_line = random.choice(shared_disclosure_change_templates).format(
+                company=company_name,
+                disclosure_topic=random.choice(["derivative disclosures", "risk management strategies"]),
+                disclosure_topic2=random.choice(["hedge effectiveness", "notional amounts"]),
+                year=effective_year,
+            )
+            sentences.append(disclosure_line)
+
+        if random.random() < 0.15:
+            expedient_line = random.choice(shared_practical_expedient_templates).format(
+                company=company_name,
+                expedient_description=random.choice(shared_transition_features),
+            )
+            sentences.append(expedient_line)
+
         # ==============================
         # 2. ADOPTION STATEMENT
         # ==============================
-        adopt_template = random.choice(adoption_status_templates)
+        adopt_template = random.choice(shared_adoption_status_templates)
         adopt_standard = random.choice(hedge_standards)
-        adopt_method = random.choice(adoption_methods)
+        adopt_method = random.choice(shared_adoption_methods)
         adopt_month = random.choice(months)
         adopt_day = random.randint(1, 28)
         adopt_year = random.randint(current_year - 8, current_year + 4)
@@ -4557,13 +4597,43 @@ def generate_labeled_hedge_paragraph(
         )
         sentences.append(adoption_sentence)
 
+        # Optional: Adoption impact
+        if random.random() < 0.25:
+            impact_line = random.choice(shared_adoption_impact_templates).format(
+                company=company_name,
+                impact=random.choice([
+                    "a reduction in earnings volatility",
+                    "an increase in OCI from effective hedge portions",
+                    "no material impact on the consolidated financial statements",
+                ]),
+            )
+            sentences.append(impact_line)
+
         # ==============================
         # 3. EVALUATION STATEMENT
         # ==============================
-        evaluation_sentence = random.choice(eval_templates).format(company=company_name)
+        evaluation_sentence = random.choice(shared_evaluation_templates).format(company=company_name)
         sentences.append(evaluation_sentence)
 
+        # Optional: Recently issued pronouncement
+        if random.random() < 0.2:
+            pronouncement = random.choice(shared_recent_pronouncement_templates).format(
+                company=company_name,
+                issuer=random.choice(shared_issuers),
+                standard=random.choice(hedge_standards),
+                topic=random.choice([
+                    "hedging relationships",
+                    "cash flow hedge presentation",
+                    "fair value hedge accounting",
+                ]),
+                month=random.choice(months),
+                year=random.randint(current_year - 2, current_year),
+                adoption_year=random.randint(current_year, current_year + 3),
+            )
+            sentences.append(pronouncement)
+
         return sentences
+
 
     def expire_hedge():
         sentences = []
@@ -5268,6 +5338,142 @@ def generate_accounting_noise_paragraph(
     currency_code = random.choice(currency_codes)
     major_currency = random.choice(all_currencies)
     target_companies = [name for name in company_names if name != company_name]
+
+    def generate_other_policy_update():
+        sentences = []
+
+        # ==============================
+        # 1. ISSUANCE STATEMENT
+        # ==============================
+        template = random.choice(general_policy_templates)
+        issuer = random.choice(shared_issuers)
+        standard = random.choice(other_standard_names)
+        topic = random.choice(shared_topics)
+        purpose = random.choice(shared_purposes)
+        description = random.choice(general_descriptions)
+        extra = random.choice(general_additional_features)
+
+        issue_month = random.choice(months)
+        issue_year = random.randint(current_year - 5, current_year)
+        effective_year = issue_year + random.randint(2, 4)
+        eff_month = random.choice(months)
+        eff_day = random.randint(15, 31)
+
+        issuance_sentence = template.format(
+            month=issue_month,
+            year=issue_year,
+            issuer=issuer,
+            standard=standard,
+            topic=topic,
+            purpose=purpose,
+            description=description,
+            additional_feature=extra,
+            eff_month=eff_month,
+            eff_day=eff_day,
+            eff_year=effective_year,
+            company=company_name,
+        )
+        sentences.append(issuance_sentence)
+
+        # Optional: Add effective date, transition, disclosure, expedient
+        if random.random() < 0.3:
+            eff_line = random.choice(shared_effective_date_templates).format(
+                month=eff_month,
+                day=random.randint(1, 28),
+                end_day=random.randint(15, 31),
+                year=effective_year,
+            )
+            sentences.append(eff_line)
+
+        if random.random() < 0.2:
+            trans_line = random.choice(shared_transition_templates).format(
+                company=company_name,
+                method=random.choice(shared_adoption_methods),
+                feature=random.choice(shared_transition_features),
+            )
+            sentences.append(trans_line)
+
+        if random.random() < 0.25:
+            disclosure_line = random.choice(shared_disclosure_change_templates).format(
+                company=company_name,
+                disclosure_topic=random.choice(
+                    [
+                        "lease assets",
+                        "revenue recognition policies",
+                        "credit loss assumptions",
+                    ]
+                ),
+                disclosure_topic2=random.choice(
+                    ["disaggregation of revenue", "allowance methodology"]
+                ),
+                year=effective_year,
+            )
+            sentences.append(disclosure_line)
+
+        if random.random() < 0.15:
+            expedient_line = random.choice(shared_practical_expedient_templates).format(
+                company=company_name,
+                expedient_description=random.choice(shared_transition_features),
+            )
+            sentences.append(expedient_line)
+
+        # ==============================
+        # 2. ADOPTION STATEMENT
+        # ==============================
+        adopt_template = random.choice(shared_adoption_status_templates)
+        adopt_standard = random.choice(other_standard_names)
+        adopt_method = random.choice(shared_adoption_methods)
+        adopt_month = random.choice(months)
+        adopt_day = random.randint(1, 28)
+        adopt_year = random.randint(current_year - 8, current_year + 4)
+
+        adoption_sentence = adopt_template.format(
+            company=company_name,
+            standard=adopt_standard,
+            method=adopt_method,
+            month=adopt_month,
+            day=adopt_day,
+            year=adopt_year,
+        )
+        sentences.append(adoption_sentence)
+
+        # Optional: Adoption impact
+        if random.random() < 0.3:
+            impact_line = random.choice(shared_adoption_impact_templates).format(
+                company=company_name,
+                impact=random.choice(
+                    [
+                        "recognition of additional lease liabilities",
+                        "a change in timing of revenue recognition",
+                        "no material impact on consolidated results",
+                    ]
+                ),
+            )
+            sentences.append(impact_line)
+
+        # ==============================
+        # 3. EVALUATION STATEMENT
+        # ==============================
+        evaluation_sentence = random.choice(shared_evaluation_templates).format(
+            company=company_name
+        )
+        sentences.append(evaluation_sentence)
+
+        # Optional: Recently issued pronouncement
+        if random.random() < 0.25:
+            pronouncement = random.choice(shared_recent_pronouncement_templates).format(
+                company=company_name,
+                issuer=random.choice(shared_issuers),
+                standard=random.choice(other_standard_names),
+                topic=random.choice(shared_topics),
+                month=random.choice(months),
+                year=random.randint(current_year - 2, current_year),
+                adoption_year=random.randint(current_year, current_year + 3),
+            )
+            sentences.append(pronouncement)
+
+        return sentences
+
     # ================== SENTENCE GENERATION ==================
 
     # Litigation (0-2 sentences)
@@ -6695,77 +6901,8 @@ def generate_accounting_noise_paragraph(
 
         all_sentences.append(sentence)
     
-    if random.random() < 0.10: # Accounting standards
-        sentences = []
-        # --- Common pools (simplified) ---
-        issuers = shared_issuers
-        purposes = shared_purposes
-        adoption_methods = shared_adoption_methods
-        eval_templates = shared_evaluation_templates
-        adoption_status_templates = shared_adoption_status_templates
-        eff_months = random.choice(months)
-
-        # ==============================
-        # 1. ISSUANCE STATEMENT
-        # ==============================
-        template = random.choice(policy_templates)
-        issuer = random.choice(issuers)
-        standard = random.choice(accounting_standards)
-        topic = random.choice(
-            ["financial instruments", "revenue recognition", "lease accounting", "fair value measurement"]
-        )
-        purpose = random.choice(purposes)
-        description = random.choice(policy_descriptions)
-        extra = random.choice(policy_features)
-
-        issue_month = random.choice(months)
-        issue_year = random.randint(current_year - 5, current_year)
-        effective_year = issue_year + random.randint(2, 4)
-        eff_month = random.choice(months)
-        eff_day = random.randint(15, 31)
-
-        issuance_sentence = template.format(
-            month=issue_month,
-            year=issue_year,
-            issuer=issuer,
-            standard=standard,
-            topic=topic,
-            purpose=purpose,
-            description=description,
-            additional_feature=extra,
-            eff_month=eff_month,
-            eff_day=eff_day,
-            eff_year=effective_year,
-            company=company_name,
-        )
-        sentences.append(issuance_sentence)
-
-        # ==============================
-        # 2. ADOPTION STATEMENT
-        # ==============================
-        adopt_template = random.choice(adoption_status_templates)
-        adopt_standard = random.choice(accounting_standards)
-        adopt_method = random.choice(adoption_methods)
-        adopt_month = random.choice(months)
-        adopt_day = random.randint(1, 28)
-        adopt_year = random.randint(current_year - 8, current_year + 4)
-
-        adoption_sentence = adopt_template.format(
-            company=company_name,
-            standard=adopt_standard,
-            method=adopt_method,
-            month=adopt_month,
-            day=adopt_day,
-            year=adopt_year,
-        )
-        sentences.append(adoption_sentence)
-
-        # ==============================
-        # 3. EVALUATION STATEMENT
-        # ==============================
-        evaluation_sentence = random.choice(eval_templates).format(company=company_name)
-        sentences.append(evaluation_sentence)
-
+    if random.random() < 0.05: # Accounting standards
+        all_sentences = generate_other_policy_update()
     if random.random() < 0.05:  # Generat of text and numbers
         noise = generate_sec_noise(
             company=pick_company_name(company_name),
