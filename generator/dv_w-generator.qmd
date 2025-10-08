@@ -7014,8 +7014,6 @@ def generate_accounting_noise_paragraph(
     )
     all_sentences.append(noise)
 
-    all_sentences.append([""])
-
     # Shuffle and select
     random.shuffle(all_sentences)
     selected_sentences = all_sentences[0]
