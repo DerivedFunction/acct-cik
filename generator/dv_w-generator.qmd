@@ -3512,7 +3512,7 @@ def generate_derivative_liability_paragraph(
         # Add down round features (0-1) - only for label 4
         if not is_past and random.random() < 0.4:
             sentence = random.choice(down_round_templates)
-            all_sentences.append(sentence.format(company=company_name))
+            all_sentences.append(sentence.format(company=pick_company_name(company_name)))
 
         # Add earnout liability (0-1)
         if random.random() < 0.3:
@@ -3694,7 +3694,7 @@ def generate_derivative_liability_paragraph(
             assumptions = random.choice(valuation_assumptions)
 
             sentence = template.format(
-                model=model, assumptions=assumptions, company=company_name
+                model=model, assumptions=assumptions, company=pick_company_name(company_name)
             )
             all_sentences.append(sentence)
 
@@ -3723,7 +3723,7 @@ def generate_derivative_liability_paragraph(
         if not is_past and random.random() < 0.4:
             sentence = random.choice(ccr_analysis_templates)
             verb = random.choice(assessment_verbs)
-            sentence = sentence.format(verb=verb, company=company_name)
+            sentence = sentence.format(verb=verb, company=pick_company_name(company_name))
             all_sentences.append(sentence)
 
         # Add settlement activity (0-1)
@@ -4155,7 +4155,7 @@ def generate_labeled_hedge_paragraph(
         )
         # Context sentences
         template = random.choice(fx_context_templates)
-        sentences.append(template.format(company=company_name))
+        sentences.append(template.format(company=pick_company_name(company_name)))
 
         # Impact sentences
         template = random.choice(fx_impact_templates)
@@ -4301,11 +4301,11 @@ def generate_labeled_hedge_paragraph(
         template = random.choice(ir_context_templates)
         sentences.append(
             template.format(
-                company=company_name, verb=verb, swap_types=selected_ir_list
+                company=pick_company_name(company_name), verb=verb, swap_types=selected_ir_list
             )
         )
         template = random.choice(fx_ir_context_templates)
-        sentences.append(template.format(company=company_name))
+        sentences.append(template.format(company=pick_company_name(company_name)))
         # Mitigation sentences
         template = random.choice(fx_ir_mitigation_templates)
         verb = random.choice(mit_verbs)
@@ -4464,7 +4464,7 @@ def generate_labeled_hedge_paragraph(
             mit_verbs = hedge_may_mitigation_verbs
         # Context (0-1)
         template = random.choice(hedge_context_templates)
-        sentences.append(template.format(company=company_name))
+        sentences.append(template.format(company=pick_company_name(company_name)))
 
         # Impact (0-1)
         template = random.choice(hedge_impact_templates)
@@ -4533,13 +4533,14 @@ def generate_labeled_hedge_paragraph(
             eff_month=eff_month,
             eff_day=eff_day,
             eff_year=effective_year,
-            company=company_name,
+            company=pick_company_name(company_name),
         )
         sentences.append(issuance_sentence)
 
         # Optional: Add effective date
         if random.random() < 0.25:
             eff_line = random.choice(shared_effective_date_templates).format(
+                company=pick_company_name(company_name),
                 month=eff_month,
                 day=random.randint(15, 31),
                 end_day=random.randint(15, 31),
@@ -4550,7 +4551,7 @@ def generate_labeled_hedge_paragraph(
         # Optional: Add transition/disclosure/practical expedient
         if random.random() < 0.2:
             trans_line = random.choice(shared_transition_templates).format(
-                company=company_name,
+                company=pick_company_name(company_name),
                 method=random.choice(shared_adoption_methods),
                 feature=random.choice(shared_transition_features),
             )
@@ -4558,7 +4559,7 @@ def generate_labeled_hedge_paragraph(
 
         if random.random() < 0.2:
             disclosure_line = random.choice(shared_disclosure_change_templates).format(
-                company=company_name,
+                company=pick_company_name(company_name),
                 disclosure_topic=random.choice(["derivative disclosures", "risk management strategies"]),
                 disclosure_topic2=random.choice(["hedge effectiveness", "notional amounts"]),
                 year=effective_year,
@@ -4567,7 +4568,7 @@ def generate_labeled_hedge_paragraph(
 
         if random.random() < 0.15:
             expedient_line = random.choice(shared_practical_expedient_templates).format(
-                company=company_name,
+                company=pick_company_name(company_name),
                 expedient_description=random.choice(shared_transition_features),
             )
             sentences.append(expedient_line)
@@ -4583,7 +4584,7 @@ def generate_labeled_hedge_paragraph(
         adopt_year = random.randint(current_year - 8, current_year + 4)
 
         adoption_sentence = adopt_template.format(
-            company=company_name,
+            company=pick_company_name(company_name),
             standard=adopt_standard,
             method=adopt_method,
             month=adopt_month,
@@ -4595,7 +4596,7 @@ def generate_labeled_hedge_paragraph(
         # Optional: Adoption impact
         if random.random() < 0.25:
             impact_line = random.choice(shared_adoption_impact_templates).format(
-                company=company_name,
+                company=pick_company_name(company_name),
                 impact=random.choice([
                     "a reduction in earnings volatility",
                     "an increase in OCI from effective hedge portions",
@@ -4607,13 +4608,13 @@ def generate_labeled_hedge_paragraph(
         # ==============================
         # 3. EVALUATION STATEMENT
         # ==============================
-        evaluation_sentence = random.choice(shared_evaluation_templates).format(company=company_name)
+        evaluation_sentence = random.choice(shared_evaluation_templates).format(company=pick_company_name(company_name))
         sentences.append(evaluation_sentence)
 
         # Optional: Recently issued pronouncement
         if random.random() < 0.2:
             pronouncement = random.choice(shared_recent_pronouncement_templates).format(
-                company=company_name,
+                company=pick_company_name(company_name),
                 issuer=random.choice(shared_issuers),
                 standard=random.choice(hedge_standards),
                 topic=random.choice([
@@ -4830,7 +4831,7 @@ def generate_labeled_hedge_paragraph(
 
         # Counterparty risk (0-1)
         template = random.choice(hedge_counterparty_templates)
-        all_sentences.append(template.format(company=company_name))
+        all_sentences.append(template.format(company=pick_company_name(company_name)))
     # Labels 0 and 1: Specific positions
     else:
         if not has_active_derivative:
@@ -5369,13 +5370,14 @@ def generate_accounting_noise_paragraph(
             eff_month=eff_month,
             eff_day=eff_day,
             eff_year=effective_year,
-            company=company_name,
+            company=pick_company_name(company_name),
         )
         sentences.append(issuance_sentence)
 
         # Optional: Add effective date, transition, disclosure, expedient
         if random.random() < 0.3:
             eff_line = random.choice(shared_effective_date_templates).format(
+                company=pick_company_name(company_name),
                 month=eff_month,
                 day=random.randint(1, 28),
                 end_day=random.randint(15, 31),
@@ -5385,7 +5387,7 @@ def generate_accounting_noise_paragraph(
 
         if random.random() < 0.2:
             trans_line = random.choice(shared_transition_templates).format(
-                company=company_name,
+                company=pick_company_name(company_name),
                 method=random.choice(shared_adoption_methods),
                 feature=random.choice(shared_transition_features),
             )
@@ -5393,7 +5395,7 @@ def generate_accounting_noise_paragraph(
 
         if random.random() < 0.25:
             disclosure_line = random.choice(shared_disclosure_change_templates).format(
-                company=company_name,
+                company=pick_company_name(company_name),
                 disclosure_topic=random.choice(
                     [
                         "lease assets",
@@ -5410,7 +5412,7 @@ def generate_accounting_noise_paragraph(
 
         if random.random() < 0.15:
             expedient_line = random.choice(shared_practical_expedient_templates).format(
-                company=company_name,
+                company=pick_company_name(company_name),
                 expedient_description=random.choice(shared_transition_features),
             )
             sentences.append(expedient_line)
@@ -5426,7 +5428,7 @@ def generate_accounting_noise_paragraph(
         adopt_year = random.randint(current_year - 8, current_year + 4)
 
         adoption_sentence = adopt_template.format(
-            company=company_name,
+            company=pick_company_name(company_name),
             standard=adopt_standard,
             method=adopt_method,
             month=adopt_month,
@@ -5438,7 +5440,7 @@ def generate_accounting_noise_paragraph(
         # Optional: Adoption impact
         if random.random() < 0.3:
             impact_line = random.choice(shared_adoption_impact_templates).format(
-                company=company_name,
+                company=pick_company_name(company_name),
                 impact=random.choice(
                     [
                         "recognition of additional lease liabilities",
@@ -5453,14 +5455,14 @@ def generate_accounting_noise_paragraph(
         # 3. EVALUATION STATEMENT
         # ==============================
         evaluation_sentence = random.choice(shared_evaluation_templates).format(
-            company=company_name
+            company=pick_company_name(company_name)
         )
         sentences.append(evaluation_sentence)
 
         # Optional: Recently issued pronouncement
         if random.random() < 0.25:
             pronouncement = random.choice(shared_recent_pronouncement_templates).format(
-                company=company_name,
+                company=pick_company_name(company_name),
                 issuer=random.choice(shared_issuers),
                 standard=random.choice(other_standard_names),
                 topic=random.choice(shared_topics),
@@ -5674,7 +5676,7 @@ def generate_accounting_noise_paragraph(
     if random.random() < 0.3:
         if random.random() < 0.5:
             sentence = random.choice(revenue_recognition_templates)
-            sentence = sentence.format(company=company_name)
+            sentence = sentence.format(company=pick_company_name(company_name))
         else:
             template = random.choice(deferred_revenue_templates)
             amount = round(random.uniform(10, 100), 1)
@@ -6520,7 +6522,7 @@ def generate_accounting_noise_paragraph(
 
         elif comp_type == "clawback":
             template = random.choice(clawback_templates)
-            sentence = template.format(company=company_name)
+            sentence = template.format(company=pick_company_name(company_name))
         all_sentences.append(sentence)
 
     # Market prices and trading (0-1)
