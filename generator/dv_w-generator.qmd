@@ -5282,7 +5282,10 @@ def generate_labeled_hedge_paragraph(
             elif swapType == "fx":
                 sentences = generate_fx_policy(has_active_derivative)
             else:
-                sentences = generate_hedge_policy(has_active_derivative)
+                if random.random() < 0.5:
+                    sentences = generate_hedge_policy(has_active_derivative)
+                else:
+                    sentences = generate_hedge_policy_update()
         sentences = sentences[: random.randint(1, 2)]
         selected_sentences.extend(sentences)
         random.shuffle(selected_sentences)
