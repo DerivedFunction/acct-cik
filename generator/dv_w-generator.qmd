@@ -397,6 +397,65 @@ general_policy_templates = [
     "During {year}, the {issuer} issued guidance under {standard} to {purpose}. {description}. Additionally, it {additional_feature}",
 ]
 
+# ==============================
+# Counterparty / Credit Risk Templates
+# ==============================
+risk_templates = [
+    "Based upon certain factors, including a review of the {item} for {company}'s counterparties, {company} determined its counterparty credit risk to be {materiality}",
+    "After assessing {item} and other indicators for {company}'s derivative counterparties, management concluded that counterparty exposure is {materiality}",
+    "{company} periodically reviews {item} and other market data to evaluate counterparty credit risk, which was determined to be {materiality}",
+    "Based on a review of {item} and internal assessments, {company} concluded that exposure to counterparty credit risk is {materiality}",
+    "{company} monitors {item} as part of its evaluation of counterparty credit exposure associated with derivative contracts",
+    "Considering {item}, credit ratings, and exposure limits, {company} determined that counterparty risk is {materiality}",
+    "{company} evaluates {item} to assess potential credit exposure under its derivative contracts and considers such exposure to be {materiality}",
+    "Taking into account {item} and the financial strength of counterparties, {company} considers the overall counterparty credit risk to be {materiality}",
+]
+
+# ==============================
+# Risk Items
+# ==============================
+
+# Derivative / Hedging-Related Risk Items
+risk_items_derivative = [
+    "credit default swap spreads",
+    "credit default swap rates",
+    "counterparty credit spreads",
+    "market-implied default probabilities",
+    "collateral coverage ratios under derivative agreements",
+    "credit exposure under derivative master netting arrangements",
+    "net derivative positions by counterparty",
+    "credit valuation adjustments (CVA)",
+    "potential future exposure on derivative contracts",
+    "credit risk metrics for derivative counterparties",
+    "mark-to-market exposure on outstanding swaps",
+    "counterparty exposure by derivative type",
+]
+
+# General / Non-Derivative (“Other”) Risk Items
+risk_items_other = [
+    "customer credit ratings",
+    "trade receivable aging reports",
+    "exposure by customer group",
+    "accounts receivable turnover ratios",
+    "supplier credit evaluations",
+    "internal credit risk assessments unrelated to derivatives",
+    "counterparty concentration in commercial transactions",
+    "loan portfolio credit quality indicators",
+    "credit loss reserves and allowances",
+    "overall counterparty creditworthiness in non-derivative activities",
+    "exposure to sovereign or institutional counterparties",
+]
+
+# Optional
+materiality = [
+    "immaterial",
+    "not significant",
+    "limited",
+    "material",
+    "significant",
+    "not material",
+]
+
 ```
 
 # Derivative liabilities and Warrants and Embedded Derivatives
@@ -4307,7 +4366,9 @@ def generate_labeled_hedge_paragraph(
         template = random.choice(ir_context_templates)
         sentences.append(
             template.format(
-                company=pick_company_name(company_name), verb=verb, swap_types=selected_ir_list
+                company=pick_company_name(company_name),
+                verb=verb,
+                swap_types=selected_ir_list,
             )
         )
         template = random.choice(fx_ir_context_templates)
@@ -4500,7 +4561,18 @@ def generate_labeled_hedge_paragraph(
                 swap_type=swap_type,
             )
         )
+        
+        # Risk
+        materiality_choice = random.choice(materiality)
+        template = random.choice(risk_templates)
+        item = (
+            random.choice(swap_types)
+            if random.random() < 0.5
+            else random.choice(risk_items_derivative)
+        )
+        template.format(item=item, company=pick_company_name(company_name), materiality=materiality_choice)
         return sentences
+
 
     def generate_hedge_policy_update():
         sentences = []
@@ -4511,12 +4583,14 @@ def generate_labeled_hedge_paragraph(
         template = random.choice(hedge_change_policy_templates)
         issuer = random.choice(shared_issuers)
         standard = random.choice(hedge_standards)
-        topic = random.choice([
-            "derivatives and hedging",
-            "hedging activities",
-            "cash flow hedges",
-            "fair value hedges",
-        ])
+        topic = random.choice(
+            [
+                "derivatives and hedging",
+                "hedging activities",
+                "cash flow hedges",
+                "fair value hedges",
+            ]
+        )
         purpose = random.choice(shared_purposes)
         description = random.choice(hedging_descriptions)
         extra = random.choice(hedging_additional_features)
@@ -4566,8 +4640,12 @@ def generate_labeled_hedge_paragraph(
         if random.random() < 0.2:
             disclosure_line = random.choice(shared_disclosure_change_templates).format(
                 company=pick_company_name(company_name),
-                disclosure_topic=random.choice(["derivative disclosures", "risk management strategies"]),
-                disclosure_topic2=random.choice(["hedge effectiveness", "notional amounts"]),
+                disclosure_topic=random.choice(
+                    ["derivative disclosures", "risk management strategies"]
+                ),
+                disclosure_topic2=random.choice(
+                    ["hedge effectiveness", "notional amounts"]
+                ),
                 year=effective_year,
             )
             sentences.append(disclosure_line)
@@ -4603,18 +4681,22 @@ def generate_labeled_hedge_paragraph(
         if random.random() < 0.25:
             impact_line = random.choice(shared_adoption_impact_templates).format(
                 company=pick_company_name(company_name),
-                impact=random.choice([
-                    "a reduction in earnings volatility",
-                    "an increase in OCI from effective hedge portions",
-                    "no material impact on the consolidated financial statements",
-                ]),
+                impact=random.choice(
+                    [
+                        "a reduction in earnings volatility",
+                        "an increase in OCI from effective hedge portions",
+                        "no material impact on the consolidated financial statements",
+                    ]
+                ),
             )
             sentences.append(impact_line)
 
         # ==============================
         # 3. EVALUATION STATEMENT
         # ==============================
-        evaluation_sentence = random.choice(shared_evaluation_templates).format(company=pick_company_name(company_name))
+        evaluation_sentence = random.choice(shared_evaluation_templates).format(
+            company=pick_company_name(company_name)
+        )
         sentences.append(evaluation_sentence)
 
         # Optional: Recently issued pronouncement
@@ -4623,11 +4705,13 @@ def generate_labeled_hedge_paragraph(
                 company=pick_company_name(company_name),
                 issuer=random.choice(shared_issuers),
                 standard=random.choice(hedge_standards),
-                topic=random.choice([
-                    "hedging relationships",
-                    "cash flow hedge presentation",
-                    "fair value hedge accounting",
-                ]),
+                topic=random.choice(
+                    [
+                        "hedging relationships",
+                        "cash flow hedge presentation",
+                        "fair value hedge accounting",
+                    ]
+                ),
                 month=random.choice(months),
                 year=random.randint(current_year - 2, current_year),
                 adoption_year=random.randint(current_year, current_year + 3),
@@ -4635,7 +4719,6 @@ def generate_labeled_hedge_paragraph(
             sentences.append(pronouncement)
 
         return sentences
-
 
     def expire_hedge():
         sentences = []
@@ -6343,7 +6426,17 @@ def generate_accounting_noise_paragraph(
             )
 
         all_sentences.append(sentence)
-
+    # Risk
+    if random.random() < 0.1:
+        materiality_choice = random.choice(materiality)
+        template = random.choice(risk_templates)
+        item = random.choice(risk_items_other)
+        sentence = template.format(
+            item=item,
+            company=pick_company_name(company_name),
+            materiality=materiality_choice,
+        )
+        all_sentences.append(sentence)
     # CEO and executive compensation (0-2 sentences)
     num_exec_comp = random.randint(0, 2)
     for _ in range(num_exec_comp):
@@ -6906,8 +6999,8 @@ def generate_accounting_noise_paragraph(
         )
 
         all_sentences.append(sentence)
-    
-    if random.random() < 0.05: # Accounting standards
+
+    if random.random() < 0.05:  # Accounting standards
         all_sentences = generate_other_policy_update()
     if random.random() < 0.05:  # Generat of text and numbers
         noise = generate_sec_noise(
