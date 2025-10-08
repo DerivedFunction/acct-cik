@@ -2262,7 +2262,6 @@ sec_toc_patterns = [
 litigation_templates = [
     "{company} is involved in various legal proceedings and claims arising in the ordinary course of business, including {case_types}",
     "As of {month} {end_day}, {year}, {company} is a defendant in several lawsuits related to {case_types}",
-    "As of {month} {end_day}, {year}, {company} is a defendant in several derivative lawsuits related to {case_types}",
     "{company} is subject to litigation and regulatory inquiries concerning {case_types} in the normal course of operations",
     "Various legal actions, proceedings, and claims are pending or may be instituted against {company} , including {case_types}",
     "As of {month} {end_day}, {year}, {company} is a defending against several derivative lawsuits related to {case_types}",
@@ -5620,25 +5619,24 @@ def generate_accounting_noise_paragraph(
 
     # ================== SENTENCE GENERATION ==================
     # Litigation (0-2 sentences)
-    num_litigation = random.randint(0, 2)
+    num_litigation = random.randint(1, 3)
     sentences = []
     for _ in range(num_litigation):
-        if random.random() < 0.7:
-            template = random.choice(litigation_templates)
-            case_type = random.choice(case_types)
-            court = random.choice(courts)
-            sentence = template.format(
-                year=current_year,
-                case_types=case_type,
-                company=pick_company_name(company_name),
-                court=court,
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                month=random.choice(months),
-                end_day=random.randint(28, 31),
-            )
-            sentences.append(sentence)
+        template = random.choice(litigation_templates)
+        case_type = random.choice(case_types)
+        court = random.choice(courts)
+        sentence = template.format(
+            year=current_year,
+            case_types=case_type,
+            company=pick_company_name(company_name),
+            court=court,
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+            month=random.choice(months),
+            end_day=random.randint(28, 31),
+        )
+        sentences.append(sentence)
         if random.random() < 0.5:
             template = random.choice(litigation_assessment_templates)
             verb = random.choice(assessment_verbs)
