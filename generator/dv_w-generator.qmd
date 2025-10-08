@@ -6044,6 +6044,7 @@ def generate_accounting_noise_paragraph(
         outstanding = random.randint(0, int(amount) // 2)
         debt_type = random.choice(debt_types_list)
         maturity_year = current_year + random.randint(3, 10)
+        years=random.randint(3, 10)
         sentence = template.format(
             amount=amount,
             amount2=amount2,
@@ -6061,6 +6062,7 @@ def generate_accounting_noise_paragraph(
             end_day=random.randint(28, 31),
             pct=pct,
             pct2=pct2,
+            years=years,
         )
         sentences.append(sentence)
 
