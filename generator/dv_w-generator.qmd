@@ -856,6 +856,7 @@ hedge_position_templates = [
     "To manage exposure, {company} {verb} {swap_type} in {old_year}, with an inception notional of {currency_code}{old_notional} {money_unit} and a stated maturity in {future_year}",
     "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{old_notional} {money_unit}, which are set to expire in {month} {future_year}",
     "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{old_notional} {money_unit}, expiring in {future_year}",
+    "{swap_type} expires in {future_year}",
     # Revesred
     "As of {month} {end_day}, {year}, {company} {verb} notional amounts totaling {currency_code}{notional} {money_unit} in {swap_type}",
     "At year-end {year}, {company} {verb} aggregate notional values of {currency_code}{notional} {money_unit} in {swap_type} designated as hedges",
@@ -1591,6 +1592,7 @@ cp_position_template = [
     "During {old_year}, {company} {verb} {swap_type} to manage {commodity} exposure, with a notional of {currency_code}{old_notional} {money_unit}, terminating in {future_year}",
     "{company} {verb} {swap_type} in {month} {old_year} to lock in pricing, covering {currency_code}{old_notional} {money_unit}, expiring in {month} {future_year}",
     "At year-end {year}, {company} {verb} {swap_type} initiated in {old_year}, with outstanding notional amounts of {currency_code}{old_notional} {money_unit}, maturing in {future_year}",
+    "{swap_type} expires in {future_year}",
     # Reversed
     "As of {month} {end_day}, {year}, {company} {verb} {currency_code}{notional} {money_unit} in {swap_type}",
     "At year-end {year}, {company} {verb} {currency_code}{notional} {money_unit} of {swap_type} outstanding, designated to manage {commodity} exposures",
@@ -1809,6 +1811,7 @@ fx_position_template = [
     "During {old_year}, {company} {verb} {swap_type} to hedge forecasted foreign currency expenditures, with an initial notional of {currency_code}{old_notional} {money_unit}, maturing in {future_year}",
     "As part of its treasury risk management program, {company} {verb} {swap_type} in {old_year}, which carry notional amounts of {currency_code}{old_notional} {money_unit} and terminate in {future_year}, mitigating exposure to foreign currency fluctuations",
     "In {month} {old_year}, {company} {verb} {swap_type} with a starting notional value of {currency_code}{old_notional} {money_unit}, reducing over time until expiration in {month} {future_year}, designated as hedges of currency-denominated obligations",
+    "{swap_type} expires in {future_year}",
     # Reversed
     "In {month} {old_year}, {company} {verb} notional amounts of {currency_code}{old_notional} {money_unit} in {swap_type}, maturing in {month} {future_year}",
     "During {prev_year}, {company} {verb} notional exposures of {currency_code}{prev_notional} {money_unit} through {swap_type} to manage translation exposure, set to expire in {future_year}",
@@ -2063,6 +2066,7 @@ ir_position_template = [
     "During {old_year}, {company} {verb} {swap_type} to hedge debt obligations, with an initial notional of {currency_code}{old_notional} {money_unit}, maturing in {future_year}",
     "As part of its bond financing strategy, {company} {verb} {swap_type} in {old_year}, which carry notional amounts of {currency_code}{old_notional} {money_unit} and terminate in {future_year}",
     "In {month} {old_year}, {company} {verb} {swap_type} with a starting notional value of {currency_code}{old_notional} {money_unit}, declining annually until expiration in {month} {future_year}",
+    "{swap_type} expires in {future_year}",
     # Reversed
     "At year-end {year}, {company} holds notional values of {currency_code}{notional} {money_unit} in {swap_type} to manage debt-related interest rate risk",
     "At year-end {year}, {company} held {currency_code}{notional} {money_unit} in {swap_type}",
