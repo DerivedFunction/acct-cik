@@ -5579,619 +5579,33 @@ def generate_accounting_noise_paragraph(
         return sentences
 
     # ================== SENTENCE GENERATION ==================
-    if random.random() < 0.5:
-        # Litigation (0-2 sentences)
-        num_litigation = random.randint(0, 2)
-        sentences = []
-        for _ in range(num_litigation):
-            if random.random() < 0.7:
-                template = random.choice(litigation_templates)
-                case_type = random.choice(case_types)
-                court = random.choice(courts)
-                sentence = template.format(
-                    year=current_year,
-                    case_types=case_type,
-                    company=pick_company_name(company_name),
-                    court=court,
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    month=random.choice(months),
-                    end_day=random.randint(28, 31),
-                )
-                sentences.append(sentence)
-            if random.random() < 0.5:
-                template = random.choice(litigation_assessment_templates)
-                verb = random.choice(assessment_verbs)
-                sentence = template.format(
-                    company=pick_company_name(company_name), verb=verb
-                )
-                sentences.append(sentence)
-            if random.random() < 0.5:
-                template = random.choice(guarantee_templates)
-                amount = round(random.uniform(10, 100), 1)
-                payments = round(amount * random.uniform(0.1, 0.3), 1)
-                guarantee_type = random.choice(guarantee_types)
-                sentence = template.format(
-                    amount=amount,
-                    year=current_year,
-                    month=random.choice(months),
-                    payments=payments,
-                    guarantee_type=guarantee_type,
-                    company=pick_company_name(company_name),
-                    currency_code=currency_code,
-                    major_currency=major_currency,
-                    money_unit=money_units,
-                    end_day=random.randint(28, 31),
-                )
-                sentences.append(sentence)
-        all_sentences.append(sentences)
-
-    # Restructuring (0-1)
-    if random.random() < 0.2:
-        template = random.choice(restructuring_templates)
-        amount = round(random.uniform(10, 80), 1)
-        purpose = random.choice(restructuring_purposes)
-        expense_type = random.choice(restructuring_expense_types)
-        month = random.choice(months)
-        sentence = template.format(
-            year=current_year,
-            amount=amount,
-            purpose=purpose,
-            expense_type=expense_type,
-            month=month,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            end_day=random.randint(28, 31),
-        )
-        all_sentences.append([sentence])
-
-    # Non-cash transactions (0-1)
-    if random.random() < 0.25:
-        sentences = []
-        if random.random() < 0.8:
-            # Warrant issuance as debt costs
-            template = random.choice(warrant_debt_issuance_templates)
-            month = random.choice(months)
-            year = random.choice([current_year, current_year - 1])
-            financing_type = random.choice(financing_types)
-            shares1 = random.choice([100000, 200000, 333334, 400000, 496875])
-            shares2 = random.choice([20834, 50000, 100000, 150000])
-            value1 = round(shares1 * random.uniform(0.25, 0.75), 0)
-            value2 = round(shares2 * random.uniform(0.15, 0.50), 0)
-            shares = shares1
-            value = value1
-
-            sentence = template.format(
-                month=month,
-                year=year,
-                end_day=random.randint(28, 31),
-                financing_type=financing_type,
-                shares1=f"{shares1:,}",
-                shares2=f"{shares2:,}",
-                value1=f"{value1:,}",
-                value2=f"{value2:,}",
-                shares=f"{shares:,}",
-                value=f"{value:,}",
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-            )
-            sentences.append(sentence)
-
-        if random.random() < 0.5:
-            # Warrant amortization
-            template = random.choice(warrant_amortization_templates)
-            asset_type = random.choice(asset_types)
-            value = round(random.uniform(50, 500), 0)
-            value2 = round(random.uniform(50, 500), 0)
-            sentence = template.format(
-                asset_type=asset_type,
-                value=f"{value:,}",
-                value2=f"{value:,}",
-                year=current_year,
-                prev_year=current_year - 1,
-                month=random.choice(months),
-                end_day=random.randint(28, 31),
-                debt_types_list=random.choice(debt_types_list),
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                price=random.choice([5000, 10000, 15000, 17500, 20000]),
-            )
-            sentences.append(sentence)
-        if random.random() < 0.5:
-            # Non-cash settlements
-            template = random.choice(non_cash_settlement_templates)
-            shares = random.choice([5000, 10000, 15000, 17500, 20000])
-            value = round(shares * random.uniform(4, 8), 0)
-            service_type = random.choice(service_types)
-            month = random.choice(months)
-            year = random.choice([current_year, current_year - 1])
-
-            sentence = template.format(
-                shares=f"{shares:,}",
-                value=f"{value:,}",
-                service_type=service_type,
-                month=month,
-                end_day=random.randint(28, 31),
-                year=year,
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-            )
-            sentences.append(sentence)
-        all_sentences.append(sentences)
-    # Acquisitions (0-1)
-    if random.random() < 0.2:
-        template = random.choice(acquisition_templates)
-        target = random.choice(acquisition_targets)
-        amount = round(random.uniform(50, 500), 1)
-        goodwill = round(amount * random.uniform(0.3, 0.5), 1)
-        intangibles = round(amount * random.uniform(0.2, 0.4), 1)
-        month = random.choice(months)
-        purpose = random.choice(acquisition_purposes)
-        funding = random.choice(acquisition_funding)
-        sentence = template.format(
-            month=month,
-            year=current_year,
-            target=target,
-            amount=amount,
-            goodwill=goodwill,
-            intangibles=intangibles,
-            purpose=purpose,
-            funding=funding,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            end_day=random.randint(28, 31),
-        )
-        all_sentences.append([sentence])
-
-    # Lawsuits (0-1)
-    if random.random() < 0.2:
-        template = random.choice(specific_lawsuit_templates)
-        month = random.choice(months)
-        year = random.choice([current_year, current_year - 1])
-        dismiss_year = year + 1
-        court = random.choice(courts)
-        allegation = random.choice(allegations)
-        amount = random.choice([10, 25, 50, 75, 100, 150, 200])
-        quarter = random.choice(quarters)
-
-        sentence = template.format(
-            month=month,
-            year=year,
-            dismiss_year=dismiss_year,
-            court=court,
-            allegation=allegation,
-            amount=amount,
-            quarter=quarter,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            end_day=random.randint(28, 31),
-        )
-        all_sentences.append([sentence])
-
-    # Revenue recognition (0-1)
-    if random.random() < 0.3:
-        sentences = []
-
-        sentence = random.choice(revenue_recognition_templates)
-        sentence = sentence.format(company=pick_company_name(company_name))
-        sentences.append(sentence)
-        if random.random() < 0.75:
-            template = random.choice(deferred_revenue_templates)
-            amount = round(random.uniform(10, 100), 1)
-            prev_amount = round(amount * random.uniform(0.8, 1.2), 1)
-            sentence = template.format(
-                year=current_year,
-                month=random.choice(months),
-                amount=amount,
-                prev_amount=prev_amount,
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-            )
-            sentences.append(sentence)
-        all_sentences.append(sentences)
-
-    # Inventory (0-1)
-    if random.random() < 0.3:
-        sentences = []
-        template = random.choice(inventory_templates)
-        method = random.choice(inventory_methods)
-        amount = round(random.uniform(50, 300), 1)
-        reserve = round(amount * random.uniform(0.05, 0.15), 1)
-        selected_co = []
-        for _ in range(3):
-            selected_co.append(random.choice(commodities))
-            if random.random() < 0.5:
-                break
-        selected_co_list = (
-            ", ".join(selected_co[:-1]) + " and " + selected_co[-1]
-            if len(selected_co) > 1
-            else selected_co[0]
-        )
-        sentence = template.format(
-            method=method,
-            year=current_year,
-            month=random.choice(months),
-            amount=amount,
-            reserve=reserve,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            end_day=random.randint(28, 31),
-            items=selected_co_list,
-        )
-        sentences.append(sentence)
-        if random.random() < 0.75:
-            template = random.choice(inventory_writedown_templates)
-            amount = round(random.uniform(2, 20), 1)
-            prev_amount = round(random.uniform(amount, amount + 20), 1)
-            sentence = template.format(
-                year=current_year,
-                amount=amount,
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                month=random.choice(months),
-                end_day=random.randint(28, 31),
-                prev_amount=prev_amount,
-            )
-            sentences.append(sentence)
-        all_sentences.append(sentences)
-
-    # PP&E (0-1)
-    if random.random() < 0.3:
-        sentences = []
-
-        template = random.choice(ppe_templates)
-        amount = round(random.uniform(100, 500), 1)
-        purpose = random.choice(capex_purposes)
-        sentence = template.format(
-            month=random.choice(months),
-            end_day=random.randint(28, 31),
-            amount=amount,
-            year=current_year,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            purpose=purpose,
-        )
-        sentences.append(sentence)
+    # Litigation (0-2 sentences)
+    num_litigation = random.randint(0, 2)
+    sentences = []
+    for _ in range(num_litigation):
         if random.random() < 0.7:
-            template = random.choice(capex_templates)
-            amount = round(random.uniform(20, 150), 1)
-            purpose = random.choice(capex_purposes)
+            template = random.choice(litigation_templates)
+            case_type = random.choice(case_types)
+            court = random.choice(courts)
             sentence = template.format(
                 year=current_year,
-                month=random.choice(months),
-                amount=amount,
-                purpose=purpose,
+                case_types=case_type,
                 company=pick_company_name(company_name),
+                court=court,
                 currency_code=currency_code,
                 major_currency=major_currency,
                 money_unit=money_units,
-            )
-            sentences.append(sentence)
-        if random.random() < 0.7:
-            template = random.choice(impairment_templates)
-            amount = round(random.uniform(5, 50), 1)
-            asset_type = random.choice(asset_types)
-            quarter = random.choice(quarters)
-            sentence = template.format(
-                amount=amount,
-                year=current_year,
                 month=random.choice(months),
-                quarter=quarter,
-                asset_type=asset_type,
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
                 end_day=random.randint(28, 31),
             )
             sentences.append(sentence)
-        all_sentences.append(sentences)
-
-    # Leases (0-1)
-    if random.random() < 0.3:
-        sentences = []
-
-        template = random.choice(lease_templates)
-        min_term = random.randint(1, 3)
-        max_term = random.randint(5, 15)
-        amount = round(random.uniform(50, 200), 1)
-        liability = round(amount * random.uniform(1.0, 1.1), 1)
-        adoption_year = random.randint(2019, 2020)
-        sentence = template.format(
-            min_term=min_term,
-            max_term=max_term,
-            year=current_year,
-            month=random.choice(months),
-            amount=amount,
-            liability=liability,
-            adoption_year=adoption_year,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            end_day=random.randint(28, 31),
-        )
-        sentences.append(sentence)
-        if random.random() < 0.7:
-            template = random.choice(lease_commitment_templates)
-            amount = round(random.uniform(100, 800), 1)
-            amount2 = round(random.uniform(100, 600), 1)
-            amount3 = round(random.uniform(100, 400), 1)
-            pv_amount = round(random.uniform(100, 900), 1)
-            years = round(random.uniform(3, 8), 1)
-            rate = (round(random.uniform(3.0, 7.0), 1),)
-            sentence = template.format(
-                amount=amount,
-                amount2=amount2,
-                amount3=amount3,
-                year=current_year,
-                next_year=current_year + 1,
-                next2_year=current_year + 2,
-                years=years,
-                month=random.choice(months),
-                rate=rate,
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-                pv_amount=pv_amount,
-            )
-            sentences.append(sentence)
-        all_sentences.append(sentences)
-
-    # Goodwill and Intangibles (0-1)
-    if random.random() < 0.3:
-        sentences = []
-        template = random.choice(goodwill_templates)
-        amount = round(random.uniform(200, 1000), 1)
-        quarter = random.choice(quarters)
-        sentence = template.format(
-            amount=amount,
-            year=current_year,
-            quarter=quarter,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            month=random.choice(months),
-            end_day=random.randint(28, 31),
-            verb=random.choice(assessment_verbs),
-        )
-        sentences.append(sentence)
-        template = random.choice(intangible_templates)
-        amount = round(random.uniform(50, 300), 1)
-        years = round(random.uniform(5, 12), 1)
-        intangible_type = random.choice(intangible_types)
-        sentence = template.format(
-            intangible_types=intangible_type,
-            amount=amount,
-            year=current_year,
-            month=random.choice(months),
-            years=years,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            end_day=random.randint(28, 31),
-        )
-        sentences.append(sentence)
-
-        all_sentences.append(sentences)
-
-    # Debt (0-1)
-    if random.random() < 0.3:
-        sentences = []
-        debt_type_list = []
-        for _ in range(3):
-            debt_type_list.append(random.choice(debt_types_list))
-            if random.random() < 0.5:
-                break
-        selected_debt = ", ".join(debt_type_list[:-1]) + " and " + debt_type_list[-1] if len(debt_type_list) > 1 else debt_type_list[0]
-        template = random.choice(debt_templates)
-        amount = generate_value(False)
-        amount2 = generate_value(False)
-        pct = generate_value(False, 8)
-        pct2 = generate_value(False, 20)
-        outstanding = random.randint(0, int(amount) // 2)
-        debt_type = random.choice(debt_types_list)
-        maturity_year = current_year + random.randint(3, 10)
-        sentence = template.format(
-            amount=amount,
-            amount2=amount2,
-            year=maturity_year,
-            month=random.choice(months),
-            outstanding=outstanding,
-            current_year=current_year,
-            debt_types=selected_debt,
-            debt_type=debt_type,
-            maturity_year=maturity_year,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            end_day=random.randint(28, 31),
-            pct=pct,
-            pct2=pct2,
-        )
-        sentences.append(sentence)
-
-        template = random.choice(debt_covenant_templates)
-        ratio = round(random.uniform(2.5, 4.0), 1)
-        coverage = round(random.uniform(2.0, 4.0), 1)
-        sentence = template.format(
-            year=current_year,
-            month=random.choice(months),
-            end_day=random.randint(28, 31),
-            ratio=ratio,
-            coverage=coverage,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-        )
-        sentences.append(sentence)
-
-        all_sentences.append(sentences)
-
-    # Income taxes (0-1)
-    if random.random() < 0.3:
-        sentences = []
-
-        template = random.choice(tax_templates)
-        amount = round(random.uniform(20, 150), 1)
-        rate = round(random.uniform(15, 30), 1)
-        prev_rate = round(rate * random.uniform(0.9, 1.1), 1)
-        source = random.choice(tax_sources)
-        start_year = current_year + 1
-        end_year = current_year + random.randint(10, 20)
-        sentence = template.format(
-            amount=amount,
-            year=current_year,
-            rate=rate,
-            month=random.choice(months),
-            prev_rate=prev_rate,
-            sources=source,
-            start_year=start_year,
-            end_year=end_year,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            end_day=random.randint(28, 31),
-        )
-        sentences.append(sentence)
         if random.random() < 0.5:
-            template = random.choice(uncertain_tax_templates)
-            amount = round(random.uniform(5, 50), 1)
+            template = random.choice(litigation_assessment_templates)
+            verb = random.choice(assessment_verbs)
             sentence = template.format(
-                amount=amount,
-                year=current_year,
-                month=random.choice(months),
-                end_day=random.randint(28, 31),
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
+                company=pick_company_name(company_name), verb=verb
             )
             sentences.append(sentence)
-        all_sentences.append(sentences)
-
-    # Stock-based compensation (0-1)
-    if random.random() < 0.3:
-        sentences = []
-
-        template = random.choice(stock_comp_templates)
-        amount = round(random.uniform(10, 80), 1)
-        shares = random.choice([50000, 100000, 250000, 500000])
-        price = round(random.uniform(20, 100), 2)
-        sentence = template.format(
-            amount=amount,
-            year=current_year,
-            month=random.choice(months),
-            shares=f"{shares:,}",
-            price=price,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            end_day=random.randint(28, 31),
-        )
-        if random.random() < 0.5:
-            template = random.choice(stock_comp_valuation_templates)
-            amount = round(random.uniform(5, 25), 2)
-            model = random.choice(valuation_models)
-            sentence = template.format(
-                year=current_year,
-                month=random.choice(months),
-                amount=amount,
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                model=model,
-            )
-            sentences.append(sentence)
-        all_sentences.append(sentences)
-
-    # Pension (0-1)
-    if random.random() < 0.2:
-        sentences = []
-
-        template = random.choice(pension_templates)
-        assets = round(random.uniform(200, 800), 1)
-        obligations = round(assets * random.uniform(1.0, 1.2), 1)
-        amount = round(random.uniform(20, 100), 1)
-        sentence = template.format(
-            assets=assets,
-            obligations=obligations,
-            year=current_year,
-            month=random.choice(months),
-            amount=amount,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            end_day=random.randint(28, 31),
-        )
-        sentences.append(sentence)
-        if random.random() < 0.5:
-            template = random.choice(opeb_templates)
-            amount = round(random.uniform(50, 200), 1)
-            sentence = template.format(
-                amount=amount,
-                year=current_year,
-                month=random.choice(months),
-                end_day=random.randint(28, 31),
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-            )
-            sentences.append(sentence)
-        all_sentences.append(sentences)
-
-    # Commitments (0-1)
-    if random.random() < 0.3:
-        sentences = []
-
-        template = random.choice(purchase_commitment_templates)
-        amount = round(random.uniform(50, 300), 1)
-        years = random.randint(3, 7)
-        sentence = template.format(
-            amount=amount,
-            year=current_year,
-            years=years,
-            month=random.choice(months),
-            end_day=random.randint(28, 31),
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-        )
-        sentences.append(sentence)
         if random.random() < 0.5:
             template = random.choice(guarantee_templates)
             amount = round(random.uniform(10, 100), 1)
@@ -6210,55 +5624,616 @@ def generate_accounting_noise_paragraph(
                 end_day=random.randint(28, 31),
             )
             sentences.append(sentence)
-        all_sentences.append(sentences)
+    all_sentences.append(sentences)
 
     # Restructuring (0-1)
-    if random.random() < 0.2:
-        template = random.choice(restructuring_templates)
-        amount = round(random.uniform(10, 80), 1)
-        purpose = random.choice(restructuring_purposes)
-        expense_type = random.choice(restructuring_expense_types)
+    template = random.choice(restructuring_templates)
+    amount = round(random.uniform(10, 80), 1)
+    purpose = random.choice(restructuring_purposes)
+    expense_type = random.choice(restructuring_expense_types)
+    month = random.choice(months)
+    sentence = template.format(
+        year=current_year,
+        amount=amount,
+        purpose=purpose,
+        expense_type=expense_type,
+        month=month,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+    )
+    all_sentences.append([sentence])
+
+    # Non-cash transactions (0-1)
+    sentences = []
+    if random.random() < 0.8:
+        # Warrant issuance as debt costs
+        template = random.choice(warrant_debt_issuance_templates)
         month = random.choice(months)
+        year = random.choice([current_year, current_year - 1])
+        financing_type = random.choice(financing_types)
+        shares1 = random.choice([100000, 200000, 333334, 400000, 496875])
+        shares2 = random.choice([20834, 50000, 100000, 150000])
+        value1 = round(shares1 * random.uniform(0.25, 0.75), 0)
+        value2 = round(shares2 * random.uniform(0.15, 0.50), 0)
+        shares = shares1
+        value = value1
+
         sentence = template.format(
-            year=current_year,
-            amount=amount,
-            purpose=purpose,
-            expense_type=expense_type,
             month=month,
+            year=year,
+            end_day=random.randint(28, 31),
+            financing_type=financing_type,
+            shares1=f"{shares1:,}",
+            shares2=f"{shares2:,}",
+            value1=f"{value1:,}",
+            value2=f"{value2:,}",
+            shares=f"{shares:,}",
+            value=f"{value:,}",
             company=pick_company_name(company_name),
             currency_code=currency_code,
             major_currency=major_currency,
             money_unit=money_units,
-            end_day=random.randint(28, 31),
         )
-        all_sentences.append([sentence])
+        sentences.append(sentence)
+
+    if random.random() < 0.5:
+        # Warrant amortization
+        template = random.choice(warrant_amortization_templates)
+        asset_type = random.choice(asset_types)
+        value = round(random.uniform(50, 500), 0)
+        value2 = round(random.uniform(50, 500), 0)
+        sentence = template.format(
+            asset_type=asset_type,
+            value=f"{value:,}",
+            value2=f"{value:,}",
+            year=current_year,
+            prev_year=current_year - 1,
+            month=random.choice(months),
+            end_day=random.randint(28, 31),
+            debt_types_list=random.choice(debt_types_list),
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+            price=random.choice([5000, 10000, 15000, 17500, 20000]),
+        )
+        sentences.append(sentence)
+    if random.random() < 0.5:
+        # Non-cash settlements
+        template = random.choice(non_cash_settlement_templates)
+        shares = random.choice([5000, 10000, 15000, 17500, 20000])
+        value = round(shares * random.uniform(4, 8), 0)
+        service_type = random.choice(service_types)
+        month = random.choice(months)
+        year = random.choice([current_year, current_year - 1])
+
+        sentence = template.format(
+            shares=f"{shares:,}",
+            value=f"{value:,}",
+            service_type=service_type,
+            month=month,
+            end_day=random.randint(28, 31),
+            year=year,
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+        )
+        sentences.append(sentence)
+    all_sentences.append(sentences)
 
     # Acquisitions (0-1)
-    if random.random() < 0.2:
-        template = random.choice(acquisition_templates)
-        target = random.choice(acquisition_targets)
-        amount = round(random.uniform(50, 500), 1)
-        goodwill = round(amount * random.uniform(0.3, 0.5), 1)
-        intangibles = round(amount * random.uniform(0.2, 0.4), 1)
-        month = random.choice(months)
-        purpose = random.choice(acquisition_purposes)
-        funding = random.choice(acquisition_funding)
+    template = random.choice(acquisition_templates)
+    target = random.choice(acquisition_targets)
+    amount = round(random.uniform(50, 500), 1)
+    goodwill = round(amount * random.uniform(0.3, 0.5), 1)
+    intangibles = round(amount * random.uniform(0.2, 0.4), 1)
+    month = random.choice(months)
+    purpose = random.choice(acquisition_purposes)
+    funding = random.choice(acquisition_funding)
+    sentence = template.format(
+        month=month,
+        year=current_year,
+        target=target,
+        amount=amount,
+        goodwill=goodwill,
+        intangibles=intangibles,
+        purpose=purpose,
+        funding=funding,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+    )
+    all_sentences.append([sentence])
+
+    # Lawsuits (0-1)
+    template = random.choice(specific_lawsuit_templates)
+    month = random.choice(months)
+    year = random.choice([current_year, current_year - 1])
+    dismiss_year = year + 1
+    court = random.choice(courts)
+    allegation = random.choice(allegations)
+    amount = random.choice([10, 25, 50, 75, 100, 150, 200])
+    quarter = random.choice(quarters)
+
+    sentence = template.format(
+        month=month,
+        year=year,
+        dismiss_year=dismiss_year,
+        court=court,
+        allegation=allegation,
+        amount=amount,
+        quarter=quarter,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+    )
+    all_sentences.append([sentence])
+
+    # Revenue recognition (0-1)
+    sentences = []
+    sentence = random.choice(revenue_recognition_templates)
+    sentence = sentence.format(company=pick_company_name(company_name))
+    sentences.append(sentence)
+    if random.random() < 0.75:
+        template = random.choice(deferred_revenue_templates)
+        amount = round(random.uniform(10, 100), 1)
+        prev_amount = round(amount * random.uniform(0.8, 1.2), 1)
         sentence = template.format(
-            month=month,
             year=current_year,
-            target=target,
+            month=random.choice(months),
             amount=amount,
-            goodwill=goodwill,
-            intangibles=intangibles,
-            purpose=purpose,
-            funding=funding,
+            prev_amount=prev_amount,
             company=pick_company_name(company_name),
             currency_code=currency_code,
             major_currency=major_currency,
             money_unit=money_units,
             end_day=random.randint(28, 31),
         )
-        all_sentences.append([sentence])
+        sentences.append(sentence)
+    all_sentences.append(sentences)
+
+    # Inventory (0-1)
+    sentences = []
+    template = random.choice(inventory_templates)
+    method = random.choice(inventory_methods)
+    amount = round(random.uniform(50, 300), 1)
+    reserve = round(amount * random.uniform(0.05, 0.15), 1)
+    selected_co = []
+    for _ in range(3):
+        selected_co.append(random.choice(commodities))
+        if random.random() < 0.5:
+            break
+    selected_co_list = (
+        ", ".join(selected_co[:-1]) + " and " + selected_co[-1]
+        if len(selected_co) > 1
+        else selected_co[0]
+    )
+    sentence = template.format(
+        method=method,
+        year=current_year,
+        month=random.choice(months),
+        amount=amount,
+        reserve=reserve,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+        items=selected_co_list,
+    )
+    sentences.append(sentence)
+    if random.random() < 0.75:
+        template = random.choice(inventory_writedown_templates)
+        amount = round(random.uniform(2, 20), 1)
+        prev_amount = round(random.uniform(amount, amount + 20), 1)
+        sentence = template.format(
+            year=current_year,
+            amount=amount,
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+            month=random.choice(months),
+            end_day=random.randint(28, 31),
+            prev_amount=prev_amount,
+        )
+        sentences.append(sentence)
+    all_sentences.append(sentences)
+
+    # PP&E (0-1)
+    sentences = []
+    template = random.choice(ppe_templates)
+    amount = round(random.uniform(100, 500), 1)
+    purpose = random.choice(capex_purposes)
+    sentence = template.format(
+        month=random.choice(months),
+        end_day=random.randint(28, 31),
+        amount=amount,
+        year=current_year,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        purpose=purpose,
+    )
+    sentences.append(sentence)
+    if random.random() < 0.7:
+        template = random.choice(capex_templates)
+        amount = round(random.uniform(20, 150), 1)
+        purpose = random.choice(capex_purposes)
+        sentence = template.format(
+            year=current_year,
+            month=random.choice(months),
+            amount=amount,
+            purpose=purpose,
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+        )
+        sentences.append(sentence)
+    if random.random() < 0.7:
+        template = random.choice(impairment_templates)
+        amount = round(random.uniform(5, 50), 1)
+        asset_type = random.choice(asset_types)
+        quarter = random.choice(quarters)
+        sentence = template.format(
+            amount=amount,
+            year=current_year,
+            month=random.choice(months),
+            quarter=quarter,
+            asset_type=asset_type,
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+            end_day=random.randint(28, 31),
+        )
+        sentences.append(sentence)
+    all_sentences.append(sentences)
+
+    # Leases (0-1)
+    sentences = []
+    template = random.choice(lease_templates)
+    min_term = random.randint(1, 3)
+    max_term = random.randint(5, 15)
+    amount = round(random.uniform(50, 200), 1)
+    liability = round(amount * random.uniform(1.0, 1.1), 1)
+    adoption_year = random.randint(2019, 2020)
+    sentence = template.format(
+        min_term=min_term,
+        max_term=max_term,
+        year=current_year,
+        month=random.choice(months),
+        amount=amount,
+        liability=liability,
+        adoption_year=adoption_year,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+    )
+    sentences.append(sentence)
+    if random.random() < 0.7:
+        template = random.choice(lease_commitment_templates)
+        amount = round(random.uniform(100, 800), 1)
+        amount2 = round(random.uniform(100, 600), 1)
+        amount3 = round(random.uniform(100, 400), 1)
+        pv_amount = round(random.uniform(100, 900), 1)
+        years = round(random.uniform(3, 8), 1)
+        rate = (round(random.uniform(3.0, 7.0), 1),)
+        sentence = template.format(
+            amount=amount,
+            amount2=amount2,
+            amount3=amount3,
+            year=current_year,
+            next_year=current_year + 1,
+            next2_year=current_year + 2,
+            years=years,
+            month=random.choice(months),
+            rate=rate,
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+            end_day=random.randint(28, 31),
+            pv_amount=pv_amount,
+        )
+        sentences.append(sentence)
+    all_sentences.append(sentences)
+
+    # Goodwill and Intangibles (0-1)
+    sentences = []
+    template = random.choice(goodwill_templates)
+    amount = round(random.uniform(200, 1000), 1)
+    quarter = random.choice(quarters)
+    sentence = template.format(
+        amount=amount,
+        year=current_year,
+        quarter=quarter,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        month=random.choice(months),
+        end_day=random.randint(28, 31),
+        verb=random.choice(assessment_verbs),
+    )
+    sentences.append(sentence)
+    template = random.choice(intangible_templates)
+    amount = round(random.uniform(50, 300), 1)
+    years = round(random.uniform(5, 12), 1)
+    intangible_type = random.choice(intangible_types)
+    sentence = template.format(
+        intangible_types=intangible_type,
+        amount=amount,
+        year=current_year,
+        month=random.choice(months),
+        years=years,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+    )
+    sentences.append(sentence)
+    all_sentences.append(sentences)
+
+    # Debt (0-1)
+    sentences = []
+    debt_type_list = []
+    for _ in range(3):
+        debt_type_list.append(random.choice(debt_types_list))
+        if random.random() < 0.5:
+            break
+    selected_debt = ", ".join(debt_type_list[:-1]) + " and " + debt_type_list[-1] if len(debt_type_list) > 1 else debt_type_list[0]
+    template = random.choice(debt_templates)
+    amount = generate_value(False)
+    amount2 = generate_value(False)
+    pct = generate_value(False, 8)
+    pct2 = generate_value(False, 20)
+    outstanding = random.randint(0, int(amount) // 2)
+    debt_type = random.choice(debt_types_list)
+    maturity_year = current_year + random.randint(3, 10)
+    sentence = template.format(
+        amount=amount,
+        amount2=amount2,
+        year=maturity_year,
+        month=random.choice(months),
+        outstanding=outstanding,
+        current_year=current_year,
+        debt_types=selected_debt,
+        debt_type=debt_type,
+        maturity_year=maturity_year,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+        pct=pct,
+        pct2=pct2,
+    )
+    sentences.append(sentence)
+
+    template = random.choice(debt_covenant_templates)
+    ratio = round(random.uniform(2.5, 4.0), 1)
+    coverage = round(random.uniform(2.0, 4.0), 1)
+    sentence = template.format(
+        year=current_year,
+        month=random.choice(months),
+        end_day=random.randint(28, 31),
+        ratio=ratio,
+        coverage=coverage,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+    )
+    sentences.append(sentence)
+    all_sentences.append(sentences)
+
+    # Income taxes (0-1)
+    sentences = []
+    template = random.choice(tax_templates)
+    amount = round(random.uniform(20, 150), 1)
+    rate = round(random.uniform(15, 30), 1)
+    prev_rate = round(rate * random.uniform(0.9, 1.1), 1)
+    source = random.choice(tax_sources)
+    start_year = current_year + 1
+    end_year = current_year + random.randint(10, 20)
+    sentence = template.format(
+        amount=amount,
+        year=current_year,
+        rate=rate,
+        month=random.choice(months),
+        prev_rate=prev_rate,
+        sources=source,
+        start_year=start_year,
+        end_year=end_year,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+    )
+    sentences.append(sentence)
+    if random.random() < 0.5:
+        template = random.choice(uncertain_tax_templates)
+        amount = round(random.uniform(5, 50), 1)
+        sentence = template.format(
+            amount=amount,
+            year=current_year,
+            month=random.choice(months),
+            end_day=random.randint(28, 31),
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+        )
+        sentences.append(sentence)
+    all_sentences.append(sentences)
+
+    # Stock-based compensation (0-1)
+    sentences = []
+    template = random.choice(stock_comp_templates)
+    amount = round(random.uniform(10, 80), 1)
+    shares = random.choice([50000, 100000, 250000, 500000])
+    price = round(random.uniform(20, 100), 2)
+    sentence = template.format(
+        amount=amount,
+        year=current_year,
+        month=random.choice(months),
+        shares=f"{shares:,}",
+        price=price,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+    )
+    if random.random() < 0.5:
+        template = random.choice(stock_comp_valuation_templates)
+        amount = round(random.uniform(5, 25), 2)
+        model = random.choice(valuation_models)
+        sentence = template.format(
+            year=current_year,
+            month=random.choice(months),
+            amount=amount,
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+            model=model,
+        )
+        sentences.append(sentence)
+    all_sentences.append(sentences)
+
+    # Pension (0-1)
+    sentences = []
+    template = random.choice(pension_templates)
+    assets = round(random.uniform(200, 800), 1)
+    obligations = round(assets * random.uniform(1.0, 1.2), 1)
+    amount = round(random.uniform(20, 100), 1)
+    sentence = template.format(
+        assets=assets,
+        obligations=obligations,
+        year=current_year,
+        month=random.choice(months),
+        amount=amount,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+    )
+    sentences.append(sentence)
+    if random.random() < 0.5:
+        template = random.choice(opeb_templates)
+        amount = round(random.uniform(50, 200), 1)
+        sentence = template.format(
+            amount=amount,
+            year=current_year,
+            month=random.choice(months),
+            end_day=random.randint(28, 31),
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+        )
+        sentences.append(sentence)
+    all_sentences.append(sentences)
+
+    # Commitments (0-1)
+    sentences = []
+    template = random.choice(purchase_commitment_templates)
+    amount = round(random.uniform(50, 300), 1)
+    years = random.randint(3, 7)
+    sentence = template.format(
+        amount=amount,
+        year=current_year,
+        years=years,
+        month=random.choice(months),
+        end_day=random.randint(28, 31),
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+    )
+    sentences.append(sentence)
+    if random.random() < 0.5:
+        template = random.choice(guarantee_templates)
+        amount = round(random.uniform(10, 100), 1)
+        payments = round(amount * random.uniform(0.1, 0.3), 1)
+        guarantee_type = random.choice(guarantee_types)
+        sentence = template.format(
+            amount=amount,
+            year=current_year,
+            month=random.choice(months),
+            payments=payments,
+            guarantee_type=guarantee_type,
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+            end_day=random.randint(28, 31),
+        )
+        sentences.append(sentence)
+    all_sentences.append(sentences)
+
+    # Restructuring (0-1)
+    template = random.choice(restructuring_templates)
+    amount = round(random.uniform(10, 80), 1)
+    purpose = random.choice(restructuring_purposes)
+    expense_type = random.choice(restructuring_expense_types)
+    month = random.choice(months)
+    sentence = template.format(
+        year=current_year,
+        amount=amount,
+        purpose=purpose,
+        expense_type=expense_type,
+        month=month,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+    )
+    all_sentences.append([sentence])
+
+    # Acquisitions (0-1)
+    template = random.choice(acquisition_templates)
+    target = random.choice(acquisition_targets)
+    amount = round(random.uniform(50, 500), 1)
+    goodwill = round(amount * random.uniform(0.3, 0.5), 1)
+    intangibles = round(amount * random.uniform(0.2, 0.4), 1)
+    month = random.choice(months)
+    purpose = random.choice(acquisition_purposes)
+    funding = random.choice(acquisition_funding)
+    sentence = template.format(
+        month=month,
+        year=current_year,
+        target=target,
+        amount=amount,
+        goodwill=goodwill,
+        intangibles=intangibles,
+        purpose=purpose,
+        funding=funding,
+        company=pick_company_name(company_name),
+        currency_code=currency_code,
+        major_currency=major_currency,
+        money_unit=money_units,
+        end_day=random.randint(28, 31),
+    )
+    all_sentences.append([sentence])
 
     # Balance sheet changes (0-2 sentences)
     num_bs_changes = random.randint(0, 2)
@@ -6671,241 +6646,142 @@ def generate_accounting_noise_paragraph(
         all_sentences.append([sentence])
 
     # Market prices and trading (0-1)
-    if random.random() < 0.2:
-        category = random.choice(["stock_price", "trading_volume"])
-
-        if category == "stock_price":
-            template = random.choice(stock_price_templates)
-            exchange = random.choice(exchanges)
-            ticker = string.ascii_letters[: random.randint(3, 4)].capitalize
-            price = round(random.uniform(10, 200), 2)
-            prev_price = round(price * random.uniform(0.7, 1.3), 2)
-            low = round(price * random.uniform(0.6, 0.9), 2)
-            high = round(price * random.uniform(1.1, 1.5), 2)
-            volume = random.choice([500000, 1000000, 2000000, 5000000])
-            market_cap = round(random.uniform(500, 5000), 0)
-            shares = random.choice([50, 75, 100, 150, 200])
-            direction = "increase" if price > prev_price else "decrease"
-            pct = abs(round(((price - prev_price) / prev_price) * 100, 1))
-            month = random.choice(months)
-            end_day = random.randint(28, 31)
-
-            sentence = template.format(
-                exchange=exchange,
-                ticker=ticker,
-                currency_code=currency_code,
-                price=price,
-                prev_price=prev_price,
-                low=low,
-                high=high,
-                volume=f"{volume:,}",
-                market_cap=f"{market_cap:,}",
-                money_unit=money_units,
-                shares=f"{shares:,}",
-                direction=direction,
-                pct=pct,
-                month=month,
-                end_day=end_day,
-                year=current_year,
-                prev_year=current_year - 1,
-                company=pick_company_name(company_name),
-            )
-        else:
-            template = random.choice(trading_volume_templates)
-            volume = random.choice([500000, 1000000, 2000000, 3000000])
-            volatility = random.choice(volatility_levels)
-            pct = round(random.uniform(5, 50), 1)
-            improved_decreased = random.choice(["improved", "decreased"])
-
-            sentence = template.format(
-                year=current_year,
-                prev_year=current_year - 1,
-                volume=f"{volume:,}",
-                volatility=volatility,
-                pct=pct,
-                improved_decreased=improved_decreased,
-                company=pick_company_name(company_name),
-            )
-
-        all_sentences.append([sentence])
-
-    # Company description (0-1)
-    if random.random() < 0.2:
-        template = random.choice(company_description_templates)
-        industry = random.choice(industries)
-        business_activity = random.choice(business_activities)
-        products_services = random.choice(
-            ["products and services", "solutions", "technology platforms"]
-        )
-        geography = random.choice(geographies)
-        founding_year = random.randint(1950, 2010)
-        city = random.choice(cities)
-        state = random.choice(states)
-        market_segment = random.choice(
-            ["enterprise", "consumer", "industrial", "healthcare"]
-        )
-        activities = random.choice(business_activities)
-        employees = random.choice([5000, 10000, 25000, 50000, 100000])
-        locations = random.randint(50, 500)
-        segments = random.choice([2, 3, 4])
-        segment_names = random.choice(segment_examples)
-        mission = "deliver innovative solutions that create value for customers and shareholders"
+    category = random.choice(["stock_price", "trading_volume"])
+    if category == "stock_price":
+        template = random.choice(stock_price_templates)
+        exchange = random.choice(exchanges)
+        ticker = string.ascii_letters[: random.randint(3, 4)].capitalize
+        price = round(random.uniform(10, 200), 2)
+        prev_price = round(price * random.uniform(0.7, 1.3), 2)
+        low = round(price * random.uniform(0.6, 0.9), 2)
+        high = round(price * random.uniform(1.1, 1.5), 2)
+        volume = random.choice([500000, 1000000, 2000000, 5000000])
+        market_cap = round(random.uniform(500, 5000), 0)
+        shares = random.choice([50, 75, 100, 150, 200])
+        direction = "increase" if price > prev_price else "decrease"
+        pct = abs(round(((price - prev_price) / prev_price) * 100, 1))
         month = random.choice(months)
         end_day = random.randint(28, 31)
 
         sentence = template.format(
-            industry=industry,
-            business_activity=business_activity,
-            company=pick_company_name(company_name),
-            products_services=products_services,
-            geography=geography,
-            founding_year=founding_year,
-            city=city,
-            state=state,
-            market_segment=market_segment,
-            activities=activities,
-            employees=f"{employees:,}",
-            locations=locations,
+            exchange=exchange,
+            ticker=ticker,
+            currency_code=currency_code,
+            price=price,
+            prev_price=prev_price,
+            low=low,
+            high=high,
+            volume=f"{volume:,}",
+            market_cap=f"{market_cap:,}",
+            money_unit=money_units,
+            shares=f"{shares:,}",
+            direction=direction,
+            pct=pct,
             month=month,
             end_day=end_day,
             year=current_year,
-            segments=segments,
-            segment_names=segment_names,
-            mission_statement=mission,
-        )
-
-        all_sentences.append([sentence])
-
-    # Institutional/hedge fund ownership (0-1)
-    if random.random() < 0.15:
-        category = random.choice(["institutional", "insider"])
-
-        if category == "institutional":
-            template = random.choice(institutional_ownership_templates)
-            fund_name = random.choice(target_companies)
-            fund_name2 = random.choice([f for f in target_companies if f != fund_name])
-            pct = round(random.uniform(5, 15), 1)
-            pct2 = round(random.uniform(3, 10), 1)
-            prev_pct = round(pct * random.uniform(0.8, 1.2), 1)
-            form = random.choice(sec_forms)
-            month = random.choice(months)
-            end_day = random.randint(28, 31)
-
-            sentence = template.format(
-                month=month,
-                end_day=end_day,
-                year=current_year,
-                pct=pct,
-                pct2=pct2,
-                prev_pct=prev_pct,
-                fund_name=fund_name,
-                fund_name2=fund_name2,
-                form=form,
-                company=pick_company_name(company_name),
-            )
-        else:
-            template = random.choice(insider_ownership_templates)
-            pct = round(random.uniform(1, 8), 1)
-            shares = random.choice([500000, 1000000, 2000000])
-            action = random.choice(insider_actions)
-            month = random.choice(months)
-            end_day = random.randint(28, 31)
-
-            sentence = template.format(
-                pct=pct,
-                shares=f"{shares:,}",
-                action=action,
-                month=month,
-                end_day=end_day,
-                year=current_year,
-                company=pick_company_name(company_name),
-            )
-
-        all_sentences.append([sentence])
-
-    # Forward-looking statements (0-1)
-    if random.random() < 0.25:
-        category = random.choice(["forward_looking", "safe_harbor"])
-
-        if category == "forward_looking":
-            template = random.choice(forward_looking_templates)
-            topics = random.choice(forward_looking_topics)
-            words = random.choice(forward_looking_words)
-            risk_factors = random.choice(risk_factors_examples)
-            month = random.choice(months)
-            end_day = random.randint(28, 31)
-
-            sentence = template.format(
-                topics=topics,
-                words=words,
-                company=pick_company_name(company_name),
-                risk_factors=risk_factors,
-                month=month,
-                end_day=end_day,
-                year=current_year,
-            )
-        else:
-            sentence = random.choice(safe_harbor_templates)
-        sentence = sentence.format(company=pick_company_name(company_name))
-        all_sentences.append([sentence])
-
-    # Analyst coverage (0-1)
-    if random.random() < 0.1:
-        template = random.choice(analyst_coverage_templates)
-        number = random.randint(8, 25)
-        number2 = random.randint(3, 12)
-        number3 = random.randint(0, 5)
-        eps = round(random.uniform(1.50, 8.00), 2)
-        revenue = round(random.uniform(500, 5000), 0)
-        target = round(random.uniform(50, 200), 2)
-        direction = random.choice(["upside", "downside"])
-        pct = round(random.uniform(10, 40), 1)
-        low = round(eps * 0.8, 2)
-        high = round(eps * 1.2, 2)
-
-        sentence = template.format(
-            number=number,
-            number2=number2,
-            number3=number3,
-            year=current_year,
-            currency_code=currency_code,
-            eps=eps,
-            revenue=f"{revenue:,}",
-            money_unit=money_units,
-            target=target,
-            direction=direction,
-            pct=pct,
-            low=low,
-            high=high,
+            prev_year=current_year - 1,
             company=pick_company_name(company_name),
         )
+    else:
+        template = random.choice(trading_volume_templates)
+        volume = random.choice([500000, 1000000, 2000000, 3000000])
+        volatility = random.choice(volatility_levels)
+        pct = round(random.uniform(5, 50), 1)
+        improved_decreased = random.choice(["improved", "decreased"])
 
-        all_sentences.append([sentence])
-
-    # Credit ratings (0-1)
-    if random.random() < 0.15:
-        template = random.choice(credit_rating_templates)
-        agency = random.choice(credit_agencies)
-        agency2 = random.choice([a for a in credit_agencies if a != agency])
-        agency3 = random.choice(
-            [a for a in credit_agencies if a not in [agency, agency2]]
+        sentence = template.format(
+            year=current_year,
+            prev_year=current_year - 1,
+            volume=f"{volume:,}",
+            volatility=volatility,
+            pct=pct,
+            improved_decreased=improved_decreased,
+            company=pick_company_name(company_name),
         )
-        rating = random.choice(credit_ratings)
-        rating2 = random.choice(credit_ratings)
-        rating3 = random.choice(credit_ratings)
-        outlook = random.choice(rating_outlooks)
-        action = random.choice(rating_actions)
+    all_sentences.append([sentence])
+
+    # Company description (0-1)
+    template = random.choice(company_description_templates)
+    industry = random.choice(industries)
+    business_activity = random.choice(business_activities)
+    products_services = random.choice(
+        ["products and services", "solutions", "technology platforms"]
+    )
+    geography = random.choice(geographies)
+    founding_year = random.randint(1950, 2010)
+    city = random.choice(cities)
+    state = random.choice(states)
+    market_segment = random.choice(
+        ["enterprise", "consumer", "industrial", "healthcare"]
+    )
+    activities = random.choice(business_activities)
+    employees = random.choice([5000, 10000, 25000, 50000, 100000])
+    locations = random.randint(50, 500)
+    segments = random.choice([2, 3, 4])
+    segment_names = random.choice(segment_examples)
+    mission = "deliver innovative solutions that create value for customers and shareholders"
+    month = random.choice(months)
+    end_day = random.randint(28, 31)
+
+    sentence = template.format(
+        industry=industry,
+        business_activity=business_activity,
+        company=pick_company_name(company_name),
+        products_services=products_services,
+        geography=geography,
+        founding_year=founding_year,
+        city=city,
+        state=state,
+        market_segment=market_segment,
+        activities=activities,
+        employees=f"{employees:,}",
+        locations=locations,
+        month=month,
+        end_day=end_day,
+        year=current_year,
+        segments=segments,
+        segment_names=segment_names,
+        mission_statement=mission,
+    )
+    all_sentences.append([sentence])
+
+    # Institutional/hedge fund ownership (0-1)
+    category = random.choice(["institutional", "insider"])
+    if category == "institutional":
+        template = random.choice(institutional_ownership_templates)
+        fund_name = random.choice(target_companies)
+        fund_name2 = random.choice([f for f in target_companies if f != fund_name])
+        pct = round(random.uniform(5, 15), 1)
+        pct2 = round(random.uniform(3, 10), 1)
+        prev_pct = round(pct * random.uniform(0.8, 1.2), 1)
+        form = random.choice(sec_forms)
         month = random.choice(months)
         end_day = random.randint(28, 31)
 
         sentence = template.format(
-            rating=rating,
-            rating2=rating2,
-            rating3=rating3,
-            agency=agency,
-            agency2=agency2,
-            agency3=agency3,
-            outlook=outlook,
+            month=month,
+            end_day=end_day,
+            year=current_year,
+            pct=pct,
+            pct2=pct2,
+            prev_pct=prev_pct,
+            fund_name=fund_name,
+            fund_name2=fund_name2,
+            form=form,
+            company=pick_company_name(company_name),
+        )
+    else:
+        template = random.choice(insider_ownership_templates)
+        pct = round(random.uniform(1, 8), 1)
+        shares = random.choice([500000, 1000000, 2000000])
+        action = random.choice(insider_actions)
+        month = random.choice(months)
+        end_day = random.randint(28, 31)
+
+        sentence = template.format(
+            pct=pct,
+            shares=f"{shares:,}",
             action=action,
             month=month,
             end_day=end_day,
@@ -6913,151 +6789,232 @@ def generate_accounting_noise_paragraph(
             company=pick_company_name(company_name),
         )
 
-        all_sentences.append([sentence])
+    all_sentences.append([sentence])
 
-    # Dividend/capital allocation (0-1)
-    if random.random() < 0.2:
-        category = random.choice(["dividend", "repurchase"])
+    # Forward-looking statements (0-1)
+    category = random.choice(["forward_looking", "safe_harbor"])
 
-        if category == "dividend":
-            template = random.choice(dividend_policy_templates)
-            amount = round(random.uniform(0.25, 2.00), 2)
-            pct = round(random.uniform(20, 60), 1)
-            pct2 = round(random.uniform(30, 70), 1)
-            prev_pct = round(pct * random.uniform(0.9, 1.1), 1)
-            yield_pct = round(random.uniform(1.5, 4.5), 1)
-            month = random.choice(months)
-            end_day = random.randint(1, 28)
-            start_year = random.randint(1990, 2010)
-
-            sentence = template.format(
-                year=start_year,
-                month=month,
-                end_day=end_day,
-                currency_code=currency_code,
-                amount=amount,
-                pct=pct,
-                pct2=pct2,
-                prev_pct=prev_pct,
-                prev_year=current_year - 1,
-                company=pick_company_name(company_name),
-            )
-        else:
-            template = random.choice(share_repurchase_templates)
-            shares = random.choice([1000000, 2000000, 5000000, 10000000])
-            amount = round(random.uniform(50, 500), 0)
-            prev_amount = round(amount * random.uniform(0.7, 1.3), 0)
-            remaining = round(random.uniform(100, 400), 0)
-            month = random.choice(months)
-            end_day = random.randint(28, 31)
-
-            sentence = template.format(
-                year=current_year,
-                shares=f"{shares:,}",
-                currency_code=currency_code,
-                amount=f"{amount:,}",
-                prev_amount=f"{prev_amount:,}",
-                remaining=f"{remaining:,}",
-                money_unit=money_units,
-                month=month,
-                end_day=end_day,
-                prev_year=current_year - 1,
-                company=pick_company_name(company_name),
-            )
-
-        all_sentences.append([sentence])
-
-    # Competition (0-1)
-    if random.random() < 0.15:
-        template = random.choice(competition_templates)
-        characteristics = random.choice(competitive_characteristics)
-        competitor1 = random.choice(target_companies)
-        competitor2 = random.choice([c for c in target_companies if c != competitor1])
-        competitor3 = random.choice(
-            [c for c in target_companies if c not in [competitor1, competitor2]]
-        )
-        factors = random.choice(competitive_factors)
-        pct = round(random.uniform(10, 35), 1)
-        reasons = "new market entrants, pricing pressures, and technological disruption"
-        advantages = random.choice(competitive_advantages)
-
-        sentence = template.format(
-            characteristics=characteristics,
-            competitor1=competitor1,
-            competitor2=competitor2,
-            competitor3=competitor3,
-            factors=factors,
-            pct=pct,
-            year=current_year,
-            reasons=reasons,
-            advantages=advantages,
-            company=pick_company_name(company_name),
-        )
-
-        all_sentences.append([sentence])
-
-    # Regulatory (0-1)
-    if random.random() < 0.15:
-        template = random.choice(regulatory_templates)
-        regulators_list = random.choice(regulators)
-        areas = random.choice(regulatory_areas)
-        amount = round(random.uniform(5, 50), 1)
-        approvals = "product registrations and environmental permits"
-        matters = "regulatory audits and compliance reviews"
-
-        sentence = template.format(
-            regulators=regulators_list,
-            areas=areas,
-            currency_code=currency_code,
-            amount=amount,
-            money_unit=money_units,
-            year=current_year,
-            approvals=approvals,
-            matters=matters,
-            company=pick_company_name(company_name),
-        )
-
-        all_sentences.append([sentence])
-
-    # Insurance (0-1)
-    if random.random() < 0.1:
-        template = random.choice(insurance_templates)
-        amount = round(random.uniform(10, 100), 1)
-        risks = random.choice(self_insured_risks)
-        incident = random.choice(
-            ["property damage", "business interruption", "product liability claims"]
-        )
-        coverage_types_list = random.choice(coverage_types)
+    if category == "forward_looking":
+        template = random.choice(forward_looking_templates)
+        topics = random.choice(forward_looking_topics)
+        words = random.choice(forward_looking_words)
+        risk_factors = random.choice(risk_factors_examples)
         month = random.choice(months)
         end_day = random.randint(28, 31)
 
         sentence = template.format(
-            currency_code=currency_code,
-            amount=amount,
-            money_unit=money_units,
+            topics=topics,
+            words=words,
+            company=pick_company_name(company_name),
+            risk_factors=risk_factors,
             month=month,
             end_day=end_day,
             year=current_year,
-            risks=risks,
-            incident=incident,
-            coverage_types=coverage_types_list,
+        )
+    else:
+        sentence = random.choice(safe_harbor_templates)
+    sentence = sentence.format(company=pick_company_name(company_name))
+    all_sentences.append([sentence])
+
+    # Analyst coverage (0-1)
+    template = random.choice(analyst_coverage_templates)
+    number = random.randint(8, 25)
+    number2 = random.randint(3, 12)
+    number3 = random.randint(0, 5)
+    eps = round(random.uniform(1.50, 8.00), 2)
+    revenue = round(random.uniform(500, 5000), 0)
+    target = round(random.uniform(50, 200), 2)
+    direction = random.choice(["upside", "downside"])
+    pct = round(random.uniform(10, 40), 1)
+    low = round(eps * 0.8, 2)
+    high = round(eps * 1.2, 2)
+
+    sentence = template.format(
+        number=number,
+        number2=number2,
+        number3=number3,
+        year=current_year,
+        currency_code=currency_code,
+        eps=eps,
+        revenue=f"{revenue:,}",
+        money_unit=money_units,
+        target=target,
+        direction=direction,
+        pct=pct,
+        low=low,
+        high=high,
+        company=pick_company_name(company_name),
+    )
+
+    all_sentences.append([sentence])
+
+    # Credit ratings (0-1)
+    template = random.choice(credit_rating_templates)
+    agency = random.choice(credit_agencies)
+    agency2 = random.choice([a for a in credit_agencies if a != agency])
+    agency3 = random.choice(
+        [a for a in credit_agencies if a not in [agency, agency2]]
+    )
+    rating = random.choice(credit_ratings)
+    rating2 = random.choice(credit_ratings)
+    rating3 = random.choice(credit_ratings)
+    outlook = random.choice(rating_outlooks)
+    action = random.choice(rating_actions)
+    month = random.choice(months)
+    end_day = random.randint(28, 31)
+
+    sentence = template.format(
+        rating=rating,
+        rating2=rating2,
+        rating3=rating3,
+        agency=agency,
+        agency2=agency2,
+        agency3=agency3,
+        outlook=outlook,
+        action=action,
+        month=month,
+        end_day=end_day,
+        year=current_year,
+        company=pick_company_name(company_name),
+    )
+
+    all_sentences.append([sentence])
+
+    # Dividend/capital allocation (0-1)
+    category = random.choice(["dividend", "repurchase"])
+    if category == "dividend":
+        template = random.choice(dividend_policy_templates)
+        amount = round(random.uniform(0.25, 2.00), 2)
+        pct = round(random.uniform(20, 60), 1)
+        pct2 = round(random.uniform(30, 70), 1)
+        prev_pct = round(pct * random.uniform(0.9, 1.1), 1)
+        yield_pct = round(random.uniform(1.5, 4.5), 1)
+        month = random.choice(months)
+        end_day = random.randint(1, 28)
+        start_year = random.randint(1990, 2010)
+
+        sentence = template.format(
+            year=start_year,
+            month=month,
+            end_day=end_day,
+            currency_code=currency_code,
+            amount=amount,
+            pct=pct,
+            pct2=pct2,
+            prev_pct=prev_pct,
+            prev_year=current_year - 1,
             company=pick_company_name(company_name),
         )
+    else:
+        template = random.choice(share_repurchase_templates)
+        shares = random.choice([1000000, 2000000, 5000000, 10000000])
+        amount = round(random.uniform(50, 500), 0)
+        prev_amount = round(amount * random.uniform(0.7, 1.3), 0)
+        remaining = round(random.uniform(100, 400), 0)
+        month = random.choice(months)
+        end_day = random.randint(28, 31)
 
-        all_sentences.append([sentence])
-
-    if random.random() < 0.15:  # Accounting standards
-        all_sentences.append(generate_other_policy_update())
-    if random.random() < 0.15:  # Generat of text and numbers
-        noise = generate_sec_noise(
-            company=pick_company_name(company_name),
-            currency_unit=money_units,
-            month=random.choice(months),
+        sentence = template.format(
             year=current_year,
+            shares=f"{shares:,}",
+            currency_code=currency_code,
+            amount=f"{amount:,}",
+            prev_amount=f"{prev_amount:,}",
+            remaining=f"{remaining:,}",
+            money_unit=money_units,
+            month=month,
+            end_day=end_day,
+            prev_year=current_year - 1,
+            company=pick_company_name(company_name),
         )
-        all_sentences.append(noise)
-    if random.random() < 0.05: # Nothing
-        all_sentences.append([""])
+    all_sentences.append([sentence])
+
+    # Competition (0-1)
+    template = random.choice(competition_templates)
+    characteristics = random.choice(competitive_characteristics)
+    competitor1 = random.choice(target_companies)
+    competitor2 = random.choice([c for c in target_companies if c != competitor1])
+    competitor3 = random.choice(
+        [c for c in target_companies if c not in [competitor1, competitor2]]
+    )
+    factors = random.choice(competitive_factors)
+    pct = round(random.uniform(10, 35), 1)
+    reasons = "new market entrants, pricing pressures, and technological disruption"
+    advantages = random.choice(competitive_advantages)
+
+    sentence = template.format(
+        characteristics=characteristics,
+        competitor1=competitor1,
+        competitor2=competitor2,
+        competitor3=competitor3,
+        factors=factors,
+        pct=pct,
+        year=current_year,
+        reasons=reasons,
+        advantages=advantages,
+        company=pick_company_name(company_name),
+    )
+
+    all_sentences.append([sentence])
+
+    # Regulatory (0-1)
+    template = random.choice(regulatory_templates)
+    regulators_list = random.choice(regulators)
+    areas = random.choice(regulatory_areas)
+    amount = round(random.uniform(5, 50), 1)
+    approvals = "product registrations and environmental permits"
+    matters = "regulatory audits and compliance reviews"
+
+    sentence = template.format(
+        regulators=regulators_list,
+        areas=areas,
+        currency_code=currency_code,
+        amount=amount,
+        money_unit=money_units,
+        year=current_year,
+        approvals=approvals,
+        matters=matters,
+        company=pick_company_name(company_name),
+    )
+
+    all_sentences.append([sentence])
+
+    # Insurance (0-1)
+    template = random.choice(insurance_templates)
+    amount = round(random.uniform(10, 100), 1)
+    risks = random.choice(self_insured_risks)
+    incident = random.choice(
+        ["property damage", "business interruption", "product liability claims"]
+    )
+    coverage_types_list = random.choice(coverage_types)
+    month = random.choice(months)
+    end_day = random.randint(28, 31)
+
+    sentence = template.format(
+        currency_code=currency_code,
+        amount=amount,
+        money_unit=money_units,
+        month=month,
+        end_day=end_day,
+        year=current_year,
+        risks=risks,
+        incident=incident,
+        coverage_types=coverage_types_list,
+        company=pick_company_name(company_name),
+    )
+    all_sentences.append([sentence])
+
+    all_sentences.append(generate_other_policy_update())
+    
+    noise = generate_sec_noise(
+        company=pick_company_name(company_name),
+        currency_unit=money_units,
+        month=random.choice(months),
+        year=current_year,
+    )
+    all_sentences.append(noise)
+
+    all_sentences.append([""])
 
     # Shuffle and select
     random.shuffle(all_sentences)
@@ -7071,6 +7028,7 @@ def generate_accounting_noise_paragraph(
     )
     # Clean up common formatting issues
     paragraph = cleanup(paragraph, False)
+    
     return paragraph, 3
 
 
