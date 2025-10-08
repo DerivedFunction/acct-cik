@@ -551,15 +551,18 @@ hedge_past_event_template = [
 hedge_no_such_outstanding_template = [
     # --- One-year ---
     "As of {month} {end_day}, {year}, {company} {verb} no outstanding {swap_type} positions"
+    "As of {month} {end_day}, {year}, {company} did not {verb} outstanding {swap_type}"
     "At year-end {year}, {company} reported no outstanding {swap_type}, as all derivative instruments were closed out before {month} {year}",
     "As of {month} {year}, there were no {swap_type} remaining",
     "In the {quarter} quarter of {year}, there were no {swap_type} remaining",
     # --- Two-year ---
     "At {month} {end_day}, {year} and {prev_year}, {company} {verb} no outstanding {swap_type}",
+    "At {month} {end_day}, {year} and {prev_year}, {company} did not {verb} outstanding {swap_type}",
     "As of {month} {end_day}, {year} and {prev_year}, there were no active {swap_type} positions, following the full settlement of prior hedge instruments",
     "At the close of both {year} and {prev_year}, {company} reported no outstanding {swap_type}",
     # --- Three-year ---
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} no outstanding {swap_type}",
+    "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} did not {verb} outstanding {swap_type}",
     "As of {month} {end_day}, {year}, {prev_year}, and {prev2_year}, there were no {swap_type} remaining",
     "At {month} {end_day}, {year}, {prev_year}, and {prev2_year}, {company} {verb} no outstanding {swap_type}",
     "For {year}, {prev_year}, and {prev2_year}, {company} reported no outstanding {swap_type}, as all derivative positions were either settled or allowed to expire",
@@ -1052,6 +1055,7 @@ hedge_use_verbs = [
     "uses",
     "maintains",
     "has",
+    "have",
     "applies",
 ]
 hedge_may_use_verbs = [
