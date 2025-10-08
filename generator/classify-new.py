@@ -1849,18 +1849,7 @@ def get_sentence_analysis():
         max_workers=num_workers,
     )
 
-    # Save to Google Drive if in Colab
-    if IS_COLAB:
-        print("Saving results to Google Drive...")
-        subprocess.run(f"cp *.xlsx {DRIVE_PATH}/{DRIVE_KEYWORDS_PATH}/.", shell=True)
-
     return sa
-
-
-from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import pandas as pd
-
 
 class WorkbookManager:
     """Manages multiple data sources and writes Excel workbooks in parallel."""
@@ -2003,8 +1992,8 @@ class WorkbookManager:
         if IS_COLAB:
             print("Saving results to Google Drive...")
             subprocess.run(
-                    f"cp *.xlsx {DRIVE_PATH}/{DRIVE_KEYWORDS_PATH}/.", shell=True
-                )
+                    f"cp *.xlsx {DRIVE_PATH}/.", shell=True
+                )            
 
 # =============================================================================
 # USAGE IN YOUR MAIN FUNCTION
