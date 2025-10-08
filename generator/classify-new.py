@@ -203,14 +203,12 @@ def save_batch_results(results_buffer):
 
         for result in results_buffer:
             try:
-                batch_data.append(
-                    (result.url, json.dumps(result.server_response)))
+                batch_data.append((result.url, json.dumps(result.server_response)))
             except Exception as e:
                 debug_print(f"Error preparing data for {result.url}: {e}")
                 # Get cik and year from report_data for fail_results
                 c.execute(
-                    "SELECT cik, year FROM report_data WHERE url=?", (
-                        result.url,)
+                    "SELECT cik, year FROM report_data WHERE url=?", (result.url,)
                 )
                 db_result = c.fetchone()
                 if db_result:
@@ -234,8 +232,7 @@ def save_batch_results(results_buffer):
             )
 
         conn.commit()
-        debug_print(
-            f"Batch saved: {success_count} success, {fail_count} failures")
+        debug_print(f"Batch saved: {success_count} success, {fail_count} failures")
 
     except sqlite3.Error as e:
         print(f"Batch DB error: {e}")
@@ -274,7 +271,7 @@ def get_result_from_server(sentences, batch_size=128):
     headers = {"Content-Type": "application/json"}
 
     for i in range(0, len(sentences), batch_size):
-        batch = sentences[i: i + batch_size]
+        batch = sentences[i : i + batch_size]
         payload = {"texts": batch}
         try:
             response = requests.post(
@@ -369,6 +366,7 @@ def get_final_results():
 
     return wr
 
+
 # =============================================================================
 # PARALLELIZED ANALYSIS FUNCTIONS
 # =============================================================================
@@ -390,7 +388,7 @@ def process_row_for_analysis(row_data):
     if not predictions:
         return None
 
-    # Map IDs → labels
+    # Map IDs -> labels
     predicted_labels = [id2label.get(pid, "Unknown") for pid in predictions]
     pred_counts = Counter(predicted_labels)
 
@@ -527,7 +525,6 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
     Now includes detailed breakdowns by hedge type, confusion matrices, and accuracy metrics.
     Includes both current-only and current+historic comparisons.
     ENHANCED: Now includes derivative liabilities and embedded derivatives analysis.
-    ENHANCED: Now includes speculative/policy labels (14,15,16).
     """
     print("  Comparing keyword search results with model results...")
     try:
@@ -596,16 +593,6 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
         model_embed_current = model_embed_current.reset_index(
             name="model_embed_current"
         )
-
-        # Speculative/Policy (current only)
-        model_ir_spec = sa.groupby(["cik", "year"])[id2label[14]].sum() > 0
-        model_ir_spec = model_ir_spec.reset_index(name="model_ir_spec")
-
-        model_fx_spec = sa.groupby(["cik", "year"])[id2label[15]].sum() > 0
-        model_fx_spec = model_fx_spec.reset_index(name="model_fx_spec")
-
-        model_cp_spec = sa.groupby(["cik", "year"])[id2label[16]].sum() > 0
-        model_cp_spec = model_cp_spec.reset_index(name="model_cp_spec")
 
         # --- CURRENT + HISTORIC MODEL FLAGS ---
 
@@ -693,15 +680,6 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
         model_users_current = model_users_current.merge(
             model_any_deriv_current, on=["cik", "year"], how="outer"
         )
-        model_users_current = model_users_current.merge(
-            model_ir_spec, on=["cik", "year"], how="outer"
-        )
-        model_users_current = model_users_current.merge(
-            model_fx_spec, on=["cik", "year"], how="outer"
-        )
-        model_users_current = model_users_current.merge(
-            model_cp_spec, on=["cik", "year"], how="outer"
-        )
 
         # Merge all model results (current + historic)
         model_users_all = model_general_all.merge(
@@ -722,15 +700,6 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
         model_users_all = model_users_all.merge(
             model_any_deriv_all, on=["cik", "year"], how="outer"
         )
-        model_users_all = model_users_all.merge(
-            model_ir_spec, on=["cik", "year"], how="outer"
-        )
-        model_users_all = model_users_all.merge(
-            model_fx_spec, on=["cik", "year"], how="outer"
-        )
-        model_users_all = model_users_all.merge(
-            model_cp_spec, on=["cik", "year"], how="outer"
-        )
 
         # Fill NaN with False and convert to int
         for col in [
@@ -741,9 +710,6 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             "model_liab_current",
             "model_embed_current",
             "model_any_deriv_current",
-            "model_ir_spec",
-            "model_fx_spec",
-            "model_cp_spec",
         ]:
             model_users_current[col] = (
                 model_users_current[col].fillna(False).astype(bool).astype(int)
@@ -757,9 +723,6 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             "model_liab_all",
             "model_embed_all",
             "model_any_deriv_all",
-            "model_ir_spec",
-            "model_fx_spec",
-            "model_cp_spec",
         ]:
             model_users_all[col] = (
                 model_users_all[col].fillna(False).astype(bool).astype(int)
@@ -883,56 +846,6 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             margins=True,
         )
 
-        # Speculative confusion matrices (vs keyword)
-        confusion_ir_spec = pd.crosstab(
-            comparison_current["keyword_ir"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
-            comparison_current["model_ir_spec"].map({0: "Model_No", 1: "Model_Spec"}),
-            rownames=["Keyword_IR"],
-            colnames=["Model_IR_Spec"],
-            margins=True,
-        )
-
-        confusion_fx_spec = pd.crosstab(
-            comparison_current["keyword_fx"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
-            comparison_current["model_fx_spec"].map({0: "Model_No", 1: "Model_Spec"}),
-            rownames=["Keyword_FX"],
-            colnames=["Model_FX_Spec"],
-            margins=True,
-        )
-
-        confusion_cp_spec = pd.crosstab(
-            comparison_current["keyword_cp"].map({0: "Keyword_No", 1: "Keyword_Yes"}),
-            comparison_current["model_cp_spec"].map({0: "Model_No", 1: "Model_Spec"}),
-            rownames=["Keyword_CP"],
-            colnames=["Model_CP_Spec"],
-            margins=True,
-        )
-
-        # Spec to hedge crosstabs
-        spec_to_user_ir = pd.crosstab(
-            comparison_current["model_ir_spec"].map({0: "Spec_No", 1: "Spec_Yes"}),
-            comparison_current["model_ir_current"].map({0: "Hedge_No", 1: "Hedge_Yes"}),
-            rownames=["Speculative IR"],
-            colnames=["IR Hedge User"],
-            margins=True,
-        )
-
-        spec_to_user_fx = pd.crosstab(
-            comparison_current["model_fx_spec"].map({0: "Spec_No", 1: "Spec_Yes"}),
-            comparison_current["model_fx_current"].map({0: "Hedge_No", 1: "Hedge_Yes"}),
-            rownames=["Speculative FX"],
-            colnames=["FX Hedge User"],
-            margins=True,
-        )
-
-        spec_to_user_cp = pd.crosstab(
-            comparison_current["model_cp_spec"].map({0: "Spec_No", 1: "Spec_Yes"}),
-            comparison_current["model_cp_current"].map({0: "Hedge_No", 1: "Hedge_Yes"}),
-            rownames=["Speculative CP"],
-            colnames=["CP Hedge User"],
-            margins=True,
-        )
-
         # Calculate metrics - current only
         metrics_overall_current = calculate_metrics(
             "keyword_user", "model_user_current", comparison_current
@@ -948,17 +861,6 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
         )
         metrics_any_deriv_current = calculate_metrics(
             "keyword_user", "model_any_deriv_current", comparison_current
-        )
-
-        # Speculative metrics (vs keyword)
-        metrics_ir_spec = calculate_metrics(
-            "keyword_ir", "model_ir_spec", comparison_current
-        )
-        metrics_fx_spec = calculate_metrics(
-            "keyword_fx", "model_fx_spec", comparison_current
-        )
-        metrics_cp_spec = calculate_metrics(
-            "keyword_cp", "model_cp_spec", comparison_current
         )
 
         # Model-only statistics for liabilities and embedded derivatives (current)
@@ -1000,108 +902,6 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
                 {"Category": "Derivative Liabilities/Warrants", **stats_liab_current},
                 {"Category": "Embedded Derivatives", **stats_embed_current},
             ]
-        )
-
-        # Speculative summary (vs keyword)
-        summary_spec = pd.DataFrame(
-            [
-                {"Category": "Interest Rate Speculative/Policy", **metrics_ir_spec},
-                {"Category": "Foreign Exchange Speculative/Policy", **metrics_fx_spec},
-                {"Category": "Commodity Price Speculative/Policy", **metrics_cp_spec},
-            ]
-        )
-
-        # Spec to hedge translates summary
-        spec_hedge_translates = pd.DataFrame(
-            {
-                "Spec_Type": ["IR", "FX", "CP"],
-                "Spec_Count": [
-                    comparison_current["model_ir_spec"].sum(),
-                    comparison_current["model_fx_spec"].sum(),
-                    comparison_current["model_cp_spec"].sum(),
-                ],
-                "%_Spec_that_are_Hedge_Users": [
-                    (
-                        round(
-                            (
-                                spec_to_user_ir.loc["Spec_Yes", "Hedge_Yes"]
-                                / spec_to_user_ir.loc["Spec_Yes", "All"] # type: ignore
-                                * 100
-                            ), # pyright: ignore[reportArgumentType]
-                            2,
-                        ) # pyright: ignore[reportCallIssue] # type: ignore
-                        if spec_to_user_ir.loc["Spec_Yes", "All"] > 0 # type: ignore
-                        else 0
-                    ),
-                    (
-                        round(
-                            (
-                                spec_to_user_fx.loc["Spec_Yes", "Hedge_Yes"]
-                                / spec_to_user_fx.loc["Spec_Yes", "All"]
-                                * 100
-                            ),
-                            2,
-                        ) # pyright: ignore[reportCallIssue]
-                        if spec_to_user_fx.loc["Spec_Yes", "All"] > 0
-                        else 0
-                    ),
-                    (
-                        round(
-                            (
-                                spec_to_user_cp.loc["Spec_Yes", "Hedge_Yes"]
-                                / spec_to_user_cp.loc["Spec_Yes", "All"]
-                                * 100
-                            ),
-                            2,
-                        )
-                        if spec_to_user_cp.loc["Spec_Yes", "All"] > 0
-                        else 0
-                    ),
-                ],
-                "Hedge_Count": [
-                    comparison_current["model_ir_current"].sum(),
-                    comparison_current["model_fx_current"].sum(),
-                    comparison_current["model_cp_current"].sum(),
-                ],
-                "%_Hedge_that_are_Spec": [
-                    (
-                        round(
-                            (
-                                spec_to_user_ir.loc["Spec_Yes", "Hedge_Yes"]
-                                / spec_to_user_ir.loc["All", "Hedge_Yes"]
-                                * 100
-                            ),
-                            2,
-                        )
-                        if spec_to_user_ir.loc["All", "Hedge_Yes"] > 0
-                        else 0
-                    ),
-                    (
-                        round(
-                            (
-                                spec_to_user_fx.loc["Spec_Yes", "Hedge_Yes"]
-                                / spec_to_user_fx.loc["All", "Hedge_Yes"]
-                                * 100
-                            ),
-                            2,
-                        )
-                        if spec_to_user_fx.loc["All", "Hedge_Yes"] > 0
-                        else 0
-                    ),
-                    (
-                        round(
-                            (
-                                spec_to_user_cp.loc["Spec_Yes", "Hedge_Yes"]
-                                / spec_to_user_cp.loc["All", "Hedge_Yes"]
-                                * 100
-                            ),
-                            2,
-                        )
-                        if spec_to_user_cp.loc["All", "Hedge_Yes"] > 0
-                        else 0
-                    ),
-                ],
-            }
         )
 
         # Detailed comparison - current only (Hedges only)
@@ -1513,15 +1313,6 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
             "confusion_any_deriv_all": confusion_any_deriv_all,
             "summary_any_deriv_all": summary_any_deriv_all,
             "model_only_all": model_only_all,
-            # Speculative/Policy
-            "summary_spec": summary_spec,
-            "spec_hedge_translates": spec_hedge_translates,
-            "confusion_ir_spec": confusion_ir_spec,
-            "confusion_fx_spec": confusion_fx_spec,
-            "confusion_cp_spec": confusion_cp_spec,
-            "spec_to_user_ir": spec_to_user_ir,
-            "spec_to_user_fx": spec_to_user_fx,
-            "spec_to_user_cp": spec_to_user_cp,
             # Comparison
             "comparison_summary": comparison_summary,
             "model_performance_summary": model_performance_summary,
@@ -1530,6 +1321,417 @@ def analyze_keyword_vs_model(sa, hedge_labels_current):
     except FileNotFoundError:
         print(
             f"  Warning: {DERIVATIVES_CSV_PATH} not found. Skipping keyword vs. model analysis."
+        )
+        return None
+
+
+def analyze_keyword_vs_speculative_policy(sa, hedge_labels_current):
+    """
+    Analyzes keyword-based derivatives data against speculative/policy labels.
+    Examines if firms mentioning derivatives policies actually use derivatives.
+    Includes comprehensive "any derivatives" category (hedges + liabilities + embedded).
+    """
+    print("  Comparing keyword search with speculative/policy labels...")
+    try:
+        # Load original keyword-based data
+        deriv_df = pd.read_csv(DERIVATIVES_CSV_PATH)
+        deriv_df["cik"] = deriv_df["cik"].astype(int)
+
+        # Get keyword flags for each cik/year
+        keyword_users = (
+            deriv_df.groupby(["cik", "year"])[["user", "fx_user", "ir_user", "cp_user"]]
+            .max()
+            .reset_index()
+        )
+        keyword_users.rename(
+            columns={
+                "user": "keyword_user",
+                "fx_user": "keyword_fx",
+                "ir_user": "keyword_ir",
+                "cp_user": "keyword_cp",
+            },
+            inplace=True,
+        )
+
+        # --- SPECULATIVE/POLICY FLAGS ---
+
+        # Generic/Unknown Speculative (id2label[2])
+        spec_generic = sa.groupby(["cik", "year"])[id2label[2]].sum() > 0
+        spec_generic = spec_generic.reset_index(name="spec_generic")
+
+        # IR Speculative (id2label[14])
+        spec_ir = sa.groupby(["cik", "year"])[id2label[14]].sum() > 0
+        spec_ir = spec_ir.reset_index(name="spec_ir")
+
+        # FX Speculative (id2label[15])
+        spec_fx = sa.groupby(["cik", "year"])[id2label[15]].sum() > 0
+        spec_fx = spec_fx.reset_index(name="spec_fx")
+
+        # CP Speculative (id2label[16])
+        spec_cp = sa.groupby(["cik", "year"])[id2label[16]].sum() > 0
+        spec_cp = spec_cp.reset_index(name="spec_cp")
+
+        # Any speculative/policy mention (hedges only)
+        spec_any_hedges = (
+            sa.groupby(["cik", "year"])[
+                [id2label[2], id2label[14], id2label[15], id2label[16]]
+            ]
+            .sum()
+            .sum(axis=1)
+            > 0
+        )
+        spec_any_hedges = spec_any_hedges.reset_index(name="spec_any_hedges")
+
+        # --- ACTUAL USAGE FLAGS (CURRENT ONLY) ---
+
+        # Generic/Unknown Hedge (current) - id2label[0]
+        actual_generic = sa.groupby(["cik", "year"])[id2label[0]].sum() > 0
+        actual_generic = actual_generic.reset_index(name="actual_generic")
+
+        # IR Hedge (current) - id2label[8]
+        actual_ir = sa.groupby(["cik", "year"])[id2label[8]].sum() > 0
+        actual_ir = actual_ir.reset_index(name="actual_ir")
+
+        # FX Hedge (current) - id2label[10]
+        actual_fx = sa.groupby(["cik", "year"])[id2label[10]].sum() > 0
+        actual_fx = actual_fx.reset_index(name="actual_fx")
+
+        # CP Hedge (current) - id2label[12]
+        actual_cp = sa.groupby(["cik", "year"])[id2label[12]].sum() > 0
+        actual_cp = actual_cp.reset_index(name="actual_cp")
+
+        # Any actual hedge usage (current) - hedges only
+        actual_any_hedges = (
+            sa.groupby(["cik", "year"])[hedge_labels_current].sum().sum(axis=1) > 0
+        )
+        actual_any_hedges = actual_any_hedges.reset_index(name="actual_any_hedges")
+
+        # Derivative Liabilities/Warrants (current) - id2label[4]
+        actual_liabilities = sa.groupby(["cik", "year"])[id2label[4]].sum() > 0
+        actual_liabilities = actual_liabilities.reset_index(name="actual_liabilities")
+
+        # Embedded Derivatives (current) - id2label[6]
+        actual_embedded = sa.groupby(["cik", "year"])[id2label[6]].sum() > 0
+        actual_embedded = actual_embedded.reset_index(name="actual_embedded")
+
+        # ANY DERIVATIVES (hedges + liabilities + embedded) - COMPREHENSIVE
+        all_derivative_labels = hedge_labels_current + [id2label[4], id2label[6]]
+        actual_any_all = (
+            sa.groupby(["cik", "year"])[all_derivative_labels].sum().sum(axis=1) > 0
+        )
+        actual_any_all = actual_any_all.reset_index(name="actual_any_all")
+
+        # --- MERGE ALL DATA ---
+
+        comparison = keyword_users.copy()
+
+        # Merge speculative flags
+        comparison = comparison.merge(spec_generic, on=["cik", "year"], how="outer")
+        comparison = comparison.merge(spec_ir, on=["cik", "year"], how="outer")
+        comparison = comparison.merge(spec_fx, on=["cik", "year"], how="outer")
+        comparison = comparison.merge(spec_cp, on=["cik", "year"], how="outer")
+        comparison = comparison.merge(spec_any_hedges, on=["cik", "year"], how="outer")
+
+        # Merge actual usage flags
+        comparison = comparison.merge(actual_generic, on=["cik", "year"], how="outer")
+        comparison = comparison.merge(actual_ir, on=["cik", "year"], how="outer")
+        comparison = comparison.merge(actual_fx, on=["cik", "year"], how="outer")
+        comparison = comparison.merge(actual_cp, on=["cik", "year"], how="outer")
+        comparison = comparison.merge(
+            actual_any_hedges, on=["cik", "year"], how="outer"
+        )
+        comparison = comparison.merge(
+            actual_liabilities, on=["cik", "year"], how="outer"
+        )
+        comparison = comparison.merge(actual_embedded, on=["cik", "year"], how="outer")
+        comparison = comparison.merge(actual_any_all, on=["cik", "year"], how="outer")
+
+        # Fill NaN with False
+        for col in comparison.columns:
+            if col not in ["cik", "year"]:
+                comparison[col] = comparison[col].fillna(False).astype(bool).astype(int)
+
+        # --- COMPUTE TRANSLATION METRICS ---
+
+        def compute_translation_rate(spec_col, actual_col, df):
+            """
+            Compute what % of firms with speculative mentions actually use derivatives.
+            """
+            spec_firms = df[df[spec_col] == 1]
+            if len(spec_firms) == 0:
+                return {
+                    "Total_Spec_Mentions": 0,
+                    "Actual_Users": 0,
+                    "Translation_Rate": 0.0,
+                    "Non_Users": 0,
+                }
+
+            actual_users = (spec_firms[actual_col] == 1).sum()
+            total_spec = len(spec_firms)
+
+            return {
+                "Total_Spec_Mentions": total_spec,
+                "Actual_Users": actual_users,
+                "Non_Users": total_spec - actual_users,
+                "Translation_Rate": (
+                    round((actual_users / total_spec) * 100, 2)
+                    if total_spec > 0
+                    else 0.0
+                ),
+            }
+
+        # Translation rates for specific types
+        trans_generic = compute_translation_rate(
+            "spec_generic", "actual_generic", comparison
+        )
+        trans_ir = compute_translation_rate("spec_ir", "actual_ir", comparison)
+        trans_fx = compute_translation_rate("spec_fx", "actual_fx", comparison)
+        trans_cp = compute_translation_rate("spec_cp", "actual_cp", comparison)
+
+        # Translation rates for aggregate categories
+        trans_any_hedges = compute_translation_rate(
+            "spec_any_hedges", "actual_any_hedges", comparison
+        )
+        trans_any_all = compute_translation_rate(
+            "spec_any_hedges", "actual_any_all", comparison
+        )
+
+        # Summary table
+        translation_summary = pd.DataFrame(
+            [
+                {"Category": "Any Hedge (Gen/IR/FX/CP)", **trans_any_hedges},
+                {"Category": "Any Derivative (Hedges+Liab+Embed)", **trans_any_all},
+                {"Category": "Generic/Unknown", **trans_generic},
+                {"Category": "Interest Rate (IR)", **trans_ir},
+                {"Category": "Foreign Exchange (FX)", **trans_fx},
+                {"Category": "Commodity Price (CP)", **trans_cp},
+            ]
+        )
+
+        # --- MODEL-ONLY STATS (NO SPECULATIVE COMPARISON) ---
+
+        def calculate_model_only_stats(model_col, df):
+            """Calculate statistics for model predictions without speculative comparison"""
+            positive = (df[model_col] == 1).sum()
+            negative = (df[model_col] == 0).sum()
+            total = len(df)
+
+            return {
+                "Total": total,
+                "Model_Positive": positive,
+                "Model_Negative": negative,
+                "Positive_Rate": round((positive / total) * 100, 2) if total > 0 else 0,
+            }
+
+        stats_liab = calculate_model_only_stats("actual_liabilities", comparison)
+        stats_embed = calculate_model_only_stats("actual_embedded", comparison)
+
+        model_only_summary = pd.DataFrame(
+            [
+                {"Category": "Derivative Liabilities/Warrants", **stats_liab},
+                {"Category": "Embedded Derivatives", **stats_embed},
+            ]
+        )
+
+        # --- KEYWORD VS SPECULATIVE COMPARISON ---
+
+        # Cross-tabulation: Keyword mentions vs Speculative mentions
+        keyword_vs_spec = pd.DataFrame(
+            {
+                "Category": ["Any Hedge", "Generic", "IR", "FX", "CP"],
+                "Keyword_Only": [
+                    (
+                        (comparison["keyword_user"] == 1)
+                        & (comparison["spec_any_hedges"] == 0)
+                    ).sum(),
+                    (
+                        (comparison["keyword_user"] == 1)
+                        & (comparison["spec_generic"] == 0)
+                    ).sum(),
+                    (
+                        (comparison["keyword_ir"] == 1) & (comparison["spec_ir"] == 0)
+                    ).sum(),
+                    (
+                        (comparison["keyword_fx"] == 1) & (comparison["spec_fx"] == 0)
+                    ).sum(),
+                    (
+                        (comparison["keyword_cp"] == 1) & (comparison["spec_cp"] == 0)
+                    ).sum(),
+                ],
+                "Both": [
+                    (
+                        (comparison["keyword_user"] == 1)
+                        & (comparison["spec_any_hedges"] == 1)
+                    ).sum(),
+                    (
+                        (comparison["keyword_user"] == 1)
+                        & (comparison["spec_generic"] == 1)
+                    ).sum(),
+                    (
+                        (comparison["keyword_ir"] == 1) & (comparison["spec_ir"] == 1)
+                    ).sum(),
+                    (
+                        (comparison["keyword_fx"] == 1) & (comparison["spec_fx"] == 1)
+                    ).sum(),
+                    (
+                        (comparison["keyword_cp"] == 1) & (comparison["spec_cp"] == 1)
+                    ).sum(),
+                ],
+                "Spec_Only": [
+                    (
+                        (comparison["keyword_user"] == 0)
+                        & (comparison["spec_any_hedges"] == 1)
+                    ).sum(),
+                    (
+                        (comparison["keyword_user"] == 0)
+                        & (comparison["spec_generic"] == 1)
+                    ).sum(),
+                    (
+                        (comparison["keyword_ir"] == 0) & (comparison["spec_ir"] == 1)
+                    ).sum(),
+                    (
+                        (comparison["keyword_fx"] == 0) & (comparison["spec_fx"] == 1)
+                    ).sum(),
+                    (
+                        (comparison["keyword_cp"] == 0) & (comparison["spec_cp"] == 1)
+                    ).sum(),
+                ],
+                "Neither": [
+                    (
+                        (comparison["keyword_user"] == 0)
+                        & (comparison["spec_any_hedges"] == 0)
+                    ).sum(),
+                    (
+                        (comparison["keyword_user"] == 0)
+                        & (comparison["spec_generic"] == 0)
+                    ).sum(),
+                    (
+                        (comparison["keyword_ir"] == 0) & (comparison["spec_ir"] == 0)
+                    ).sum(),
+                    (
+                        (comparison["keyword_fx"] == 0) & (comparison["spec_fx"] == 0)
+                    ).sum(),
+                    (
+                        (comparison["keyword_cp"] == 0) & (comparison["spec_cp"] == 0)
+                    ).sum(),
+                ],
+            }
+        )
+
+        # --- DETAILED BREAKDOWN ---
+
+        comparison["generic_category"] = comparison.apply(
+            lambda row: (
+                "Spec->Actual"
+                if row["spec_generic"] == 1 and row["actual_generic"] == 1
+                else (
+                    "Spec->NoActual"
+                    if row["spec_generic"] == 1 and row["actual_generic"] == 0
+                    else (
+                        "NoSpec->Actual"
+                        if row["spec_generic"] == 0 and row["actual_generic"] == 1
+                        else "NoSpec->NoActual"
+                    )
+                )
+            ),
+            axis=1,
+        )
+
+        comparison["ir_category"] = comparison.apply(
+            lambda row: (
+                "Spec->Actual"
+                if row["spec_ir"] == 1 and row["actual_ir"] == 1
+                else (
+                    "Spec->NoActual"
+                    if row["spec_ir"] == 1 and row["actual_ir"] == 0
+                    else (
+                        "NoSpec->Actual"
+                        if row["spec_ir"] == 0 and row["actual_ir"] == 1
+                        else "NoSpec->NoActual"
+                    )
+                )
+            ),
+            axis=1,
+        )
+
+        comparison["fx_category"] = comparison.apply(
+            lambda row: (
+                "Spec->Actual"
+                if row["spec_fx"] == 1 and row["actual_fx"] == 1
+                else (
+                    "Spec->NoActual"
+                    if row["spec_fx"] == 1 and row["actual_fx"] == 0
+                    else (
+                        "NoSpec->Actual"
+                        if row["spec_fx"] == 0 and row["actual_fx"] == 1
+                        else "NoSpec->NoActual"
+                    )
+                )
+            ),
+            axis=1,
+        )
+
+        comparison["cp_category"] = comparison.apply(
+            lambda row: (
+                "Spec->Actual"
+                if row["spec_cp"] == 1 and row["actual_cp"] == 1
+                else (
+                    "Spec->NoActual"
+                    if row["spec_cp"] == 1 and row["actual_cp"] == 0
+                    else (
+                        "NoSpec->Actual"
+                        if row["spec_cp"] == 0 and row["actual_cp"] == 1
+                        else "NoSpec->NoActual"
+                    )
+                )
+            ),
+            axis=1,
+        )
+
+        comparison["any_hedges_category"] = comparison.apply(
+            lambda row: (
+                "Spec->Actual"
+                if row["spec_any_hedges"] == 1 and row["actual_any_hedges"] == 1
+                else (
+                    "Spec->NoActual"
+                    if row["spec_any_hedges"] == 1 and row["actual_any_hedges"] == 0
+                    else (
+                        "NoSpec->Actual"
+                        if row["spec_any_hedges"] == 0 and row["actual_any_hedges"] == 1
+                        else "NoSpec->NoActual"
+                    )
+                )
+            ),
+            axis=1,
+        )
+
+        comparison["any_all_category"] = comparison.apply(
+            lambda row: (
+                "Spec->Actual"
+                if row["spec_any_hedges"] == 1 and row["actual_any_all"] == 1
+                else (
+                    "Spec->NoActual"
+                    if row["spec_any_hedges"] == 1 and row["actual_any_all"] == 0
+                    else (
+                        "NoSpec->Actual"
+                        if row["spec_any_hedges"] == 0 and row["actual_any_all"] == 1
+                        else "NoSpec->NoActual"
+                    )
+                )
+            ),
+            axis=1,
+        )
+
+        return {
+            "comparison": comparison,
+            "translation_summary": translation_summary,
+            "keyword_vs_spec": keyword_vs_spec,
+            "model_only_summary": model_only_summary,
+        }
+
+    except FileNotFoundError:
+        print(
+            f"  Warning: {DERIVATIVES_CSV_PATH} not found. Skipping speculative analysis."
         )
         return None
 
@@ -1573,8 +1775,8 @@ def get_sentence_analysis():
     # --- Define label groups ---
     hedge_labels_current = [id2label[0], id2label[8], id2label[10], id2label[12]]
     hedge_labels_historic = [id2label[1], id2label[9], id2label[11], id2label[13]]
-    label_cols = [id2label[i] for i in range(17)]
-    exclude_cols = [id2label[i] for i in range(17) if i != 2]
+    label_cols = [id2label[i] for i in id2label]
+    exclude_cols = [id2label[i] for i in id2label if i != 2]
     hedge_types = {
         "General": [id2label[0], id2label[1]],
         "IR": [id2label[8], id2label[9]],
@@ -1735,17 +1937,13 @@ def write_workbooks(
             },
         },
         {
-            "filename": base_path.with_name(base_path.stem + "_SPECULATIVE.xlsx"),
-            "description": "Keyword vs Speculative/Policy",
-            "sheets": {
-                "Summary_vs_Keyword": ("summary_spec", False),
-                "Spec_to_Hedge_Translates": ("spec_hedge_translates", False),
-                "Confusion_IR_vs_Spec": ("confusion_ir_spec", True),
-                "Confusion_FX_vs_Spec": ("confusion_fx_spec", True),
-                "Confusion_CP_vs_Spec": ("confusion_cp_spec", True),
-                "Crosstab_Spec_vs_Hedge_IR": ("spec_to_user_ir", True),
-                "Crosstab_Spec_vs_Hedge_FX": ("spec_to_user_fx", True),
-                "Crosstab_Spec_vs_Hedge_CP": ("spec_to_user_cp", True),
+        "filename": base_path.with_name(base_path.stem + "_SPECULATIVE_POLICY.xlsx"),
+        "description": "Keyword vs Speculative/Policy Analysis",
+        "sheets": {
+            "Translation_Summary": ("translation_summary", False),
+            "Keyword_vs_Speculative": ("keyword_vs_spec", False),
+            "ModelOnly_Liab_Embed": ("model_only_summary", False),
+            "Detailed_Comparison": ("comparison", False),
             },
         },
     ]
@@ -1782,7 +1980,7 @@ def write_workbooks(
                     except Exception:
                         pass
 
-        return f"✅ {config['description']} saved → {filename}"
+        return f"✅ {config['description']} saved -> {filename}"
 
     print(
         f"\n🚀 Writing {len(all_workbooks)} workbooks with {max_workers} threads...\n"
@@ -1813,14 +2011,16 @@ def process_sentence_chunk(chunk_data):
             pred = predictions[i]
             label = id2label.get(pred, "Unknown")
 
-            results.append({
-                "cik": cik,
-                "year": year,
-                "url": url,
-                "sentence": sentence,
-                "label_id": pred,
-                "label": label,
-            })
+            results.append(
+                {
+                    "cik": cik,
+                    "year": year,
+                    "url": url,
+                    "sentence": sentence,
+                    "label_id": pred,
+                    "label": label,
+                }
+            )
 
     return results
 
@@ -1843,8 +2043,7 @@ def build_sentence_label_excel():
     combined_df = pd.read_sql(query, conn)
     conn.close()
 
-    print(
-        f"Processing {len(combined_df):,} reports for sentence-label mapping...")
+    print(f"Processing {len(combined_df):,} reports for sentence-label mapping...")
 
     # Prepare data for parallel processing
     row_data_list = []
@@ -1852,24 +2051,29 @@ def build_sentence_label_excel():
         matches = json.loads(row["matches"])
         predictions = json.loads(row["server_response"])
         row_data_list.append(
-            (row["cik"], row["year"], row["url"], matches, predictions))
+            (row["cik"], row["year"], row["url"], matches, predictions)
+        )
 
     # Split into chunks for better load balancing
     num_workers = mp.cpu_count()
     chunk_size = max(1, len(row_data_list) // (num_workers * 4))
-    chunks = [row_data_list[i:i + chunk_size]
-              for i in range(0, len(row_data_list), chunk_size)]
+    chunks = [
+        row_data_list[i : i + chunk_size]
+        for i in range(0, len(row_data_list), chunk_size)
+    ]
 
     print(f"Using {num_workers} CPU cores, processing {len(chunks)} chunks")
 
     # Process in parallel
     all_rows = []
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        results = list(tqdm(
-            executor.map(process_sentence_chunk, chunks),
-            total=len(chunks),
-            desc="Building sentence labels"
-        ))
+        results = list(
+            tqdm(
+                executor.map(process_sentence_chunk, chunks),
+                total=len(chunks),
+                desc="Building sentence labels",
+            )
+        )
 
         # Flatten results
         for chunk_result in results:
@@ -1900,29 +2104,29 @@ def build_sentence_label_excel():
     print(f"\nWriting to separate Excel workbooks by label group...")
 
     # Group data by label groups
-    final_df['group'] = final_df['label_id'].map(label_id_to_group)
+    final_df["group"] = final_df["label_id"].map(label_id_to_group)
 
     # Handle any unmapped labels (shouldn't happen, but defensive coding)
-    unmapped = final_df[final_df['group'].isna()]
+    unmapped = final_df[final_df["group"].isna()]
     if not unmapped.empty:
         print(
-            f"  Warning: Found {len(unmapped)} rows with unmapped label_ids: {unmapped['label_id'].unique()}")
-        final_df['group'] = final_df['group'].fillna('Other')
+            f"  Warning: Found {len(unmapped)} rows with unmapped label_ids: {unmapped['label_id'].unique()}"
+        )
+        final_df["group"] = final_df["group"].fillna("Other")
 
     try:
         # Write each group to a separate workbook
         for group_name, label_ids in label_groups.items():
-            group_df = final_df[final_df['label_id'].isin(label_ids)].copy()
+            group_df = final_df[final_df["label_id"].isin(label_ids)].copy()
 
             if group_df.empty:
                 print(f"  Skipping {group_name} (no data)")
                 continue
 
             # Create filename
-            file_path = SENTENCE_PATH.replace('.xlsx', f'_{group_name}.xlsx')
+            file_path = SENTENCE_PATH.replace(".xlsx", f"_{group_name}.xlsx")
 
-            print(
-                f"\n  Writing {group_name} workbook ({len(group_df):,} rows)...")
+            print(f"\n  Writing {group_name} workbook ({len(group_df):,} rows)...")
 
             with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
                 # Disable automatic URL conversion
@@ -1930,22 +2134,25 @@ def build_sentence_label_excel():
                 workbook.strings_to_urls = False
 
                 # Write complete group dataset to first sheet
-                group_df_clean = group_df.drop(columns=['group'])
+                group_df_clean = group_df.drop(columns=["group"])
                 print(f"    - 'All_{group_name}' sheet...")
                 group_df_clean.to_excel(
-                    writer, sheet_name=f"All_{group_name}"[:31], index=False)
+                    writer, sheet_name=f"All_{group_name}"[:31], index=False
+                )
 
                 # Write separate sheet for each label in this group
                 unique_labels_in_group = sorted(group_df["label"].unique())
 
                 for label in unique_labels_in_group:
                     label_df = group_df_clean[group_df_clean["label"] == label]
-                    sheet_name = str(label)[:31].replace(
-                        "/", "-").replace("\\", "-").replace(":", "-")
-                    print(
-                        f"    - '{sheet_name}' sheet ({len(label_df):,} rows)...")
-                    label_df.to_excel(
-                        writer, sheet_name=sheet_name, index=False)
+                    sheet_name = (
+                        str(label)[:31]
+                        .replace("/", "-")
+                        .replace("\\", "-")
+                        .replace(":", "-")
+                    )
+                    print(f"    - '{sheet_name}' sheet ({len(label_df):,} rows)...")
+                    label_df.to_excel(writer, sheet_name=sheet_name, index=False)
 
                 # Write summary for this group
                 print(f"    - 'Summary' sheet...")
@@ -1963,74 +2170,113 @@ def build_sentence_label_excel():
                         "unique_urls": label_data["url"].nunique(),
                         "year_min": label_data["year"].min(),
                         "year_max": label_data["year"].max(),
-                        "avg_sentences_per_firm": len(label_data) / label_data["cik"].nunique(),
-                        "avg_sentences_per_url": len(label_data) / label_data["url"].nunique(),
+                        "avg_sentences_per_firm": len(label_data)
+                        / label_data["cik"].nunique(),
+                        "avg_sentences_per_url": len(label_data)
+                        / label_data["url"].nunique(),
                     }
                     summary_stats.append(stats)
 
                 summary = pd.DataFrame(summary_stats)
                 summary["pct_of_group"] = (
-                    summary["total_sentences"] / len(group_df_clean) * 100).round(2)
+                    summary["total_sentences"] / len(group_df_clean) * 100
+                ).round(2)
 
-                summary = summary[[
-                    "label", "label_id", "total_sentences", "pct_of_group",
-                    "unique_firms", "unique_urls",
-                    "avg_sentences_per_firm", "avg_sentences_per_url",
-                    "year_min", "year_max"
-                ]]
+                summary = summary[
+                    [
+                        "label",
+                        "label_id",
+                        "total_sentences",
+                        "pct_of_group",
+                        "unique_firms",
+                        "unique_urls",
+                        "avg_sentences_per_firm",
+                        "avg_sentences_per_url",
+                        "year_min",
+                        "year_max",
+                    ]
+                ]
 
                 summary = summary.sort_values(
-                    "total_sentences", ascending=False).reset_index(drop=True)
+                    "total_sentences", ascending=False
+                ).reset_index(drop=True)
                 summary.to_excel(writer, sheet_name="Summary", index=False)
 
                 # Format the summary sheet
                 worksheet = writer.sheets["Summary"]
-                worksheet.set_column('A:A', 30)
-                worksheet.set_column('B:B', 10)
-                worksheet.set_column('C:D', 18)
-                worksheet.set_column('E:F', 15)
-                worksheet.set_column('G:H', 22)
-                worksheet.set_column('I:J', 12)
+                worksheet.set_column("A:A", 30)
+                worksheet.set_column("B:B", 10)
+                worksheet.set_column("C:D", 18)
+                worksheet.set_column("E:F", 15)
+                worksheet.set_column("G:H", 22)
+                worksheet.set_column("I:J", 12)
 
-                number_format = workbook.add_format({'num_format': '#,##0'})
-                percent_format = workbook.add_format({'num_format': '0.00"%"'})
-                decimal_format = workbook.add_format(
-                    {'num_format': '#,##0.00'})
+                number_format = workbook.add_format({"num_format": "#,##0"})
+                percent_format = workbook.add_format({"num_format": '0.00"%"'})
+                decimal_format = workbook.add_format({"num_format": "#,##0.00"})
 
                 for row_num in range(1, len(summary) + 1):
                     worksheet.write_number(
-                        row_num, 2, summary.iloc[row_num-1]["total_sentences"], number_format)
+                        row_num,
+                        2,
+                        summary.iloc[row_num - 1]["total_sentences"],
+                        number_format,
+                    )
                     worksheet.write_number(
-                        row_num, 3, summary.iloc[row_num-1]["pct_of_group"], percent_format)
+                        row_num,
+                        3,
+                        summary.iloc[row_num - 1]["pct_of_group"],
+                        percent_format,
+                    )
                     worksheet.write_number(
-                        row_num, 4, summary.iloc[row_num-1]["unique_firms"], number_format)
+                        row_num,
+                        4,
+                        summary.iloc[row_num - 1]["unique_firms"],
+                        number_format,
+                    )
                     worksheet.write_number(
-                        row_num, 5, summary.iloc[row_num-1]["unique_urls"], number_format)
+                        row_num,
+                        5,
+                        summary.iloc[row_num - 1]["unique_urls"],
+                        number_format,
+                    )
                     worksheet.write_number(
-                        row_num, 6, summary.iloc[row_num-1]["avg_sentences_per_firm"], decimal_format)
+                        row_num,
+                        6,
+                        summary.iloc[row_num - 1]["avg_sentences_per_firm"],
+                        decimal_format,
+                    )
                     worksheet.write_number(
-                        row_num, 7, summary.iloc[row_num-1]["avg_sentences_per_url"], decimal_format)
+                        row_num,
+                        7,
+                        summary.iloc[row_num - 1]["avg_sentences_per_url"],
+                        decimal_format,
+                    )
 
                 total_row = len(summary) + 2
-                worksheet.write(total_row, 0, "TOTAL",
-                                workbook.add_format({'bold': True}))
-                worksheet.write_number(total_row, 2, len(
-                    group_df_clean), number_format)
+                worksheet.write(
+                    total_row, 0, "TOTAL", workbook.add_format({"bold": True})
+                )
+                worksheet.write_number(total_row, 2, len(group_df_clean), number_format)
                 worksheet.write_number(total_row, 3, 100.0, percent_format)
                 worksheet.write_number(
-                    total_row, 4, group_df_clean["cik"].nunique(), number_format)
+                    total_row, 4, group_df_clean["cik"].nunique(), number_format
+                )
                 worksheet.write_number(
-                    total_row, 5, group_df_clean["url"].nunique(), number_format)
+                    total_row, 5, group_df_clean["url"].nunique(), number_format
+                )
 
             print(f"  ✓ Saved {file_path}")
 
             # Save to Google Drive if in Colab
             if IS_COLAB:
-                subprocess.run(f"cp {file_path} {DRIVE_PATH}/{DRIVE_SENTENCE_PATH}/.", shell=True)
+                subprocess.run(
+                    f"cp {file_path} {DRIVE_PATH}/{DRIVE_SENTENCE_PATH}/.", shell=True
+                )
 
         # Create overall summary workbook
         print(f"\n  Writing overall summary workbook...")
-        summary_file = SENTENCE_PATH.replace('.xlsx', '_Overall_Summary.xlsx')
+        summary_file = SENTENCE_PATH.replace(".xlsx", "_Overall_Summary.xlsx")
 
         with pd.ExcelWriter(summary_file, engine="xlsxwriter") as writer:
             # Disable automatic URL conversion
@@ -2057,30 +2303,41 @@ def build_sentence_label_excel():
 
             overall_summary = pd.DataFrame(overall_summary_stats)
             overall_summary["pct_of_total"] = (
-                overall_summary["total_sentences"] / len(final_df) * 100).round(2)
+                overall_summary["total_sentences"] / len(final_df) * 100
+            ).round(2)
 
-            overall_summary = overall_summary[[
-                "group", "label", "label_id", "total_sentences", "pct_of_total",
-                "unique_firms", "unique_urls", "year_min", "year_max"
-            ]]
+            overall_summary = overall_summary[
+                [
+                    "group",
+                    "label",
+                    "label_id",
+                    "total_sentences",
+                    "pct_of_total",
+                    "unique_firms",
+                    "unique_urls",
+                    "year_min",
+                    "year_max",
+                ]
+            ]
 
             overall_summary = overall_summary.sort_values(
-                "total_sentences", ascending=False).reset_index(drop=True)
-            overall_summary.to_excel(
-                writer, sheet_name="Overall_Summary", index=False)
+                "total_sentences", ascending=False
+            ).reset_index(drop=True)
+            overall_summary.to_excel(writer, sheet_name="Overall_Summary", index=False)
 
             # Format
             worksheet = writer.sheets["Overall_Summary"]
-            worksheet.set_column('A:A', 25)
-            worksheet.set_column('B:B', 30)
-            worksheet.set_column('C:G', 15)
-            worksheet.set_column('H:I', 12)
+            worksheet.set_column("A:A", 25)
+            worksheet.set_column("B:B", 30)
+            worksheet.set_column("C:G", 15)
+            worksheet.set_column("H:I", 12)
 
         print(f"  ✓ Saved {summary_file}")
 
         if IS_COLAB:
             subprocess.run(
-                f"cp {summary_file} {DRIVE_PATH}/{DRIVE_SENTENCE_PATH}/.", shell=True)
+                f"cp {summary_file} {DRIVE_PATH}/{DRIVE_SENTENCE_PATH}/.", shell=True
+            )
 
     except ImportError:
         print(" (pip install xlsxwriter for better performance)")
@@ -2088,7 +2345,8 @@ def build_sentence_label_excel():
 
     print(f"\n{'='*70}")
     print(
-        f"Saved {len(final_df):,} sentence-label mappings to {len(label_groups)} workbooks")
+        f"Saved {len(final_df):,} sentence-label mappings to {len(label_groups)} workbooks"
+    )
     print(f"Each workbook contains:")
     print(f"  - 1 'All_[Group]' sheet with all data for that group")
     print(f"  - Separate sheets for each label in the group")
@@ -2096,6 +2354,7 @@ def build_sentence_label_excel():
     print(f"{'='*70}")
 
     return final_df
+
 
 # =============================================================================
 # CHUNKED PROCESSING
@@ -2121,7 +2380,7 @@ def process_reports_in_chunks():
 
     # Create chunks
     chunks = [
-        reports_to_process[i: i + CHUNK_SIZE]
+        reports_to_process[i : i + CHUNK_SIZE]
         for i in range(0, total_reports, CHUNK_SIZE)
     ]
 
@@ -2161,8 +2420,7 @@ def process_reports_in_chunks():
                     else:
                         chunk_empty += 1
                 except Exception as e:
-                    debug_print(
-                        f"Error processing {future_to_report[future].url}: {e}")
+                    debug_print(f"Error processing {future_to_report[future].url}: {e}")
                     chunk_empty += 1
         # Flush the results buffer
         save_batch_results(results_buffer)
@@ -2188,7 +2446,7 @@ def process_reports_in_chunks():
 
         # Save to Google Drive if in Colab
         if IS_COLAB:
-            print(f"  → Saving to Google Drive...")
+            print(f"  -> Saving to Google Drive...")
             subprocess.run(SAVE_SHELL_CMD, shell=True)
 
         # Progress summary
@@ -2240,8 +2498,7 @@ if __name__ == "__main__":
     print("\nProcessing reports with server predictions...")
     total_processed = process_reports_in_chunks()
 
-    print(
-        f"\nProcessed {total_processed} new reports in chunked parallel mode.")
+    print(f"\nProcessed {total_processed} new reports in chunked parallel mode.")
 
     # Generate analysis
     print("\n" + "=" * 70)
