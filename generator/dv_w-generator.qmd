@@ -7131,12 +7131,6 @@ def generate_sec_noise(company, currency_unit, month, year):
 
 
 ```{python}
-
-import pandas as pd
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from openpyxl import load_workbook
-
-
 def generate(size_per_label=100, max_workers=8):
     all_samples = []
     swap_types = ["ir", "fx", "cp", "gen"]
