@@ -5,6 +5,7 @@ from openpyxl import load_workbook
 import re
 import string
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
 ```
 
 # Init
@@ -2263,10 +2264,10 @@ litigation_templates = [
     "{company} is involved in various legal proceedings and claims arising in the ordinary course of business, including {case_types}",
     "As of {month} {end_day}, {year}, {company} is a defendant in several lawsuits related to {case_types}",
     "{company} is subject to litigation and regulatory inquiries concerning {case_types} in the normal course of operations",
-    "Various legal actions, proceedings, and claims are pending or may be instituted against {company} , including {case_types}",
+    "Various legal actions, proceedings, and claims are pending or may be instituted against {company}, including {case_types}",
     "As of {month} {end_day}, {year}, {company} is a defending against several derivative lawsuits related to {case_types}",
     'All securities holders of {company} are hereby notified that a settlement (the "Settlement") has been reached as to claims asserted in the above-captioned consolidated shareholder derivative action pending in a {court} (the "Derivative Action") on behalf of {company} against certain of its current or former directors and officers',
-    "On {month} {end_day}, {year}, a shareholder derivative suit was filed in the {court} for the against {company} ",
+    "On {month} {end_day}, {year}, a shareholder derivative suit was filed in the {court} for the against {company}",
 ]
 
 case_types = [
@@ -7169,7 +7170,7 @@ def generate(size_per_label=100, max_workers=8):
 
         # Parallel liability paragraphs
         for label_type in [4, 5, 6, 7, 3]:
-            for _ in range(swap_counts // 2):
+            for _ in range(count // 2):
                 futures.append(
                     executor.submit(
                         generate_derivative_liability_paragraph, label_type=label_type
@@ -7182,10 +7183,14 @@ def generate(size_per_label=100, max_workers=8):
 
         return futures
 
-    # --- Parallel execution ---
+    # --- Parallel execution with tqdm progress bar ---
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = submit_tasks(executor)
-        for future in as_completed(futures):
+        for future in tqdm(
+            as_completed(futures),
+            total=len(futures),
+            desc="Generating samples",
+        ):
             try:
                 paragraph, label = future.result()
                 all_samples.append((paragraph, label))
@@ -7208,6 +7213,7 @@ def generate(size_per_label=100, max_workers=8):
         df_new.to_excel(output_file, sheet_name="Generated_Data", index=False)
 
     print(f"\n{len(all_samples)} samples written/appended to {output_file} (sorted)")
+
 ```
 
 ```{python}
