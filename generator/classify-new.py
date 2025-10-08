@@ -422,17 +422,37 @@ def compute_firms_historic_only(sa, hedge_labels_historic, hedge_labels_current)
     return sa[sa["cik"].isin(firms_historic_only)]
 
 
-def compute_firms_label2_only(sa, label2_col, exclude_cols):
-    """Parallel task: filter firms with only label 2 - OPTIMIZED"""
+def compute_firms_speculative_only(sa):
+    """
+    Parallel task: filter firms with only speculative/policy mentions - OPTIMIZED
+    
+    This function identifies firms that have speculative/policy derivative mentions
+    but NO actual derivative usage (hedges, liabilities, or embedded derivatives).
+    
+    Speculative labels: 2 (Generic), 14 (IR), 15 (FX), 16 (CP)
+    Actual usage labels: 0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+    """
+    # Speculative/policy labels
+    spec_labels = [id2label[2], id2label[14], id2label[15], id2label[16]]
+    
+    # All actual usage labels (current + historic for all types)
+    actual_labels = [
+        id2label[0], id2label[1],    # Generic hedge current + historic
+        id2label[4], id2label[5],    # Liabilities current + historic
+        id2label[6], id2label[7],    # Embedded current + historic
+        id2label[8], id2label[9],    # IR hedge current + historic
+        id2label[10], id2label[11],  # FX hedge current + historic
+        id2label[12], id2label[13],  # CP hedge current + historic
+    ]
+    
     # Aggregate per firm
-    firm_label2 = sa.groupby("cik")[label2_col].sum()
-    firm_others = sa.groupby("cik")[exclude_cols].sum().sum(axis=1)
-
-    # Find firms where label2 > 0 AND others < label2
-    firms_label2_only = firm_label2[
-        (firm_label2 > 0) & (firm_others < firm_label2)
-    ].index
-    return sa[sa["cik"].isin(firms_label2_only)]
+    firm_spec = sa.groupby("cik")[spec_labels].sum().sum(axis=1)
+    firm_actual = sa.groupby("cik")[actual_labels].sum().sum(axis=1)
+    
+    # Find firms where speculative > 0 AND actual == 0
+    firms_spec_only = firm_spec[(firm_spec > 0) & (firm_actual == 0)].index
+    
+    return sa[sa["cik"].isin(firms_spec_only)]
 
 
 def compute_firms_liabilities(sa, label4_col, label5_col):
@@ -1798,7 +1818,7 @@ def get_sentence_analysis():
                 hedge_labels_current,
             ),
             "speculation": executor.submit(
-                compute_firms_label2_only, sa, id2label[2], exclude_cols
+                compute_firms_speculative_only, sa
             ),
             "liabilities": executor.submit(
                 compute_firms_liabilities, sa, id2label[4], id2label[5]
@@ -1812,6 +1832,9 @@ def get_sentence_analysis():
             "hedge_cross": executor.submit(compute_hedge_cross, sa, hedge_label_groups),
             "keyword_analysis": executor.submit(
                 analyze_keyword_vs_model, sa, hedge_labels_current
+            ),
+            "speculative_analysis": executor.submit(
+                analyze_keyword_vs_speculative_policy, sa, hedge_labels_current
             ),
         }
 
