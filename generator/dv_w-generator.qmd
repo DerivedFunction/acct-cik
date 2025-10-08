@@ -7009,6 +7009,8 @@ def generate_accounting_noise_paragraph(
             year=current_year,
         )
         all_sentences = noise
+    if random.random() < 0.005: # Nothing
+        all_sentences = [""]
 
     # Shuffle and select
     random.shuffle(all_sentences)
