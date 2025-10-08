@@ -7175,7 +7175,7 @@ def generate(size_per_label=100, max_workers=8):
 
         # Parallel liability paragraphs
         for label_type in [4, 5, 6, 7, 3]:
-            for _ in range(swap_counts):
+            for _ in range(swap_counts // 2):
                 futures.append(
                     executor.submit(
                         generate_derivative_liability_paragraph, label_type=label_type
@@ -7183,7 +7183,7 @@ def generate(size_per_label=100, max_workers=8):
                 )
 
         # Parallel accounting noise
-        for _ in range(size_per_label * 2):
+        for _ in range(size_per_label * 4):
             futures.append(executor.submit(generate_accounting_noise_paragraph))
 
         return futures
