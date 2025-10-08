@@ -2262,6 +2262,7 @@ sec_toc_patterns = [
 litigation_templates = [
     "{company} is involved in various legal proceedings and claims arising in the ordinary course of business, including {case_types}",
     "As of {month} {end_day}, {year}, {company} is a defendant in several lawsuits related to {case_types}",
+    "As of {month} {end_day}, {year}, {company} is a defendant in several derivative lawsuits related to {case_types}",
     "{company} is subject to litigation and regulatory inquiries concerning {case_types} in the normal course of operations",
     "Various legal actions, proceedings, and claims are pending or may be instituted against {company} , including {case_types}",
     "As of {month} {end_day}, {year}, {company} is a defending against several derivative lawsuits related to {case_types}",
