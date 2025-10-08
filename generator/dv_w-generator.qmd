@@ -1145,6 +1145,8 @@ hedge_policy_templates = [
     "The ultimate fair value of our {swap_type} is uncertain, and {company} believe that it is reasonably possible that a change in the estimated fair value could occur in the near future",
     "The accounting for the changes in the fair value of the derivative depends on the intended use of the derivative and the resulting designation",
     "For a derivative that does not qualify as a {hedge_type} hedge, the change in {hedge_type} is recognized currently in net income",
+    "Based upon certain factors, including a review of the {swap_type} for {company}'s counterparties, {company} determined its counterparty credit risk to be immaterial",
+    "Based upon certain factors, including a review of the {swap_type} for {company}'s counterparties, {company} determined its counterparty credit risk to be material",
 ]
 
 hedge_documentation_templates = [
@@ -1280,7 +1282,7 @@ hedge_may_use_verbs = [
     "may use",
     "may apply",
     "may have",
-    "may pursue"
+    "may pursue",
 ]
 
 hedge_change_verbs = ["increase", "decrease", "affect", "impact"]
@@ -1326,8 +1328,8 @@ hedge_standards = [
     "U.S. GAAP",
     "accounting standards",
     "ASU 2017-12",  # Targeted Improvements to Hedge Accounting
-    "ASC 815",      # Derivatives and Hedging
-    "Topic 815"     # Derivatives and Hedging
+    "ASC 815",  # Derivatives and Hedging
+    "Topic 815",  # Derivatives and Hedging
 ]
 ```
 
