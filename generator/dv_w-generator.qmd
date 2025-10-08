@@ -7062,9 +7062,6 @@ def generate_accounting_noise_paragraph(
     # Shuffle and select
     random.shuffle(all_sentences)
     selected_sentences = all_sentences[0]
-    print(selected_sentences)
-    if isinstance(selected_sentences, list):
-        selected_sentences = ". ".join(selected_sentences) + "."
     selected_sentences = [s[0].upper() + s[1:] if s else "" for s in selected_sentences]
     # Create paragraph
     paragraph = (
