@@ -2264,17 +2264,14 @@ def build_sentence_label_excel():
 
     # Define label groupings (pairs of related labels)
     label_groups = {
-        "Gen_Hedge_0-1": [0, 1],
-        "Gen_Speculation_2": [2],
+        "Gen_Hedge_0-1-2": [0, 1, 2],
+        "Speculation_Policy_2_14_15_16": [2, 14, 15, 16],
         "Irrelevant_3": [3],
         "Liabilities_Warrants_4-5": [4, 5],
         "Embedded_Derivatives_6-7": [6, 7],
-        "IR_Hedge_8-9": [8, 9],
-        "FX_Hedge_10-11": [10, 11],
-        "CP_Hedge_12-13": [12, 13],
-        "IR_Speculation_14": [14],
-        "FX_Speculation_15": [15],
-        "CP_Speculation_16": [16],
+        "IR_Hedge_8-9-14": [8, 9, 14],
+        "FX_Hedge_10-11-15": [10, 11, 15],
+        "CP_Hedge_12-13-16": [12, 13, 16],
     }
 
     # Create a mapping from label_id to group name
@@ -2315,12 +2312,13 @@ def build_sentence_label_excel():
                 workbook = writer.book
                 workbook.strings_to_urls = False
 
-                # Write complete group dataset to first sheet
-                group_df_clean = group_df.drop(columns=["group"])
-                print(f"    - 'All_{group_name}' sheet...")
-                group_df_clean.to_excel(
-                    writer, sheet_name=f"All_{group_name}"[:31], index=False
-                )
+                # Write complete group dataset to first sheet if and only if there is more than one label
+                if len(label_ids) > 1:
+                    group_df_clean = group_df.drop(columns=["group"])
+                    print(f"    - 'All_{group_name}' sheet...")
+                    group_df_clean.to_excel(
+                        writer, sheet_name=f"All_{group_name}"[:31], index=False
+                    )
 
                 # Write separate sheet for each label in this group
                 unique_labels_in_group = sorted(group_df["label"].unique())
