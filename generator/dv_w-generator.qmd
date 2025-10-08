@@ -7060,7 +7060,7 @@ def generate_accounting_noise_paragraph(
     # Shuffle and select
     random.shuffle(all_sentences)
     selected_sentences = all_sentences[0][:max_len]
-    selected_sentences = [s[0].upper() + s[1:] if s else "" for s in all_sentences]
+    selected_sentences = [s[0].upper() + s[1:] if s else "" for s in selected_sentences]
     # Create paragraph
     paragraph = (
         f"<reportingYear>{reporting_year}</reportingYear> "
