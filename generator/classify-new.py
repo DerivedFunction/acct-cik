@@ -2311,15 +2311,10 @@ def build_sentence_label_excel():
                 # Disable automatic URL conversion
                 workbook = writer.book
                 workbook.strings_to_urls = False
-
-                # Write complete group dataset to first sheet if and only if there is more than one label
-                if len(label_ids) > 1:
-                    group_df_clean = group_df.drop(columns=["group"])
-                    print(f"    - 'All_{group_name}' sheet...")
-                    group_df_clean.to_excel(
-                        writer, sheet_name=f"All_{group_name}"[:31], index=False
-                    )
-
+                
+                
+                group_df_clean = group_df.drop(columns=["group"])
+                
                 # Write separate sheet for each label in this group
                 unique_labels_in_group = sorted(group_df["label"].unique())
 
