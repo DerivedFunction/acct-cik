@@ -6099,24 +6099,25 @@ def generate_accounting_noise_paragraph(
 
     # Stock-based compensation (0-1)
     if random.random() < 0.3:
+        sentences = []
+
+        template = random.choice(stock_comp_templates)
+        amount = round(random.uniform(10, 80), 1)
+        shares = random.choice([50000, 100000, 250000, 500000])
+        price = round(random.uniform(20, 100), 2)
+        sentence = template.format(
+            amount=amount,
+            year=current_year,
+            month=random.choice(months),
+            shares=f"{shares:,}",
+            price=price,
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+            end_day=random.randint(28, 31),
+        )
         if random.random() < 0.5:
-            template = random.choice(stock_comp_templates)
-            amount = round(random.uniform(10, 80), 1)
-            shares = random.choice([50000, 100000, 250000, 500000])
-            price = round(random.uniform(20, 100), 2)
-            sentence = template.format(
-                amount=amount,
-                year=current_year,
-                month=random.choice(months),
-                shares=f"{shares:,}",
-                price=price,
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-            )
-        else:
             template = random.choice(stock_comp_valuation_templates)
             amount = round(random.uniform(5, 25), 2)
             model = random.choice(valuation_models)
@@ -6130,28 +6131,31 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
                 model=model,
             )
-        all_sentences.append(sentence)
+            sentences.append(sentence)
+        all_sentences.append([sentences])
 
     # Pension (0-1)
     if random.random() < 0.2:
+        sentences = []
+
+        template = random.choice(pension_templates)
+        assets = round(random.uniform(200, 800), 1)
+        obligations = round(assets * random.uniform(1.0, 1.2), 1)
+        amount = round(random.uniform(20, 100), 1)
+        sentence = template.format(
+            assets=assets,
+            obligations=obligations,
+            year=current_year,
+            month=random.choice(months),
+            amount=amount,
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+            end_day=random.randint(28, 31),
+        )
+        sentences.append(sentence)
         if random.random() < 0.5:
-            template = random.choice(pension_templates)
-            assets = round(random.uniform(200, 800), 1)
-            obligations = round(assets * random.uniform(1.0, 1.2), 1)
-            amount = round(random.uniform(20, 100), 1)
-            sentence = template.format(
-                assets=assets,
-                obligations=obligations,
-                year=current_year,
-                month=random.choice(months),
-                amount=amount,
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-                end_day=random.randint(28, 31),
-            )
-        else:
             template = random.choice(opeb_templates)
             amount = round(random.uniform(50, 200), 1)
             sentence = template.format(
@@ -6164,26 +6168,29 @@ def generate_accounting_noise_paragraph(
                 major_currency=major_currency,
                 money_unit=money_units,
             )
-        all_sentences.append(sentence)
+            sentences.append(sentence)
+        all_sentences.append([sentences])
 
     # Commitments (0-1)
     if random.random() < 0.3:
+        sentences = []
+
+        template = random.choice(purchase_commitment_templates)
+        amount = round(random.uniform(50, 300), 1)
+        years = random.randint(3, 7)
+        sentence = template.format(
+            amount=amount,
+            year=current_year,
+            years=years,
+            month=random.choice(months),
+            end_day=random.randint(28, 31),
+            company=pick_company_name(company_name),
+            currency_code=currency_code,
+            major_currency=major_currency,
+            money_unit=money_units,
+        )
+        sentences.append(sentence)
         if random.random() < 0.5:
-            template = random.choice(purchase_commitment_templates)
-            amount = round(random.uniform(50, 300), 1)
-            years = random.randint(3, 7)
-            sentence = template.format(
-                amount=amount,
-                year=current_year,
-                years=years,
-                month=random.choice(months),
-                end_day=random.randint(28, 31),
-                company=pick_company_name(company_name),
-                currency_code=currency_code,
-                major_currency=major_currency,
-                money_unit=money_units,
-            )
-        else:
             template = random.choice(guarantee_templates)
             amount = round(random.uniform(10, 100), 1)
             payments = round(amount * random.uniform(0.1, 0.3), 1)
@@ -6200,7 +6207,8 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
                 end_day=random.randint(28, 31),
             )
-        all_sentences.append(sentence)
+            sentences.append(sentence)
+        all_sentences.append([sentences])
 
     # Restructuring (0-1)
     if random.random() < 0.2:
@@ -6221,7 +6229,7 @@ def generate_accounting_noise_paragraph(
             money_unit=money_units,
             end_day=random.randint(28, 31),
         )
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Acquisitions (0-1)
     if random.random() < 0.2:
@@ -6248,7 +6256,7 @@ def generate_accounting_noise_paragraph(
             money_unit=money_units,
             end_day=random.randint(28, 31),
         )
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Balance sheet changes (0-2 sentences)
     num_bs_changes = random.randint(0, 2)
@@ -6472,7 +6480,7 @@ def generate_accounting_noise_paragraph(
                 company=pick_company_name(company_name),
             )
 
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
     # CEO and executive compensation (0-2 sentences)
     num_exec_comp = random.randint(0, 2)
     for _ in range(num_exec_comp):
@@ -6658,7 +6666,7 @@ def generate_accounting_noise_paragraph(
         elif comp_type == "clawback":
             template = random.choice(clawback_templates)
             sentence = template.format(company=pick_company_name(company_name))
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Market prices and trading (0-1)
     if random.random() < 0.2:
@@ -6717,7 +6725,7 @@ def generate_accounting_noise_paragraph(
                 company=pick_company_name(company_name),
             )
 
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Company description (0-1)
     if random.random() < 0.2:
@@ -6764,7 +6772,7 @@ def generate_accounting_noise_paragraph(
             mission_statement=mission,
         )
 
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Institutional/hedge fund ownership (0-1)
     if random.random() < 0.15:
@@ -6811,7 +6819,7 @@ def generate_accounting_noise_paragraph(
                 company=pick_company_name(company_name),
             )
 
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Forward-looking statements (0-1)
     if random.random() < 0.25:
@@ -6836,8 +6844,8 @@ def generate_accounting_noise_paragraph(
             )
         else:
             sentence = random.choice(safe_harbor_templates)
-
-        all_sentences.append(sentence.format(company=pick_company_name(company_name)))
+        sentence = sentence.format(company=pick_company_name(company_name))
+        all_sentences.append([sentence])
 
     # Analyst coverage (0-1)
     if random.random() < 0.1:
@@ -6870,7 +6878,7 @@ def generate_accounting_noise_paragraph(
             company=pick_company_name(company_name),
         )
 
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Credit ratings (0-1)
     if random.random() < 0.15:
@@ -6903,7 +6911,7 @@ def generate_accounting_noise_paragraph(
             company=pick_company_name(company_name),
         )
 
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Dividend/capital allocation (0-1)
     if random.random() < 0.2:
@@ -6955,7 +6963,7 @@ def generate_accounting_noise_paragraph(
                 company=pick_company_name(company_name),
             )
 
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Competition (0-1)
     if random.random() < 0.15:
@@ -6984,7 +6992,7 @@ def generate_accounting_noise_paragraph(
             company=pick_company_name(company_name),
         )
 
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Regulatory (0-1)
     if random.random() < 0.15:
@@ -7007,7 +7015,7 @@ def generate_accounting_noise_paragraph(
             company=pick_company_name(company_name),
         )
 
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
     # Insurance (0-1)
     if random.random() < 0.1:
@@ -7034,24 +7042,24 @@ def generate_accounting_noise_paragraph(
             company=pick_company_name(company_name),
         )
 
-        all_sentences.append(sentence)
+        all_sentences.append([sentence])
 
-    if random.random() < 0.05:  # Accounting standards
-        all_sentences = generate_other_policy_update()
-    if random.random() < 0.05:  # Generat of text and numbers
+    if random.random() < 0.15:  # Accounting standards
+        all_sentences.append(generate_other_policy_update())
+    if random.random() < 0.15:  # Generat of text and numbers
         noise = generate_sec_noise(
             company=pick_company_name(company_name),
             currency_unit=money_units,
             month=random.choice(months),
             year=current_year,
         )
-        all_sentences = noise
-    if random.random() < 0.005: # Nothing
-        all_sentences = [""]
+        all_sentences.append(noise)
+    if random.random() < 0.05: # Nothing
+        all_sentences.append([""])
 
     # Shuffle and select
     random.shuffle(all_sentences)
-    selected_sentences = all_sentences[:max_len]
+    selected_sentences = all_sentences[0][:max_len]
     selected_sentences = [s[0].upper() + s[1:] if s else "" for s in all_sentences]
     # Create paragraph
     paragraph = (
