@@ -1842,7 +1842,7 @@ def get_sentence_analysis():
         results = {k: f.result() for k, f in futures.items()}
 
     print("Writing all results to Excel files...")
-    write_workbooks(
+    write_workbooks_modular(
         keyword_model_comparison=results["keyword_analysis"],
         sa=sa,
         other_results=results,
@@ -1857,123 +1857,55 @@ def get_sentence_analysis():
     return sa
 
 
-def write_workbooks(
-    keyword_model_comparison,
-    sa,
-    other_results,
-    base_path=KEYWORDS_EXCEL_PATH,
-    max_workers=4,
-):
-    """
-    Write main and keyword comparison Excel workbooks in parallel.
-    """
-    base_path = Path(base_path)
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import pandas as pd
 
-    # --- 1. Main server workbook ---
-    main_server_workbook = {
-        "filename": SERVER_EXCEL_PATH,
-        "description": "Server Sentence Analysis",
-        "sheets": {
-            "all_reports": (sa, False),
-            "Current Hedging": (other_results["current"], False),
-            "Hedging Past Year": (other_results["historic"], False),
-            "Speculation Only": (other_results["speculation"], False),
-            "Derivative Liabilities Warrants": (other_results["liabilities"], False),
-            "Embedded Derivatives": (other_results["embedded"], False),
-            "unique_per_year": (other_results["unique"], False),
-            "label_cooccurrence": (other_results["cooc"], True),
-            "Hedging by Type": (other_results["hedge_type"], False),
-            "Hedge Type Cross": (other_results["hedge_cross"], True),
-        },
-    }
 
-    # --- 2. Keyword workbooks ---
-    keyword_workbooks = [
-        {
-            "filename": base_path.with_name(base_path.stem + "_HEDGES_CURRENT.xlsx"),
-            "description": "Current Only - Hedges",
-            "sheets": {
-                "Summary_Current_Only": ("summary_current", False),
-                "Detailed_Current_Only": ("detailed_current", False),
-                "Basic_Current_Only": ("comparison_current", False),
-                "Confusion_Overall_Curr": ("confusion_overall_current", True),
-                "Confusion_FX_Curr": ("confusion_fx_current", True),
-                "Confusion_IR_Curr": ("confusion_ir_current", True),
-                "Confusion_CP_Curr": ("confusion_cp_current", True),
-            },
-        },
-        {
-            "filename": base_path.with_name(base_path.stem + "_HEDGES_ALL.xlsx"),
-            "description": "Current+Historic - Hedges",
-            "sheets": {
-                "Summary_Curr_Historic": ("summary_all", False),
-                "Detailed_Curr_Historic": ("detailed_all", False),
-                "Basic_Curr_Historic": ("comparison_all", False),
-                "Confusion_Overall_All": ("confusion_overall_all", True),
-                "Confusion_FX_All": ("confusion_fx_all", True),
-                "Confusion_IR_All": ("confusion_ir_all", True),
-                "Confusion_CP_All": ("confusion_cp_all", True),
-            },
-        },
-        {
-            "filename": base_path.with_name(
-                base_path.stem + "_ALL_DERIVATIVES_CURRENT.xlsx"
-            ),
-            "description": "Current Only - All Derivatives",
-            "sheets": {
-                "Summary_Current_Only": ("summary_any_deriv_current", False),
-                "Detailed_Current_Only": ("detailed_any_deriv_current", False),
-                "Basic_Current_Only": ("comparison_current", False),
-                "Confusion_Overall_Curr": ("confusion_any_deriv_current", True),
-                "Confusion_FX_Curr": ("confusion_fx_current", True),
-                "Confusion_IR_Curr": ("confusion_ir_current", True),
-                "Confusion_CP_Curr": ("confusion_cp_current", True),
-                "ModelOnly_Liab_Embed": ("model_only_current", False),
-            },
-        },
-        {
-            "filename": base_path.with_name(
-                base_path.stem + "_ALL_DERIVATIVES_FULL.xlsx"
-            ),
-            "description": "Current+Historic - All Derivatives",
-            "sheets": {
-                "Summary_Curr_Historic": ("summary_any_deriv_all", False),
-                "Detailed_Curr_Historic": ("detailed_any_deriv_all", False),
-                "Basic_Curr_Historic": ("comparison_all", False),
-                "Confusion_Overall_All": ("confusion_any_deriv_all", True),
-                "Confusion_FX_All": ("confusion_fx_all", True),
-                "Confusion_IR_All": ("confusion_ir_all", True),
-                "Confusion_CP_All": ("confusion_cp_all", True),
-                "ModelOnly_Liab_Embed": ("model_only_all", False),
-            },
-        },
-        {
-            # Separate workbook just for KW_Model_Comparison
-            "filename": base_path.with_name(
-                base_path.stem + "_KW_MODEL_COMPARISON.xlsx"
-            ),
-            "description": "Keyword vs Model Comparison (Standalone)",
-            "sheets": {
-                "KW_Model_Comparison": ("comparison_summary", False),
-                # Add this line to create the new sheet
-                "Model_Performance_Summary": ("model_performance_summary", False),
-            },
-        },
-        {
-        "filename": base_path.with_name(base_path.stem + "_SPECULATIVE_POLICY.xlsx"),
-        "description": "Keyword vs Speculative/Policy Analysis",
-        "sheets": {
-            "Translation_Summary": ("translation_summary", False),
-            "Keyword_vs_Speculative": ("keyword_vs_spec", False),
-            "ModelOnly_Liab_Embed": ("model_only_summary", False),
-            "Detailed_Comparison": ("comparison", False),
-            },
-        },
-    ]
+class WorkbookManager:
+    """Manages multiple data sources and writes Excel workbooks in parallel."""
 
-    all_workbooks = [main_server_workbook] + keyword_workbooks
+    def __init__(self, base_path=KEYWORDS_EXCEL_PATH):
+        self.base_path = Path(base_path)
+        self.data_sources = {}
 
-    def write_one_workbook(config):
+    def register_data_source(self, name, data):
+        """Register a data source (dict of DataFrames or single DataFrame)."""
+        self.data_sources[name] = data
+        return self
+
+    def get_data(self, source_name, key=None):
+        """Retrieve data from a registered source."""
+        if source_name not in self.data_sources:
+            return None
+
+        source = self.data_sources[source_name]
+
+        # If it's already a DataFrame, return it
+        if isinstance(source, pd.DataFrame):
+            return source
+
+        # If it's a dict and we have a key, return the specific item
+        if isinstance(source, dict) and key:
+            return source.get(key)
+
+        return None
+
+    def create_workbook_config(self, filename, description, sheets):
+        """
+        Create a workbook configuration.
+
+        sheets format:
+            {
+                "SheetName": ("source_name", "key", index_flag),
+                "SheetName2": ("source_name", None, False),  # For direct DataFrame sources
+                "SheetName3": dataframe_object,  # Direct DataFrame
+            }
+        """
+        return {"filename": filename, "description": description, "sheets": sheets}
+
+    def write_workbook(self, config):
+        """Write a single workbook based on configuration."""
         filename = Path(config["filename"])
         filename.parent.mkdir(parents=True, exist_ok=True)
 
@@ -1981,18 +1913,35 @@ def write_workbooks(
             workbook = writer.book
             workbook.strings_to_urls = False
 
-            for sheet_name, data_cfg in config["sheets"].items():
-                if isinstance(data_cfg[0], pd.DataFrame):
-                    df = data_cfg[0]
-                else:
-                    df = keyword_model_comparison.get(data_cfg[0])
+            for sheet_name, sheet_config in config["sheets"].items():
+                # Handle direct DataFrame
+                if isinstance(sheet_config, pd.DataFrame):
+                    df = sheet_config
+                    index_flag = False
+                # Handle tuple configuration
+                elif isinstance(sheet_config, tuple):
+                    if len(sheet_config) == 3:
+                        source_name, key, index_flag = sheet_config
+                    else:
+                        source_name, key = sheet_config
+                        index_flag = False
 
-                if df is None or df.empty:
+                    df = self.get_data(source_name, key)
+                else:
+                    print(
+                        f"⚠️  Invalid config for '{sheet_name}' in {config['description']}"
+                    )
+                    continue
+
+                # Check if data is valid
+                if df is None or (isinstance(df, pd.DataFrame) and df.empty):
                     print(f"⚠️  Skipped '{sheet_name}' in {config['description']}")
                     continue
 
-                df.to_excel(writer, sheet_name=sheet_name, index=data_cfg[1])
+                # Write to Excel
+                df.to_excel(writer, sheet_name=sheet_name, index=index_flag)
 
+                # Auto-adjust column widths
                 worksheet = writer.sheets[sheet_name]
                 for i, col in enumerate(df.columns):
                     try:
@@ -2005,19 +1954,200 @@ def write_workbooks(
 
         return f"✅ {config['description']} saved -> {filename}"
 
-    print(
-        f"\n🚀 Writing {len(all_workbooks)} workbooks with {max_workers} threads...\n"
+    def write_all(self, configs, max_workers=4):
+        """Write all workbooks in parallel."""
+        print(f"\n🚀 Writing {len(configs)} workbooks with {max_workers} threads...\n")
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(self.write_workbook, cfg) for cfg in configs]
+            for f in as_completed(futures):
+                try:
+                    print(f.result())
+                except Exception as e:
+                    print(f"❌ Error writing workbook: {e}")
+
+        print("\n🎉 All Excel workbooks generated successfully!\n")
+
+
+# =============================================================================
+# USAGE IN YOUR MAIN FUNCTION
+# =============================================================================
+
+
+def write_workbooks_modular(
+    keyword_model_comparison,
+    sa,
+    other_results,
+    base_path=KEYWORDS_EXCEL_PATH,
+    max_workers=4,
+):
+    """
+    Modular version of write_workbooks using WorkbookManager.
+    """
+    # Initialize the manager
+    manager = WorkbookManager(base_path)
+
+    # Register all data sources
+    manager.register_data_source("sa", sa)
+    manager.register_data_source("keyword_model", keyword_model_comparison)
+    manager.register_data_source(
+        "speculative", other_results.get("speculative_analysis", {})
     )
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(write_one_workbook, cfg) for cfg in all_workbooks]
-        for f in as_completed(futures):
-            try:
-                print(f.result())
-            except Exception as e:
-                print(f"❌ Error writing workbook: {e}")
+    manager.register_data_source("current", other_results.get("current"))
+    manager.register_data_source("historic", other_results.get("historic"))
+    manager.register_data_source("speculation", other_results.get("speculation"))
+    manager.register_data_source("liabilities", other_results.get("liabilities"))
+    manager.register_data_source("embedded", other_results.get("embedded"))
+    manager.register_data_source("unique", other_results.get("unique"))
+    manager.register_data_source("cooc", other_results.get("cooc"))
+    manager.register_data_source("hedge_type", other_results.get("hedge_type"))
+    manager.register_data_source("hedge_cross", other_results.get("hedge_cross"))
 
-    print("\n🎉 All Excel workbooks generated successfully!\n")
+    # Define all workbook configurations
+    configs = [
+        # Main server workbook
+        manager.create_workbook_config(
+            filename=SERVER_EXCEL_PATH,
+            description="Server Sentence Analysis",
+            sheets={
+                "all_reports": ("sa", None, False),
+                "Current Hedging": ("current", None, False),
+                "Hedging Past Year": ("historic", None, False),
+                "Speculation Only": ("speculation", None, False),
+                "Derivative Liabilities Warrants": ("liabilities", None, False),
+                "Embedded Derivatives": ("embedded", None, False),
+                "unique_per_year": ("unique", None, False),
+                "label_cooccurrence": ("cooc", None, True),
+                "Hedging by Type": ("hedge_type", None, False),
+                "Hedge Type Cross": ("hedge_cross", None, True),
+            },
+        ),
+        # Keyword comparison workbooks
+        manager.create_workbook_config(
+            filename=manager.base_path.with_name(
+                manager.base_path.stem + "_HEDGES_CURRENT.xlsx"
+            ),
+            description="Current Only - Hedges",
+            sheets={
+                "Summary_Current_Only": ("keyword_model", "summary_current", False),
+                "Detailed_Current_Only": ("keyword_model", "detailed_current", False),
+                "Basic_Current_Only": ("keyword_model", "comparison_current", False),
+                "Confusion_Overall_Curr": (
+                    "keyword_model",
+                    "confusion_overall_current",
+                    True,
+                ),
+                "Confusion_FX_Curr": ("keyword_model", "confusion_fx_current", True),
+                "Confusion_IR_Curr": ("keyword_model", "confusion_ir_current", True),
+                "Confusion_CP_Curr": ("keyword_model", "confusion_cp_current", True),
+            },
+        ),
+        manager.create_workbook_config(
+            filename=manager.base_path.with_name(
+                manager.base_path.stem + "_HEDGES_ALL.xlsx"
+            ),
+            description="Current+Historic - Hedges",
+            sheets={
+                "Summary_Curr_Historic": ("keyword_model", "summary_all", False),
+                "Detailed_Curr_Historic": ("keyword_model", "detailed_all", False),
+                "Basic_Curr_Historic": ("keyword_model", "comparison_all", False),
+                "Confusion_Overall_All": (
+                    "keyword_model",
+                    "confusion_overall_all",
+                    True,
+                ),
+                "Confusion_FX_All": ("keyword_model", "confusion_fx_all", True),
+                "Confusion_IR_All": ("keyword_model", "confusion_ir_all", True),
+                "Confusion_CP_All": ("keyword_model", "confusion_cp_all", True),
+            },
+        ),
+        manager.create_workbook_config(
+            filename=manager.base_path.with_name(
+                manager.base_path.stem + "_ALL_DERIVATIVES_CURRENT.xlsx"
+            ),
+            description="Current Only - All Derivatives",
+            sheets={
+                "Summary_Current_Only": (
+                    "keyword_model",
+                    "summary_any_deriv_current",
+                    False,
+                ),
+                "Detailed_Current_Only": (
+                    "keyword_model",
+                    "detailed_any_deriv_current",
+                    False,
+                ),
+                "Basic_Current_Only": ("keyword_model", "comparison_current", False),
+                "Confusion_Overall_Curr": (
+                    "keyword_model",
+                    "confusion_any_deriv_current",
+                    True,
+                ),
+                "Confusion_FX_Curr": ("keyword_model", "confusion_fx_current", True),
+                "Confusion_IR_Curr": ("keyword_model", "confusion_ir_current", True),
+                "Confusion_CP_Curr": ("keyword_model", "confusion_cp_current", True),
+                "ModelOnly_Liab_Embed": ("keyword_model", "model_only_current", False),
+            },
+        ),
+        manager.create_workbook_config(
+            filename=manager.base_path.with_name(
+                manager.base_path.stem + "_ALL_DERIVATIVES_FULL.xlsx"
+            ),
+            description="Current+Historic - All Derivatives",
+            sheets={
+                "Summary_Curr_Historic": (
+                    "keyword_model",
+                    "summary_any_deriv_all",
+                    False,
+                ),
+                "Detailed_Curr_Historic": (
+                    "keyword_model",
+                    "detailed_any_deriv_all",
+                    False,
+                ),
+                "Basic_Curr_Historic": ("keyword_model", "comparison_all", False),
+                "Confusion_Overall_All": (
+                    "keyword_model",
+                    "confusion_any_deriv_all",
+                    True,
+                ),
+                "Confusion_FX_All": ("keyword_model", "confusion_fx_all", True),
+                "Confusion_IR_All": ("keyword_model", "confusion_ir_all", True),
+                "Confusion_CP_All": ("keyword_model", "confusion_cp_all", True),
+                "ModelOnly_Liab_Embed": ("keyword_model", "model_only_all", False),
+            },
+        ),
+        manager.create_workbook_config(
+            filename=manager.base_path.with_name(
+                manager.base_path.stem + "_KW_MODEL_COMPARISON.xlsx"
+            ),
+            description="Keyword vs Model Comparison (Standalone)",
+            sheets={
+                "KW_Model_Comparison": ("keyword_model", "comparison_summary", False),
+                "Model_Performance_Summary": (
+                    "keyword_model",
+                    "model_performance_summary",
+                    False,
+                ),
+            },
+        ),
+        # Speculative/Policy Analysis
+        manager.create_workbook_config(
+            filename=manager.base_path.with_name(
+                manager.base_path.stem + "_SPECULATIVE_POLICY.xlsx"
+            ),
+            description="Keyword vs Speculative/Policy Analysis",
+            sheets={
+                "Translation_Summary": ("speculative", "translation_summary", False),
+                "Keyword_vs_Speculative": ("speculative", "keyword_vs_spec", False),
+                "ModelOnly_Liab_Embed": ("speculative", "model_only_summary", False),
+                "Detailed_Comparison": ("speculative", "comparison", False),
+            },
+        ),
+    ]
 
+    # Write all workbooks
+    manager.write_all(configs, max_workers=max_workers)
 
 def process_sentence_chunk(chunk_data):
     """Process a chunk of sentences for label mapping - designed for ProcessPoolExecutor"""
