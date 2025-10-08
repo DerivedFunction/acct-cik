@@ -1254,6 +1254,7 @@ hedge_use_verbs = [
     "employed",
     "used",
     "had",
+    "reported",
     "maintained",
     "committed",
     "implemented",
@@ -1267,6 +1268,7 @@ hedge_use_verbs = [
     "has",
     "have",
     "applies",
+    "reports",
 ]
 hedge_may_use_verbs = [
     "may engage in",
@@ -1277,6 +1279,8 @@ hedge_may_use_verbs = [
     "may employ",
     "may use",
     "may apply",
+    "may have",
+    "may pursue"
 ]
 
 hedge_change_verbs = ["increase", "decrease", "affect", "impact"]
