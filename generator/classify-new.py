@@ -1904,8 +1904,15 @@ class WorkbookManager:
         """
         return {"filename": filename, "description": description, "sheets": sheets}
 
-    def write_workbook(self, config):
-        """Write a single workbook based on configuration."""
+    def write_workbook(self, config, auto_width=True, sample_rows=1000):
+        """
+        Write a single workbook based on configuration.
+
+        Args:
+            config: Workbook configuration dict
+            auto_width: Enable column auto-width (can be slow for large datasets)
+            sample_rows: Number of rows to sample for width calculation (faster)
+        """
         filename = Path(config["filename"])
         filename.parent.mkdir(parents=True, exist_ok=True)
 
@@ -1941,25 +1948,51 @@ class WorkbookManager:
                 # Write to Excel
                 df.to_excel(writer, sheet_name=sheet_name, index=index_flag)
 
-                # Auto-adjust column widths
-                worksheet = writer.sheets[sheet_name]
-                for i, col in enumerate(df.columns):
-                    try:
-                        max_len = (
-                            max(df[col].astype(str).map(len).max(), len(str(col))) + 2
-                        )
-                        worksheet.set_column(i, i, max_len)
-                    except Exception:
-                        pass
+                # OPTIMIZED: Auto-adjust column widths with sampling
+                if auto_width:
+                    worksheet = writer.sheets[sheet_name]
+
+                    # Sample rows for width calculation if dataset is large
+                    df_sample = (
+                        df
+                        if len(df) <= sample_rows
+                        else df.sample(n=sample_rows, random_state=42)
+                    )
+
+                    for i, col in enumerate(df.columns):
+                        try:
+                            # Calculate max width from sample
+                            col_max = df_sample[col].astype(str).str.len().max()
+                            header_len = len(str(col))
+                            max_len = max(col_max, header_len) + 2
+
+                            # Cap at reasonable width to prevent extremely wide columns
+                            max_len = min(max_len, 50)
+
+                            worksheet.set_column(i, i, max_len)
+                        except Exception:
+                            # Fallback to default width
+                            worksheet.set_column(i, i, 15)
 
         return f"✅ {config['description']} saved -> {filename}"
 
-    def write_all(self, configs, max_workers=4):
-        """Write all workbooks in parallel."""
+    def write_all(self, configs, max_workers=4, auto_width=True, sample_rows=1000):
+        """
+        Write all workbooks in parallel.
+
+        Args:
+            configs: List of workbook configurations
+            max_workers: Number of parallel threads
+            auto_width: Enable column auto-width (disable for speed)
+            sample_rows: Number of rows to sample for width calculation
+        """
         print(f"\n🚀 Writing {len(configs)} workbooks with {max_workers} threads...\n")
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [executor.submit(self.write_workbook, cfg) for cfg in configs]
+            futures = [
+                executor.submit(self.write_workbook, cfg, auto_width, sample_rows)
+                for cfg in configs
+            ]
             for f in as_completed(futures):
                 try:
                     print(f.result())
