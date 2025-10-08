@@ -919,13 +919,13 @@ hedge_position_templates = [
 
 eq_position_templates = [
     "As of {month} {end_day}, {year}, {company} {verb} {swap_type} to manage exposure to changes in the market price of its common stock and related equity-based compensation costs",
-    "At year-end {year}, {company} {verb} {swap_type} outstanding to hedge variability in compensation expense associated with changes in the company’s share price",
+    "At year-end {year}, {company} {verb} {swap_type} outstanding to hedge variability in compensation expense associated with changes in {company}’s share price",
     "As of {month} {year}, outstanding {swap_type} with notional amounts of {currency_code}{notional} {money_unit} remain in effect to mitigate exposure to equity price movements",
-    "{company} ’s derivative portfolio at {month} {end_day}, {year} includes {swap_type} used to manage market risks associated with fluctuations in the company’s stock price",
+    "{company} ’s derivative portfolio at {month} {end_day}, {year} includes {swap_type} used to manage market risks associated with fluctuations in {company}’s stock price",
     "At the end of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active, hedging exposures tied to equity-based programs",
     "As of {month} {end_day}, {year}, {company} {verb} {swap_type} outstanding with a notional amount of {currency_code}{notional} {money_unit} to offset potential volatility from changes in its share price",
     "At year-end {year}, {company} ’s derivative portfolio includes {swap_type} executed to reduce variability in reported expenses arising from equity-linked compensation",
-    "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} remain designated as economic hedges of the company’s share price exposure",
+    "As of {month} {end_day}, {year}, outstanding {swap_type} totaling {currency_code}{notional} {money_unit} remain designated as economic hedges of {company}’s share price exposure",
     "{company} {verb} {swap_type} with a notional amount of {currency_code}{notional} {money_unit} at {month} {end_day}, {year}, to hedge the market price risk associated with stock-based compensation plans",
     "At the close of {year}, {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} remain active to mitigate equity-related market risk",
     "As of {month} {year}, {company} ’s {swap_type} portfolio includes notional amounts totaling {currency_code}{notional} {money_unit} linked to the value of its common stock or market indices",
@@ -7125,7 +7125,7 @@ def generate(size_per_label=100, max_workers=8):
                 )
 
         # Parallel accounting noise
-        for _ in range(size_per_label):
+        for _ in range(size_per_label * 2):
             futures.append(executor.submit(generate_accounting_noise_paragraph))
 
         return futures
