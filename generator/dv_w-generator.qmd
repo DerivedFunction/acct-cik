@@ -906,14 +906,14 @@ hedge_may_use_templates = [
 
 hedge_policy_templates = [
     "Changes in the fair value of derivative instruments are recorded each period in current earnings or other comprehensive income (loss), depending on whether a derivative instrument is designated as part of a hedging transaction and, if it is, the type of hedging transaction",
-    "Derivative instruments are measured at fair value with gains and losses recorded in earnings or accumulated other comprehensive income based on hedge designation",
+    "{swap_type} are measured at fair value with gains and losses recorded in earnings or accumulated other comprehensive income based on hedge designation",
     "{company} accounts for derivatives at fair value, with changes in fair value recognized in either net income or other comprehensive income depending on the nature of the hedging relationship",
     "Fair value changes in derivatives are reflected in the financial statements through either the income statement or other comprehensive income, based on whether hedge accounting is applied",
-    "{company} records derivative instruments at fair value, with changes recognized in earnings or OCI depending on hedge designation",
+    "{company} records {swap_type} at fair value, with changes recognized in earnings or OCI depending on hedge designation",
     "Changes in derivative fair values are recorded in net income or accumulated OCI, based on the type of hedge and its designation",
     "Derivatives are accounted for at fair value, with gains or losses recorded in earnings or other comprehensive income per hedge accounting rules",
     "{company} recognizes fair value changes of derivatives in either current earnings or OCI, depending on the hedging relationship",
-    "Derivative instruments are measured at fair value, with changes reflected in net income or accumulated OCI based on hedge designation",
+    "{swap_type} are measured at fair value, with changes reflected in net income or accumulated OCI based on hedge designation",
     "Fair value adjustments for derivatives are recorded in earnings or OCI, depending on whether the instrument qualifies for hedge accounting",
     "{company} accounts for derivatives at fair value, recognizing changes in either the income statement or other comprehensive income",
     "Changes in the fair value of derivatives are recorded in earnings or OCI, based on the nature of the hedging relationship",
@@ -921,15 +921,15 @@ hedge_policy_templates = [
     "{company} records fair value changes in derivatives in either earnings or accumulated OCI, based on hedge designation",
     "Derivative fair value changes are recognized in the income statement or OCI, depending on the type of hedging relationship",
     "{company} accounts for derivatives at fair value, with changes recorded in earnings or OCI per applicable accounting standards",
-    "Fair value changes in derivative instruments are reflected in net income or OCI, based on their hedge designation",
+    "Fair value changes in {swap_type} are reflected in net income or OCI, based on their hedge designation",
     "Derivatives are measured at fair value, with changes recorded in earnings or other comprehensive income depending on hedge accounting",
     "{company} recognizes derivative fair value changes in either net income or OCI, based on the hedging relationship",
     "Changes in derivative fair values are recorded in current earnings or OCI, depending on the hedge type and accounting treatment",
-    "All derivative instruments, other than those that satisfy specific exceptions, are recorded at fair value. {company} record changes in the fair value of our derivative positions based on the value for which the derivative instrument could be exchanged between willing parties",
+    "All {swap_type}, other than those that satisfy specific exceptions, are recorded at fair value. {company} record changes in the fair value of our derivative positions based on the value for which the derivative instrument could be exchanged between willing parties",
     "If market quotes are not available to estimate fair value, management’s best estimate of fair value is based on the quoted market price of derivatives with similar characteristics or determined through industry-standard valuation techniques",
     "{company} value our {swap_type} using observable inputs including interest rate curves, risk adjusted discount rates, credit spreads and other relevant data",
-    "Gains and losses on derivative instruments are recognized currently in earnings",
-    "The ultimate fair value of our derivative instruments is uncertain, and {company} believe that it is reasonably possible that a change in the estimated fair value could occur in the near future",
+    "Gains and losses on {swap_type} are recognized currently in earnings",
+    "The ultimate fair value of our {swap_type} is uncertain, and {company} believe that it is reasonably possible that a change in the estimated fair value could occur in the near future",
     "The accounting for the changes in the fair value of the derivative depends on the intended use of the derivative and the resulting designation",
     "For a derivative that does not qualify as a {hedge_type} hedge, the change in {hedge_type} is recognized currently in net income",
 ]
@@ -959,7 +959,7 @@ hedge_documentation_templates = [
 ]
 
 hedge_effectiveness_templates = [
-    "{company} {verb}, both at inception and on an on-going basis, whether the derivative instruments that are utilized in {hedge_type} hedging transactions are highly effective in offsetting the {metric} of hedged items",
+    "{company} {verb}, both at inception and on an on-going basis, whether the {swap_type} that are utilized in {hedge_type} hedging transactions are highly effective in offsetting the {metric} of hedged items",
     "{company} {verb} hedge effectiveness {frequency} to ensure derivatives continue to meet the criteria for hedge accounting",
     "Hedge effectiveness is {verb} {frequency} using {method} in accordance with {standard}",
     "{company} {verb} {frequency} assessments of hedge effectiveness to determine whether hedging relationships remain highly effective",
@@ -1707,7 +1707,7 @@ fx_debt_optimization_templates = [
 ]
 
 # Foreign Exchange Hedge Templates
-fx_may_use_templates = [
+    fx_may_use_templates = [
     "{company} {verb} {swap_types} to mitigate exposure to foreign currency movements",
     "{company} {verb} {swap_types} to manage risks related to forecasted foreign transactions",
     "{company} {verb} {swap_types} to offset volatility from translating foreign subsidiaries’ results",
