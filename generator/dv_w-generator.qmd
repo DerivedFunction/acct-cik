@@ -760,8 +760,8 @@ hedge_past_event_template = [
 
 hedge_no_such_outstanding_template = [
     # --- One-year ---
-    "As of {month} {end_day}, {year}, {company} {verb} no outstanding {swap_type} positions"
-    "As of {month} {end_day}, {year}, {company} did not {verb} outstanding {swap_type}"
+    "As of {month} {end_day}, {year}, {company} {verb} no outstanding {swap_type} positions",
+    "As of {month} {end_day}, {year}, {company} did not {verb} outstanding {swap_type}",
     "At year-end {year}, {company} reported no outstanding {swap_type}, as all derivative instruments were closed out before {month} {year}",
     "As of {month} {year}, there were no {swap_type} remaining",
     "In the {quarter} quarter of {year}, there were no {swap_type} remaining",
