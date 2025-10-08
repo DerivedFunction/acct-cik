@@ -218,11 +218,6 @@ shared_topics = [
     "defined benefit plans",
     "collaborative arrangements",
     "insurance contracts",
-    "hedging activities",
-    "derivatives and hedging",
-    "cash flow hedges",
-    "fair value hedges",
-    "hedge effectiveness",
 ]
 
 other_standard_names = [
