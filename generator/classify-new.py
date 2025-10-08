@@ -2271,14 +2271,17 @@ def build_sentence_label_excel():
 
     # Define label groupings (pairs of related labels)
     label_groups = {
-        "General_Hedge_0-1": [0, 1],
-        "Speculation_2": [2],
+        "Gen_Hedge_0-1": [0, 1],
+        "Gen_Speculation_2": [2],
         "Irrelevant_3": [3],
         "Liabilities_Warrants_4-5": [4, 5],
         "Embedded_Derivatives_6-7": [6, 7],
-        "Interest_Rate_8-9": [8, 9],
-        "Foreign_Exchange_10-11": [10, 11],
-        "Commodity_Price_12-13": [12, 13],
+        "IR_Hedge_8-9": [8, 9],
+        "FX_Hedge_10-11": [10, 11],
+        "CP_Hedge_12-13": [12, 13],
+        "IR_Speculation_14": [14],
+        "FX_Speculation_15": [15],
+        "CP_Speculation_16": [16],
     }
 
     # Create a mapping from label_id to group name
