@@ -5625,7 +5625,7 @@ def generate_accounting_noise_paragraph(
                     end_day=random.randint(28, 31),
                 )
                 sentences.append(sentence)
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # Restructuring (0-1)
     if random.random() < 0.2:
@@ -5726,7 +5726,7 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
             )
             sentences.append(sentence)
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
     # Acquisitions (0-1)
     if random.random() < 0.2:
         template = random.choice(acquisition_templates)
@@ -5804,7 +5804,7 @@ def generate_accounting_noise_paragraph(
                 end_day=random.randint(28, 31),
             )
             sentences.append(sentence)
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # Inventory (0-1)
     if random.random() < 0.3:
@@ -5853,7 +5853,7 @@ def generate_accounting_noise_paragraph(
                 prev_amount=prev_amount,
             )
             sentences.append(sentence)
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # PP&E (0-1)
     if random.random() < 0.3:
@@ -5907,7 +5907,7 @@ def generate_accounting_noise_paragraph(
                 end_day=random.randint(28, 31),
             )
             sentences.append(sentence)
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # Leases (0-1)
     if random.random() < 0.3:
@@ -5960,7 +5960,7 @@ def generate_accounting_noise_paragraph(
                 pv_amount=pv_amount,
             )
             sentences.append(sentence)
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # Goodwill and Intangibles (0-1)
     if random.random() < 0.3:
@@ -5999,7 +5999,7 @@ def generate_accounting_noise_paragraph(
         )
         sentences.append(sentence)
 
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # Debt (0-1)
     if random.random() < 0.3:
@@ -6015,7 +6015,7 @@ def generate_accounting_noise_paragraph(
         amount2 = generate_value(False)
         pct = generate_value(False, 8)
         pct2 = generate_value(False, 20)
-        outstanding = random.randint(0, amount // 2)
+        outstanding = random.randint(0, int(amount) // 2)
         debt_type = random.choice(debt_types_list)
         maturity_year = current_year + random.randint(3, 10)
         sentence = template.format(
@@ -6033,6 +6033,8 @@ def generate_accounting_noise_paragraph(
             major_currency=major_currency,
             money_unit=money_units,
             end_day=random.randint(28, 31),
+            pct=pct,
+            pct2=pct2,
         )
         sentences.append(sentence)
 
@@ -6052,7 +6054,7 @@ def generate_accounting_noise_paragraph(
         )
         sentences.append(sentence)
 
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # Income taxes (0-1)
     if random.random() < 0.3:
@@ -6095,7 +6097,7 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
             )
             sentences.append(sentence)
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # Stock-based compensation (0-1)
     if random.random() < 0.3:
@@ -6132,7 +6134,7 @@ def generate_accounting_noise_paragraph(
                 model=model,
             )
             sentences.append(sentence)
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # Pension (0-1)
     if random.random() < 0.2:
@@ -6169,7 +6171,7 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
             )
             sentences.append(sentence)
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # Commitments (0-1)
     if random.random() < 0.3:
@@ -6208,7 +6210,7 @@ def generate_accounting_noise_paragraph(
                 end_day=random.randint(28, 31),
             )
             sentences.append(sentence)
-        all_sentences.append([sentences])
+        all_sentences.append(sentences)
 
     # Restructuring (0-1)
     if random.random() < 0.2:
@@ -7060,6 +7062,7 @@ def generate_accounting_noise_paragraph(
     # Shuffle and select
     random.shuffle(all_sentences)
     selected_sentences = all_sentences[0]
+    print(selected_sentences)
     if isinstance(selected_sentences, list):
         selected_sentences = ". ".join(selected_sentences) + "."
     selected_sentences = [s[0].upper() + s[1:] if s else "" for s in selected_sentences]
@@ -7118,38 +7121,38 @@ def generate(size_per_label=100):
     numSwaps = len(swap_types)
     count = size_per_label // numSwaps
     swap_counts = count * 3
-    for prefix in swap_types:
-        for _ in range(swap_counts):
-            paragraph, label = generate_labeled_hedge_paragraph(
-                has_active_derivative=True, swapType=prefix
-            )
-            all_samples.append((paragraph, label))
+    # for prefix in swap_types:
+    #     for _ in range(swap_counts):
+    #         paragraph, label = generate_labeled_hedge_paragraph(
+    #             has_active_derivative=True, swapType=prefix
+    #         )
+    #         all_samples.append((paragraph, label))
 
-        for _ in range(swap_counts):
-            paragraph, label = generate_labeled_hedge_paragraph(
-                has_active_derivative=False, swapType=prefix
-            )
-            all_samples.append((paragraph, label))
-        for _ in range(count):
-            paragraph, label = generate_labeled_hedge_paragraph(
-                has_active_derivative=None, swapType=prefix
-            )
-            all_samples.append((paragraph, label))
-    for _ in range(count):
-        paragraph, label = generate_derivative_liability_paragraph(label_type=4)
-        all_samples.append((paragraph, label))
-    for _ in range(count):
-        paragraph, label = generate_derivative_liability_paragraph(label_type=5)
-        all_samples.append((paragraph, label))
-    for _ in range(count):
-        paragraph, label = generate_derivative_liability_paragraph(label_type=6)
-        all_samples.append((paragraph, label))
-    for _ in range(count):
-        paragraph, label = generate_derivative_liability_paragraph(label_type=7)
-        all_samples.append((paragraph, label))
-    for _ in range(count):
-        paragraph, label = generate_derivative_liability_paragraph(label_type=3)
-        all_samples.append((paragraph, label))
+    #     for _ in range(swap_counts):
+    #         paragraph, label = generate_labeled_hedge_paragraph(
+    #             has_active_derivative=False, swapType=prefix
+    #         )
+    #         all_samples.append((paragraph, label))
+    #     for _ in range(count):
+    #         paragraph, label = generate_labeled_hedge_paragraph(
+    #             has_active_derivative=None, swapType=prefix
+    #         )
+    #         all_samples.append((paragraph, label))
+    # for _ in range(count):
+    #     paragraph, label = generate_derivative_liability_paragraph(label_type=4)
+    #     all_samples.append((paragraph, label))
+    # for _ in range(count):
+    #     paragraph, label = generate_derivative_liability_paragraph(label_type=5)
+    #     all_samples.append((paragraph, label))
+    # for _ in range(count):
+    #     paragraph, label = generate_derivative_liability_paragraph(label_type=6)
+    #     all_samples.append((paragraph, label))
+    # for _ in range(count):
+    #     paragraph, label = generate_derivative_liability_paragraph(label_type=7)
+    #     all_samples.append((paragraph, label))
+    # for _ in range(count):
+    #     paragraph, label = generate_derivative_liability_paragraph(label_type=3)
+    #     all_samples.append((paragraph, label))
     for _ in range(count * numSwaps):
         paragraph, label = generate_accounting_noise_paragraph()
         all_samples.append((paragraph, label))
