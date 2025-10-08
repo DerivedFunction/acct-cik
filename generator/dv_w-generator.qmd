@@ -5619,9 +5619,9 @@ def generate_accounting_noise_paragraph(
 
     # ================== SENTENCE GENERATION ==================
     # Litigation (0-2 sentences)
-    num_litigation = random.randint(1, 3)
-    sentences = []
+    num_litigation = random.randint(1, 3) 
     for _ in range(num_litigation):
+        sentences = []
         template = random.choice(litigation_templates)
         case_type = random.choice(case_types)
         court = random.choice(courts)
@@ -5662,7 +5662,7 @@ def generate_accounting_noise_paragraph(
                 end_day=random.randint(28, 31),
             )
             sentences.append(sentence)
-    all_sentences.append(sentences)
+        all_sentences.append(sentences)
 
     # Restructuring (0-1)
     template = random.choice(restructuring_templates)
