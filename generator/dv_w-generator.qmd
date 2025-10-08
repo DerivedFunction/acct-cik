@@ -267,16 +267,16 @@ shared_effective_date_templates = [
     "This guidance becomes effective for annual periods beginning after {month} {end_day}, {year}, with early application permitted",
     "The amendments are effective for fiscal years, and interim periods within those years, beginning after {month} {end_day}, {year}",
     "Effective date is for annual reporting periods beginning after {month} {end_day}, {year}",
-    "The Company must adopt this guidance no later than fiscal year {year}",
+    "{company} must adopt this guidance no later than fiscal year {year}",
 ]
 
 shared_adoption_status_templates = [
     "{company} adopted this guidance on {month} {day}, {year} using the {method}",
-    "The Company adopted {standard} effective {month} {day}, {year}",
+    "{company} adopted {standard} effective {month} {day}, {year}",
     "{company} early adopted the standard in {year}",
-    "The Company will adopt the guidance in fiscal year {year}",
+    "{company} will adopt the guidance in fiscal year {year}",
     "{company} is currently evaluating the impact of adopting this guidance",
-    "The Company does not expect the adoption of this standard to have a material impact on its consolidated financial statements",
+    "{company} does not expect the adoption of this standard to have a material impact on its consolidated financial statements",
     "{company} adopted the new guidance prospectively",
     "The standard was adopted retrospectively with a cumulative-effect adjustment to retained earnings",
 ]
@@ -372,7 +372,7 @@ hedge_change_policy_templates = [
     "In {month} {year}, the {issuer} issued {standard} related to hedging activities. The guidance {description}. Additionally, it {additional_feature}",
     "The {issuer} issued {standard} to address {topic}. This update {description}. The new guidance {additional_feature}",
     "Hedging Activities: In {month} {year}, {issuer} released guidance on {topic}. It {description} and {additional_feature}",
-    "The amendment to Topic 815 {description} and {additional_feature}. Effective for fiscal years beginning after {month} {end_day}, {year}",
+    "The amendment to Topic 815 {description} and {additional_feature}. Effective for fiscal years beginning after {month} {eff_day}, {year}",
 ]
 
 # ========== GENERAL ACCOUNTING POLICY ==========
