@@ -1993,12 +1993,7 @@ class WorkbookManager:
                 except Exception as e:
                     print(f"❌ Error writing workbook: {e}")
 
-        print("\n🎉 All Excel workbooks generated successfully!\n")
-        if IS_COLAB:
-            print("Saving results to Google Drive...")
-            subprocess.run(
-                    f"cp *.xlsx {DRIVE_PATH}/.", shell=True
-                )            
+        print("\n🎉 All Excel workbooks generated successfully!\n")        
 
 # =============================================================================
 # USAGE IN YOUR MAIN FUNCTION
