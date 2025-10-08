@@ -1962,7 +1962,12 @@ class WorkbookManager:
                         except Exception:
                             # Fallback to default width
                             worksheet.set_column(i, i, 15)
-
+        # Save it to Drive if Colab
+        if IS_COLAB:
+            print("Saving results to Google Drive...")
+            subprocess.run(
+                    f"cp {filename} {DRIVE_PATH}/{DRIVE_KEYWORDS_PATH}/.", shell=True
+                )
         return f"✅ {config['description']} saved -> {filename}"
 
     def write_all(self, configs, max_workers=4, auto_width=True, sample_rows=1000):
