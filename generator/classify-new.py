@@ -2685,16 +2685,12 @@ if __name__ == "__main__":
     print("Generating sentence analysis...")
     print("=" * 70)
     sa = get_sentence_analysis()
-    print(f"\nFirst 10 rows of analysis:")
-    print(sa.head(10))
 
     # Build sentence-label mapping
     print("\n" + "=" * 70)
     print("Building sentence-label Excel file...")
     print("=" * 70)
     sentence_label_df = build_sentence_label_excel()
-    print(f"\nFirst 10 rows of sentence labels:")
-    print(sentence_label_df.head(10))
 
     # Final save to Drive if in Colab
     if IS_COLAB:
