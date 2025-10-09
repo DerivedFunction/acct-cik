@@ -179,7 +179,18 @@ frequencies = [
     "monthly",
     "periodically",
 ]
-volume_units = ["barrels", "MMBtu", "MWh", "metric tons", "bushels", "gallons"]
+volume_units = [
+    "barrels",
+    "MMBtu",
+    "MWh",
+    "metric tons",
+    "bushels",
+    "gallons",
+    "ton",
+    "pound",
+    "bushel",
+    "board foot",
+]
 assessment_verbs = [
     "assessed",
     "evaluated",
@@ -188,6 +199,14 @@ assessment_verbs = [
     "analyzed",
     "conducted",
     "performed",
+]
+balance_sheet_locations = [
+    "other income (expense), net",
+    "change in fair value of derivative liabilities",
+    "other comprehensive income",
+    "earnings",
+    "the consolidated statements of operations",
+    "statement of operations",
 ]
 ```
 
@@ -510,15 +529,6 @@ warrant_liability_templates = [
     "This warrant liability will be re-measured at each balance sheet date until the warrants are exercised or expire, and any change in fair value will be recognized in {company}'s {location}",
     "Any decrease or increase in the estimated fair value of the warrant liability since the most recent balance sheet date is recorded in {company}'s {location} as changes in fair value of derivative liabilities",
     "The amount of warrant liability was determined and recognized on {location} for the applicable reporting period based on the number of warrants that would have been issued",
-]
-
-fv_change_locations = [
-    "other income (expense), net",
-    "change in fair value of derivative liabilities",
-    "other comprehensive income",
-    "earnings",
-    "the consolidated statements of operations",
-    "statement of operations",
 ]
 
 # Derivative liability general templates
@@ -2614,7 +2624,7 @@ debt_templates = [
     # Covenant and credit facility context
     "The revolving credit facility contains customary financial covenants, including maintaining a maximum leverage ratio and minimum interest coverage ratio",
     "{company} was in compliance with all debt covenants as of {month} {end_day}, {year}",
-    "{company}'s credit agreements require maintenance of specified leverage and coverage ratios, which the company met as of {month} {end_day}, {year}",
+    "{company}'s credit agreements require maintenance of specified leverage and coverage ratios, which {company} met as of {month} {end_day}, {year}",
     # Other specialized cases
     "During {year}, {company} entered into a new {currency_code}{amount} {money_unit} term loan agreement with a maturity in {maturity_year}",
     "Proceeds from the {debt_type} issuance were used to repay existing borrowings and for general corporate purposes",
@@ -3423,6 +3433,118 @@ coverage_types = [
     "cyber liability, errors and omissions, fiduciary liability, and environmental liability",
     "general liability, auto liability, workers' compensation, and excess umbrella coverage",
 ]
+
+
+# ========== FOREIGN CURRENCY RISK/TRANSLATION (NON-DERIVATIVE) ==========
+
+foreign_currency_exposure_templates = [
+    "{company} operates in multiple countries and is exposed to foreign currency exchange rate fluctuations {major_currency} in that affect reported revenues and expenses",
+    "{company}'s international operations subject it to foreign currency risks, primarily related to the {major_currency}, {currency2}, and {currency3}",
+    "Foreign currency transaction in {major_currency} gains and losses are recorded in {location} as incurred",
+    "Substantially all of {company}'s foreign subsidiaries use {major_currency} as their local currency",
+    "{company}'s results of operations are affected by changes in foreign currency exchange rates, particularly movements in the {major_currency} and {currency2}"
+]
+
+foreign_currency_translation_templates = [
+    "Assets and liabilities of foreign subsidiaries are translated to {major_currency} at period-end exchange rates, while income and expenses are translated at average exchange rates for the period",
+    "Translation adjustments resulting from the process of translating foreign currency financial statements into {major_currency} are recorded in accumulated other comprehensive income",
+    "The cumulative translation adjustment recorded in accumulated other comprehensive income was {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
+    "Foreign currency translation adjustments decreased stockholders' equity by {currency_code}{amount} {money_unit} during {year}",
+    "{company} recorded a foreign currency translation loss of {currency_code}{amount} {money_unit} in other comprehensive income for the year ended {month} {end_day}, {year}",
+    "The weakening of the {major_currency} against the {major_currency_2} resulted in an unfavorable translation impact of {currency_code}{amount} {money_unit} in {year}",
+    "Changes in foreign exchange rates resulted in translation gains of {currency_code}{amount} {money_unit} recorded in other comprehensive income during {year}"
+]
+
+foreign_currency_transaction_templates = [
+    "Foreign currency transaction gains (losses) included in {location} totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
+    "{company} recognized foreign exchange losses of {currency_code}{amount} {money_unit} during {year}, primarily related to intercompany balances denominated in {major_currency}",
+    "{company} recorded foreign currency transaction losses of {currency_code}{amount} {money_unit} in {year} compared to gains of {currency_code}{prev_amount} {money_unit} in {prev_year}",
+    "Foreign exchange gains and losses on remeasurement of monetary assets and liabilities totaled {currency_code}{amount} {money_unit} in {year}",
+    "Transaction gains and losses on foreign currency ({major_currency}) denominated receivables and payables are recognized in earnings as exchange rates fluctuate"
+]
+
+functional_currency_templates = [
+    "The functional currency for most of {company}'s foreign subsidiaries is the local currency of the country in which the subsidiary operates",
+    "For subsidiaries operating in highly inflationary economies, the {major_currency} is used as the functional currency",
+    "{company} determines the functional currency of each subsidiary based on the primary economic environment in which the entity operates",
+    "The functional currencies of {company}'s significant foreign operations include the {major_currency}, {currency2}, and {currency3}",
+    "Remeasurement of foreign subsidiary financial statements from local currency to functional currency resulted in gains of {currency_code}{amount} {money_unit} in {year}"
+]
+
+fx_impact_on_results_templates = [
+    "Foreign currency exchange rate fluctuations had an unfavorable impact on revenues of approximately {currency_code}{amount} {money_unit}, or {pct}%, during {year}",
+    "Changes in foreign exchange rates negatively impacted operating income by {currency_code}{amount} {money_unit} in {year}",
+    "Foreign currency movements had a favorable effect on revenues of {pct}% in {year}, primarily due to strengthening of the {major_currency}",
+    "Excluding the impact of foreign currency translation, revenues would have increased {pct}% in {year} compared to {prev_year}",
+    "The translation impact of changes in foreign exchange rates decreased reported revenues by {currency_code}{amount} {money_unit} year-over-year",
+    "On a constant currency basis, revenues increased {pct}% compared to the prior year, versus {reported_pct}% on a reported basis"
+]
+
+intercompany_fx_templates = [
+    "{company} has intercompany loans denominated in various currencies that are remeasured each reporting period with gains and losses recorded in earnings",
+    "Intercompany foreign currency transactions resulted in remeasurement losses of {currency_code}{amount} {money_unit} during {year}",
+    "{company} has {currency_code}{amount} {money_unit} in intercompany receivables denominated in {major_currency} as of {month} {end_day}, {year}",
+    "Remeasurement of intercompany balances denominated in currencies other than the functional currency resulted in losses of {currency_code}{amount} {money_unit} in {year}"
+]
+
+# ========== COMMODITY PRICES/RISK/INVENTORY (NON-DERIVATIVE) ==========
+
+commodity_price_exposure_templates = [
+    "{company}'s operating results are affected by changes in commodity prices, particularly {commodity} and {commodity2}",
+    "{company} is exposed to price volatility for key raw materials including {commodity}, {commodity2}, and {commodity3}",
+    "Commodity price fluctuations, particularly for {commodity}, can significantly impact {company}'s cost structure and margins",
+    "Raw material costs are subject to market volatility, with {commodity} prices ranging from {currency_code}{low_price} to {currency_code}{high_price} per {unit} during {year}",
+    "{company}'s operations are sensitive to changes in {commodity} prices, which can affect both revenue and cost of sales"
+]
+
+commodity_cost_impact_templates = [
+    "Commodity price increases added approximately {currency_code}{amount} {money_unit} to cost of goods sold during {year}",
+    "Changes in {commodity} prices unfavorably impacted gross margin by {pct} percentage points in {year}",
+    "{company} experienced cost inflation of {currency_code}{amount} {money_unit} in {year}, primarily driven by higher {commodity} and {commodity2} prices",
+    "Commodity costs increased {pct}% year-over-year, driven primarily by {commodity} price appreciation",
+    "Raw material price increases, particularly for {commodity}, reduced gross profit margin from {prev_pct}% to {pct}% in {year}",
+    "{company} absorbed {currency_code}{amount} {money_unit} in commodity cost inflation during {year} through operational efficiencies and pricing actions"
+]
+
+commodity_inventory_valuation_templates = [
+    "{company} maintains inventory of {commodity} and {commodity2} to support production requirements, exposing {company} to price risk",
+    "As of {month} {end_day}, {year}, {company} held {volume} {unit} of {commodity} inventory valued at {currency_code}{amount} million",
+    "{company} recorded an inventory writedown of {currency_code}{amount} {money_unit} in {year} due to declines in {commodity} market prices",
+    "Commodity inventory is stated at the lower of cost or net realizable value, with cost determined using the {method} method",
+    "{company}'s inventory includes {currency_code}{amount} {money_unit} of raw materials subject to commodity price volatility",
+    "{company} recognized a {currency_code}{amount} {money_unit} charge related to excess and obsolete {commodity} inventory in {year}"
+]
+
+commodity_pricing_strategies_templates = [
+    "{company} generally seeks to pass through commodity cost changes to customers through pricing mechanisms, though timing differences can affect margins",
+    "{company} has implemented price increases totaling {pct}% to offset {commodity} cost inflation during {year}",
+    "Pricing adjustments are typically implemented with a {months}-month lag following changes in {commodity} costs",
+    "{company} utilizes index-based pricing formulas for certain products to mitigate the impact of {commodity} price volatility",
+    "Customer contracts include provisions that allow {company} to adjust prices in response to significant {commodity} cost movements"
+]
+
+commodity_supply_risk_templates = [
+    "{company} sources {commodity} from multiple suppliers to mitigate supply chain disruption risk",
+    "{company} maintains strategic inventory of {commodity} to buffer against potential supply disruptions",
+    "Supply constraints for {commodity} during {year} resulted in increased costs and temporary production delays",
+    "{company} has long-term supply agreements for {commodity} covering approximately {pct}% of anticipated requirements",
+    "{company} is exposed to concentration risk as {pct}% of {commodity} is sourced from a single region"
+]
+
+commodity_exposure_quantification_templates = [
+    "A {pct}% change in {commodity} prices would impact annual cost of sales by approximately {currency_code}{amount} {money_unit}",
+    "{company} estimates that commodity price volatility could affect operating income by {currency_code}{amount} {money_unit} annually",
+    "Each {currency_code}{change} per {unit} change in {commodity} prices impacts annual costs by approximately {currency_code}{amount} {money_unit}",
+    "Commodity exposure is concentrated in {commodity} ({pct}% of raw material spend) and {commodity2} ({pct2}% of raw material spend)"
+]
+
+physical_commodity_operations_templates = [
+    "{company} owns and operates {commodity} production facilities with annual capacity of {volume} {unit}",
+    "{company} produced {volume} {unit} of {commodity} during {year}, a {pct}% increase from the prior year",
+    "{company}'s {commodity} operations generated revenues of {currency_code}{amount} {money_unit} in {year}",
+    "Production costs for {commodity} averaged {currency_code}{cost} per {unit} in {year}, compared to {currency_code}{prev_cost} in {prev_year}",
+    "{company} maintains proved reserves of {volume} {unit} of {commodity} as of {month} {end_day}, {year}"
+]
  
 ```
 
@@ -3440,6 +3562,8 @@ def generate_value(haveZero=True, upperlimit=1000):
         chance = 0.1
     else:
         chance = 0
+        
+    upperlimit = int(upperlimit)
     value = 0.0 if random.random() < chance else random.randint(1, upperlimit)
 
     if random.random() < 0.5:
@@ -3457,7 +3581,7 @@ def generate_value(haveZero=True, upperlimit=1000):
 def cleanup(paragraph: str, checkBracket: bool = True):
     pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
-    if random.random() < 0.25: # Chance to replace values with nil
+    if random.random() < 0.25:  # Chance to replace values with nil
         paragraph = pattern_nil.sub(
             random.choice([" nil", " 0", " 0.0", " 0.00"]), paragraph
         )
@@ -3574,7 +3698,7 @@ def generate_derivative_liability_paragraph(
 
         # Add liability classification (0-1)
         template = random.choice(warrant_liability_templates)
-        location = random.choice(fv_change_locations)
+        location = random.choice(balance_sheet_locations)
         event = random.choice(warrant_events)
         sentence = template.format(
             location=location, company=pick_company_name(company_name), event=event
@@ -3702,7 +3826,7 @@ def generate_derivative_liability_paragraph(
             template = random.choice(embedded_types_templates)
             embedded_type = random.choice(embedded_types)
             host_contract = random.choice(host_contracts)
-            location = random.choice(fv_change_locations)
+            location = random.choice(balance_sheet_locations)
 
             sentence = template.format(
                 embedded_type=embedded_type,
@@ -3797,7 +3921,7 @@ def generate_derivative_liability_paragraph(
             template = random.choice(embedded_fv_change_templates)
             gain_loss = random.choice(["gain", "loss"])
             amount = round(random.uniform(1.0, 20.0), 1)
-            location = random.choice(fv_change_locations)
+            location = random.choice(balance_sheet_locations)
 
             sentence = template.format(
                 year=current_year,
@@ -5882,41 +6006,6 @@ def generate_accounting_noise_paragraph(
         sentences.append(sentence)
     all_sentences.append(sentences)
 
-    # Stock-based compensation (0-1)
-    sentences = []
-    template = random.choice(stock_comp_templates)
-    amount = round(random.uniform(10, 80), 1)
-    shares = random.choice([50000, 100000, 250000, 500000])
-    price = round(random.uniform(20, 100), 2)
-    sentence = template.format(
-        amount=amount,
-        year=current_year,
-        month=random.choice(months),
-        shares=f"{shares:,}",
-        price=price,
-        company=pick_company_name(company_name),
-        currency_code=currency_code,
-        major_currency=major_currency,
-        money_unit=money_units,
-        end_day=random.randint(28, 31),
-    )
-    if random.random() < 0.5:
-        template = random.choice(stock_comp_valuation_templates)
-        amount = round(random.uniform(5, 25), 2)
-        model = random.choice(valuation_models)
-        sentence = template.format(
-            year=current_year,
-            month=random.choice(months),
-            amount=amount,
-            company=pick_company_name(company_name),
-            currency_code=currency_code,
-            major_currency=major_currency,
-            money_unit=money_units,
-            model=model,
-        )
-        sentences.append(sentence)
-    all_sentences.append(sentences)
-
     # Pension (0-1)
     sentences = []
     template = random.choice(pension_templates)
@@ -6038,21 +6127,9 @@ def generate_accounting_noise_paragraph(
     # Balance sheet changes (0-2 sentences)
     num_bs_changes = random.randint(0, 2)
     for _ in range(num_bs_changes):
-        category = random.choice(
-            [
-                "ar",
-                "ap",
-                "accrued",
-                "working_capital",
-                "other_assets",
-                "other_liabilities",
-                "equity",
-                "cash_flow",
-                "general",
-            ]
-        )
+        sentences = []
 
-        if category == "ar":
+        if random.random() < 0.5:
             template = random.choice(ar_templates)
             amount = round(random.uniform(10, 150), 1)
             prev_amount = round(amount * random.uniform(0.8, 1.2), 1)
@@ -6074,8 +6151,9 @@ def generate_accounting_noise_paragraph(
                 days=days,
                 prev_days=prev_days,
             )
+            sentences.append(sentence)
 
-        elif category == "ap":
+        if random.random() < 0.5:
             template = random.choice(ap_templates)
             amount = round(random.uniform(5, 100), 1)
             prev_amount = round(amount * random.uniform(0.7, 1.3), 1)
@@ -6097,8 +6175,9 @@ def generate_accounting_noise_paragraph(
                 prev_days=prev_days,
                 reason=reason,
             )
+            sentences.append(sentence)
 
-        elif category == "accrued":
+        if random.random() < 0.5:
             template = random.choice(accrued_liabilities_templates)
             amount = round(random.uniform(5, 80), 1)
             change = round(random.uniform(2, 30), 1)
@@ -6115,8 +6194,9 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 company=pick_company_name(company_name),
             )
+            sentences.append(sentence)
 
-        elif category == "working_capital":
+        if random.random() < 0.5:
             template = random.choice(working_capital_templates)
             amount = round(random.uniform(50, 300), 1)
             prev_amount = round(amount * random.uniform(0.8, 1.2), 1)
@@ -6136,8 +6216,9 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 company=pick_company_name(company_name),
             )
+            sentences.append(sentence)
 
-        elif category == "other_assets":
+        if random.random() < 0.5:
             template = random.choice(other_current_assets_templates)
             amount = round(random.uniform(5, 50), 1)
             ending = round(random.uniform(20, 100), 1)
@@ -6154,8 +6235,9 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 company=pick_company_name(company_name),
             )
+            sentences.append(sentence)
 
-        elif category == "other_liabilities":
+        if random.random() < 0.5:
             template = random.choice(other_liabilities_templates)
             amount = round(random.uniform(10, 100), 1)
             prev_amount = round(amount * random.uniform(0.8, 1.2), 1)
@@ -6174,8 +6256,9 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 company=pick_company_name(company_name),
             )
+            sentences.append(sentence)
 
-        elif category == "equity":
+        if random.random() < 0.5:
             if random.random() < 0.5:
                 template = random.choice(stockholders_equity_templates)
                 amount = round(random.uniform(20, 200), 1)
@@ -6218,8 +6301,9 @@ def generate_accounting_noise_paragraph(
                     month=random.choice(months),
                     company=pick_company_name(company_name),
                 )
+            sentences.append(sentence)
 
-        elif category == "cash_flow":
+        if random.random() < 0.5:
             template = random.choice(cash_flow_statement_templates)
             amount = round(random.uniform(20, 200), 1)
             prev_amount = round(amount * random.uniform(0.7, 1.3), 1)
@@ -6237,8 +6321,9 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 company=pick_company_name(company_name),
             )
+            sentences.append(sentence)
 
-        else:  # general balance sheet changes
+        if random.random() < 0.5:  # general balance sheet changes
             template = random.choice(balance_sheet_change_templates)
             amount = round(random.uniform(5, 100), 1)
             ending = round(random.uniform(50, 200), 1)
@@ -6256,27 +6341,19 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 company=pick_company_name(company_name),
             )
+            sentences.append(sentence)
 
-        all_sentences.append([sentence])
+        random.shuffle(sentences)
+        sentences = sentences[: random.random(1, len(sentences))]
+        merged_text = ". ".join(sentences)
+        all_sentences.append([merged_text])
+
     # CEO and executive compensation (0-2 sentences)
     num_exec_comp = random.randint(0, 2)
     for _ in range(num_exec_comp):
-        comp_type = random.choice(
-            [
-                "ceo_total",
-                "executive_total",
-                "equity_grant",
-                "severance",
-                "employment_agreement",
-                "committee",
-                "say_on_pay",
-                "deferred",
-                "perquisites",
-                "clawback",
-            ]
-        )
+        sentences = []
 
-        if comp_type == "ceo_total":
+        if random.random() < 0.5:
             template = random.choice(ceo_compensation_templates)
             total_amount = round(random.uniform(8, 25), 1)
             salary = round(random.uniform(1, 2), 1)
@@ -6299,8 +6376,9 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 end_day=random.randint(28, 31),
             )
+            sentences.append(sentence)
 
-        elif comp_type == "executive_total":
+        if random.random() < 0.5:
             template = random.choice(executive_compensation_templates)
             amount = round(random.uniform(30, 80), 1)
             equity = round(amount * random.uniform(0.4, 0.6), 1)
@@ -6320,8 +6398,9 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 end_day=random.randint(28, 31),
             )
+            sentences.append(sentence)
 
-        elif comp_type == "equity_grant":
+        if random.random() < 0.5:
             template = random.choice(equity_grant_templates)
             shares = random.choice([50000, 75000, 100000, 150000, 200000])
             amount = round(random.uniform(3, 12), 1)
@@ -6346,8 +6425,9 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
                 end_day=random.randint(28, 31),
             )
+            sentences.append(sentence)
 
-        elif comp_type == "severance":
+        if random.random() < 0.5:
             template = random.choice(severance_templates)
             multiple = random.choice([2, 2.5, 3])
             amount = round(random.uniform(5, 20), 1)
@@ -6363,8 +6443,9 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 end_day=random.randint(28, 31),
             )
+            sentences.append(sentence)
 
-        elif comp_type == "employment_agreement":
+        if random.random() < 0.5:
             template = random.choice(employment_agreement_templates)
             salary = round(random.uniform(0.8, 2.0), 1)
             bonus_pct = random.choice([100, 125, 150, 200])
@@ -6381,17 +6462,18 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
                 end_day=random.randint(28, 31),
             )
+            sentences.append(sentence)
 
-        elif comp_type == "committee":
+        if random.random() < 0.5:
             template = random.choice(compensation_committee_templates)
             consultant = random.choice(acquisition_targets)
-
             sentence = template.format(consultant=consultant)
+            sentences.append(sentence)
 
-        elif comp_type == "say_on_pay":
+        if random.random() < 0.5:
             template = random.choice(say_on_pay_templates)
             pct = round(random.uniform(75, 95), 1)
-            month = random.choice(["May", "June", "April"])
+            month = random.choice(months)
 
             sentence = template.format(
                 year=current_year,
@@ -6403,8 +6485,9 @@ def generate_accounting_noise_paragraph(
                 money_unit=money_units,
                 end_day=random.randint(28, 31),
             )
+            sentences.append(sentence)
 
-        elif comp_type == "deferred":
+        if random.random() < 0.5:
             template = random.choice(deferred_comp_templates)
             pct = random.choice([50, 75, 100])
             bonus_pct = random.choice([50, 100])
@@ -6422,8 +6505,9 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 end_day=random.randint(28, 31),
             )
+            sentences.append(sentence)
 
-        elif comp_type == "perquisites":
+        if random.random() < 0.5:
             template = random.choice(perquisites_templates)
             amount = random.choice([50, 75, 100, 150, 200])
             perq_type = random.choice(perq_types)
@@ -6439,11 +6523,49 @@ def generate_accounting_noise_paragraph(
                 month=random.choice(months),
                 end_day=random.randint(28, 31),
             )
+            sentences.append(sentence)
 
-        elif comp_type == "clawback":
+        if random.random() < 0.5:
             template = random.choice(clawback_templates)
             sentence = template.format(company=pick_company_name(company_name))
-        all_sentences.append([sentence])
+            sentences.append(sentence)
+        if random.random() < 0.5:
+            template = random.choice(stock_comp_templates)
+            amount = round(random.uniform(10, 80), 1)
+            shares = random.choice([50000, 100000, 250000, 500000])
+            price = round(random.uniform(20, 100), 2)
+            sentence = template.format(
+                amount=amount,
+                year=current_year,
+                month=random.choice(months),
+                shares=f"{shares:,}",
+                price=price,
+                company=pick_company_name(company_name),
+                currency_code=currency_code,
+                major_currency=major_currency,
+                money_unit=money_units,
+                end_day=random.randint(28, 31),
+            )
+            sentences.append(sentence)
+        if random.random() < 0.5:
+            template = random.choice(stock_comp_valuation_templates)
+            amount = round(random.uniform(5, 25), 2)
+            model = random.choice(valuation_models)
+            sentence = template.format(
+                year=current_year,
+                month=random.choice(months),
+                amount=amount,
+                company=pick_company_name(company_name),
+                currency_code=currency_code,
+                major_currency=major_currency,
+                money_unit=money_units,
+                model=model,
+            )
+            sentences.append(sentence)
+        random.shuffle(sentences)
+        sentences = sentences[: random.random(1, len(sentences))]
+        merged_text = ". ".join(sentences)
+        all_sentences.append([merged_text])
 
     # Market prices and trading (0-1)
     category = random.choice(["stock_price", "trading_volume"])
@@ -6681,8 +6803,8 @@ def generate_accounting_noise_paragraph(
     all_sentences.append([sentence])
 
     # Dividend/capital allocation (0-1)
-    category = random.choice(["dividend", "repurchase"])
-    if category == "dividend":
+    for _ in range(1):
+        sentences = []
         template = random.choice(dividend_policy_templates)
         amount = round(random.uniform(0.25, 2.00), 2)
         pct = round(random.uniform(20, 60), 1)
@@ -6705,7 +6827,7 @@ def generate_accounting_noise_paragraph(
             prev_year=current_year - 1,
             company=pick_company_name(company_name),
         )
-    else:
+        sentences.append(sentence)
         template = random.choice(share_repurchase_templates)
         shares = random.choice([1000000, 2000000, 5000000, 10000000])
         amount = round(random.uniform(50, 500), 0)
@@ -6727,7 +6849,11 @@ def generate_accounting_noise_paragraph(
             prev_year=current_year - 1,
             company=pick_company_name(company_name),
         )
-    all_sentences.append([sentence])
+        sentences.append(sentence)
+        random.shuffle(sentences)
+        sentences = sentences[: random.random(1, len(sentences))]
+        merged_text = ". ".join(sentences)
+        all_sentences.append([merged_text])
 
     # Competition (0-1)
     template = random.choice(competition_templates)
@@ -6814,13 +6940,257 @@ def generate_accounting_noise_paragraph(
     )
     all_sentences.append(noise)
 
+    # Foreign currency risk/translation (0-2 sentences)
+    num_fx = random.randint(1, 2)
+    for _ in range(num_fx):
+        sentences = []
+
+        currency2 = random.choice([c for c in all_currencies if c != major_currency])
+        currency3 = random.choice(
+            [c for c in all_currencies if c not in [major_currency, currency2]]
+        )
+        month = random.choice(months)
+        end_day = random.randint(28, 31)
+        location = random.choice(balance_sheet_locations)
+        if random.random() < 0.5:
+            template = random.choice(foreign_currency_exposure_templates)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                major_currency=major_currency,
+                currency2=currency2,
+                currency3=currency3,
+                location=location,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(foreign_currency_translation_templates)
+            amount = generate_value(False)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                currency_code=currency_code,
+                amount=amount,
+                month=month,
+                end_day=end_day,
+                year=current_year,
+                major_currency=major_currency,
+                money_unit=money_unit,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(foreign_currency_transaction_templates)
+            amount = generate_value(False)
+            prev_amount = generate_value(False, amount)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                currency_code=currency_code,
+                amount=amount,
+                prev_amount=prev_amount,
+                location=location,
+                month=month,
+                end_day=end_day,
+                year=current_year,
+                prev_year=current_year - 1,
+                major_currency=major_currency,
+                money_unit=money_unit,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(functional_currency_templates)
+            amount = generate_value(False)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                major_currency=major_currency,
+                currency2=currency2,
+                currency3=currency3,
+                currency_code=currency_code,
+                amount=amount,
+                year=current_year,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(fx_impact_on_results_templates)
+            amount = generate_value(False)
+            pct = generate_value(False, 10)
+            reported_pct = round(pct + random.uniform(-2, 2), 1)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                currency_code=currency_code,
+                amount=amount,
+                pct=pct,
+                reported_pct=reported_pct,
+                year=current_year,
+                prev_year=current_year - 1,
+                major_currency=major_curr,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(intercompany_fx_templates)
+            amount = generate_value(False)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                currency_code=currency_code,
+                amount=amount,
+                major_currency=major_currency,
+                month=month,
+                end_day=end_day,
+                year=current_year,
+            )
+            sentences.append(sentence)
+        random.shuffle(sentences)
+        sentences = sentences[: random.random(1, len(sentences))]
+        merged_text = ". ".join(sentences)
+        all_sentences.append([merged_text])
+
+    # Commodity prices/risk/inventory (0-2 sentences)
+    num_commodity = random.randint(1, 2)
+    for _ in range(num_commodity):
+        sentences = []
+
+        commodity = random.choice(commodities)
+        commodity2 = random.choice([c for c in commodities if c != commodity])
+        commodity3 = random.choice(
+            [c for c in commodities if c not in [commodity, commodity2]]
+        )
+        unit = random.choice(volume_units)
+        month = random.choice(months)
+        end_day = random.randint(28, 31)
+
+        if random.random() < 0.5:
+            template = random.choice(commodity_price_exposure_templates)
+            low_price = generate_value(False, 100)
+            high_price = round(low_price * random.uniform(1.3, 2.0), 2)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                commodity=commodity,
+                commodity2=commodity2,
+                commodity3=commodity3,
+                currency_code=currency_code,
+                low_price=low_price,
+                high_price=high_price,
+                unit=unit,
+                year=current_year,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(commodity_cost_impact_templates)
+            amount = generate_value(False, 150)
+            pct = generate_value(False, 40)
+            prev_pct = generate_value(False, 40)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                currency_code=currency_code,
+                amount=amount,
+                pct=pct,
+                prev_pct=prev_pct,
+                commodity=commodity,
+                commodity2=commodity2,
+                year=current_year,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(commodity_inventory_valuation_templates)
+            amount = generate_value(False, 100)
+            volume = generate_value(False, 50000)
+            method = random.choice(inventory_methods)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                commodity=commodity,
+                commodity2=commodity2,
+                volume=f"{volume:,}",
+                unit=unit,
+                currency_code=currency_code,
+                amount=amount,
+                month=month,
+                end_day=end_day,
+                year=current_year,
+                method=method,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(commodity_pricing_strategies_templates)
+            pct = generate_value(False, 50)
+            months = generate_value(False, 12)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                pct=pct,
+                months=months,
+                commodity=commodity,
+                year=current_year,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(commodity_supply_risk_templates)
+            pct = generate_value(False, 90)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                commodity=commodity,
+                pct=pct,
+                year=current_year,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(commodity_exposure_quantification_templates)
+            pct = generate_value(False, 10)
+            pct2 = generate_value(False, 25)
+            amount = generate_value(False, 100)
+            change = generate_value(False, 20)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                pct=pct,
+                pct2=pct2,
+                commodity=commodity,
+                commodity2=commodity2,
+                currency_code=currency_code,
+                amount=amount,
+                change=change,
+                unit=unit,
+            )
+            sentences.append(sentence)
+
+        if random.random() < 0.5:
+            template = random.choice(physical_commodity_operations_templates)
+            volume = generate_value(False, 10000)
+            amount = generate_value(False, 500)
+            pct = generate_value(False, 25)
+            cost = generate_value(False, 80)
+            prev_cost = round(cost * random.uniform(0.7, 1.2), 2)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                commodity=commodity,
+                volume=f"{volume:,}",
+                unit=unit,
+                year=current_year,
+                currency_code=currency_code,
+                amount=amount,
+                pct=pct,
+                cost=cost,
+                prev_cost=prev_cost,
+                month=month,
+                end_day=end_day,
+            )
+            sentences.append(sentence)
+        random.shuffle(sentences)
+        sentences = sentences[: random.random(1, len(sentences))]
+        merged_text = ". ".join(sentences)
+        all_sentences.append([merged_text])
+
     # Shuffle and select
     random.shuffle(all_sentences)
     selected_sentences = []
     for i in range(max_len):
         sentence = all_sentences[i]
         selected_sentences.extend(sentence)
-        if random.random() < 0.25:
+        if random.random() < 0.25 or len(sentence) > 400:
             break
     selected_sentences = [s[0].upper() + s[1:] if s else "" for s in selected_sentences]
     # Create paragraph
@@ -6839,7 +7209,13 @@ def generate_sec_noise(company, currency_unit, month, year):
     def generate_toc_line():
         template = random.choice(sec_toc_patterns)
         page_num = random.randint(1, 200)  # simulate TOC page numbers
-        return template.format(page=page_num, company=company) + " "
+        return (
+            template.format(
+                page=page_num,
+                company=pick_company_name(company_name),
+            )
+            + " "
+        )
 
     phrases = [
         "Commission file number " + str(random.randint(1, 99999)).zfill(5),
@@ -6868,23 +7244,24 @@ def generate_sec_noise(company, currency_unit, month, year):
     )
     return chunks
 
+
 # def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min_words_per_sentence=4):
 #     """
 #     Generate a single batch of deboost sentences.
 #     This function is called by each worker thread.
-    
+
 #     Args:
 #         batch_id: Identifier for this batch (for reproducibility if needed)
 #         batch_size: Number of sentences per swap type
 #         max_words_per_sentence: Maximum words in a sentence
 #         min_words_per_sentence: Minimum words in a sentence
-    
+
 #     Returns:
 #         List of (sentence, label) tuples
 #     """
 #     # Set random seed based on batch_id for reproducibility (optional)
 #     # random.seed(batch_id)
-    
+
 #     sentences = []
 
 #     # [Insert all the template definitions from previous version here]
@@ -6893,7 +7270,7 @@ def generate_sec_noise(company, currency_unit, month, year):
 #         "total return swap", "credit default swap", "variance swap",
 #         "basis swap", "credit spread option", "interest rate cap", "interest rate floor"
 #     ]
-    
+
 #     gen_standalone = [
 #         "option", "collar", "call", "put", "over-the-counter",
 #         "receive-equity", "pay-fixed", "receive-floating", "pay-equity",
@@ -6901,7 +7278,7 @@ def generate_sec_noise(company, currency_unit, month, year):
 #         "swap", "future", "forward", "call option", "put option", "OTC",
 #         "swaption", "cap", "floor", "straddle", "strangle"
 #     ]
-    
+
 #     accounting_buzzwords = [
 #         "interest rate", "average interest rate", "floating rate", "fixed rate",
 #         "foreign currency", "currency", "exchange rate", "currency translation",
@@ -6915,13 +7292,13 @@ def generate_sec_noise(company, currency_unit, month, year):
 #         "hedge fund", "fund", "outstanding", "terminate", "expire", "termination", "expiration",
 #         "dedesignation", "dedesignate", "swap", "forward", "future", "cap", "floor", "agreement"
 #     ]
-    
+
 #     connectors = [
 #         "and", "or", "with", "including", "related to", "consisting of",
 #         "totaling", "aggregating", "measured at", "recorded in", "recognized in",
 #         "as of", "during", "throughout", "within", "under"
 #     ]
-    
+
 #     accounting_phrases = [
 #         "recorded in the balance sheet",
 #         "recognized in earnings",
@@ -6949,140 +7326,140 @@ def generate_sec_noise(company, currency_unit, month, year):
 #     num_label_3 = batch_size // 4  # Adjust ratio as needed
 #     for _ in range(num_label_3):
 #         sentence_parts = []
-        
+
 #         if random.random() < 0.8:
 #             sentence_parts.extend(random.sample(
-#                 accounting_buzzwords, 
+#                 accounting_buzzwords,
 #                 min(random.randint(2, 4), len(accounting_buzzwords))
 #             ))
-        
+
 #         if random.random() < 0.6:
 #             sentence_parts.append(random.choice(connectors))
-        
+
 #         sentence_parts.extend(random.sample(
 #             accounting_buzzwords,
 #             min(random.randint(1, 3), len(accounting_buzzwords))
 #         ))
 #         if random.random() < 0.3:
 #             sentence_parts.extend(random.sample(commodity_specific_terms, random.randint(1, 3)))
-        
+
 #         if random.random() < 0.3:
 #             sentence_parts.append(random.choice(gen_standalone))
 #             if random.random() < 0.5:
 #                 sentence_parts.append(random.choice(connectors))
 #                 sentence_parts.append(random.choice(gen_standalone))
-        
+
 #         if random.random() < 0.4:
 #             sentence_parts.append(random.choice(accounting_phrases))
-        
+
 #         while len(sentence_parts) < min_words_per_sentence:
 #             sentence_parts.append(random.choice(accounting_buzzwords))
-        
+
 #         sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 5)]
-        
+
 #         seen = set()
 #         unique_parts = []
 #         for part in sentence_parts:
 #             if part not in seen:
 #                 seen.add(part)
 #                 unique_parts.append(part)
-        
+
 #         sentence = " ".join(unique_parts)
 #         sentences.append((sentence, 3))
-    
+
 #     # --- Label 2: Gen/Unknown Hedge Der. Speculative/Policy ---
 #     num_label_2 = batch_size // 4
 #     for _ in range(num_label_2):
 #         sentence_parts = []
-        
+
 #         sentence_parts.extend(random.sample(
 #             gen_standalone,
 #             min(random.randint(2, 4), len(gen_standalone))
 #         ))
-        
+
 #         if random.random() < 0.6:
 #             sentence_parts.append(random.choice(connectors))
-        
+
 #         if random.random() < 0.5:
 #             sentence_parts.extend(random.sample(
 #                 accounting_buzzwords,
 #                 min(random.randint(1, 3), len(accounting_buzzwords))
 #             ))
-        
+
 #         if random.random() < 0.2:
 #             sentence_parts.append(random.choice(derivative_specific))
-        
+
 #         if random.random() < 0.5:
 #             sentence_parts.append(random.choice(connectors))
 #             sentence_parts.append(random.choice(accounting_phrases))
 
-        
+
 #         while len(sentence_parts) < min_words_per_sentence:
 #             sentence_parts.append(random.choice(gen_standalone))
-        
+
 #         sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 5)]
-        
+
 #         seen = set()
 #         unique_parts = []
 #         for part in sentence_parts:
 #             if part not in seen:
 #                 seen.add(part)
 #                 unique_parts.append(part)
-        
+
 #         sentence = " ".join(unique_parts)
 #         sentences.append((sentence, 2))
-    
+
 #     # --- Labels 14/15/16: Type-specific ---
 #     swap_types = {
 #         "ir": 14,
 #         "fx": 15,
 #         "cp": 16
-#     }    
+#     }
 #     for prefix, label in swap_types.items():
 #         for _ in range(batch_size):
 #             sentence_parts = []
-            
+
 #             num_swaps = random.randint(2, 4)
 #             for _ in range(num_swaps):
 #                 swap_type = random.choice(derivative_keywords.get(prefix, []))
 #                 sentence_parts.append(swap_type)
-            
+
 #             if random.random() < 0.7:
 #                 sentence_parts.append(random.choice(connectors))
-            
+
 #             if random.random() < 0.4:
 #                 sentence_parts.extend(random.sample(
 #                     gen_standalone,
 #                     min(random.randint(1, 2), len(gen_standalone))
 #                 ))
-            
+
 #             if random.random() < 0.3:
 #                 sentence_parts.extend(random.sample(
 #                     accounting_buzzwords,
 #                     min(random.randint(1, 3), len(accounting_buzzwords))
 #                 ))
-            
+
 #             if random.random() < 0.2:
 #                 other_prefix = random.choice([p for p in swap_types.keys() if p != prefix])
 #                 cross_contamination = random.choice(derivative_keywords.get(other_prefix, []))
 #                 sentence_parts.append(cross_contamination)
-            
+
 #             if random.random() < 0.5:
 #                 sentence_parts.append(random.choice(accounting_phrases))
-            
+
 #             while len(sentence_parts) < min_words_per_sentence:
 #                 swap_type = random.choice(derivative_keywords.get(prefix, []))
 #                 sentence_parts.append(swap_type)
-            
+
 #             sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 6)]
-            
+
 #             seen = set()
 #             unique_parts = []
 #             for part in sentence_parts:
 #                 if part not in seen:
 #                     seen.add(part)
 #                     unique_parts.append(part)
-            
+
 #             sentence = " ".join(unique_parts)
 #             sentences.append((sentence, label))
 #     random.shuffle(sentences)
@@ -7098,19 +7475,19 @@ def generate_sec_noise(company, currency_unit, month, year):
 # ):
 #     """
 #     Generate deboost dataset using concurrent processing with tqdm progress bar.
-    
+
 #     Args:
 #         total_batches: Number of batches to generate
 #         batch_size: Size of each batch
 #         max_workers: Number of parallel workers
 #         max_words_per_sentence: Max words per sentence
 #         min_words_per_sentence: Min words per sentence
-    
+
 #     Returns:
 #         List of (sentence, label) tuples
 #     """
 #     all_sentences = []
-    
+
 #     # Create progress bar
 #     with tqdm(total=total_batches, desc="Generating deboost sentences", unit="batch") as pbar:
 #         # Use ThreadPoolExecutor for I/O-bound or CPU-bound tasks
@@ -7125,7 +7502,7 @@ def generate_sec_noise(company, currency_unit, month, year):
 #                     min_words_per_sentence=min_words_per_sentence
 #                 ): i for i in range(total_batches)
 #             }
-            
+
 #             # Process completed tasks
 #             for future in as_completed(futures):
 #                 batch_id = futures[future]
@@ -7136,7 +7513,7 @@ def generate_sec_noise(company, currency_unit, month, year):
 #                 except Exception as e:
 #                     print(f"\nError in batch {batch_id}: {e}")
 #                     pbar.update(1)
-    
+
 #     # Remove duplicates
 #     all_sentences = list(set(all_sentences))
 #     return all_sentences
