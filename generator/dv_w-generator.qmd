@@ -5082,12 +5082,8 @@ def generate_labeled_hedge_paragraph(
             sentences.append(sentence)
 
         # --- Select appropriate template set ---
-        if swapType == "fx":
-            template = random.choice(fx_position_template)
-        elif swapType == "ir":
-            template = random.choice(ir_position_template)
-        elif swapType == "cp":
-            template = random.choice(cp_position_template)
+        if swapType in ["fx", "ir", "cp"]:
+            template = random.choice(hedge_position_templates)
         else:
             # generic fallback
             template = random.choice(
