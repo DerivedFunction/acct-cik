@@ -172,9 +172,44 @@ trainer.train() # resume_from_checkpoint=True
 ```
 
 ```{python}
-string = '''
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+import json
 
-'''
+EXCEL_PATH = "./training_data.xlsx"
+MODEL_PATH = "derivative-type-classifier"
+MODEL_USER = "DerivedFunction"
+MODEL_NAME = f"{MODEL_USER}/{MODEL_PATH}"
+KEYWORDS_FILE = "./keywords_find.json"
+
+with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
+    keyword_data = json.load(f)
+id2label = {int(k): v for k, v in keyword_data["id2label"].items()}
+label2id = {v: int(k) for k, v in keyword_data["id2label"].items()}
+
+# Load tokenizer and model
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+model = AutoModelForSequenceClassification.from_pretrained(
+    MODEL_NAME,
+    num_labels=len(id2label),
+    id2label=id2label,
+    label2id=label2id,
+    # Allow loading even if the checkpoint's head has a different size.
+    # This prevents the RuntimeError when you add/remove labels compared to
+    # the original checkpoint. The classification head weights will be
+    # randomly initialized for the mismatched entries.
+    ignore_mismatched_sizes=True,
+)
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+model.to(device)
+print(f"Model loaded to {device}")
+```
+
+
+```{python}
+string = """
+"""
+
 model.eval()
 inputs = tokenizer(
     string.strip(),
@@ -183,11 +218,11 @@ inputs = tokenizer(
     padding=True,
 )
 inputs = {k: v.to(device) for k, v in inputs.items()}
-outputs = model(**inputs)
 
 with torch.no_grad():
     outputs = model(**inputs)
     logits = outputs.logits
     predicted_ids = torch.argmax(logits, dim=1).tolist()
     print([id2label[i] for i in predicted_ids])
+
 ```
