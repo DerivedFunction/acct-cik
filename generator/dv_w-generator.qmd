@@ -7207,7 +7207,7 @@ def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, mi
             f"{commodity} price",
             f"{commodity} inventory",
             f"{commodity} risk",
-            f"{commodity} market"
+            f"{commodity} market",
             commodity
         )
 
