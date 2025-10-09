@@ -5098,11 +5098,11 @@ def generate_labeled_hedge_paragraph(
         # --- Time logic ---
         year = current_year if has_active_derivative else current_year - 1
         prev_year, prev2_year = year - 1, year - 2
-        old_year = random.choice(past_years) if past_years else prev_year
+        old_year = random.choice(past_years) - 1 if past_years else prev_year
         future_year = (
             random.randint(current_year + 1, current_year + 5)
             if has_active_derivative
-            else random.randint(old_year, prev_year)
+            else random.randint(old_year - 1, prev_year)
         )
 
         # --- Notionals ---
