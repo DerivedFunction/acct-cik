@@ -1187,6 +1187,11 @@ hedge_may_use_templates = [
     "{company} {verb} {swap_type} to reduce overall earnings volatility",
     "{company} {verb} {swap_type} to enhance stability of financial performance",
     "{company} {verb} {swap_type} to manage risk exposure across multiple markets",
+    "To protect against unfavorable changes in market conditions, {company} {verb} {swap_type}",
+    "To offset risks associated with forecasted transactions, {company} {verb} {swap_type}",
+    "To reduce overall earnings volatility, {company} {verb} {swap_type}",
+    "To enhance stability of financial performance, {company} {verb} {swap_type}",
+    "To manage risk exposure across multiple markets, {company} {verb} {swap_type}",
 ]
 
 hedge_policy_templates = [
@@ -5113,39 +5118,30 @@ def generate_labeled_hedge_paragraph(
 
         # --- Select appropriate template set ---
         if swapType == "fx":
-            if random.random() < 0.85:
+            if random.random() < 0.85 or not has_active_derivative:
                 template = random.choice(fx_position_template)
             else:
                 template = random.choice(fx_may_use_templates)
-                if has_active_derivative:
-                    verb = random.choice(hedge_use_verbs)
-                else:
-                    verb = random.choice(hedge_may_use_verbs)
+                verb = random.choice(hedge_use_verbs)
         elif swapType == "ir":
             if random.random() < 0.85:
                 template = random.choice(ir_position_template)
             else:
                 template = random.choice(ir_may_use_templates)
-                if has_active_derivative:
-                    verb = random.choice(hedge_use_verbs)
-                else:
-                    verb = random.choice(hedge_may_use_verbs)
+                verb = random.choice(hedge_use_verbs)
         elif swapType == "cp":
-            if random.random() < 0.85:
+            if random.random() < 0.85 or not has_active_derivative:
                 template = random.choice(cp_position_template)
             else:
                 template = random.choice(cp_may_use_templates)
-                if has_active_derivative:
-                    verb = random.choice(hedge_use_verbs)
-                else:
-                    verb = random.choice(hedge_may_use_verbs)
+                verb = random.choice(hedge_use_verbs)
         else:
-            # generic fallback
-            template = random.choice(
-                hedge_position_templates
-                if random.random() < 0.85
-                else eq_position_templates
-            )
+            if random.random() < 0.85 or not has_active_derivative:
+                # generic fallback
+                template = random.choice(hedge_position_templates if random.random() < 0.85 else eq_position_templates)
+            else:
+                template = random.choice(hedge_may_use_templates)
+                verb = random.choice(hedge_use_verbs)
 
         # --- Time logic ---
         year = current_year if has_active_derivative else current_year - 1
