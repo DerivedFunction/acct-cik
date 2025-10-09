@@ -7177,7 +7177,9 @@ def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, mi
         "hedge accounting", "hedge effectiveness", "hedge designation",
         "accumulated other comprehensive income", "fair value hierarchy",
         "Level 1", "Level 2", "Level 3", "carrying value", "book value",
-        "net investment hedge", "cash flow hedge", "fair value hedge"
+        "net investment hedge", "cash flow hedge", "fair value hedge",
+        "hedge fund", "fund", "outstanding", "terminate", "expire", "termination", "expiration",
+        "dedesignation", "dedesignate"
     ]
     
     connectors = [
@@ -7198,6 +7200,16 @@ def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, mi
         "included in the consolidated financial statements",
         "disclosed in the footnotes"
     ]
+
+    type_specific_terms = []
+    for commodity in commodities:
+        type_specific_terms.extend(
+            f"{commodity} price",
+            f"{commodity} inventory",
+            f"{commodity} risk",
+            f"{commodity} market"
+            commodity
+        )
 
     # --- Label 3: Irrelevant / Unrelated Context ---
     num_label_3 = batch_size  # Adjust ratio as needed
@@ -7271,11 +7283,7 @@ def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, mi
             ))
         
         if random.random() < 0.3:
-            type_specific_terms = random.sample([
-                "interest rate", "foreign exchange", "commodity price",
-                "currency", "crude oil", "natural gas", "EUR/USD", "LIBOR", "SOFR"
-            ], random.randint(1, 2))
-            sentence_parts.extend(type_specific_terms)
+            sentence_parts.extend(random.sample(type_specific_terms, random.randint(1, 3)))
         
         if random.random() < 0.2:
             sentence_parts.append(random.choice(derivative_specific))
@@ -7286,7 +7294,7 @@ def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, mi
         
         if random.random() < 0.6:
             value = round(random.uniform(1, 9999), 1)
-            currency_symbol = random.choice(["$", "€", "£"])
+            currency_symbol = random.choice(currency_codes)
             money_unit = random.choice(money_unit_list)
             sentence_parts.append(f"notional {currency_symbol}{value} {money_unit}")
         
