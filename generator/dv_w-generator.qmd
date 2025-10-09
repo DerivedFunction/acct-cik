@@ -6984,7 +6984,7 @@ def generate_accounting_noise_paragraph(
                 end_day=end_day,
                 year=current_year,
                 major_currency=major_currency,
-                money_unit=money_unit,
+                money_unit=money_units,
             )
             sentences.append(sentence)
 
@@ -7003,7 +7003,7 @@ def generate_accounting_noise_paragraph(
                 year=current_year,
                 prev_year=current_year - 1,
                 major_currency=major_currency,
-                money_unit=money_unit,
+                money_unit=money_units,
             )
             sentences.append(sentence)
 
