@@ -5113,7 +5113,7 @@ def generate_labeled_hedge_paragraph(
 
         # --- Select appropriate template set ---
         if swapType == "fx":
-            if random.random() < 0.5:
+            if random.random() < 0.85:
                 template = random.choice(fx_position_template)
             else:
                 template = random.choice(fx_may_use_templates)
@@ -5122,7 +5122,7 @@ def generate_labeled_hedge_paragraph(
                 else:
                     verb = random.choice(hedge_may_use_verbs)
         elif swapType == "ir":
-            if random.random() < 0.5:
+            if random.random() < 0.85:
                 template = random.choice(ir_position_template)
             else:
                 template = random.choice(ir_may_use_templates)
@@ -5131,7 +5131,7 @@ def generate_labeled_hedge_paragraph(
                 else:
                     verb = random.choice(hedge_may_use_verbs)
         elif swapType == "cp":
-            if random.random() < 0.5:
+            if random.random() < 0.85:
                 template = random.choice(cp_position_template)
             else:
                 template = random.choice(cp_may_use_templates)
