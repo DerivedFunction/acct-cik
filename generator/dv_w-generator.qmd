@@ -7246,7 +7246,7 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
         [
             "option",
             "collar",
-            " call",
+            "call",
             "over-the-counter",
             "receive-equity",
             "pay-fixed",
