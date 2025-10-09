@@ -860,11 +860,11 @@ hedge_position_templates = [
     "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{old_notional} {money_unit}, which are set to expire in {month} {future_year}",
     "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{old_notional} {money_unit}, expiring in {future_year}",
     "{swap_type} expires in {future_year}",
-    "In {month} {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
-    "In the {quarter} quarter of {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
-    "During {month} {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
-    "During the {quarter} quarter of {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
-    "The net unrealized loss on the {swap_type} was {currency_code}{amount} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income.",
+    "In {month} {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}, resulting in fair value losses recorded in equity",
+    "In the {quarter} quarter of {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}, resulting in fair value losses recorded in equity",
+    "During {month} {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{notional} {money_unit} of unrealized losses recorded in accumulated OCI",
+    "During the {quarter} quarter of {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{notional} {money_unit} of unrealized losses recorded in accumulated OCI",
+    "The net unrealized loss on the {swap_type} was {currency_code}{notional} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income.",
     # Revesred
     "As of {month} {end_day}, {year}, {company} {verb} notional amounts totaling {currency_code}{notional} {money_unit} in {swap_type}",
     "At year-end {year}, {company} {verb} aggregate notional values of {currency_code}{notional} {money_unit} in {swap_type} designated as hedges",
@@ -5193,6 +5193,7 @@ def generate_labeled_hedge_paragraph(
             old_notional=old_notional,
             money_unit=money_units,
             cost_type=cost_type,
+            hedge_type=hedge_type,
         )
         sentences.append(sentence)
 
