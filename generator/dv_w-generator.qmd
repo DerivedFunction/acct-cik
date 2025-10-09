@@ -1743,6 +1743,9 @@ commodities = [
     "raw materials",
     "commodity",
     "energy",
+    "resin",
+    "chemicals",
+    "lumber",
 ]
 cost_types = [
     "input costs",
@@ -1756,6 +1759,7 @@ cost_types = [
     "storage costs",
     "commodity costs",
     "production costs",
+    "lumber costs",
 ]
 ```
 
