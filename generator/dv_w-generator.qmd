@@ -7640,7 +7640,7 @@ def generate(size_per_label=100, max_workers=8):
                 )
 
         # Parallel accounting noise
-        for _ in range(size_per_label):
+        for _ in range(size_per_label * 2):
             futures.append(executor.submit(generate_accounting_noise_paragraph))
 
         return futures
@@ -7653,11 +7653,11 @@ def generate(size_per_label=100, max_workers=8):
             total=len(futures),
             desc="Generating samples",
         ):
-            # try:
-            paragraph, label = future.result()
-            all_samples.append((paragraph, label))
-            # except Exception as e:
-            #     print(f"Error during generation: {e}")
+            try:
+                paragraph, label = future.result()
+                all_samples.append((paragraph, label))
+            except Exception as e:
+                print(f"Error during generation: {e}")
     # Deboosting
     # all_samples.extend(generate_deboost_dataset_concurrent(size_per_label))
 
@@ -7681,7 +7681,7 @@ def generate(size_per_label=100, max_workers=8):
 ```
 
 ```{python}
-generate(100)
+generate(200)
 ```
 
 ```{python}
