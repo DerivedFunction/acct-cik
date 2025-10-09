@@ -7217,7 +7217,7 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
         ])
     
 
-    for _ in range(batch_size * len(words_to_deboost_label_3) // 2):
+    for _ in range(len(words_to_deboost_label_3) * 2):
         num_words = random.randint(1, max_words_per_sentence)
         selected_words = random.sample(words_to_deboost_label_3, num_words)
         words_with_context = []
