@@ -7681,7 +7681,7 @@ def generate(size_per_label=100, max_workers=8):
 ```
 
 ```{python}
-generate(200)
+generate(500)
 ```
 
 ```{python}
