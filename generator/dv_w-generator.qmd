@@ -6344,7 +6344,7 @@ def generate_accounting_noise_paragraph(
             sentences.append(sentence)
 
         random.shuffle(sentences)
-        sentences = sentences[: random.random(1, len(sentences))]
+        sentences = sentences[: random.randint(1, len(sentences))]
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
 
@@ -6563,7 +6563,7 @@ def generate_accounting_noise_paragraph(
             )
             sentences.append(sentence)
         random.shuffle(sentences)
-        sentences = sentences[: random.random(1, len(sentences))]
+        sentences = sentences[: random.randint(1, len(sentences))]
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
 
@@ -6851,7 +6851,7 @@ def generate_accounting_noise_paragraph(
         )
         sentences.append(sentence)
         random.shuffle(sentences)
-        sentences = sentences[: random.random(1, len(sentences))]
+        sentences = sentences[: random.randint(1, len(sentences))]
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
 
@@ -7042,7 +7042,7 @@ def generate_accounting_noise_paragraph(
             )
             sentences.append(sentence)
         random.shuffle(sentences)
-        sentences = sentences[: random.random(1, len(sentences))]
+        sentences = sentences[: random.randint(1, len(sentences))]
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
 
@@ -7117,11 +7117,11 @@ def generate_accounting_noise_paragraph(
         if random.random() < 0.5:
             template = random.choice(commodity_pricing_strategies_templates)
             pct = generate_value(False, 50)
-            months = generate_value(False, 12)
+            num_months = generate_value(False, 12)
             sentence = template.format(
                 company=pick_company_name(company_name),
                 pct=pct,
-                months=months,
+                months=num_months,
                 commodity=commodity,
                 year=current_year,
             )
@@ -7180,7 +7180,7 @@ def generate_accounting_noise_paragraph(
             )
             sentences.append(sentence)
         random.shuffle(sentences)
-        sentences = sentences[: random.random(1, len(sentences))]
+        sentences = sentences[: random.randint(1, len(sentences))]
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
 
