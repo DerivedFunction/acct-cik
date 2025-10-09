@@ -7133,7 +7133,6 @@ def generate_sec_noise(company, currency_unit, month, year):
     )
     return chunks
 
-
 def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
     """
     Generate deboost sentences for derivative contexts, suitable for parallel execution.
@@ -7146,7 +7145,7 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
     # --- 1. Deboost swaps by category/prefix (excluding 'gen') ---
     swap_types = {"ir": 14, "fx": 15, "cp": 16}  # label mapping
 
-    # --- 2. Derivative-specific phrases (label 2) ---
+    # --- 2. Derivative-specific phrases that could be confused (label 2) ---
     derivative_specific = [
         "equity swap",
         "forward contract",
@@ -7160,17 +7159,46 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
         random.shuffle(sentence)
         sentences.append((" ".join(sentence), 2))
 
-    # --- 3. Contextless / irrelevant words (label 3) ---
-    irrelevant_generic = [
+    # --- 3. Generic derivative terms that need context (label 17 - ambiguous) ---
+    gen_standalone = [
+        "option",
+        "collar",
+        "call",
+        "put",
+        "over-the-counter",
+        "receive-equity",
+        "pay-fixed",
+        "receive-floating",
+        "pay-equity",
+        "pay-floating",
+        "receive-fixed",
+        "equity collar",
+        "total return",
         "swap",
         "future",
         "forward",
-        "option",
         "call option",
         "put option",
     ]
+    
+    # Generate GEN_STANDALONE combinations (label 17)
+    for _ in range(len(gen_standalone) * 4):
+        num_words = random.randint(1, 3)
+        selected_words = random.sample(gen_standalone, min(num_words, len(gen_standalone)))
+        words_with_context = []
+        for _ in range(random.randint(1, 3)):
+            words_with_context.extend(selected_words)
+        words_with_context = list(set(words_with_context))
+        
+        if random.random() < 0.4:
+            words_with_context.append(f"{random.randint(1990, 2025)}")
+        random.shuffle(words_with_context)
+        sentence = " ".join(words_with_context)
+        sentences.append((sentence, 2))
+
+    # --- 4. Contextless / irrelevant words (label 3) - NO GEN_STANDALONE ---
     words_to_deboost_label_3 = [
-        # Interest Rate
+        # Interest Rate context (without derivative terms)
         "interest rate",
         "average interest rate",
         "weighted average interest rate",
@@ -7183,7 +7211,9 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
         "benchmark rate",
         "LIBOR",
         "SOFR",
-        # Foreign Exchange
+        "EURIBOR",
+        "prime rate",
+        # Foreign Exchange context (without derivative terms)
         "foreign currency",
         "currency",
         "exchange rate",
@@ -7193,6 +7223,7 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
         "currency fluctuation",
         "exchange rate risk",
         "currency risk",
+        "translation adjustment",
         # Commodity / Market
         "commodity price",
         "market price",
@@ -7200,9 +7231,12 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
         "commodity market",
         "market risk",
         "commodity risk",
-        # Derivative / Contract buzzwords
+        "price volatility",
+        # Financial instrument buzzwords (without specific derivative terms)
         "financial instrument",
         "financial contract",
+        "financial asset",
+        "financial liability",
         # Accounting / Disclosure buzzwords
         "cash flow",
         "OCI",
@@ -7211,6 +7245,8 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
         "amortized cost",
         "mark to market",
         "valuation adjustment",
+        "carrying value",
+        "book value",
         # Generic / Neutral
         "notional amount",
         "exposure",
@@ -7233,49 +7269,46 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
         "bond",
         "strategies",
         "strategy",
+        "portfolio",
+        "investment",
+        # Fair value hierarchy
         "Level 1",
         "Level 2",
         "Level 3",
         "Level 4",
         "Level 5",
+        "fair value hierarchy",
+        # Other accounting terms
+        "balance sheet",
+        "income statement",
+        "equity",
+        "retained earnings",
+        "shareholders",
+        "stockholders",
     ]
-    # Add standalone generic words
-    words_to_deboost_label_3.extend(irrelevant_generic)
-    # Add GEN_STANDALONE
-    words_to_deboost_label_3.extend(
-        [
-            "option",
-            "collar",
-            "call",
-            "over-the-counter",
-            "receive-equity",
-            "pay-fixed",
-            "receive-floating",
-            "pay-equity",
-            "pay-floating",
-            "receive-fixed",
-            "equity collar",
-            "total return",
-        ]
-    )
-    # Add commodities as contextless phrases
+    
+    # Add commodities as contextless phrases (just the commodity names and prices)
     for commodity in commodities:
-        words_to_deboost_label_3.extend(
-            [
-                f"{commodity} price",
-                f"{commodity} exposure",
-                f"{commodity} inventory",
-                commodity,
-            ]
-        )
+        words_to_deboost_label_3.extend([
+            f"{commodity} price",
+            f"{commodity} exposure",
+            f"{commodity} inventory",
+            f"{commodity} cost",
+            commodity,
+        ])
 
+    # Generate label 3 sentences (contextless/irrelevant)
     for _ in range(len(words_to_deboost_label_3) * 5):
         num_words = random.randint(1, max_words_per_sentence)
-        selected_words = random.sample(words_to_deboost_label_3, num_words)
+        selected_words = random.sample(
+            words_to_deboost_label_3, 
+            min(num_words, len(words_to_deboost_label_3))
+        )
         words_with_context = []
         for _ in range(random.randint(1, 4)):
             words_with_context.extend(selected_words)
         words_with_context = list(set(words_with_context))
+        
         # Optionally add random numbers / currencies
         if random.random() < 0.7:
             value = generate_value()
@@ -7287,11 +7320,13 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
                 words_with_context.append(f"{currency_symbol}{value}")
         if random.random() < 0.5:
             words_with_context.append(f"{random.randint(1990, 2025)}")
+        
         random.shuffle(words_with_context)
         sentence = " ".join(words_with_context)
         sentences.append((sentence, 3))
 
-    # Hedges deboosting
+    # --- 5. Type-specific derivative terms (labels 14, 15, 16) ---
+    # These are actual derivative contracts by type
     for prefix, label in swap_types.items():
         for _ in range(batch_size):
             swaps = []
@@ -7303,17 +7338,22 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
                     swap_type = re.sub(
                         "commodity", random.choice(commodities), swap_type
                     )
+                swaps.append(swap_type)
+            
             if swaps:
                 swaps = list(set(swaps))
                 # Optionally add past/future year placeholders
                 if random.random() < 0.5:
-                    swap_type = f"{swap_type} {random.randint(1990, 2025)}"
-                swaps.append(swap_type)
-                # Optionally add random words from label 3
-                if random.random() < 0.5:
-                    swaps.append(words_to_deboost_label_3)
+                    swaps.append(f"{random.randint(1990, 2025)}")
+                
+                # Optionally add contextless words from label 3 (NOT gen_standalone)
+                if random.random() < 0.3:
+                    contextless_word = random.choice(words_to_deboost_label_3)
+                    swaps.append(contextless_word)
+                
                 random.shuffle(swaps)
                 sentences.append((" ".join(swaps), label))
+    
     # Remove duplicates
     sentences = list(set(sentences))
     return sentences
