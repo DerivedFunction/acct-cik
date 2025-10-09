@@ -5626,7 +5626,7 @@ def generate_accounting_noise_paragraph(
 
     # ================== SENTENCE GENERATION ==================
     # Litigation (0-2 sentences)
-    num_litigation = random.randint(1, 3) 
+    num_litigation = random.randint(1, 3)
     for _ in range(num_litigation):
         sentences = []
         template = random.choice(litigation_templates)
@@ -6105,7 +6105,6 @@ def generate_accounting_noise_paragraph(
         # --- Merge into a single coherent text block ---
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
-
 
     # Income taxes (0-1)
     sentences = []
@@ -6786,7 +6785,9 @@ def generate_accounting_noise_paragraph(
     locations = random.randint(50, 500)
     segments = random.choice([2, 3, 4])
     segment_names = random.choice(segment_examples)
-    mission = "deliver innovative solutions that create value for customers and shareholders"
+    mission = (
+        "deliver innovative solutions that create value for customers and shareholders"
+    )
     month = random.choice(months)
     end_day = random.randint(28, 31)
 
@@ -6918,9 +6919,7 @@ def generate_accounting_noise_paragraph(
     template = random.choice(credit_rating_templates)
     agency = random.choice(credit_agencies)
     agency2 = random.choice([a for a in credit_agencies if a != agency])
-    agency3 = random.choice(
-        [a for a in credit_agencies if a not in [agency, agency2]]
-    )
+    agency3 = random.choice([a for a in credit_agencies if a not in [agency, agency2]])
     rating = random.choice(credit_ratings)
     rating2 = random.choice(credit_ratings)
     rating3 = random.choice(credit_ratings)
@@ -7071,7 +7070,7 @@ def generate_accounting_noise_paragraph(
     all_sentences.append([sentence])
 
     all_sentences.append(generate_other_policy_update())
-    
+
     noise = generate_sec_noise(
         company=pick_company_name(company_name),
         currency_unit=money_units,
@@ -7097,7 +7096,7 @@ def generate_accounting_noise_paragraph(
     )
     # Clean up common formatting issues
     paragraph = cleanup(paragraph, False)
-    
+
     return paragraph, 3
 
 
@@ -7133,7 +7132,111 @@ def generate_sec_noise(company, currency_unit, month, year):
         headers + phrases + [gibberish] + [generate_toc_line()], k=random.randint(8, 15)
     )
     return chunks
-  
+
+def deboost_keywords_parallel(batch_size=1, max_words_per_sentence=3):
+    """
+    Generate deboost sentences for derivative contexts, suitable for parallel execution.
+    Each call generates `batch_size` sentences.
+    
+    Returns: List of (sentence, label) tuples
+    """
+    sentences = []
+    
+    # --- 1. Deboost swaps by category/prefix (excluding 'gen') ---
+    swap_types = {"ir": 14, "fx": 15, "cp": 16}  # label mapping
+    for prefix, label in swap_types.items():
+        for _ in range(batch_size):
+            swaps = []
+            length = random.randint(1, max_words_per_sentence)
+            for _ in range(length):
+                swap_type = random.choice(derivative_keywords[prefix])
+                # Randomize commodity type if applicable
+                if prefix == "cp" and "commodity" in swap_type:
+                    swap_type = re.sub("commodity", random.choice(commodities), swap_type)
+
+                # Optionally add past/future year placeholders
+                if random.random() < 0.5:
+                    swap_type = f"{swap_type} {random.randint(1990, 2025)}"
+
+                swaps.append(swap_type)
+            if swaps:
+                sentences.append((" and ".join(swaps), label))
+
+    
+    # --- 2. Derivative-specific phrases (label 2) ---
+    derivative_specific = [
+        "equity swap", "forward contract", "futures contract", "option contract",
+        "swaption", "call contract", "put contract"
+    ]
+    for _ in range(batch_size):
+        word = random.choice(derivative_specific)
+        context = random.choice(["discussion", "note", "overview", "summary"])
+        sentences.append((f"{word} {context}", 2))
+    
+    # --- 3. Contextless / irrelevant words (label 3) ---
+    irrelevant_generic = [
+        "swap", "future", "forward", "option", "call option", "put option"
+    ]
+    words_to_deboost_label_3 = [
+        # Interest Rate
+        "interest rate", "average interest rate", "weighted average interest rate",
+        "floating rate", "fixed rate", "weighted rate", "interest rate risk",
+        "variable rate", "yield curve", "benchmark rate", "LIBOR", "SOFR",
+        # Foreign Exchange
+        "foreign currency", "currency", "exchange rate", "currency translation",
+        "foreign exchange", "FX rate", "currency fluctuation", "exchange rate risk",
+        "currency risk",
+        # Commodity / Market
+        "commodity price", "market price", "spot price", "commodity market",
+        "market risk", "commodity risk",
+        # Derivative / Contract buzzwords
+        "financial instrument", "financial contract",
+        # Accounting / Disclosure buzzwords
+        "cash flow", "OCI", "other comprehensive income",
+        "fair value", "amortized cost", "mark to market", "valuation adjustment",
+        # Generic / Neutral
+        "notional amount", "exposure", "sensitivity", "risk management", "synthetic instrument",
+        "hedge fund", "warrant", "embedded", "warrants", "assets", "liabilities", "contract", "debt", "loan", "bond",
+        "strategy",
+        "Level 1", "Level 2", "Level 3", "Level 4", "Level 5"
+    ]
+    # Add standalone generic words
+    words_to_deboost_label_3.extend(irrelevant_generic)
+    # Add GEN_STANDALONE
+    words_to_deboost_label_3.extend([
+        "put option contract", "collar", " call option contract",
+        "over-the-counter", "receive-equity return, pay-fixed equity",
+        "receive-equity return, pay-floating equity", "equity collor", "total return"
+    ])
+    # Add commodities as contextless phrases
+    for commodity in commodities:
+        words_to_deboost_label_3.extend([
+            f"{commodity} price", f"{commodity} exposure", f"{commodity} inventory", commodity
+        ])
+    
+    context_phrases = ["discussion", "note", "overview", "summary", "details"]
+
+    for _ in range(batch_size):
+        num_words = random.randint(1, max_words_per_sentence)
+        selected_words = random.sample(words_to_deboost_label_3, num_words)
+        words_with_context = [f"{word} {random.choice(context_phrases)}" for word in selected_words]
+
+        # Optionally add random numbers / currencies
+        if random.random() < 0.7:
+            value = generate_value()
+            currency_symbol = random.choice(currency_codes)
+            if random.random() < 0.3:
+                currency_name = random.choice(all_currencies)
+                words_with_context.append(f"{currency_symbol}{value} {currency_name}")
+            else:
+                words_with_context.append(f"{currency_symbol}{value}")
+        if random.random() < 0.5:
+            words_with_context.append(f"{random.randint(1990, 2025)}")
+        sentence = " and ".join(words_with_context)
+        sentences.append((sentence, 3))
+
+    return sentences
+            
 ```
 
 
@@ -7186,7 +7289,9 @@ def generate(size_per_label=100, max_workers=8):
         # Parallel accounting noise
         for _ in range(size_per_label * 4):
             futures.append(executor.submit(generate_accounting_noise_paragraph))
-
+        
+        for _ in range(size_per_label):
+            futures.append(executor.submit(deboost_keywords_parallel, batch_size=3))
         return futures
 
     # --- Parallel execution with tqdm progress bar ---
