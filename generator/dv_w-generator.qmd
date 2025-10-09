@@ -5971,7 +5971,7 @@ def generate_accounting_noise_paragraph(
             debt_type = random.choice(debt_types_list)
             maturity_year = current_year + random.randint(3, 10)
             years = random.randint(3, 10)
-
+            template = random.choice(debt_templates)
             sentence = template.format(
                 amount=amount,
                 amount2=amount2,
@@ -7639,11 +7639,11 @@ def generate(size_per_label=100, max_workers=8):
             total=len(futures),
             desc="Generating samples",
         ):
-            try:
-                paragraph, label = future.result()
-                all_samples.append((paragraph, label))
-            except Exception as e:
-                print(f"Error during generation: {e}")
+            # try:
+            paragraph, label = future.result()
+            all_samples.append((paragraph, label))
+            # except Exception as e:
+            #     print(f"Error during generation: {e}")
     # Deboosting
     # all_samples.extend(generate_deboost_dataset_concurrent(size_per_label))
 
