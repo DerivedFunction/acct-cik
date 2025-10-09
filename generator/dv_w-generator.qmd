@@ -6354,7 +6354,7 @@ def generate_accounting_noise_paragraph(
             sentences.append(sentence)
 
         random.shuffle(sentences)
-        sentences = sentences[: random.randint(1, len(sentences))] if len(sentences) > 1 else sentences
+        sentences = sentences[: random.randint(1, len(sentences))] if len(sentences) > 2 else sentences
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
 
@@ -6573,7 +6573,7 @@ def generate_accounting_noise_paragraph(
             )
             sentences.append(sentence)
         random.shuffle(sentences)
-        sentences = sentences[: random.randint(1, len(sentences))] if len(sentences) > 1 else sentences
+        sentences = sentences[: random.randint(1, len(sentences))] if len(sentences) > 2 else sentences
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
 
@@ -6861,7 +6861,7 @@ def generate_accounting_noise_paragraph(
         )
         sentences.append(sentence)
         random.shuffle(sentences)
-        sentences = sentences[: random.randint(1, len(sentences))] if len(sentences) > 1 else sentences
+        sentences = sentences[: random.randint(1, len(sentences))] if len(sentences) > 2 else sentences
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
 
@@ -7053,7 +7053,7 @@ def generate_accounting_noise_paragraph(
             )
             sentences.append(sentence)
         random.shuffle(sentences)
-        sentences = sentences[: random.randint(1, len(sentences))] if len(sentences) > 1 else sentences
+        sentences = sentences[: random.randint(1, len(sentences))] if len(sentences) > 2 else sentences
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
 
@@ -7191,7 +7191,7 @@ def generate_accounting_noise_paragraph(
             )
             sentences.append(sentence)
         random.shuffle(sentences)
-        sentences = sentences[: random.randint(1, len(sentences))] if len(sentences) > 1 else sentences
+        sentences = sentences[: random.randint(1, len(sentences))] if len(sentences) > 2 else sentences
         merged_text = ". ".join(sentences)
         all_sentences.append([merged_text])
 
