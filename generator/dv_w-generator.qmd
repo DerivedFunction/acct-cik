@@ -3564,7 +3564,8 @@ def generate_value(haveZero=True, upperlimit=1000):
         chance = 0
         
     upperlimit = int(upperlimit)
-    value = 0.0 if random.random() < chance else random.randint(1, upperlimit)
+    value = 0.0 if random.random() < chance else (1
+    if upperlimit == 1 else random.randint(1, upperlimit))
 
     if random.random() < 0.5:
         divisor = random.choice([10, 100])
