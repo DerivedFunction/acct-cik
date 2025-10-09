@@ -5052,7 +5052,7 @@ def generate_labeled_hedge_paragraph(
             # Build the debt type combination
             for _ in range(3):
                 debt_type_list.append(random.choice(debt_types_list))
-                if random.random() < 0.5:
+                if random.random() < 0.95:
                     break
 
             selected_debt = (
