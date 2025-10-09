@@ -3451,7 +3451,7 @@ foreign_currency_translation_templates = [
     "The cumulative translation adjustment recorded in accumulated other comprehensive income was {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "Foreign currency translation adjustments decreased stockholders' equity by {currency_code}{amount} {money_unit} during {year}",
     "{company} recorded a foreign currency translation loss of {currency_code}{amount} {money_unit} in other comprehensive income for the year ended {month} {end_day}, {year}",
-    "The weakening of the {major_currency} against the {major_currency_2} resulted in an unfavorable translation impact of {currency_code}{amount} {money_unit} in {year}",
+    "The weakening of the {major_currency} against the {currency2} resulted in an unfavorable translation impact of {currency_code}{amount} {money_unit} in {year}",
     "Changes in foreign exchange rates resulted in translation gains of {currency_code}{amount} {money_unit} recorded in other comprehensive income during {year}"
 ]
 
@@ -6984,6 +6984,7 @@ def generate_accounting_noise_paragraph(
                 end_day=end_day,
                 year=current_year,
                 major_currency=major_currency,
+                currency2=currency2,
                 money_unit=money_units,
             )
             sentences.append(sentence)
