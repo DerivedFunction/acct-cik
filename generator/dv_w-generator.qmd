@@ -7133,7 +7133,7 @@ def generate_sec_noise(company, currency_unit, month, year):
     )
     return chunks
 
-def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, min_words_per_sentence=4):
+def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min_words_per_sentence=4):
     """
     Generate a single batch of deboost sentences.
     This function is called by each worker thread.
