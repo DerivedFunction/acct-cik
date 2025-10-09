@@ -7198,7 +7198,7 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
         "fair value", "amortized cost", "mark to market", "valuation adjustment",
         # Generic / Neutral
         "notional amount", "exposure", "sensitivity", "risk management", "synthetic instrument",
-        "hedge fund", "warrant", "embedded", "warrants", "assets", "liabilities", "contract", "debt", "loan", "bond",
+        "hedge fund", "warrant", "embedded", "warrants", "assets", "liabilities", "contract", "debt",  "liability", "derivative", "asset", "lawsuit", "loan", "bond", "strategies",
         "strategy",
         "Level 1", "Level 2", "Level 3", "Level 4", "Level 5"
     ]
@@ -7206,9 +7206,9 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
     words_to_deboost_label_3.extend(irrelevant_generic)
     # Add GEN_STANDALONE
     words_to_deboost_label_3.extend([
-        "put option contract", "collar", " call option contract",
-        "over-the-counter", "receive-equity return, pay-fixed equity",
-        "receive-equity return, pay-floating equity", "equity collar", "total return"
+        "option", "collar", " call",
+        "over-the-counter", "receive-equity", "pay-fixed",
+        "receive-floating", "pay-equity", "pay-floating", "receive-fixed", "equity collar", "total return"
     ])
     # Add commodities as contextless phrases
     for commodity in commodities:
