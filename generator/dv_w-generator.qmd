@@ -1733,6 +1733,11 @@ cp_may_use_templates = [
     "{company} {verb} {swap_types} to stabilize operating costs tied to {commodity} inputs",
     "{company} {verb} {swap_types} to protect margins from unexpected {commodity} price movements",
     "{company} {verb} {swap_types} to lock in pricing for forecasted {commodity} purchases",
+    "To manage the volatility of {commodity} prices, {company} {verb} {swap_types}",
+    "To reduce the risk of fluctuations in {commodity} costs, {company} {verb} {swap_types}",
+    "To stabilize operating costs tied to {commodity} inputs, {company} {verb} {swap_types}",
+    "To protect margins from unexpected {commodity} price movements, {company} {verb} {swap_types}",
+    "To lock in pricing for forecasted {commodity} purchases, {company} {verb} {swap_types}",
 ]
 
 commodities = [
@@ -2016,6 +2021,11 @@ fx_may_use_templates = [
     "{company} {verb} {swap_types} to offset volatility from translating foreign subsidiaries’ results",
     "{company} {verb} {swap_types} to reduce the impact of exchange rate fluctuations on cash flows",
     "{company} {verb} {swap_types} to protect against adverse changes in cross-border financing costs",
+    "To mitigate exposure to foreign currency movements, {company} {verb} {swap_types}",
+    "To manage risks related to forecasted foreign transactions, {company} {verb} {swap_types}",
+    "To offset volatility from translating foreign subsidiaries’ results, {company} {verb} {swap_types}",
+    "To reduce the impact of exchange rate fluctuations on cash flows, {company} {verb} {swap_types}",
+    "To protect against adverse changes in cross-border financing costs, {company} {verb} {swap_types}",
 ]
 ```
 
@@ -2179,6 +2189,12 @@ ir_may_use_templates = [
     "{company} {verb} {swap_types} to stabilize the cost of borrowing",
     "{company} {verb} {swap_types} to protect against unfavorable changes in long-term debt obligations",
     "{company} {verb} {swap_types} to hedge interest rate risk on forecasted debt issuances",
+    "To hedge against fluctuations in interest rates, {company} {verb} {swap_types}",
+    "To manage exposure to changes in benchmark interest rates, {company} {verb} {swap_types}",
+    "To reduce cash flow variability from interest-bearing debt, {company} {verb} {swap_types}",
+    "To stabilize the cost of borrowing, {company} {verb} {swap_types}",
+    "To protect against unfavorable changes in long-term debt obligations, {company} {verb} {swap_types}",
+    "To hedge interest rate risk on forecasted debt issuances, {company} {verb} {swap_types}",
 ]
 
 hedge_methods = [
@@ -4713,7 +4729,7 @@ def generate_labeled_hedge_paragraph(
                 swap_type=swap_type,
             )
         )
-        
+
         # Risk
         materiality_choice = random.choice(materiality)
         template = random.choice(risk_templates)
@@ -4722,9 +4738,12 @@ def generate_labeled_hedge_paragraph(
             if random.random() < 0.5
             else random.choice(risk_items_derivative)
         )
-        template.format(item=item, company=pick_company_name(company_name), materiality=materiality_choice)
+        template.format(
+            item=item,
+            company=pick_company_name(company_name),
+            materiality=materiality_choice,
+        )
         return sentences
-
 
     def generate_hedge_policy_update():
         sentences = []
@@ -4998,11 +5017,10 @@ def generate_labeled_hedge_paragraph(
         )
         sentences.append(sentence)
         return sentences
-    
+
     def generate_derivative_sentences():
         """Generate derivative-related sentences for FX, IR, CP, or generic types."""
         sentences = []
-
 
         # --- Common fields ---
         verb = random.choice(hedge_use_verbs)
@@ -5010,9 +5028,21 @@ def generate_labeled_hedge_paragraph(
         commodity = random.choice(commodities)
         cost_type = random.choice(cost_types)
 
-        month=random.choice(months)
-        end_day=random.randint(28, 31)
-        quarter=random.choice(quarters)
+        month = random.choice(months)
+        end_day = random.randint(28, 31)
+        quarter = random.choice(quarters)
+
+
+        selected_swap = []
+        for _ in range(3):
+            selected_swap.append(random.choice(swap_types))
+            if random.random() < 0.5:
+                break
+        selected_swap_list = (
+            ", ".join(selected_swap[:-1]) + " and " + selected_swap[-1]
+            if len(selected_swap) > 1
+            else selected_swap[0]
+        )
 
         # --- FX: add currency description sentence (0-1 chance) ---
         if swapType == "fx" and random.random() < 0.6:
@@ -5026,7 +5056,8 @@ def generate_labeled_hedge_paragraph(
             selected = list(dict.fromkeys(selected))
             currency_list = (
                 ", ".join(selected[:-1]) + " and " + selected[-1]
-                if len(selected) > 1 else selected[0]
+                if len(selected) > 1
+                else selected[0]
             )
             if random.random() < 0.3:
                 currency_list += " and other European and Latin American currencies"
@@ -5081,12 +5112,39 @@ def generate_labeled_hedge_paragraph(
                 sentences.append(sentence)
 
         # --- Select appropriate template set ---
-        if swapType in ["fx", "ir", "cp"]:
-            template = random.choice(hedge_position_templates)
+        if swapType == "fx":
+            if random.random() < 0.5:
+                template = random.choice(fx_position_template)
+            else:
+                template = random.choice(fx_may_use_templates)
+                if has_active_derivative:
+                    verb = random.choice(hedge_use_verbs)
+                else:
+                    verb = random.choice(hedge_may_use_verbs)
+        elif swapType == "ir":
+            if random.random() < 0.5:
+                template = random.choice(ir_position_template)
+            else:
+                template = random.choice(ir_may_use_templates)
+                if has_active_derivative:
+                    verb = random.choice(hedge_use_verbs)
+                else:
+                    verb = random.choice(hedge_may_use_verbs)
+        elif swapType == "cp":
+            if random.random() < 0.5:
+                template = random.choice(cp_position_template)
+            else:
+                template = random.choice(cp_may_use_templates)
+                if has_active_derivative:
+                    verb = random.choice(hedge_use_verbs)
+                else:
+                    verb = random.choice(hedge_may_use_verbs)
         else:
             # generic fallback
             template = random.choice(
-                hedge_position_templates if random.random() < 0.85 else eq_position_templates
+                hedge_position_templates
+                if random.random() < 0.85
+                else eq_position_templates
             )
 
         # --- Time logic ---
@@ -5114,6 +5172,7 @@ def generate_labeled_hedge_paragraph(
             company=pick_company_name(company_name),
             verb=verb,
             swap_type=swap_type,
+            swap_types=selected_swap_list,
             commodity=commodity,
             month=month,
             end_day=end_day,
@@ -5143,7 +5202,9 @@ def generate_labeled_hedge_paragraph(
     if has_active_derivative is None:
         # Accounting policy (always)
         act_template = random.choice(hedge_policy_templates)
-        swap_type = random.choice(swap_types) if random.random() < 0.5 else "derivatives"
+        swap_type = (
+            random.choice(swap_types) if random.random() < 0.5 else "derivatives"
+        )
         hedge_type = random.choice(hedge_types)
         all_sentences.append(
             act_template.format(
@@ -5258,10 +5319,7 @@ def generate_labeled_hedge_paragraph(
             all_sentences.append(sentence)
 
         # Main generator
-        all_sentences.extend(
-            generate_derivative_sentences()
-        )
-
+        all_sentences.extend(generate_derivative_sentences())
 
     # Shuffle and select sentences
     random.shuffle(all_sentences)
