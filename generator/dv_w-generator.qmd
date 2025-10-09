@@ -7203,12 +7203,12 @@ def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, mi
 
     type_specific_terms = []
     for commodity in commodities:
-        type_specific_terms.extend(
+        type_specific_terms.extend([
             f"{commodity} price",
             f"{commodity} inventory",
             f"{commodity} risk",
             f"{commodity} market",
-            commodity
+            commodity]
         )
 
     # --- Label 3: Irrelevant / Unrelated Context ---
