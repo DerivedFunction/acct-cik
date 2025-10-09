@@ -3650,7 +3650,6 @@ def generate_derivative_liability_paragraph(
 
         if random.random() < 0.5:
             template = random.choice(warrant_issuance_templates)
-            company = random.choice(company_names)
             shares = random.choice([50000, 100000, 250000, 500000, 750000, 1000000])
             price = round(random.uniform(1.50, 25.00), 2)
             month = random.choice(months)
@@ -4074,7 +4073,6 @@ def generate_derivative_liability_paragraph(
                     "capital_raising",
                 ]
             )
-            company = random.choice(company_names)
             month = random.choice(months)
             year = random.choice([current_year, current_year - 1])
             end_day = random.randint(28, 31)
@@ -7224,7 +7222,7 @@ def generate_sec_noise(company, currency_unit, month, year):
         return (
             template.format(
                 page=page_num,
-                company=pick_company_name(company_name),
+                company=pick_company_name(company),
             )
             + " "
         )
