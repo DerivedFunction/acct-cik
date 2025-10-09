@@ -827,6 +827,7 @@ hedge_past_event_template = [
     "In the {quarter} quarter of {year}, {company} {verb} {swap_type} agreements with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
     "During {month} {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
     "During the {quarter} quarter of {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
+    "The net unrealized loss on the {swap_type} was {currency_code}{amount} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income.",
 ]
 
 hedge_no_such_outstanding_template = [
@@ -2171,6 +2172,7 @@ ir_context_templates = [
     "{company} recognize the gains and losses on our derivative instruments as an adjustment to interest expense in the period the hedged interest payment affects earnings",
     "{company} manage interest costs by using a mix of fixed- and floating-rate debt",
     "{company} {verb} derivative financial instruments to manage our variable interest rate exposure",
+    "Variable rate obligations expose {company} to the risk of increased interest expense if short-term interest rates rise"
 ]
 # Interest Rate (IR) Debt Optimization Templates
 ir_debt_optimization_templates = [
@@ -2625,33 +2627,31 @@ intangible_types = [
 
 debt_templates = [
     # General facilities and balances
-    "{company} maintains a {currency_code}{amount} {money_unit} revolving credit facility that expires in {year}, with {currency_code}{outstanding} {money_unit} outstanding as of {month} {end_day}, {current_year}",
-    "As of {month} {end_day}, {year}, {company} had total long-term debt of {currency_code}{amount} {money_unit}, consisting primarily of {debt_types}",
-    "Long-term debt as of {month} {end_day}, {year} totaled {currency_code}{amount} {money_unit}, consisting of {debt_types}",
-    "At year-end {year}, {company} reported total debt of {currency_code}{amount} {money_unit}, including {debt_types}",
-    "{company}'s outstanding borrowings under its revolving credit facility totaled {currency_code}{outstanding} {money_unit} as of {month} {end_day}, {year}",
+    "{company} maintains a {currency_code}{amount} {money_unit} revolving credit facility that expires in {year}, with {currency_code}{outstanding} {money_unit} outstanding as of {month} {end_day}, {current_year}, with annual interest rate of {pct}%",
+    "As of {month} {end_day}, {year}, {company} had total long-term debt of {currency_code}{amount} {money_unit}, consisting primarily of {debt_types}, with an average interest rate of {pct}% and {pct2}%, respectively",
+    "Long-term debt, with an annual interest rate of {pct}% as of {month} {end_day}, {year} totaled {currency_code}{amount} {money_unit}, consisting of {debt_types}",
+    "At year-end {year}, {company} reported total debt of {currency_code}{amount} {money_unit} with interest rates ranging from {pct}% to {pct2}%, including {debt_types}",
+    "{company}'s outstanding borrowings under its revolving credit facility totaled {currency_code}{outstanding} {money_unit} with average interest rate of {pct}% to {pct2}% as of {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, there was {currency_code}{outstanding} {money_unit} outstanding on the {debt_type} and {currency_code}{outstanding} {money_unit} outstanding on {debt_types}",
     # Issuances and repayments
-    "During {year}, {company} issued {currency_code}{amount} {money_unit} in {debt_types} with a maturity date of {maturity_year}",
+    "During {year}, {company} issued {currency_code}{amount} {money_unit} in {debt_types} with a maturity date of {maturity_year} and a weighted average interest rate of {pct}%",
     "In {year}, {company} completed a private placement of {currency_code}{amount} {money_unit} of {debt_types}, bearing interest at {pct}% per annum",
     "During {year}, {company} repaid {currency_code}{amount} {money_unit} of its outstanding {debt_type} prior to maturity",
     "{company} repaid {currency_code}{amount} {money_unit} of outstanding {debt_type} during {year} using cash from operations",
-    "In {year}, {company} refinanced {currency_code}{amount} {money_unit} of existing {debt_type}, extending the maturity to {maturity_year}",
+    "In {year}, {company} refinanced {currency_code}{amount} {money_unit} of existing {debt_type} at interest rate of {pct}%, extending the maturity to {maturity_year}",
     # Interest rate and maturity details
     "As of year-end {year}, {company} had total {debt_type} of {currency_code}{amount} {money_unit}, {currency_code}{amount2} {money_unit} of which was fixed rate debt with a weighted average interest rate of {pct}% to {pct2}%",
-    "The weighted average interest rate on {company}'s long-term debt was approximately {pct}% as of {month} {end_day}, {year}",
-    "As of {month} {end_day}, {year}, {company}'s long-term debt had a weighted average maturity of {years} years",
+    "The weighted average interest rate on {company}'s {debt_type} was approximately {pct}% as of {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, {company}'s {debt_type} had a weighted average maturity of {years} years",
     "As of {month} {end_day}, {year}, {company}'s variable-rate borrowings bore interest at an average rate of {pct}%",
     "Interest expense related to {debt_type} for {year} was approximately {currency_code}{amount} {money_unit}",
-    # Covenant and credit facility context
-    "The revolving credit facility contains customary financial covenants, including maintaining a maximum leverage ratio and minimum interest coverage ratio",
-    "{company} was in compliance with all debt covenants as of {month} {end_day}, {year}",
-    "{company}'s credit agreements require maintenance of specified leverage and coverage ratios, which {company} met as of {month} {end_day}, {year}",
+    "At {month} {year}, {company} repaid {currency_code}{amount} {money_unit} of the {currency_code}{amount2} {money_unit} borrowed",
     # Other specialized cases
-    "During {year}, {company} entered into a new {currency_code}{amount} {money_unit} term loan agreement with a maturity in {maturity_year}",
+    "During {year}, {company} entered into a new {currency_code}{amount} {money_unit} {debt_type} with a maturity in {maturity_year} and annual interest rate of {pct}%",
     "Proceeds from the {debt_type} issuance were used to repay existing borrowings and for general corporate purposes",
     "In {year}, {company} retired {currency_code}{amount} {money_unit} of {debt_type} upon maturity",
-    "At {month} {end_day}, {year}, unamortized debt issuance costs related to long-term debt totaled {currency_code}{amount} {money_unit}",
-    "The fair value of {company}'s long-term debt was estimated at {currency_code}{amount2} {money_unit} as of {month} {end_day}, {year}",
+    "At {month} {end_day}, {year}, unamortized debt issuance costs related to {debt_type} totaled {currency_code}{amount} {money_unit}",
+    "The fair value of {company}'s {debt_type} was estimated at {currency_code}{amount2} {money_unit} as of {month} {end_day}, {year}",
 ]
 
 debt_types_list = [
@@ -2665,6 +2665,10 @@ debt_types_list = [
     "term loan B facility",
     "credit facility borrowings",
     "notes payable",
+    "long-term loan agreement",
+    "short-term loan",
+    "long-term debt",
+    "short-term debt",
     # Market rate–specific
     "LIBOR-based loans",
     "SOFR-based revolving loans",
@@ -2686,6 +2690,10 @@ debt_covenant_templates = [
     "As of {month} {end_day}, {year}, {company} was in compliance with all debt covenants",
     "The revolving credit facility requires maintenance of a maximum leverage ratio of {ratio}:1 and minimum interest coverage ratio of {coverage}:1",
     "Debt agreements contain restrictions on dividends, additional indebtedness, and asset sales, subject to certain exceptions",
+    # Covenant and credit facility context
+    "The revolving credit facility contains customary financial covenants, including maintaining a maximum leverage ratio and minimum interest coverage ratio",
+    "{company} was in compliance with all debt covenants as of {month} {end_day}, {year}",
+    "{company}'s credit agreements require maintenance of specified leverage and coverage ratios, which {company} met as of {month} {end_day}, {year}",
 ]
 
 # ============ INCOME TAXES ============
@@ -3463,7 +3471,7 @@ foreign_currency_exposure_templates = [
     "{company}'s international operations subject it to foreign currency risks, primarily related to the {major_currency}, {currency2}, and {currency3}",
     "Foreign currency transaction in {major_currency} gains and losses are recorded in {location} as incurred",
     "Substantially all of {company}'s foreign subsidiaries use {major_currency} as their local currency",
-    "{company}'s results of operations are affected by changes in foreign currency exchange rates, particularly movements in the {major_currency} and {currency2}"
+    "{company}'s results of operations are affected by changes in foreign currency exchange rates, particularly movements in the {major_currency} and {currency2}",
 ]
 
 foreign_currency_translation_templates = [
@@ -3473,7 +3481,7 @@ foreign_currency_translation_templates = [
     "Foreign currency translation adjustments decreased stockholders' equity by {currency_code}{amount} {money_unit} during {year}",
     "{company} recorded a foreign currency translation loss of {currency_code}{amount} {money_unit} in other comprehensive income for the year ended {month} {end_day}, {year}",
     "The weakening of the {major_currency} against the {currency2} resulted in an unfavorable translation impact of {currency_code}{amount} {money_unit} in {year}",
-    "Changes in foreign exchange rates resulted in translation gains of {currency_code}{amount} {money_unit} recorded in other comprehensive income during {year}"
+    "Changes in foreign exchange rates resulted in translation gains of {currency_code}{amount} {money_unit} recorded in other comprehensive income during {year}",
 ]
 
 foreign_currency_transaction_templates = [
@@ -3481,7 +3489,7 @@ foreign_currency_transaction_templates = [
     "{company} recognized foreign exchange losses of {currency_code}{amount} {money_unit} during {year}, primarily related to intercompany balances denominated in {major_currency}",
     "{company} recorded foreign currency transaction losses of {currency_code}{amount} {money_unit} in {year} compared to gains of {currency_code}{prev_amount} {money_unit} in {prev_year}",
     "Foreign exchange gains and losses on remeasurement of monetary assets and liabilities totaled {currency_code}{amount} {money_unit} in {year}",
-    "Transaction gains and losses on foreign currency ({major_currency}) denominated receivables and payables are recognized in earnings as exchange rates fluctuate"
+    "Transaction gains and losses on foreign currency ({major_currency}) denominated receivables and payables are recognized in earnings as exchange rates fluctuate",
 ]
 
 functional_currency_templates = [
@@ -3489,7 +3497,7 @@ functional_currency_templates = [
     "For subsidiaries operating in highly inflationary economies, the {major_currency} is used as the functional currency",
     "{company} determines the functional currency of each subsidiary based on the primary economic environment in which the entity operates",
     "The functional currencies of {company}'s significant foreign operations include the {major_currency}, {currency2}, and {currency3}",
-    "Remeasurement of foreign subsidiary financial statements from local currency to functional currency resulted in gains of {currency_code}{amount} {money_unit} in {year}"
+    "Remeasurement of foreign subsidiary financial statements from local currency to functional currency resulted in gains of {currency_code}{amount} {money_unit} in {year}",
 ]
 
 fx_impact_on_results_templates = [
@@ -3498,14 +3506,14 @@ fx_impact_on_results_templates = [
     "Foreign currency movements had a favorable effect on revenues of {pct}% in {year}, primarily due to strengthening of the {major_currency}",
     "Excluding the impact of foreign currency translation, revenues would have increased {pct}% in {year} compared to {prev_year}",
     "The translation impact of changes in foreign exchange rates decreased reported revenues by {currency_code}{amount} {money_unit} year-over-year",
-    "On a constant currency basis, revenues increased {pct}% compared to the prior year, versus {reported_pct}% on a reported basis"
+    "On a constant currency basis, revenues increased {pct}% compared to the prior year, versus {reported_pct}% on a reported basis",
 ]
 
 intercompany_fx_templates = [
     "{company} has intercompany loans denominated in various currencies that are remeasured each reporting period with gains and losses recorded in earnings",
     "Intercompany foreign currency transactions resulted in remeasurement losses of {currency_code}{amount} {money_unit} during {year}",
     "{company} has {currency_code}{amount} {money_unit} in intercompany receivables denominated in {major_currency} as of {month} {end_day}, {year}",
-    "Remeasurement of intercompany balances denominated in currencies other than the functional currency resulted in losses of {currency_code}{amount} {money_unit} in {year}"
+    "Remeasurement of intercompany balances denominated in currencies other than the functional currency resulted in losses of {currency_code}{amount} {money_unit} in {year}",
 ]
 
 # ========== COMMODITY PRICES/RISK/INVENTORY (NON-DERIVATIVE) ==========
@@ -3515,7 +3523,7 @@ commodity_price_exposure_templates = [
     "{company} is exposed to price volatility for key raw materials including {commodity}, {commodity2}, and {commodity3}",
     "Commodity price fluctuations, particularly for {commodity}, can significantly impact {company}'s cost structure and margins",
     "Raw material costs are subject to market volatility, with {commodity} prices ranging from {currency_code}{low_price} to {currency_code}{high_price} per {unit} during {year}",
-    "{company}'s operations are sensitive to changes in {commodity} prices, which can affect both revenue and cost of sales"
+    "{company}'s operations are sensitive to changes in {commodity} prices, which can affect both revenue and cost of sales",
 ]
 
 commodity_cost_impact_templates = [
@@ -3524,7 +3532,7 @@ commodity_cost_impact_templates = [
     "{company} experienced cost inflation of {currency_code}{amount} {money_unit} in {year}, primarily driven by higher {commodity} and {commodity2} prices",
     "Commodity costs increased {pct}% year-over-year, driven primarily by {commodity} price appreciation",
     "Raw material price increases, particularly for {commodity}, reduced gross profit margin from {prev_pct}% to {pct}% in {year}",
-    "{company} absorbed {currency_code}{amount} {money_unit} in commodity cost inflation during {year} through operational efficiencies and pricing actions"
+    "{company} absorbed {currency_code}{amount} {money_unit} in commodity cost inflation during {year} through operational efficiencies and pricing actions",
 ]
 
 commodity_inventory_valuation_templates = [
@@ -3533,7 +3541,7 @@ commodity_inventory_valuation_templates = [
     "{company} recorded an inventory writedown of {currency_code}{amount} {money_unit} in {year} due to declines in {commodity} market prices",
     "Commodity inventory is stated at the lower of cost or net realizable value, with cost determined using the {method} method",
     "{company}'s inventory includes {currency_code}{amount} {money_unit} of raw materials subject to commodity price volatility",
-    "{company} recognized a {currency_code}{amount} {money_unit} charge related to excess and obsolete {commodity} inventory in {year}"
+    "{company} recognized a {currency_code}{amount} {money_unit} charge related to excess and obsolete {commodity} inventory in {year}",
 ]
 
 commodity_pricing_strategies_templates = [
@@ -3541,7 +3549,7 @@ commodity_pricing_strategies_templates = [
     "{company} has implemented price increases totaling {pct}% to offset {commodity} cost inflation during {year}",
     "Pricing adjustments are typically implemented with a {months}-month lag following changes in {commodity} costs",
     "{company} utilizes index-based pricing formulas for certain products to mitigate the impact of {commodity} price volatility",
-    "Customer contracts include provisions that allow {company} to adjust prices in response to significant {commodity} cost movements"
+    "Customer contracts include provisions that allow {company} to adjust prices in response to significant {commodity} cost movements",
 ]
 
 commodity_supply_risk_templates = [
@@ -3549,14 +3557,14 @@ commodity_supply_risk_templates = [
     "{company} maintains strategic inventory of {commodity} to buffer against potential supply disruptions",
     "Supply constraints for {commodity} during {year} resulted in increased costs and temporary production delays",
     "{company} has long-term supply agreements for {commodity} covering approximately {pct}% of anticipated requirements",
-    "{company} is exposed to concentration risk as {pct}% of {commodity} is sourced from a single region"
+    "{company} is exposed to concentration risk as {pct}% of {commodity} is sourced from a single region",
 ]
 
 commodity_exposure_quantification_templates = [
     "A {pct}% change in {commodity} prices would impact annual cost of sales by approximately {currency_code}{amount} {money_unit}",
     "{company} estimates that commodity price volatility could affect operating income by {currency_code}{amount} {money_unit} annually",
     "Each {currency_code}{change} per {unit} change in {commodity} prices impacts annual costs by approximately {currency_code}{amount} {money_unit}",
-    "Commodity exposure is concentrated in {commodity} ({pct}% of raw material spend) and {commodity2} ({pct2}% of raw material spend)"
+    "Commodity exposure is concentrated in {commodity} ({pct}% of raw material spend) and {commodity2} ({pct2}% of raw material spend)",
 ]
 
 physical_commodity_operations_templates = [
@@ -3564,7 +3572,7 @@ physical_commodity_operations_templates = [
     "{company} produced {volume} {unit} of {commodity} during {year}, a {pct}% increase from the prior year",
     "{company}'s {commodity} operations generated revenues of {currency_code}{amount} {money_unit} in {year}",
     "Production costs for {commodity} averaged {currency_code}{cost} per {unit} in {year}, compared to {currency_code}{prev_cost} in {prev_year}",
-    "{company} maintains proved reserves of {volume} {unit} of {commodity} as of {month} {end_day}, {year}"
+    "{company} maintains proved reserves of {volume} {unit} of {commodity} as of {month} {end_day}, {year}",
 ]
  
 ```
@@ -5277,7 +5285,7 @@ def generate_labeled_hedge_paragraph(
         if random.random() < 0.15 and len(past_years) > 0:
             template = random.choice(hedge_past_event_template)
             swap_type = random.choice(swap_types)
-            past_year = random.choice(past_years)
+            year = current_year if has_active_derivative else random.choice(past_years)
             amount = generate_value(False)
             hedge_type = random.choice(hedge_types)
             verb = random.choice(hedge_use_verbs)
@@ -5286,7 +5294,7 @@ def generate_labeled_hedge_paragraph(
                 verb=verb,
                 swap_type=swap_type,
                 month=random.choice(months),
-                year=past_year,
+                year=year,
                 quarter=random.choice(quarters),
                 currency_code=currency_code,
                 amount=amount,
@@ -5975,8 +5983,7 @@ def generate_accounting_noise_paragraph(
         )
 
         # --- Generate multiple related debt statements ---
-        for _ in range(random.randint(1, 3)):  # combine 2–4 related debt lines
-            template = random.choice(debt_templates)
+        for _ in range(random.randint(5, 10)):  # Boost debt related topics
             amount = generate_value(False)
             amount2 = generate_value(False)
             pct = generate_value(False, 8)
