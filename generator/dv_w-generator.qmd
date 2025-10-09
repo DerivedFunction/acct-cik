@@ -7034,7 +7034,7 @@ def generate_accounting_noise_paragraph(
                 reported_pct=reported_pct,
                 year=current_year,
                 prev_year=current_year - 1,
-                major_currency=major_curr,
+                major_currency=major_currency,
             )
             sentences.append(sentence)
 
