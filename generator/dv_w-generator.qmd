@@ -5118,25 +5118,25 @@ def generate_labeled_hedge_paragraph(
 
         # --- Select appropriate template set ---
         if swapType == "fx":
-            if random.random() < 0.85 or not has_active_derivative:
+            if random.random() < 0.90 or not has_active_derivative:
                 template = random.choice(fx_position_template)
             else:
                 template = random.choice(fx_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
         elif swapType == "ir":
-            if random.random() < 0.85:
+            if random.random() < 0.90:
                 template = random.choice(ir_position_template)
             else:
                 template = random.choice(ir_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
         elif swapType == "cp":
-            if random.random() < 0.85 or not has_active_derivative:
+            if random.random() < 0.90 or not has_active_derivative:
                 template = random.choice(cp_position_template)
             else:
                 template = random.choice(cp_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
         else:
-            if random.random() < 0.85 or not has_active_derivative:
+            if random.random() < 0.90 or not has_active_derivative:
                 # generic fallback
                 template = random.choice(hedge_position_templates if random.random() < 0.85 else eq_position_templates)
             else:
