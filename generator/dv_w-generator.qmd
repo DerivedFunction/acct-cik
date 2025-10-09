@@ -6864,278 +6864,278 @@ def generate_sec_noise(company, currency_unit, month, year):
     )
     return chunks
 
-def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min_words_per_sentence=4):
-    """
-    Generate a single batch of deboost sentences.
-    This function is called by each worker thread.
+# def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min_words_per_sentence=4):
+#     """
+#     Generate a single batch of deboost sentences.
+#     This function is called by each worker thread.
     
-    Args:
-        batch_id: Identifier for this batch (for reproducibility if needed)
-        batch_size: Number of sentences per swap type
-        max_words_per_sentence: Maximum words in a sentence
-        min_words_per_sentence: Minimum words in a sentence
+#     Args:
+#         batch_id: Identifier for this batch (for reproducibility if needed)
+#         batch_size: Number of sentences per swap type
+#         max_words_per_sentence: Maximum words in a sentence
+#         min_words_per_sentence: Minimum words in a sentence
     
-    Returns:
-        List of (sentence, label) tuples
-    """
-    # Set random seed based on batch_id for reproducibility (optional)
-    # random.seed(batch_id)
+#     Returns:
+#         List of (sentence, label) tuples
+#     """
+#     # Set random seed based on batch_id for reproducibility (optional)
+#     # random.seed(batch_id)
     
-    sentences = []
+#     sentences = []
 
-    # [Insert all the template definitions from previous version here]
-    derivative_specific = [
-        "equity swap", "forward contract", "futures contract", "swaption",
-        "total return swap", "credit default swap", "variance swap",
-        "basis swap", "credit spread option", "interest rate cap", "interest rate floor"
-    ]
+#     # [Insert all the template definitions from previous version here]
+#     derivative_specific = [
+#         "equity swap", "forward contract", "futures contract", "swaption",
+#         "total return swap", "credit default swap", "variance swap",
+#         "basis swap", "credit spread option", "interest rate cap", "interest rate floor"
+#     ]
     
-    gen_standalone = [
-        "option", "collar", "call", "put", "over-the-counter",
-        "receive-equity", "pay-fixed", "receive-floating", "pay-equity",
-        "pay-floating", "receive-fixed", "equity collar", "total return",
-        "swap", "future", "forward", "call option", "put option", "OTC",
-        "swaption", "cap", "floor", "straddle", "strangle"
-    ]
+#     gen_standalone = [
+#         "option", "collar", "call", "put", "over-the-counter",
+#         "receive-equity", "pay-fixed", "receive-floating", "pay-equity",
+#         "pay-floating", "receive-fixed", "equity collar", "total return",
+#         "swap", "future", "forward", "call option", "put option", "OTC",
+#         "swaption", "cap", "floor", "straddle", "strangle"
+#     ]
     
-    accounting_buzzwords = [
-        "interest rate", "average interest rate", "floating rate", "fixed rate",
-        "foreign currency", "currency", "exchange rate", "currency translation",
-        "commodity price", "market price", "spot price", "fair value",
-        "OCI", "other comprehensive income", "cash flow", "mark to market",
-        "notional amount", "exposure", "sensitivity", "risk management",
-        "assets", "liabilities", "contract", "debt", "warrant", "embedded",
-        "hedge accounting", "hedge effectiveness", "hedge designation",
-        "accumulated other comprehensive income", "fair value hierarchy",
-        "Level 1", "Level 2", "Level 3", "carrying value", "book value",
-        "hedge fund", "fund", "outstanding", "terminate", "expire", "termination", "expiration",
-        "dedesignation", "dedesignate", "swap", "forward", "future", "cap", "floor", "agreement"
-    ]
+#     accounting_buzzwords = [
+#         "interest rate", "average interest rate", "floating rate", "fixed rate",
+#         "foreign currency", "currency", "exchange rate", "currency translation",
+#         "commodity price", "market price", "spot price", "fair value",
+#         "OCI", "other comprehensive income", "cash flow", "mark to market",
+#         "notional amount", "exposure", "sensitivity", "risk management",
+#         "assets", "liabilities", "contract", "debt", "warrant", "embedded",
+#         "hedge accounting", "hedge effectiveness", "hedge designation",
+#         "accumulated other comprehensive income", "fair value hierarchy",
+#         "Level 1", "Level 2", "Level 3", "carrying value", "book value",
+#         "hedge fund", "fund", "outstanding", "terminate", "expire", "termination", "expiration",
+#         "dedesignation", "dedesignate", "swap", "forward", "future", "cap", "floor", "agreement"
+#     ]
     
-    connectors = [
-        "and", "or", "with", "including", "related to", "consisting of",
-        "totaling", "aggregating", "measured at", "recorded in", "recognized in",
-        "as of", "during", "throughout", "within", "under"
-    ]
+#     connectors = [
+#         "and", "or", "with", "including", "related to", "consisting of",
+#         "totaling", "aggregating", "measured at", "recorded in", "recognized in",
+#         "as of", "during", "throughout", "within", "under"
+#     ]
     
-    accounting_phrases = [
-        "recorded in the balance sheet",
-        "recognized in earnings",
-        "deferred in other comprehensive income",
-        "measured at fair value",
-        "designated as hedging instruments",
-        "subject to periodic assessment",
-        "evaluated for effectiveness",
-        "classified as Level 2",
-        "included in the consolidated financial statements",
-        "disclosed in the footnotes"
-    ]
+#     accounting_phrases = [
+#         "recorded in the balance sheet",
+#         "recognized in earnings",
+#         "deferred in other comprehensive income",
+#         "measured at fair value",
+#         "designated as hedging instruments",
+#         "subject to periodic assessment",
+#         "evaluated for effectiveness",
+#         "classified as Level 2",
+#         "included in the consolidated financial statements",
+#         "disclosed in the footnotes"
+#     ]
 
-    commodity_specific_terms = []
-    for commodity in commodities:
-        commodity_specific_terms.extend([
-            f"{commodity} price",
-            f"{commodity} inventory",
-            f"{commodity} risk",
-            f"{commodity} market",
-            commodity]
-        )
+#     commodity_specific_terms = []
+#     for commodity in commodities:
+#         commodity_specific_terms.extend([
+#             f"{commodity} price",
+#             f"{commodity} inventory",
+#             f"{commodity} risk",
+#             f"{commodity} market",
+#             commodity]
+#         )
 
-    # --- Label 3: Irrelevant / Unrelated Context ---
-    num_label_3 = batch_size // 4  # Adjust ratio as needed
-    for _ in range(num_label_3):
-        sentence_parts = []
+#     # --- Label 3: Irrelevant / Unrelated Context ---
+#     num_label_3 = batch_size // 4  # Adjust ratio as needed
+#     for _ in range(num_label_3):
+#         sentence_parts = []
         
-        if random.random() < 0.8:
-            sentence_parts.extend(random.sample(
-                accounting_buzzwords, 
-                min(random.randint(2, 4), len(accounting_buzzwords))
-            ))
+#         if random.random() < 0.8:
+#             sentence_parts.extend(random.sample(
+#                 accounting_buzzwords, 
+#                 min(random.randint(2, 4), len(accounting_buzzwords))
+#             ))
         
-        if random.random() < 0.6:
-            sentence_parts.append(random.choice(connectors))
+#         if random.random() < 0.6:
+#             sentence_parts.append(random.choice(connectors))
         
-        sentence_parts.extend(random.sample(
-            accounting_buzzwords,
-            min(random.randint(1, 3), len(accounting_buzzwords))
-        ))
-        if random.random() < 0.3:
-            sentence_parts.extend(random.sample(commodity_specific_terms, random.randint(1, 3)))
+#         sentence_parts.extend(random.sample(
+#             accounting_buzzwords,
+#             min(random.randint(1, 3), len(accounting_buzzwords))
+#         ))
+#         if random.random() < 0.3:
+#             sentence_parts.extend(random.sample(commodity_specific_terms, random.randint(1, 3)))
         
-        if random.random() < 0.3:
-            sentence_parts.append(random.choice(gen_standalone))
-            if random.random() < 0.5:
-                sentence_parts.append(random.choice(connectors))
-                sentence_parts.append(random.choice(gen_standalone))
+#         if random.random() < 0.3:
+#             sentence_parts.append(random.choice(gen_standalone))
+#             if random.random() < 0.5:
+#                 sentence_parts.append(random.choice(connectors))
+#                 sentence_parts.append(random.choice(gen_standalone))
         
-        if random.random() < 0.4:
-            sentence_parts.append(random.choice(accounting_phrases))
+#         if random.random() < 0.4:
+#             sentence_parts.append(random.choice(accounting_phrases))
         
-        while len(sentence_parts) < min_words_per_sentence:
-            sentence_parts.append(random.choice(accounting_buzzwords))
+#         while len(sentence_parts) < min_words_per_sentence:
+#             sentence_parts.append(random.choice(accounting_buzzwords))
         
-        sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 5)]
+#         sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 5)]
         
-        seen = set()
-        unique_parts = []
-        for part in sentence_parts:
-            if part not in seen:
-                seen.add(part)
-                unique_parts.append(part)
+#         seen = set()
+#         unique_parts = []
+#         for part in sentence_parts:
+#             if part not in seen:
+#                 seen.add(part)
+#                 unique_parts.append(part)
         
-        sentence = " ".join(unique_parts)
-        sentences.append((sentence, 3))
+#         sentence = " ".join(unique_parts)
+#         sentences.append((sentence, 3))
     
-    # --- Label 2: Gen/Unknown Hedge Der. Speculative/Policy ---
-    num_label_2 = batch_size // 4
-    for _ in range(num_label_2):
-        sentence_parts = []
+#     # --- Label 2: Gen/Unknown Hedge Der. Speculative/Policy ---
+#     num_label_2 = batch_size // 4
+#     for _ in range(num_label_2):
+#         sentence_parts = []
         
-        sentence_parts.extend(random.sample(
-            gen_standalone,
-            min(random.randint(2, 4), len(gen_standalone))
-        ))
+#         sentence_parts.extend(random.sample(
+#             gen_standalone,
+#             min(random.randint(2, 4), len(gen_standalone))
+#         ))
         
-        if random.random() < 0.6:
-            sentence_parts.append(random.choice(connectors))
+#         if random.random() < 0.6:
+#             sentence_parts.append(random.choice(connectors))
         
-        if random.random() < 0.5:
-            sentence_parts.extend(random.sample(
-                accounting_buzzwords,
-                min(random.randint(1, 3), len(accounting_buzzwords))
-            ))
+#         if random.random() < 0.5:
+#             sentence_parts.extend(random.sample(
+#                 accounting_buzzwords,
+#                 min(random.randint(1, 3), len(accounting_buzzwords))
+#             ))
         
-        if random.random() < 0.2:
-            sentence_parts.append(random.choice(derivative_specific))
+#         if random.random() < 0.2:
+#             sentence_parts.append(random.choice(derivative_specific))
         
-        if random.random() < 0.5:
-            sentence_parts.append(random.choice(connectors))
-            sentence_parts.append(random.choice(accounting_phrases))
+#         if random.random() < 0.5:
+#             sentence_parts.append(random.choice(connectors))
+#             sentence_parts.append(random.choice(accounting_phrases))
 
         
-        while len(sentence_parts) < min_words_per_sentence:
-            sentence_parts.append(random.choice(gen_standalone))
+#         while len(sentence_parts) < min_words_per_sentence:
+#             sentence_parts.append(random.choice(gen_standalone))
         
-        sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 5)]
+#         sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 5)]
         
-        seen = set()
-        unique_parts = []
-        for part in sentence_parts:
-            if part not in seen:
-                seen.add(part)
-                unique_parts.append(part)
+#         seen = set()
+#         unique_parts = []
+#         for part in sentence_parts:
+#             if part not in seen:
+#                 seen.add(part)
+#                 unique_parts.append(part)
         
-        sentence = " ".join(unique_parts)
-        sentences.append((sentence, 2))
+#         sentence = " ".join(unique_parts)
+#         sentences.append((sentence, 2))
     
-    # --- Labels 14/15/16: Type-specific ---
-    swap_types = {
-        "ir": 14,
-        "fx": 15,
-        "cp": 16
-    }    
-    for prefix, label in swap_types.items():
-        for _ in range(batch_size):
-            sentence_parts = []
+#     # --- Labels 14/15/16: Type-specific ---
+#     swap_types = {
+#         "ir": 14,
+#         "fx": 15,
+#         "cp": 16
+#     }    
+#     for prefix, label in swap_types.items():
+#         for _ in range(batch_size):
+#             sentence_parts = []
             
-            num_swaps = random.randint(2, 4)
-            for _ in range(num_swaps):
-                swap_type = random.choice(derivative_keywords.get(prefix, []))
-                sentence_parts.append(swap_type)
+#             num_swaps = random.randint(2, 4)
+#             for _ in range(num_swaps):
+#                 swap_type = random.choice(derivative_keywords.get(prefix, []))
+#                 sentence_parts.append(swap_type)
             
-            if random.random() < 0.7:
-                sentence_parts.append(random.choice(connectors))
+#             if random.random() < 0.7:
+#                 sentence_parts.append(random.choice(connectors))
             
-            if random.random() < 0.4:
-                sentence_parts.extend(random.sample(
-                    gen_standalone,
-                    min(random.randint(1, 2), len(gen_standalone))
-                ))
+#             if random.random() < 0.4:
+#                 sentence_parts.extend(random.sample(
+#                     gen_standalone,
+#                     min(random.randint(1, 2), len(gen_standalone))
+#                 ))
             
-            if random.random() < 0.3:
-                sentence_parts.extend(random.sample(
-                    accounting_buzzwords,
-                    min(random.randint(1, 3), len(accounting_buzzwords))
-                ))
+#             if random.random() < 0.3:
+#                 sentence_parts.extend(random.sample(
+#                     accounting_buzzwords,
+#                     min(random.randint(1, 3), len(accounting_buzzwords))
+#                 ))
             
-            if random.random() < 0.2:
-                other_prefix = random.choice([p for p in swap_types.keys() if p != prefix])
-                cross_contamination = random.choice(derivative_keywords.get(other_prefix, []))
-                sentence_parts.append(cross_contamination)
+#             if random.random() < 0.2:
+#                 other_prefix = random.choice([p for p in swap_types.keys() if p != prefix])
+#                 cross_contamination = random.choice(derivative_keywords.get(other_prefix, []))
+#                 sentence_parts.append(cross_contamination)
             
-            if random.random() < 0.5:
-                sentence_parts.append(random.choice(accounting_phrases))
+#             if random.random() < 0.5:
+#                 sentence_parts.append(random.choice(accounting_phrases))
             
-            while len(sentence_parts) < min_words_per_sentence:
-                swap_type = random.choice(derivative_keywords.get(prefix, []))
-                sentence_parts.append(swap_type)
+#             while len(sentence_parts) < min_words_per_sentence:
+#                 swap_type = random.choice(derivative_keywords.get(prefix, []))
+#                 sentence_parts.append(swap_type)
             
-            sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 6)]
+#             sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 6)]
             
-            seen = set()
-            unique_parts = []
-            for part in sentence_parts:
-                if part not in seen:
-                    seen.add(part)
-                    unique_parts.append(part)
+#             seen = set()
+#             unique_parts = []
+#             for part in sentence_parts:
+#                 if part not in seen:
+#                     seen.add(part)
+#                     unique_parts.append(part)
             
-            sentence = " ".join(unique_parts)
-            sentences.append((sentence, label))
-    random.shuffle(sentences)
-    return sentences[:batch_size]
+#             sentence = " ".join(unique_parts)
+#             sentences.append((sentence, label))
+#     random.shuffle(sentences)
+#     return sentences[:batch_size]
 
 
-def generate_deboost_dataset_concurrent(
-    total_batches=100,
-    batch_size=20,
-    max_workers=8,
-    max_words_per_sentence=8,
-    min_words_per_sentence=4
-):
-    """
-    Generate deboost dataset using concurrent processing with tqdm progress bar.
+# def generate_deboost_dataset_concurrent(
+#     total_batches=100,
+#     batch_size=20,
+#     max_workers=8,
+#     max_words_per_sentence=8,
+#     min_words_per_sentence=4
+# ):
+#     """
+#     Generate deboost dataset using concurrent processing with tqdm progress bar.
     
-    Args:
-        total_batches: Number of batches to generate
-        batch_size: Size of each batch
-        max_workers: Number of parallel workers
-        max_words_per_sentence: Max words per sentence
-        min_words_per_sentence: Min words per sentence
+#     Args:
+#         total_batches: Number of batches to generate
+#         batch_size: Size of each batch
+#         max_workers: Number of parallel workers
+#         max_words_per_sentence: Max words per sentence
+#         min_words_per_sentence: Min words per sentence
     
-    Returns:
-        List of (sentence, label) tuples
-    """
-    all_sentences = []
+#     Returns:
+#         List of (sentence, label) tuples
+#     """
+#     all_sentences = []
     
-    # Create progress bar
-    with tqdm(total=total_batches, desc="Generating deboost sentences", unit="batch") as pbar:
-        # Use ThreadPoolExecutor for I/O-bound or CPU-bound tasks
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            # Submit all tasks
-            futures = {
-                executor.submit(
-                    deboost_keywords_batch,
-                    batch_id=i,
-                    batch_size=batch_size,
-                    max_words_per_sentence=max_words_per_sentence,
-                    min_words_per_sentence=min_words_per_sentence
-                ): i for i in range(total_batches)
-            }
+#     # Create progress bar
+#     with tqdm(total=total_batches, desc="Generating deboost sentences", unit="batch") as pbar:
+#         # Use ThreadPoolExecutor for I/O-bound or CPU-bound tasks
+#         with ThreadPoolExecutor(max_workers=max_workers) as executor:
+#             # Submit all tasks
+#             futures = {
+#                 executor.submit(
+#                     deboost_keywords_batch,
+#                     batch_id=i,
+#                     batch_size=batch_size,
+#                     max_words_per_sentence=max_words_per_sentence,
+#                     min_words_per_sentence=min_words_per_sentence
+#                 ): i for i in range(total_batches)
+#             }
             
-            # Process completed tasks
-            for future in as_completed(futures):
-                batch_id = futures[future]
-                try:
-                    batch_sentences = future.result()
-                    all_sentences.extend(batch_sentences)
-                    pbar.update(1)
-                except Exception as e:
-                    print(f"\nError in batch {batch_id}: {e}")
-                    pbar.update(1)
+#             # Process completed tasks
+#             for future in as_completed(futures):
+#                 batch_id = futures[future]
+#                 try:
+#                     batch_sentences = future.result()
+#                     all_sentences.extend(batch_sentences)
+#                     pbar.update(1)
+#                 except Exception as e:
+#                     print(f"\nError in batch {batch_id}: {e}")
+#                     pbar.update(1)
     
-    # Remove duplicates
-    all_sentences = list(set(all_sentences))
-    return all_sentences
+#     # Remove duplicates
+#     all_sentences = list(set(all_sentences))
+#     return all_sentences
 ```
 
 
@@ -7205,7 +7205,7 @@ def generate(size_per_label=100, max_workers=8):
             except Exception as e:
                 print(f"Error during generation: {e}")
     # Deboosting
-    all_samples.extend(generate_deboost_dataset_concurrent(size_per_label))
+    # all_samples.extend(generate_deboost_dataset_concurrent(size_per_label))
 
     # --- Create and sort DataFrame ---
     df_new = pd.DataFrame(all_samples, columns=["sentence", "label"])
