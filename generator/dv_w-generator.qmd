@@ -822,14 +822,6 @@ embedded_no_longer_outstanding_templates = [
 ## Common Activities
 ```{python}
 
-hedge_past_event_template = [
-    "In {month} {year}, {company} {verb} {swap_type} agreements with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
-    "In the {quarter} quarter of {year}, {company} {verb} {swap_type} agreements with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
-    "During {month} {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
-    "During the {quarter} quarter of {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
-    "The net unrealized loss on the {swap_type} was {currency_code}{amount} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income.",
-]
-
 hedge_no_such_outstanding_template = [
     # --- One-year ---
     "As of {month} {end_day}, {year}, {company} {verb} no outstanding {swap_type} positions",
@@ -868,6 +860,11 @@ hedge_position_templates = [
     "In {month} {old_year}, {company} {verb} {swap_type} with notional amounts of {currency_code}{old_notional} {money_unit}, which are set to expire in {month} {future_year}",
     "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{old_notional} {money_unit}, expiring in {future_year}",
     "{swap_type} expires in {future_year}",
+    "In {month} {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
+    "In the {quarter} quarter of {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{amount} {money_unit}, resulting in fair value losses recorded in equity",
+    "During {month} {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
+    "During the {quarter} quarter of {year}, {swap_type} were designated as {hedge_type} hedges, resulting in {currency_code}{amount} {money_unit} of unrealized losses recorded in accumulated OCI",
+    "The net unrealized loss on the {swap_type} was {currency_code}{amount} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income.",
     # Revesred
     "As of {month} {end_day}, {year}, {company} {verb} notional amounts totaling {currency_code}{notional} {money_unit} in {swap_type}",
     "At year-end {year}, {company} {verb} aggregate notional values of {currency_code}{notional} {money_unit} in {swap_type} designated as hedges",
@@ -5040,6 +5037,7 @@ def generate_labeled_hedge_paragraph(
         swap_type = random.choice(swap_types)
         commodity = random.choice(commodities)
         cost_type = random.choice(cost_types)
+        hedge_type = random.choice(hedge_types)
 
         month = random.choice(months)
         end_day = random.randint(28, 31)
@@ -5121,6 +5119,7 @@ def generate_labeled_hedge_paragraph(
                     pct=pct,
                     pct2=pct2,
                     years=years,
+                    hedge_type=hedge_type
                 )
                 sentences.append(sentence)
 
@@ -5281,27 +5280,6 @@ def generate_labeled_hedge_paragraph(
         all_sentences.append(template.format(company=pick_company_name(company_name)))
     # Labels 0 and 1: Specific positions
     else:
-        # Past event (0-1)
-        if random.random() < 0.15 and len(past_years) > 0:
-            template = random.choice(hedge_past_event_template)
-            swap_type = random.choice(swap_types)
-            year = current_year if has_active_derivative else random.choice(past_years)
-            amount = generate_value(False)
-            hedge_type = random.choice(hedge_types)
-            verb = random.choice(hedge_use_verbs)
-            sentence = template.format(
-                company=pick_company_name(company_name),
-                verb=verb,
-                swap_type=swap_type,
-                month=random.choice(months),
-                year=year,
-                quarter=random.choice(quarters),
-                currency_code=currency_code,
-                amount=amount,
-                money_unit=money_units,
-                hedge_type=hedge_type,
-            )
-            all_sentences.append(sentence)
         # Past event (0-1)
         if random.random() < 0.10:
             template = random.choice(hedge_no_such_outstanding_template)
