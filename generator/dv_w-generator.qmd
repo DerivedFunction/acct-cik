@@ -7133,7 +7133,7 @@ def generate_sec_noise(company, currency_unit, month, year):
     )
     return chunks
 
-def deboost_keywords_parallel(batch_size=1, max_words_per_sentence=3):
+def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
     """
     Generate deboost sentences for derivative contexts, suitable for parallel execution.
     Each call generates `batch_size` sentences.
@@ -7147,32 +7147,32 @@ def deboost_keywords_parallel(batch_size=1, max_words_per_sentence=3):
     for prefix, label in swap_types.items():
         for _ in range(batch_size):
             swaps = []
-            length = random.randint(1, max_words_per_sentence)
+            length = random.randint(2, 5)
             for _ in range(length):
                 swap_type = random.choice(derivative_keywords[prefix])
                 # Randomize commodity type if applicable
                 if prefix == "cp" and "commodity" in swap_type:
                     swap_type = re.sub("commodity", random.choice(commodities), swap_type)
-
                 # Optionally add past/future year placeholders
                 if random.random() < 0.5:
                     swap_type = f"{swap_type} {random.randint(1990, 2025)}"
-
                 swaps.append(swap_type)
             if swaps:
-                sentences.append((" and ".join(swaps), label))
+                sentences.append((" ".join(swaps), label))
 
     
     # --- 2. Derivative-specific phrases (label 2) ---
     derivative_specific = [
-        "equity swap", "forward contract", "futures contract", "option contract",
-        "swaption", "call contract", "put contract"
+        "equity swap", "forward contract", "futures contract", "swaption", 
     ]
-    for _ in range(batch_size):
-        word = random.choice(derivative_specific)
-        context = random.choice(["discussion", "note", "overview", "summary"])
-        sentences.append((f"{word} {context}", 2))
-    
+    for _ in range(len(derivative_specific) * 3):
+        sentence = []
+        length = random.randint(2, 4)
+        for _ in range(length):
+            word = random.choice(derivative_specific)
+        sentence.append(word)
+        sentences.append((" ".join(sentence), 2))
+
     # --- 3. Contextless / irrelevant words (label 3) ---
     irrelevant_generic = [
         "swap", "future", "forward", "option", "call option", "put option"
@@ -7214,12 +7214,11 @@ def deboost_keywords_parallel(batch_size=1, max_words_per_sentence=3):
             f"{commodity} price", f"{commodity} exposure", f"{commodity} inventory", commodity
         ])
     
-    context_phrases = ["discussion", "note", "overview", "summary", "details"]
 
     for _ in range(batch_size):
         num_words = random.randint(1, max_words_per_sentence)
         selected_words = random.sample(words_to_deboost_label_3, num_words)
-        words_with_context = [f"{word} {random.choice(context_phrases)}" for word in selected_words]
+        words_with_context = word
 
         # Optionally add random numbers / currencies
         if random.random() < 0.7:
@@ -7234,7 +7233,8 @@ def deboost_keywords_parallel(batch_size=1, max_words_per_sentence=3):
             words_with_context.append(f"{random.randint(1990, 2025)}")
         sentence = " and ".join(words_with_context)
         sentences.append((sentence, 3))
-
+    # Remove duplicates
+    sentences = list(set(sentences))
     return sentences
             
 ```
@@ -7289,9 +7289,7 @@ def generate(size_per_label=100, max_workers=8):
         # Parallel accounting noise
         for _ in range(size_per_label * 4):
             futures.append(executor.submit(generate_accounting_noise_paragraph))
-        
-        for _ in range(size_per_label):
-            futures.append(executor.submit(deboost_keywords_parallel, batch_size=3))
+
         return futures
 
     # --- Parallel execution with tqdm progress bar ---
@@ -7307,6 +7305,8 @@ def generate(size_per_label=100, max_workers=8):
                 all_samples.append((paragraph, label))
             except Exception as e:
                 print(f"Error during generation: {e}")
+    # Deboosting
+    all_samples.extend(deboost_keywords_parallel(size_per_label * numSwaps))
 
     # --- Create and sort DataFrame ---
     df_new = pd.DataFrame(all_samples, columns=["sentence", "label"])
