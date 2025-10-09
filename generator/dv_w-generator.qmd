@@ -7230,7 +7230,7 @@ def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, mi
         if random.random() < 0.7:
             value = round(random.uniform(1, 9999), 1)
             currency_symbol = random.choice(currency_codes)
-            money_unit = random.choice(money_units)
+            money_unit = random.choice(money_unit_list)
             sentence_parts.append(f"{currency_symbol}{value} {money_unit}")
         
         if random.random() < 0.6:
@@ -7425,19 +7425,7 @@ def generate_deboost_dataset_concurrent(
                     pbar.update(1)
     
     # Remove duplicates
-    print("\nRemoving duplicates...")
     all_sentences = list(set(all_sentences))
-    
-    # Print statistics
-    label_counts = {}
-    for _, label in all_sentences:
-        label_counts[label] = label_counts.get(label, 0) + 1
-    
-    print(f"\nTotal unique sentences: {len(all_sentences)}")
-    print("Label distribution:")
-    for label in sorted(label_counts.keys()):
-        print(f"  Label {label}: {label_counts[label]} sentences")
-    
     return all_sentences
 ```
 
