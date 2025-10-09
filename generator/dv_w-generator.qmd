@@ -5023,7 +5023,7 @@ def generate_labeled_hedge_paragraph(
         sentences.append(sentence)
         return sentences
 
-    def generate_derivative_sentences():
+    def generate_derivative_sentences(positionOnly=False):
         """Generate derivative-related sentences for FX, IR, CP, or generic types."""
         sentences = []
 
@@ -5117,26 +5117,27 @@ def generate_labeled_hedge_paragraph(
                 sentences.append(sentence)
 
         # --- Select appropriate template set ---
+        chance = random.random() < 0.90 or not has_active_derivative or positionOnly
         if swapType == "fx":
-            if random.random() < 0.90 or not has_active_derivative:
+            if chance:
                 template = random.choice(fx_position_template)
             else:
                 template = random.choice(fx_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
         elif swapType == "ir":
-            if random.random() < 0.90:
+            if chance:
                 template = random.choice(ir_position_template)
             else:
                 template = random.choice(ir_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
         elif swapType == "cp":
-            if random.random() < 0.90 or not has_active_derivative:
+            if chance:
                 template = random.choice(cp_position_template)
             else:
                 template = random.choice(cp_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
         else:
-            if random.random() < 0.90 or not has_active_derivative:
+            if chance:
                 # generic fallback
                 template = random.choice(hedge_position_templates if random.random() < 0.85 else eq_position_templates)
             else:
@@ -5326,7 +5327,10 @@ def generate_labeled_hedge_paragraph(
     # Context sentences
     if include_policy or len(selected_sentences) < 2:
         if has_active_derivative is not None and random.random() < 0.33 or len(selected_sentences) < 2:
-            sentences = generate_additional_events()
+            if random.random() < 0.35:
+                sentences = generate_additional_events()
+            else:
+                sentences = generate_derivative_sentences(True)
         else:
             if swapType == "cp":
                 sentences = generate_cp_policy(commodity, has_active_derivative)
@@ -7677,7 +7681,7 @@ def generate(size_per_label=100, max_workers=8):
 ```
 
 ```{python}
-generate(500)
+generate(100)
 ```
 
 ```{python}
