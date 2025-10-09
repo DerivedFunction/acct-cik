@@ -7133,226 +7133,328 @@ def generate_sec_noise(company, currency_unit, month, year):
     )
     return chunks
 
-def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
-    """
-    Generate deboost sentences for derivative contexts, suitable for parallel execution.
-    Each call generates `batch_size` sentences.
 
-    Returns: List of (sentence, label) tuples
+def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=8, min_words_per_sentence=4):
+    """
+    Generate deboost sentences for derivative contexts with anti-overfitting measures.
+    Sentences are longer and more realistic.
+    
+    Labels:
+    - 2: Gen/Unknown Hedge Der. Speculative/Policy
+    - 3: Irrelevant / Unrelated Context
+    - 14: IR Hedge Speculative/Policy (contextless IR terms)
+    - 15: FX Hedge Speculative/Policy (contextless FX terms)
+    - 16: CP Hedge Speculative/Policy (contextless CP terms)
     """
     sentences = []
 
-    # --- 1. Deboost swaps by category/prefix (excluding 'gen') ---
-    swap_types = {"ir": 14, "fx": 15, "cp": 16}  # label mapping
-
-    # --- 2. Derivative-specific phrases that could be confused (label 2) ---
+    # Define keyword pools
     derivative_specific = [
-        "equity swap",
-        "forward contract",
-        "futures contract",
-        "swaption",
+        "equity swap", "forward contract", "futures contract", "swaption",
+        "total return swap", "credit default swap", "variance swap",
+        "basis swap", "credit spread option", "interest rate cap", "interest rate floor"
     ]
-    for _ in range(len(derivative_specific) * 3):
-        sentence = []
-        length = random.randint(2, 4)
-        sentence = derivative_specific[:length]
-        random.shuffle(sentence)
-        sentences.append((" ".join(sentence), 2))
-
-    # --- 3. Generic derivative terms that need context (label 17 - ambiguous) ---
+    
     gen_standalone = [
-        "option",
-        "collar",
-        "call",
-        "put",
-        "over-the-counter",
-        "receive-equity",
-        "pay-fixed",
-        "receive-floating",
-        "pay-equity",
-        "pay-floating",
-        "receive-fixed",
-        "equity collar",
-        "total return",
-        "swap",
-        "future",
-        "forward",
-        "call option",
-        "put option",
+        "option", "collar", "call", "put", "over-the-counter",
+        "receive-equity", "pay-fixed", "receive-floating", "pay-equity",
+        "pay-floating", "receive-fixed", "equity collar", "total return",
+        "swap", "future", "forward", "call option", "put option", "OTC",
+        "swaption", "cap", "floor", "straddle", "strangle"
     ]
     
-    # Generate GEN_STANDALONE combinations (label 17)
-    for _ in range(len(gen_standalone) * 4):
-        num_words = random.randint(1, 3)
-        selected_words = random.sample(gen_standalone, min(num_words, len(gen_standalone)))
-        words_with_context = []
-        for _ in range(random.randint(1, 3)):
-            words_with_context.extend(selected_words)
-        words_with_context = list(set(words_with_context))
+    accounting_buzzwords = [
+        "interest rate", "average interest rate", "floating rate", "fixed rate",
+        "foreign currency", "currency", "exchange rate", "currency translation",
+        "commodity price", "market price", "spot price", "fair value",
+        "OCI", "other comprehensive income", "cash flow", "mark to market",
+        "notional amount", "exposure", "sensitivity", "risk management",
+        "assets", "liabilities", "contract", "debt", "warrant", "embedded",
+        "hedge accounting", "hedge effectiveness", "hedge designation",
+        "accumulated other comprehensive income", "fair value hierarchy",
+        "Level 1", "Level 2", "Level 3", "carrying value", "book value",
+        "net investment hedge", "cash flow hedge", "fair value hedge"
+    ]
+    
+    connectors = [
+        "and", "or", "with", "including", "related to", "consisting of",
+        "totaling", "aggregating", "measured at", "recorded in", "recognized in",
+        "as of", "during", "throughout", "within", "under"
+    ]
+    
+    accounting_phrases = [
+        "recorded in the balance sheet",
+        "recognized in earnings",
+        "deferred in other comprehensive income",
+        "measured at fair value",
+        "designated as hedging instruments",
+        "subject to periodic assessment",
+        "evaluated for effectiveness",
+        "classified as Level 2",
+        "included in the consolidated financial statements",
+        "disclosed in the footnotes"
+    ]
+    
+    # --- Label 3: Irrelevant / Unrelated Context ---
+    for _ in range(150):
+        num_words = random.randint(min_words_per_sentence, max_words_per_sentence)
         
+        # Build longer, more coherent sentences
+        sentence_parts = []
+        
+        # Start with accounting terms
+        if random.random() < 0.8:
+            sentence_parts.extend(random.sample(
+                accounting_buzzwords, 
+                min(random.randint(2, 4), len(accounting_buzzwords))
+            ))
+        
+        # Add connectors
+        if random.random() < 0.6:
+            sentence_parts.append(random.choice(connectors))
+        
+        # Add more accounting terms
+        sentence_parts.extend(random.sample(
+            accounting_buzzwords,
+            min(random.randint(1, 3), len(accounting_buzzwords))
+        ))
+        
+        # 30% chance to add derivative terms (to prevent keyword shortcuts)
+        if random.random() < 0.3:
+            sentence_parts.append(random.choice(gen_standalone))
+            if random.random() < 0.5:
+                sentence_parts.append(random.choice(connectors))
+                sentence_parts.append(random.choice(gen_standalone))
+        
+        # Add accounting phrases
         if random.random() < 0.4:
-            words_with_context.append(f"{random.randint(1990, 2025)}")
-        random.shuffle(words_with_context)
-        sentence = " ".join(words_with_context)
-        sentences.append((sentence, 2))
-
-    # --- 4. Contextless / irrelevant words (label 3) - NO GEN_STANDALONE ---
-    words_to_deboost_label_3 = [
-        # Interest Rate context (without derivative terms)
-        "interest rate",
-        "average interest rate",
-        "weighted average interest rate",
-        "floating rate",
-        "fixed rate",
-        "weighted rate",
-        "interest rate risk",
-        "variable rate",
-        "yield curve",
-        "benchmark rate",
-        "LIBOR",
-        "SOFR",
-        "EURIBOR",
-        "prime rate",
-        # Foreign Exchange context (without derivative terms)
-        "foreign currency",
-        "currency",
-        "exchange rate",
-        "currency translation",
-        "foreign exchange",
-        "FX rate",
-        "currency fluctuation",
-        "exchange rate risk",
-        "currency risk",
-        "translation adjustment",
-        # Commodity / Market
-        "commodity price",
-        "market price",
-        "spot price",
-        "commodity market",
-        "market risk",
-        "commodity risk",
-        "price volatility",
-        # Financial instrument buzzwords (without specific derivative terms)
-        "financial instrument",
-        "financial contract",
-        "financial asset",
-        "financial liability",
-        # Accounting / Disclosure buzzwords
-        "cash flow",
-        "OCI",
-        "other comprehensive income",
-        "fair value",
-        "amortized cost",
-        "mark to market",
-        "valuation adjustment",
-        "carrying value",
-        "book value",
-        # Generic / Neutral
-        "notional amount",
-        "exposure",
-        "sensitivity",
-        "risk management",
-        "synthetic instrument",
-        "hedge fund",
-        "warrant",
-        "embedded",
-        "warrants",
-        "assets",
-        "liabilities",
-        "contract",
-        "debt",
-        "liability",
-        "derivative",
-        "asset",
-        "lawsuit",
-        "loan",
-        "bond",
-        "strategies",
-        "strategy",
-        "portfolio",
-        "investment",
-        # Fair value hierarchy
-        "Level 1",
-        "Level 2",
-        "Level 3",
-        "Level 4",
-        "Level 5",
-        "fair value hierarchy",
-        # Other accounting terms
-        "balance sheet",
-        "income statement",
-        "equity",
-        "retained earnings",
-        "shareholders",
-        "stockholders",
-    ]
-    
-    # Add commodities as contextless phrases (just the commodity names and prices)
-    for commodity in commodities:
-        words_to_deboost_label_3.extend([
-            f"{commodity} price",
-            f"{commodity} exposure",
-            f"{commodity} inventory",
-            f"{commodity} cost",
-            commodity,
-        ])
-
-    # Generate label 3 sentences (contextless/irrelevant)
-    for _ in range(len(words_to_deboost_label_3) * 5):
-        num_words = random.randint(1, max_words_per_sentence)
-        selected_words = random.sample(
-            words_to_deboost_label_3, 
-            min(num_words, len(words_to_deboost_label_3))
-        )
-        words_with_context = []
-        for _ in range(random.randint(1, 4)):
-            words_with_context.extend(selected_words)
-        words_with_context = list(set(words_with_context))
+            sentence_parts.append(random.choice(accounting_phrases))
         
-        # Optionally add random numbers / currencies
+        # Add values and dates
         if random.random() < 0.7:
             value = generate_value()
             currency_symbol = random.choice(currency_codes)
-            if random.random() < 0.3:
-                currency_name = random.choice(all_currencies)
-                words_with_context.append(f"{currency_symbol}{value} {currency_name}")
-            else:
-                words_with_context.append(f"{currency_symbol}{value}")
-        if random.random() < 0.5:
-            words_with_context.append(f"{random.randint(1990, 2025)}")
+            money_unit = random.choice(["thousand", "million", "billion"])
+            sentence_parts.append(f"{currency_symbol}{value} {money_unit}")
         
-        random.shuffle(words_with_context)
-        sentence = " ".join(words_with_context)
+        if random.random() < 0.6:
+            sentence_parts.append(f"in {random.randint(1990, 2025)}")
+        
+        if random.random() < 0.4:
+            month = random.choice(months)
+            day = random.randint(1, 28)
+            year = random.randint(2015, 2025)
+            sentence_parts.append(f"as of {month} {day}, {year}")
+        
+        # Ensure minimum length
+        while len(sentence_parts) < min_words_per_sentence:
+            sentence_parts.append(random.choice(accounting_buzzwords))
+        
+        # Trim to max length
+        sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 5)]
+        
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_parts = []
+        for part in sentence_parts:
+            if part not in seen:
+                seen.add(part)
+                unique_parts.append(part)
+        
+        sentence = " ".join(unique_parts)
         sentences.append((sentence, 3))
-
-    # --- 5. Type-specific derivative terms (labels 14, 15, 16) ---
-    # These are actual derivative contracts by type
+    
+    # --- Label 2: Gen/Unknown Hedge Der. Speculative/Policy ---
+    for _ in range(120):
+        sentence_parts = []
+        
+        # Start with generic derivative terms
+        sentence_parts.extend(random.sample(
+            gen_standalone,
+            min(random.randint(2, 4), len(gen_standalone))
+        ))
+        
+        # Add connectors
+        if random.random() < 0.6:
+            sentence_parts.append(random.choice(connectors))
+        
+        # 50% chance to add accounting context (makes it ambiguous with label 3)
+        if random.random() < 0.5:
+            sentence_parts.extend(random.sample(
+                accounting_buzzwords,
+                min(random.randint(1, 3), len(accounting_buzzwords))
+            ))
+        
+        # 30% chance to add type-specific context (makes it ambiguous with 14/15/16)
+        if random.random() < 0.3:
+            type_specific_terms = random.sample([
+                "interest rate", "foreign exchange", "commodity price",
+                "currency", "crude oil", "natural gas", "EUR/USD", "LIBOR", "SOFR"
+            ], random.randint(1, 2))
+            sentence_parts.extend(type_specific_terms)
+        
+        # 20% chance to add specific derivative instruments
+        if random.random() < 0.2:
+            sentence_parts.append(random.choice(derivative_specific))
+        
+        # Add connectors and phrases
+        if random.random() < 0.5:
+            sentence_parts.append(random.choice(connectors))
+            sentence_parts.append(random.choice(accounting_phrases))
+        
+        # Add values
+        if random.random() < 0.6:
+            value = generate_value()
+            currency_symbol = random.choice(currency_codes)
+            money_unit = random.choice(["thousand", "million", "billion"])
+            sentence_parts.append(f"notional {currency_symbol}{value} {money_unit}")
+        
+        # Add dates
+        if random.random() < 0.5:
+            sentence_parts.append(f"during {random.randint(1990, 2025)}")
+        
+        # Ensure minimum length
+        while len(sentence_parts) < min_words_per_sentence:
+            sentence_parts.append(random.choice(gen_standalone))
+        
+        sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 5)]
+        
+        # Remove duplicates
+        seen = set()
+        unique_parts = []
+        for part in sentence_parts:
+            if part not in seen:
+                seen.add(part)
+                unique_parts.append(part)
+        
+        sentence = " ".join(unique_parts)
+        sentences.append((sentence, 2))
+    
+    # --- Labels 14/15/16: Type-specific Speculative/Policy ---
+    swap_types = {
+        "IR": 14,
+        "FX": 15,
+        "CP": 16
+    }
+    
     for prefix, label in swap_types.items():
-        for _ in range(batch_size):
-            swaps = []
-            length = random.randint(2, 3)
-            for _ in range(length):
-                swap_type = random.choice(derivative_keywords[prefix])
-                # Randomize commodity type if applicable
-                if prefix == "cp" and "commodity" in swap_type:
-                    swap_type = re.sub(
-                        "commodity", random.choice(commodities), swap_type
-                    )
-                swaps.append(swap_type)
+        for _ in range(batch_size * 2):
+            sentence_parts = []
             
-            if swaps:
-                swaps = list(set(swaps))
-                # Optionally add past/future year placeholders
-                if random.random() < 0.5:
-                    swaps.append(f"{random.randint(1990, 2025)}")
-                
-                # Optionally add contextless words from label 3 (NOT gen_standalone)
-                if random.random() < 0.3:
-                    contextless_word = random.choice(words_to_deboost_label_3)
-                    swaps.append(contextless_word)
-                
-                random.shuffle(swaps)
-                sentences.append((" ".join(swaps), label))
+            # Add type-specific derivative terms
+            num_swaps = random.randint(2, 4)
+            for _ in range(num_swaps):
+                swap_type = random.choice(derivative_keywords[prefix])
+                if prefix == "CP" and "commodity" in swap_type:
+                    swap_type = re.sub("commodity", random.choice(commodities), swap_type)
+                sentence_parts.append(swap_type)
+            
+            # Add connectors
+            if random.random() < 0.7:
+                sentence_parts.append(random.choice(connectors))
+            
+            # 40% chance to add generic terms (prevents pure category mapping)
+            if random.random() < 0.4:
+                sentence_parts.extend(random.sample(
+                    gen_standalone,
+                    min(random.randint(1, 2), len(gen_standalone))
+                ))
+            
+            # 30% chance to add accounting buzzwords
+            if random.random() < 0.3:
+                sentence_parts.extend(random.sample(
+                    accounting_buzzwords,
+                    min(random.randint(1, 3), len(accounting_buzzwords))
+                ))
+            
+            # 20% chance to add terms from OTHER categories
+            if random.random() < 0.2:
+                other_prefix = random.choice([p for p in swap_types.keys() if p != prefix])
+                cross_contamination = random.choice(derivative_keywords[other_prefix])
+                if other_prefix == "CP" and "commodity" in cross_contamination:
+                    cross_contamination = re.sub("commodity", random.choice(commodities), cross_contamination)
+                sentence_parts.append(cross_contamination)
+            
+            # Add phrases and values
+            if random.random() < 0.5:
+                sentence_parts.append(random.choice(accounting_phrases))
+            
+            if random.random() < 0.6:
+                value = generate_value()
+                currency_symbol = random.choice(currency_codes)
+                money_unit = random.choice(["thousand", "million", "billion"])
+                sentence_parts.append(f"with notional amount {currency_symbol}{value} {money_unit}")
+            
+            if random.random() < 0.5:
+                sentence_parts.append(f"in {random.randint(1990, 2025)}")
+            
+            if random.random() < 0.3:
+                quarter = random.choice(["first", "second", "third", "fourth"])
+                sentence_parts.append(f"during the {quarter} quarter")
+            
+            # Ensure minimum length
+            while len(sentence_parts) < min_words_per_sentence:
+                swap_type = random.choice(derivative_keywords[prefix])
+                if prefix == "CP" and "commodity" in swap_type:
+                    swap_type = re.sub("commodity", random.choice(commodities), swap_type)
+                sentence_parts.append(swap_type)
+            
+            sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 6)]
+            
+            # Remove duplicates
+            seen = set()
+            unique_parts = []
+            for part in sentence_parts:
+                if part not in seen:
+                    seen.add(part)
+                    unique_parts.append(part)
+            
+            sentence = " ".join(unique_parts)
+            sentences.append((sentence, label))
+    
+    # --- Longer partial phrases and realistic fragments ---
+    phrase_templates = [
+        "{term1} {connector} {term2} {phrase} {value}",
+        "{term1} {term2} {connector} {term3} as of {date}",
+        "{term1} {connector} {term2} {term3} {phrase}",
+        "the Company's {term1} {connector} {term2} totaling {value}",
+        "{term1} {term2} were {phrase} during {year}",
+        "{term1} {connector} {term2} {phrase} {connector} {term3}"
+    ]
+    
+    for _ in range(100):
+        template = random.choice(phrase_templates)
+        
+        # Mix terms from different categories
+        all_terms = accounting_buzzwords + gen_standalone + derivative_specific
+        term1 = random.choice(all_terms)
+        term2 = random.choice(all_terms)
+        term3 = random.choice(all_terms)
+        connector = random.choice(connectors)
+        phrase = random.choice(accounting_phrases)
+        
+        value = generate_value()
+        currency = random.choice(currency_codes)
+        money_unit = random.choice(["thousand", "million", "billion"])
+        value_str = f"{currency}{value} {money_unit}"
+        
+        month = random.choice(months)
+        day = random.randint(1, 28)
+        year = random.randint(2015, 2025)
+        date = f"{month} {day}, {year}"
+        
+        try:
+            sentence = template.format(
+                term1=term1, term2=term2, term3=term3,
+                connector=connector, phrase=phrase,
+                value=value_str, date=date, year=year
+            )
+            
+            # Randomly assign to label 2 or 3
+            target_label = random.choice([2, 3])
+            sentences.append((sentence, target_label))
+        except:
+            continue
     
     # Remove duplicates
     sentences = list(set(sentences))
