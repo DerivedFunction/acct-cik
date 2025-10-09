@@ -7133,40 +7133,25 @@ def generate_sec_noise(company, currency_unit, month, year):
     )
     return chunks
 
+
 def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
     """
     Generate deboost sentences for derivative contexts, suitable for parallel execution.
     Each call generates `batch_size` sentences.
-    
+
     Returns: List of (sentence, label) tuples
     """
     sentences = []
-    
+
     # --- 1. Deboost swaps by category/prefix (excluding 'gen') ---
     swap_types = {"ir": 14, "fx": 15, "cp": 16}  # label mapping
-    for prefix, label in swap_types.items():
-        for _ in range(batch_size):
-            swaps = []
-            length = random.randint(2, 5)
-            for _ in range(length):
-                swap_type = random.choice(derivative_keywords[prefix])
-                # Randomize commodity type if applicable
-                if prefix == "cp" and "commodity" in swap_type:
-                    swap_type = re.sub("commodity", random.choice(commodities), swap_type)
-                if prefix == "ir" and "interest rate" in swap_type and random.random() < 0.5:
-                    swap_type = re.sub("interest rate", "", swap_type)
-                # Optionally add past/future year placeholders
-                if random.random() < 0.5:
-                    swap_type = f"{swap_type} {random.randint(1990, 2025)}"
-                swaps.append(swap_type)
-            if swaps:
-                swaps = list(set(swaps))
-                sentences.append((" ".join(swaps), label))
 
-    
     # --- 2. Derivative-specific phrases (label 2) ---
     derivative_specific = [
-        "equity swap", "forward contract", "futures contract", "swaption", 
+        "equity swap",
+        "forward contract",
+        "futures contract",
+        "swaption",
     ]
     for _ in range(len(derivative_specific) * 3):
         sentence = []
@@ -7177,54 +7162,120 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
 
     # --- 3. Contextless / irrelevant words (label 3) ---
     irrelevant_generic = [
-        "swap", "future", "forward", "option", "call option", "put option"
+        "swap",
+        "future",
+        "forward",
+        "option",
+        "call option",
+        "put option",
     ]
     words_to_deboost_label_3 = [
         # Interest Rate
-        "interest rate", "average interest rate", "weighted average interest rate",
-        "floating rate", "fixed rate", "weighted rate", "interest rate risk",
-        "variable rate", "yield curve", "benchmark rate", "LIBOR", "SOFR",
+        "interest rate",
+        "average interest rate",
+        "weighted average interest rate",
+        "floating rate",
+        "fixed rate",
+        "weighted rate",
+        "interest rate risk",
+        "variable rate",
+        "yield curve",
+        "benchmark rate",
+        "LIBOR",
+        "SOFR",
         # Foreign Exchange
-        "foreign currency", "currency", "exchange rate", "currency translation",
-        "foreign exchange", "FX rate", "currency fluctuation", "exchange rate risk",
+        "foreign currency",
+        "currency",
+        "exchange rate",
+        "currency translation",
+        "foreign exchange",
+        "FX rate",
+        "currency fluctuation",
+        "exchange rate risk",
         "currency risk",
         # Commodity / Market
-        "commodity price", "market price", "spot price", "commodity market",
-        "market risk", "commodity risk",
+        "commodity price",
+        "market price",
+        "spot price",
+        "commodity market",
+        "market risk",
+        "commodity risk",
         # Derivative / Contract buzzwords
-        "financial instrument", "financial contract",
+        "financial instrument",
+        "financial contract",
         # Accounting / Disclosure buzzwords
-        "cash flow", "OCI", "other comprehensive income",
-        "fair value", "amortized cost", "mark to market", "valuation adjustment",
+        "cash flow",
+        "OCI",
+        "other comprehensive income",
+        "fair value",
+        "amortized cost",
+        "mark to market",
+        "valuation adjustment",
         # Generic / Neutral
-        "notional amount", "exposure", "sensitivity", "risk management", "synthetic instrument",
-        "hedge fund", "warrant", "embedded", "warrants", "assets", "liabilities", "contract", "debt",  "liability", "derivative", "asset", "lawsuit", "loan", "bond", "strategies",
+        "notional amount",
+        "exposure",
+        "sensitivity",
+        "risk management",
+        "synthetic instrument",
+        "hedge fund",
+        "warrant",
+        "embedded",
+        "warrants",
+        "assets",
+        "liabilities",
+        "contract",
+        "debt",
+        "liability",
+        "derivative",
+        "asset",
+        "lawsuit",
+        "loan",
+        "bond",
+        "strategies",
         "strategy",
-        "Level 1", "Level 2", "Level 3", "Level 4", "Level 5"
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4",
+        "Level 5",
     ]
     # Add standalone generic words
     words_to_deboost_label_3.extend(irrelevant_generic)
     # Add GEN_STANDALONE
-    words_to_deboost_label_3.extend([
-        "option", "collar", " call",
-        "over-the-counter", "receive-equity", "pay-fixed",
-        "receive-floating", "pay-equity", "pay-floating", "receive-fixed", "equity collar", "total return"
-    ])
+    words_to_deboost_label_3.extend(
+        [
+            "option",
+            "collar",
+            " call",
+            "over-the-counter",
+            "receive-equity",
+            "pay-fixed",
+            "receive-floating",
+            "pay-equity",
+            "pay-floating",
+            "receive-fixed",
+            "equity collar",
+            "total return",
+        ]
+    )
     # Add commodities as contextless phrases
     for commodity in commodities:
-        words_to_deboost_label_3.extend([
-            f"{commodity} price", f"{commodity} exposure", f"{commodity} inventory", commodity
-        ])
-    
+        words_to_deboost_label_3.extend(
+            [
+                f"{commodity} price",
+                f"{commodity} exposure",
+                f"{commodity} inventory",
+                commodity,
+            ]
+        )
 
     for _ in range(len(words_to_deboost_label_3) * 2):
         num_words = random.randint(1, max_words_per_sentence)
         selected_words = random.sample(words_to_deboost_label_3, num_words)
         words_with_context = []
         for _ in range(random.randint(1, 4)):
-           words_with_context.extend(selected_words)
-        
-
+            words_with_context.extend(selected_words)
+        words_with_context = list(set(words_with_context))
         # Optionally add random numbers / currencies
         if random.random() < 0.7:
             value = generate_value()
@@ -7236,10 +7287,33 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
                 words_with_context.append(f"{currency_symbol}{value}")
         if random.random() < 0.5:
             words_with_context.append(f"{random.randint(1990, 2025)}")
-        words_with_context = list(set(words_with_context))
         random.shuffle(words_with_context)
         sentence = " ".join(words_with_context)
         sentences.append((sentence, 3))
+
+    # Hedges deboosting
+    for prefix, label in swap_types.items():
+        for _ in range(batch_size):
+            swaps = []
+            length = random.randint(2, 3)
+            for _ in range(length):
+                swap_type = random.choice(derivative_keywords[prefix])
+                # Randomize commodity type if applicable
+                if prefix == "cp" and "commodity" in swap_type:
+                    swap_type = re.sub(
+                        "commodity", random.choice(commodities), swap_type
+                    )
+            if swaps:
+                swaps = list(set(swaps))
+                # Optionally add past/future year placeholders
+                if random.random() < 0.5:
+                    swap_type = f"{swap_type} {random.randint(1990, 2025)}"
+                swaps.append(swap_type)
+                # Optionally add random words from label 3
+                if random.random() < 0.5:
+                    swaps.append(words_to_deboost_label_3)
+                random.shuffle(swaps)
+                sentences.append((" ".join(swaps), label))
     # Remove duplicates
     sentences = list(set(sentences))
     return sentences
