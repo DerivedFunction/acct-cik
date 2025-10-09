@@ -2008,32 +2008,6 @@ fx_may_use_templates = [
 ## Interest Rate
 ```{python}
 
-ir_past_event_templates = [
-    "During {month} {year}, {company} {verb} {swap_type} in anticipation of issuing fixed-rate notes, leaving {currency_code}{amount} {money_unit} of unrealized losses in OCI related to {swap_type} as of {month} {next_year}",
-    "In {month} {year}, {company} {verb} {swap_type} with a notional value of {currency_code}{amount} {money_unit} to hedge forecasted debt issuances, resulting in deferred losses recorded in accumulated OCI",
-    "{company} designated {swap_type} in {month} {year} as {hedge_type} hedges against anticipated interest payments, with {currency_code}{amount} {money_unit} in fair value adjustments recorded in equity",
-    "During {year}, {swap_type} were {verb} to lock in favorable rates prior to debt refinancing, with {currency_code}{amount} {money_unit} of accumulated losses deferred in other comprehensive income",
-    "In {month} {year}, {company} {verb} forward-starting {swap_type} in connection with planned debt offerings, recording {currency_code}{amount} {money_unit} of mark-to-market losses in OCI",
-    "In {month} {year}, {company} {verb} {swap_type} to manage interest rate risk, recognizing {currency_code}{amount} {money_unit} in unrealized gains in OCI as of {month} {next_year}",
-    "During {year}, {company} {verb} {swap_type} to hedge against fluctuations in interest rates, with {currency_code}{amount} {money_unit} in deferred gains recorded in accumulated OCI",
-    "{company} implemented {swap_type} in {month} {year} to stabilize borrowing costs, deferring {currency_code}{amount} {money_unit} of losses in other comprehensive income",
-    "in the {quarter} quarter of {year}, {company} {verb} forward-starting {swap_type} to secure rates for future debt issuances, with {currency_code}{amount} {money_unit} in mark-to-market adjustments in OCI",
-    "In {year}, {company} {verb} {swap_type} to mitigate interest rate exposure, with {currency_code}{amount} {money_unit} in fair value changes deferred in equity",
-    "In {month} {year}, {company} locked in rates using {swap_type}, recognizing {currency_code}{amount} {money_unit} in deferred losses within other comprehensive income",
-    "during the {quarter} quarter of {year}, {company} {verb} {swap_type} to hedge planned bond issuances, with {currency_code}{amount} {money_unit} in unrealized losses recorded in OCI",
-    "In {month} {year}, {swap_type} were {verb} to manage exposure to interest rate volatility, resulting in {currency_code}{amount} {money_unit} of deferred gains in equity",
-    "{company} {verb} {swap_type} in {month} {year} to hedge forecasted interest payments, with {currency_code}{amount} {money_unit} in mark-to-market adjustments in OCI",
-    "In {year}, {company} designated {swap_type} as hedges for anticipated debt, recording {currency_code}{amount} {money_unit} in fair value losses in accumulated OCI",
-    "During {month} {year}, {company} implemented {swap_type} to secure favorable rates, with {currency_code}{amount} {money_unit} in unrealized gains deferred in OCI",
-    "in the {quarter} quarter of {year}, {swap_type} were {verb} to manage interest rate risk on future borrowings, with {currency_code}{amount} {money_unit} in losses recorded in equity",
-    "{company} {verb} {swap_type} in {month} {year} to hedge against rising interest rates, deferring {currency_code}{amount} {money_unit} in mark-to-market losses in OCI",
-    "In {month} {year}, {company} {verb} {swap_type} with a notional value of {currency_code}{amount} {money_unit}, resulting in deferred gains recorded in accumulated OCI",
-    "During {year}, {company} {verb} {swap_type} to lock in rates for planned financings, with {currency_code}{amount} {money_unit} in fair value adjustments in OCI",
-    "In {month} {year}, {company} designated forward-starting {swap_type} as {hedge_type} hedges, recognizing {currency_code}{amount} {money_unit} in unrealized losses in equity",
-    "{company} implemented {swap_type} in the {quarter} quarter of {year} to stabilize interest costs, with {currency_code}{amount} {money_unit} in deferred losses recorded in OCI",
-    "In {month} {year}, {swap_type} were entered to hedge anticipated debt offerings, resulting in {currency_code}{amount} {money_unit} of mark-to-market gains in accumulated OCI",
-]
-
 ir_position_template = [
     "In {month} {year}, {swap_type} were {verb} and designated as hedges of the notes with a notional amount of {currency_code}{notional} {money_unit}, effectively converting portions of fixed-rate debt to floating rates",
     "During {month} {year}, {company} {verb} {swap_type} with an aggregate notional value of {currency_code}{notional} {money_unit} to modify the interest rate characteristics of outstanding senior notes",
@@ -4897,6 +4871,102 @@ def generate_labeled_hedge_paragraph(
         )
         sentences.append(sentence)
         return sentences
+    
+    def generate_derivative_sentences():
+        """Generate derivative-related sentences for FX, IR, CP, or generic types."""
+        sentences = []
+
+        # --- FX: add currency description sentence (0-1 chance) ---
+        if swapType == "fx" and random.random() < 0.6:
+            selected = random.sample(major_currencies, random.randint(2, 3))
+            if random.random() < 0.5:
+                selected += random.sample(european_currencies, random.randint(1, 2))
+            if random.random() < 0.4:
+                selected += random.sample(asian_currencies, random.randint(1, 2))
+            if random.random() < 0.3:
+                selected += random.sample(americas_currencies, random.randint(1, 2))
+            selected = list(dict.fromkeys(selected))
+            currency_list = (
+                ", ".join(selected[:-1]) + " and " + selected[-1]
+                if len(selected) > 1 else selected[0]
+            )
+            if random.random() < 0.3:
+                currency_list += " and other European and Latin American currencies"
+            sentences.append(
+                random.choice(fx_currency_templates).format(
+                    company=pick_company_name(company_name),
+                    currencies=currency_list,
+                )
+            )
+
+        # --- Select appropriate template set ---
+        if swapType == "fx":
+            template = random.choice(fx_position_template)
+        elif swapType == "ir":
+            template = random.choice(ir_position_template)
+        elif swapType == "cp":
+            template = random.choice(cp_position_template)
+        else:
+            # generic fallback
+            template = random.choice(
+                hedge_position_templates if random.random() < 0.85 else eq_position_templates
+            )
+
+        # --- Common fields ---
+        verb = random.choice(hedge_use_verbs)
+        swap_type = random.choice(swap_types)
+        commodity = random.choice(commodities)
+        cost_type = random.choice(cost_types)
+
+        # --- Time logic ---
+        year = current_year if has_active_derivative else current_year - 1
+        prev_year, prev2_year = year - 1, year - 2
+        old_year = random.choice(past_years) if past_years else prev_year
+        future_year = (
+            random.randint(current_year + 1, current_year + 5)
+            if has_active_derivative
+            else random.randint(old_year, prev_year)
+        )
+
+        # --- Notionals ---
+        notional = (
+            generate_value(False)
+            if has_active_derivative
+            else (generate_value(False) if random.random() < 0.5 else 0)
+        )
+        prev_notional = generate_value()
+        prev2_notional = generate_value()
+        old_notional = generate_value(False)
+
+        # --- Build main sentence ---
+        sentence = template.format(
+            company=pick_company_name(company_name),
+            verb=verb,
+            swap_type=swap_type,
+            commodity=commodity,
+            month=random.choice(months),
+            end_day=random.randint(28, 31),
+            quarter=random.choice(quarters),
+            year=year,
+            prev_year=prev_year,
+            prev2_year=prev2_year,
+            old_year=old_year,
+            future_year=future_year,
+            currency_code=currency_code,
+            notional=notional,
+            prev_notional=prev_notional,
+            prev2_notional=prev2_notional,
+            old_notional=old_notional,
+            money_unit=money_units,
+            cost_type=cost_type,
+        )
+        sentences.append(sentence)
+
+        # --- Expired hedges for non-active derivatives ---
+        if not has_active_derivative:
+            sentences.extend(expire_hedge())
+
+        return sentences
 
     # Label 2: Policy/disclosure only (no specific positions)
     if has_active_derivative is None:
@@ -4974,429 +5044,53 @@ def generate_labeled_hedge_paragraph(
         all_sentences.append(template.format(company=pick_company_name(company_name)))
     # Labels 0 and 1: Specific positions
     else:
-        if not has_active_derivative:
-            # Past event (0-1)
-            if random.random() < 0.15 and len(past_years) > 0:
-                template = random.choice(hedge_past_event_template)
-                swap_type = random.choice(swap_types)
-                past_year = random.choice(past_years)
-                amount = generate_value(False)
-                hedge_type = random.choice(hedge_types)
-                verb = random.choice(hedge_use_verbs)
-                sentence = template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    month=random.choice(months),
-                    year=past_year,
-                    quarter=random.choice(quarters),
-                    currency_code=currency_code,
-                    amount=amount,
-                    money_unit=money_units,
-                    hedge_type=hedge_type,
-                )
-                all_sentences.append(sentence)
-            # Past event (0-1)
-            if random.random() < 0.10:
-                template = random.choice(hedge_no_such_outstanding_template)
-                swap_type = random.choice(swap_types)
-                verb = random.choice(hedge_use_verbs)
-                year = current_year
-                prev_year = year - 1
-                prev2_year = prev_year - 1
-                sentence = template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    month=random.choice(months),
-                    end_day=random.randint(28, 31),
-                    year=year,
-                    prev_year=prev_year,
-                    prev2_year=prev2_year,
-                    quarter=random.choice(quarters),
-                )
-                all_sentences.append(sentence)
-        # Foreign Exchange specific logic
-        if swapType == "fx":
-            # Currency description (0-1)
-            if random.random() < 0.6:
-                selected_currencies = []
-                selected_currencies.extend(
-                    random.sample(major_currencies, random.randint(2, 3))
-                )
-                if random.random() < 0.5:
-                    selected_currencies.extend(
-                        random.sample(european_currencies, random.randint(1, 2))
-                    )
-                if random.random() < 0.4:
-                    selected_currencies.extend(
-                        random.sample(asian_currencies, random.randint(1, 2))
-                    )
-                if random.random() < 0.3:
-                    selected_currencies.extend(
-                        random.sample(americas_currencies, random.randint(1, 2))
-                    )
+        # Past event (0-1)
+        if random.random() < 0.15 and len(past_years) > 0:
+            template = random.choice(hedge_past_event_template)
+            swap_type = random.choice(swap_types)
+            past_year = random.choice(past_years)
+            amount = generate_value(False)
+            hedge_type = random.choice(hedge_types)
+            verb = random.choice(hedge_use_verbs)
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                verb=verb,
+                swap_type=swap_type,
+                month=random.choice(months),
+                year=past_year,
+                quarter=random.choice(quarters),
+                currency_code=currency_code,
+                amount=amount,
+                money_unit=money_units,
+                hedge_type=hedge_type,
+            )
+            all_sentences.append(sentence)
+        # Past event (0-1)
+        if random.random() < 0.10:
+            template = random.choice(hedge_no_such_outstanding_template)
+            swap_type = random.choice(swap_types)
+            verb = random.choice(hedge_use_verbs)
+            year = current_year if not has_active_derivative else current_year - 1
+            prev_year = year - 1
+            prev2_year = prev_year - 1
+            sentence = template.format(
+                company=pick_company_name(company_name),
+                verb=verb,
+                swap_type=swap_type,
+                month=random.choice(months),
+                end_day=random.randint(28, 31),
+                year=year,
+                prev_year=prev_year,
+                prev2_year=prev2_year,
+                quarter=random.choice(quarters),
+            )
+            all_sentences.append(sentence)
 
-                selected_currencies = list(dict.fromkeys(selected_currencies))
-                currency_list = (
-                    ", ".join(selected_currencies[:-1])
-                    + " and "
-                    + selected_currencies[-1]
-                )
-                if random.random() < 0.3:
-                    currency_list += " and other European and Latin American currencies"
-                template = random.choice(fx_currency_templates)
-                all_sentences.append(
-                    template.format(
-                        company=pick_company_name(company_name),
-                        currencies=currency_list,
-                    )
-                )
+        # Main generator
+        all_sentences.extend(
+            generate_derivative_sentences()
+        )
 
-            # Label 0: Active derivative positions
-            if has_active_derivative:
-                # Active position (always for label 0)
-                template = random.choice(fx_position_template)
-                swap_type = random.choice(swap_types)
-                notional = generate_value(False)
-                prev_notional = generate_value()
-                prev2_notional = generate_value()
-                old_notional = generate_value(False)
-                verb = random.choice(hedge_use_verbs)
-                prev_year = current_year - 1
-                prev2_year = prev_year - 1
-                old_year = random.choice(past_years) - 1 if past_years else prev_year
-                future_year = random.randint(current_year + 1, current_year + 5)
-                sentence = template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    month=random.choice(months),
-                    end_day=random.randint(28, 31),
-                    year=current_year,
-                    prev_year=prev_year,
-                    prev2_year=prev2_year,
-                    old_year=old_year,
-                    future_year=future_year,
-                    currency_code=currency_code,
-                    notional=notional,
-                    prev_notional=prev_notional,
-                    prev2_notional=prev2_notional,
-                    old_notional=old_notional,
-                    money_unit=money_units,
-                )
-                all_sentences.append(sentence)
-
-            # Label 1: No active derivative
-            elif has_active_derivative == False:
-                # Past position (always for label 1)
-                template = random.choice(fx_position_template)
-                swap_type = random.choice(swap_types)
-                prev_notional = generate_value()
-                prev2_notional = generate_value()
-                old_notional = generate_value(False)
-                verb = random.choice(hedge_use_verbs)
-                if random.random() < 0.5:  # Pick prev year
-                    year = current_year - 1
-                    notional = generate_value(False)
-                else:  # Set current year's value as 0
-                    year = current_year
-                    notional = 0
-                prev_year = year - 1
-                prev2_year = prev_year - 1
-                old_year = random.choice(past_years) - 1 if past_years else prev_year
-                future_year = random.randint(prev_year, year)
-                sentence = template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    month=random.choice(months),
-                    end_day=random.randint(28, 31),
-                    year=year,
-                    prev_year=prev_year,
-                    prev2_year=prev2_year,
-                    old_year=old_year,
-                    future_year=future_year,
-                    currency_code=currency_code,
-                    notional=notional,
-                    prev_notional=prev_notional,
-                    prev2_notional=prev2_notional,
-                    old_notional=old_notional,
-                    money_unit=money_units,
-                )
-                all_sentences.append(sentence)
-                all_sentences.extend(expire_hedge())
-
-        # Interest Rate specific logic
-        elif swapType == "ir":
-
-            # Label 0: Active derivative positions
-            if has_active_derivative:
-                # Active position (always for label 0)
-                template = random.choice(ir_position_template)
-                verb = random.choice(hedge_use_verbs)
-                prev_year = current_year - 1
-                prev2_year = prev_year - 1
-                old_year = random.choice(past_years) if past_years else prev_year
-                future_year = random.randint(current_year + 1, current_year + 5)
-                swap_type = random.choice(swap_types)
-                notional = generate_value(False)
-                prev_notional = generate_value()
-                prev2_notional = generate_value()
-                old_notional = generate_value(False)
-                cost_type = random.choice(cost_types)
-                sentence = template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    month=random.choice(months),
-                    end_day=random.randint(28, 31),
-                    quarter=random.choice(quarters),
-                    year=current_year,
-                    prev_year=prev_year,
-                    prev2_year=prev2_year,
-                    old_year=old_year,
-                    future_year=future_year,
-                    currency_code=currency_code,
-                    notional=notional,
-                    prev_notional=prev_notional,
-                    prev2_notional=prev2_notional,
-                    old_notional=old_notional,
-                    money_unit=money_units,
-                    cost_type=cost_type,
-                )
-                all_sentences.append(sentence)
-
-            # Label 1: No active derivative
-            elif has_active_derivative == False:
-                # Past event (0-1)
-                if random.random() < 0.15 and len(past_years) > 0:
-                    template = random.choice(ir_past_event_templates)
-                    verb = random.choice(hedge_use_verbs)
-                    swap_type = random.choice(swap_types)
-                    past_year = random.choice(past_years)
-                    next_year = past_year + 1
-                    amount = generate_value(False)
-                    hedge_type = random.choice(hedge_types)
-                    sentence = template.format(
-                        company=pick_company_name(company_name),
-                        verb=verb,
-                        swap_type=swap_type,
-                        month=random.choice(months),
-                        year=past_year,
-                        next_year=next_year,
-                        quarter=random.choice(quarters),
-                        currency_code=currency_code,
-                        amount=amount,
-                        money_unit=money_units,
-                        hedge_type=hedge_type,
-                    )
-                    all_sentences.append(sentence)
-                # Past position
-                template = random.choice(ir_position_template)
-                verb = random.choice(hedge_use_verbs)
-                swap_type = random.choice(swap_types)
-                prev_notional = generate_value()
-                prev2_notional = generate_value()
-                old_notional = generate_value(False)
-                if random.random() < 0.5:  # Have previous years with amount
-                    year = current_year - 1
-                    notional = generate_value(False)
-                else:  # Have current year have 0 amount
-                    year = current_year
-                    notional = 0
-                prev_year = year - 1
-                prev2_year = prev_year - 1
-                old_year = random.choice(past_years) - 1 if past_years else prev_year
-                future_year = random.randint(old_year, year)
-                sentence = template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    month=random.choice(months),
-                    quarter=random.choice(quarters),
-                    end_day=random.randint(28, 31),
-                    year=year,
-                    prev_year=prev_year,
-                    prev2_year=prev2_year,
-                    old_year=old_year,
-                    future_year=future_year,
-                    currency_code=currency_code,
-                    notional=notional,
-                    prev_notional=prev_notional,
-                    prev2_notional=prev2_notional,
-                    old_notional=old_notional,
-                    money_unit=money_units,
-                )
-                all_sentences.append(sentence)
-                all_sentences.extend(expire_hedge())
-
-        # Commodity Price specific logic
-        elif swapType == "cp":
-            # Label 0: Active derivative positions
-            if has_active_derivative:
-                # Active position (always for label 0)
-                template = random.choice(cp_position_template)  # Use position templates
-                verb = random.choice(hedge_use_verbs)
-                swap_type = random.choice(swap_types)
-                notional = generate_value(False)
-                prev_notional = generate_value()
-                prev2_notional = generate_value()
-                old_notional = generate_value(False)
-                prev_year = current_year - 1
-                prev2_year = prev_year - 1
-                old_year = random.choice(past_years) if past_years else prev_year
-                future_year = random.randint(current_year + 1, current_year + 5)
-                if random.random() < 0.3:  # Chance to replace with actual commodity
-                    swap_type = re.sub("commodity", commodity, swap_type)
-                sentence = template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    month=random.choice(months),
-                    end_day=random.randint(28, 31),
-                    year=current_year,
-                    prev_year=prev_year,
-                    prev2_year=prev2_year,
-                    old_year=old_year,
-                    future_year=future_year,
-                    currency_code=currency_code,
-                    notional=notional,
-                    prev_notional=prev_notional,
-                    prev2_notional=prev2_notional,
-                    old_notional=old_notional,
-                    money_unit=money_units,
-                    commodity=commodity,
-                )
-                all_sentences.append(sentence)
-
-            # Label 1: No active derivative
-            elif has_active_derivative == False:
-                commodity = random.choice(commodities)
-                # Past event (0-1)
-                template = random.choice(cp_position_template)  # Use event templates
-                verb = random.choice(hedge_use_verbs)
-                swap_type = random.choice(swap_types)
-                old_notional = generate_value(False)
-                if random.random() < 0.3:  # Chance to replace with actual commodity
-                    swap_type = re.sub("commodity", commodity, swap_type)
-                prev_notional = generate_value()
-                prev2_notional = generate_value()
-                if random.random() < 0.5:  # Set notional for prev year
-                    year = current_year - 1
-                    notional = generate_value(False)
-                else:  # Or set current year as 0
-                    year = current_year
-                    notional = 0
-                prev_year = year - 1
-                prev2_year = prev_year - 1
-                old_year = random.choice(past_years) - 1 if past_years else prev_year
-                future_year = random.randint(old_year, prev_year)
-                sentence = template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    commodity=commodity,
-                    month=random.choice(months),
-                    end_day=random.randint(28, 31),
-                    year=year,
-                    prev_year=prev_year,
-                    prev2_year=prev2_year,
-                    old_year=old_year,
-                    future_year=future_year,
-                    currency_code=currency_code,
-                    notional=notional,
-                    prev_notional=prev_notional,
-                    prev2_notional=prev2_notional,
-                    old_notional=old_notional,
-                    money_unit=money_units,
-                )
-                all_sentences.append(sentence)
-
-                all_sentences.extend(expire_hedge())
-
-        # Generic derivative logic (for 'gen' type or fallback)
-        else:
-
-            # Label 0: Active derivative positions
-            if has_active_derivative:
-                # Active position (always for label 0)
-                if random.random() < 0.85:
-                    template = random.choice(hedge_position_templates)
-                else:
-                    template = random.choice(eq_position_templates)
-                swap_type = random.choice(swap_types)
-                notional = generate_value(False)
-                prev_notional = generate_value()
-                prev2_notional = generate_value()
-                old_notional = generate_value(False)
-                verb = random.choice(hedge_use_verbs)
-                prev_year = current_year - 1
-                prev2_year = prev_year - 1
-                old_year = random.choice(past_years) if past_years else prev_year
-                future_year = random.randint(current_year + 1, current_year + 5)
-                sentence = template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    month=random.choice(months),
-                    end_day=random.randint(28, 31),
-                    year=current_year,
-                    prev_year=prev_year,
-                    prev2_year=prev2_year,
-                    old_year=old_year,
-                    future_year=future_year,
-                    currency_code=currency_code,
-                    notional=notional,
-                    prev_notional=prev_notional,
-                    prev2_notional=prev2_notional,
-                    old_notional=old_notional,
-                    money_unit=money_units,
-                )
-                all_sentences.append(sentence)
-
-            # Label 1: No active derivative
-            elif has_active_derivative == False:
-                # Past position
-                if random.random() < 0.85:
-                    template = random.choice(hedge_position_templates)
-                else:
-                    template = random.choice(eq_position_templates)
-                swap_type = random.choice(swap_types)
-                prev_notional = generate_value()
-                prev2_notional = generate_value()
-                old_notional = generate_value(False)
-                verb = random.choice(hedge_use_verbs)
-                if random.random() < 0.5:
-                    year = current_year - 1
-                    notional = generate_value(False)
-                else:
-                    year = current_year
-                    notional = 0
-                prev_year = year - 1
-                prev2_year = prev_year - 1
-                old_year = random.choice(past_years) - 1 if past_years else prev_year
-                future_year = random.randint(old_year, prev_year)
-                sentence = template.format(
-                    company=pick_company_name(company_name),
-                    verb=verb,
-                    swap_type=swap_type,
-                    month=random.choice(months),
-                    end_day=random.randint(28, 31),
-                    year=year,
-                    prev_year=prev_year,
-                    prev2_year=prev2_year,
-                    old_year=old_year,
-                    future_year=future_year,
-                    currency_code=currency_code,
-                    notional=notional,
-                    prev_notional=prev_notional,
-                    prev2_notional=prev2_notional,
-                    old_notional=old_notional,
-                    money_unit=money_units,
-                )
-                all_sentences.append(sentence)
-                all_sentences.extend(expire_hedge())
 
     # Shuffle and select sentences
     random.shuffle(all_sentences)
@@ -7177,7 +6871,6 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
         "hedge accounting", "hedge effectiveness", "hedge designation",
         "accumulated other comprehensive income", "fair value hierarchy",
         "Level 1", "Level 2", "Level 3", "carrying value", "book value",
-        "net investment hedge", "cash flow hedge", "fair value hedge",
         "hedge fund", "fund", "outstanding", "terminate", "expire", "termination", "expiration",
         "dedesignation", "dedesignate", "swap", "forward", "future", "cap", "floor", "agreement"
     ]
@@ -7201,9 +6894,9 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
         "disclosed in the footnotes"
     ]
 
-    type_specific_terms = []
+    commodity_specific_terms = []
     for commodity in commodities:
-        type_specific_terms.extend([
+        commodity_specific_terms.extend([
             f"{commodity} price",
             f"{commodity} inventory",
             f"{commodity} risk",
@@ -7212,7 +6905,7 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
         )
 
     # --- Label 3: Irrelevant / Unrelated Context ---
-    num_label_3 = batch_size  # Adjust ratio as needed
+    num_label_3 = batch_size // 4  # Adjust ratio as needed
     for _ in range(num_label_3):
         sentence_parts = []
         
@@ -7229,6 +6922,8 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
             accounting_buzzwords,
             min(random.randint(1, 3), len(accounting_buzzwords))
         ))
+        if random.random() < 0.3:
+            sentence_parts.extend(random.sample(commodity_specific_terms, random.randint(1, 3)))
         
         if random.random() < 0.3:
             sentence_parts.append(random.choice(gen_standalone))
@@ -7238,15 +6933,6 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
         
         if random.random() < 0.4:
             sentence_parts.append(random.choice(accounting_phrases))
-        
-        if random.random() < 0.7:
-            value = round(random.uniform(1, 9999), 1)
-            currency_symbol = random.choice(currency_codes)
-            money_unit = random.choice(money_unit_list)
-            sentence_parts.append(f"{currency_symbol}{value} {money_unit}")
-        
-        if random.random() < 0.6:
-            sentence_parts.append(f"in {random.randint(1990, 2025)}")
         
         while len(sentence_parts) < min_words_per_sentence:
             sentence_parts.append(random.choice(accounting_buzzwords))
@@ -7264,7 +6950,7 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
         sentences.append((sentence, 3))
     
     # --- Label 2: Gen/Unknown Hedge Der. Speculative/Policy ---
-    num_label_2 = batch_size
+    num_label_2 = batch_size // 4
     for _ in range(num_label_2):
         sentence_parts = []
         
@@ -7282,24 +6968,13 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
                 min(random.randint(1, 3), len(accounting_buzzwords))
             ))
         
-        if random.random() < 0.3:
-            sentence_parts.extend(random.sample(type_specific_terms, random.randint(1, 3)))
-        
         if random.random() < 0.2:
             sentence_parts.append(random.choice(derivative_specific))
         
         if random.random() < 0.5:
             sentence_parts.append(random.choice(connectors))
             sentence_parts.append(random.choice(accounting_phrases))
-        
-        if random.random() < 0.6:
-            value = round(random.uniform(1, 9999), 1)
-            currency_symbol = random.choice(currency_codes)
-            money_unit = random.choice(money_unit_list)
-            sentence_parts.append(f"notional {currency_symbol}{value} {money_unit}")
-        
-        if random.random() < 0.5:
-            sentence_parts.append(f"during {random.randint(1990, 2025)}")
+
         
         while len(sentence_parts) < min_words_per_sentence:
             sentence_parts.append(random.choice(gen_standalone))
@@ -7314,7 +6989,7 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
                 unique_parts.append(part)
         
         sentence = " ".join(unique_parts)
-        sentences.append((sentence, 3))
+        sentences.append((sentence, 2))
     
     # --- Labels 14/15/16: Type-specific ---
     swap_types = {
@@ -7329,8 +7004,6 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
             num_swaps = random.randint(2, 4)
             for _ in range(num_swaps):
                 swap_type = random.choice(derivative_keywords.get(prefix, []))
-                if prefix == "cp" and "commodity" in swap_type:
-                    swap_type = re.sub("commodity", random.choice(commodities), swap_type)
                 sentence_parts.append(swap_type)
             
             if random.random() < 0.7:
@@ -7356,15 +7029,6 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
             if random.random() < 0.5:
                 sentence_parts.append(random.choice(accounting_phrases))
             
-            if random.random() < 0.6:
-                value = round(random.uniform(1, 9999), 1)
-                currency_symbol = random.choice(currency_codes)
-                money_unit = random.choice(money_unit_list)
-                sentence_parts.append(f" {currency_symbol}{value} {money_unit}")
-            
-            if random.random() < 0.5:
-                sentence_parts.append(f"in {random.randint(1990, 2025)}")
-            
             while len(sentence_parts) < min_words_per_sentence:
                 swap_type = random.choice(derivative_keywords.get(prefix, []))
                 sentence_parts.append(swap_type)
@@ -7379,9 +7043,9 @@ def deboost_keywords_batch(batch_id, batch_size=2, max_words_per_sentence=8, min
                     unique_parts.append(part)
             
             sentence = " ".join(unique_parts)
-            sentences.append((sentence, 3))
-    
-    return sentences
+            sentences.append((sentence, label))
+    random.shuffle(sentences)
+    return sentences[:batch_size]
 
 
 def generate_deboost_dataset_concurrent(
