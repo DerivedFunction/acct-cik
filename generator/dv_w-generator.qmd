@@ -5037,7 +5037,7 @@ def generate_labeled_hedge_paragraph(
                 )
             )
         # IR: Add a chance of debt
-        if swapType == "ir" and random.random() < 0.05:
+        if swapType == "ir" and random.random() < 0.15:
             template = random.choice(debt_templates)
             amount = generate_value(False)
             amount2 = generate_value(False)
