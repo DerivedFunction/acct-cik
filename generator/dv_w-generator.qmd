@@ -7314,7 +7314,7 @@ def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, mi
                 unique_parts.append(part)
         
         sentence = " ".join(unique_parts)
-        sentences.append((sentence, 2))
+        sentences.append((sentence, 3))
     
     # --- Labels 14/15/16: Type-specific ---
     swap_types = {
@@ -7360,7 +7360,7 @@ def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, mi
                 value = round(random.uniform(1, 9999), 1)
                 currency_symbol = random.choice(currency_codes)
                 money_unit = random.choice(money_unit_list)
-                sentence_parts.append(f"with notional amount {currency_symbol}{value} {money_unit}")
+                sentence_parts.append(f" {currency_symbol}{value} {money_unit}")
             
             if random.random() < 0.5:
                 sentence_parts.append(f"in {random.randint(1990, 2025)}")
@@ -7379,7 +7379,7 @@ def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, mi
                     unique_parts.append(part)
             
             sentence = " ".join(unique_parts)
-            sentences.append((sentence, label))
+            sentences.append((sentence, 3))
     
     return sentences
 
