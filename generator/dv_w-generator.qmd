@@ -7133,22 +7133,26 @@ def generate_sec_noise(company, currency_unit, month, year):
     )
     return chunks
 
-
-def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=8, min_words_per_sentence=4):
+def deboost_keywords_batch(batch_id, batch_size=20, max_words_per_sentence=8, min_words_per_sentence=4):
     """
-    Generate deboost sentences for derivative contexts with anti-overfitting measures.
-    Sentences are longer and more realistic.
+    Generate a single batch of deboost sentences.
+    This function is called by each worker thread.
     
-    Labels:
-    - 2: Gen/Unknown Hedge Der. Speculative/Policy
-    - 3: Irrelevant / Unrelated Context
-    - 14: IR Hedge Speculative/Policy (contextless IR terms)
-    - 15: FX Hedge Speculative/Policy (contextless FX terms)
-    - 16: CP Hedge Speculative/Policy (contextless CP terms)
+    Args:
+        batch_id: Identifier for this batch (for reproducibility if needed)
+        batch_size: Number of sentences per swap type
+        max_words_per_sentence: Maximum words in a sentence
+        min_words_per_sentence: Minimum words in a sentence
+    
+    Returns:
+        List of (sentence, label) tuples
     """
+    # Set random seed based on batch_id for reproducibility (optional)
+    # random.seed(batch_id)
+    
     sentences = []
 
-    # Define keyword pools
+    # [Insert all the template definitions from previous version here]
     derivative_specific = [
         "equity swap", "forward contract", "futures contract", "swaption",
         "total return swap", "credit default swap", "variance swap",
@@ -7194,66 +7198,49 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=8, min_words
         "included in the consolidated financial statements",
         "disclosed in the footnotes"
     ]
-    
+
     # --- Label 3: Irrelevant / Unrelated Context ---
-    for _ in range(150):
-        num_words = random.randint(min_words_per_sentence, max_words_per_sentence)
-        
-        # Build longer, more coherent sentences
+    num_label_3 = batch_size  # Adjust ratio as needed
+    for _ in range(num_label_3):
         sentence_parts = []
         
-        # Start with accounting terms
         if random.random() < 0.8:
             sentence_parts.extend(random.sample(
                 accounting_buzzwords, 
                 min(random.randint(2, 4), len(accounting_buzzwords))
             ))
         
-        # Add connectors
         if random.random() < 0.6:
             sentence_parts.append(random.choice(connectors))
         
-        # Add more accounting terms
         sentence_parts.extend(random.sample(
             accounting_buzzwords,
             min(random.randint(1, 3), len(accounting_buzzwords))
         ))
         
-        # 30% chance to add derivative terms (to prevent keyword shortcuts)
         if random.random() < 0.3:
             sentence_parts.append(random.choice(gen_standalone))
             if random.random() < 0.5:
                 sentence_parts.append(random.choice(connectors))
                 sentence_parts.append(random.choice(gen_standalone))
         
-        # Add accounting phrases
         if random.random() < 0.4:
             sentence_parts.append(random.choice(accounting_phrases))
         
-        # Add values and dates
         if random.random() < 0.7:
-            value = generate_value()
+            value = round(random.uniform(1, 9999), 1)
             currency_symbol = random.choice(currency_codes)
-            money_unit = random.choice(["thousand", "million", "billion"])
+            money_unit = random.choice(money_units)
             sentence_parts.append(f"{currency_symbol}{value} {money_unit}")
         
         if random.random() < 0.6:
             sentence_parts.append(f"in {random.randint(1990, 2025)}")
         
-        if random.random() < 0.4:
-            month = random.choice(months)
-            day = random.randint(1, 28)
-            year = random.randint(2015, 2025)
-            sentence_parts.append(f"as of {month} {day}, {year}")
-        
-        # Ensure minimum length
         while len(sentence_parts) < min_words_per_sentence:
             sentence_parts.append(random.choice(accounting_buzzwords))
         
-        # Trim to max length
         sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 5)]
         
-        # Remove duplicates while preserving order
         seen = set()
         unique_parts = []
         for part in sentence_parts:
@@ -7265,27 +7252,24 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=8, min_words
         sentences.append((sentence, 3))
     
     # --- Label 2: Gen/Unknown Hedge Der. Speculative/Policy ---
-    for _ in range(120):
+    num_label_2 = batch_size
+    for _ in range(num_label_2):
         sentence_parts = []
         
-        # Start with generic derivative terms
         sentence_parts.extend(random.sample(
             gen_standalone,
             min(random.randint(2, 4), len(gen_standalone))
         ))
         
-        # Add connectors
         if random.random() < 0.6:
             sentence_parts.append(random.choice(connectors))
         
-        # 50% chance to add accounting context (makes it ambiguous with label 3)
         if random.random() < 0.5:
             sentence_parts.extend(random.sample(
                 accounting_buzzwords,
                 min(random.randint(1, 3), len(accounting_buzzwords))
             ))
         
-        # 30% chance to add type-specific context (makes it ambiguous with 14/15/16)
         if random.random() < 0.3:
             type_specific_terms = random.sample([
                 "interest rate", "foreign exchange", "commodity price",
@@ -7293,33 +7277,27 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=8, min_words
             ], random.randint(1, 2))
             sentence_parts.extend(type_specific_terms)
         
-        # 20% chance to add specific derivative instruments
         if random.random() < 0.2:
             sentence_parts.append(random.choice(derivative_specific))
         
-        # Add connectors and phrases
         if random.random() < 0.5:
             sentence_parts.append(random.choice(connectors))
             sentence_parts.append(random.choice(accounting_phrases))
         
-        # Add values
         if random.random() < 0.6:
-            value = generate_value()
-            currency_symbol = random.choice(currency_codes)
-            money_unit = random.choice(["thousand", "million", "billion"])
+            value = round(random.uniform(1, 9999), 1)
+            currency_symbol = random.choice(["$", "€", "£"])
+            money_unit = random.choice(money_units)
             sentence_parts.append(f"notional {currency_symbol}{value} {money_unit}")
         
-        # Add dates
         if random.random() < 0.5:
             sentence_parts.append(f"during {random.randint(1990, 2025)}")
         
-        # Ensure minimum length
         while len(sentence_parts) < min_words_per_sentence:
             sentence_parts.append(random.choice(gen_standalone))
         
         sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 5)]
         
-        # Remove duplicates
         seen = set()
         unique_parts = []
         for part in sentence_parts:
@@ -7330,78 +7308,61 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=8, min_words
         sentence = " ".join(unique_parts)
         sentences.append((sentence, 2))
     
-    # --- Labels 14/15/16: Type-specific Speculative/Policy ---
+    # --- Labels 14/15/16: Type-specific ---
     swap_types = {
-        "IR": 14,
-        "FX": 15,
-        "CP": 16
-    }
-    
+        "ir": 14,
+        "fx": 15,
+        "cp": 16
+    }    
     for prefix, label in swap_types.items():
-        for _ in range(batch_size * 2):
+        for _ in range(batch_size):
             sentence_parts = []
             
-            # Add type-specific derivative terms
             num_swaps = random.randint(2, 4)
             for _ in range(num_swaps):
-                swap_type = random.choice(derivative_keywords[prefix])
-                if prefix == "CP" and "commodity" in swap_type:
+                swap_type = random.choice(derivative_keywords.get(prefix, []))
+                if prefix == "cp" and "commodity" in swap_type:
                     swap_type = re.sub("commodity", random.choice(commodities), swap_type)
                 sentence_parts.append(swap_type)
             
-            # Add connectors
             if random.random() < 0.7:
                 sentence_parts.append(random.choice(connectors))
             
-            # 40% chance to add generic terms (prevents pure category mapping)
             if random.random() < 0.4:
                 sentence_parts.extend(random.sample(
                     gen_standalone,
                     min(random.randint(1, 2), len(gen_standalone))
                 ))
             
-            # 30% chance to add accounting buzzwords
             if random.random() < 0.3:
                 sentence_parts.extend(random.sample(
                     accounting_buzzwords,
                     min(random.randint(1, 3), len(accounting_buzzwords))
                 ))
             
-            # 20% chance to add terms from OTHER categories
             if random.random() < 0.2:
                 other_prefix = random.choice([p for p in swap_types.keys() if p != prefix])
-                cross_contamination = random.choice(derivative_keywords[other_prefix])
-                if other_prefix == "CP" and "commodity" in cross_contamination:
-                    cross_contamination = re.sub("commodity", random.choice(commodities), cross_contamination)
+                cross_contamination = random.choice(derivative_keywords.get(other_prefix, []))
                 sentence_parts.append(cross_contamination)
             
-            # Add phrases and values
             if random.random() < 0.5:
                 sentence_parts.append(random.choice(accounting_phrases))
             
             if random.random() < 0.6:
-                value = generate_value()
+                value = round(random.uniform(1, 9999), 1)
                 currency_symbol = random.choice(currency_codes)
-                money_unit = random.choice(["thousand", "million", "billion"])
+                money_unit = random.choice(money_unit_list)
                 sentence_parts.append(f"with notional amount {currency_symbol}{value} {money_unit}")
             
             if random.random() < 0.5:
                 sentence_parts.append(f"in {random.randint(1990, 2025)}")
             
-            if random.random() < 0.3:
-                quarter = random.choice(["first", "second", "third", "fourth"])
-                sentence_parts.append(f"during the {quarter} quarter")
-            
-            # Ensure minimum length
             while len(sentence_parts) < min_words_per_sentence:
-                swap_type = random.choice(derivative_keywords[prefix])
-                if prefix == "CP" and "commodity" in swap_type:
-                    swap_type = re.sub("commodity", random.choice(commodities), swap_type)
+                swap_type = random.choice(derivative_keywords.get(prefix, []))
                 sentence_parts.append(swap_type)
             
             sentence_parts = sentence_parts[:max_words_per_sentence + random.randint(0, 6)]
             
-            # Remove duplicates
             seen = set()
             unique_parts = []
             for part in sentence_parts:
@@ -7412,53 +7373,72 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=8, min_words
             sentence = " ".join(unique_parts)
             sentences.append((sentence, label))
     
-    # --- Longer partial phrases and realistic fragments ---
-    phrase_templates = [
-        "{term1} {connector} {term2} {phrase} {value}",
-        "{term1} {term2} {connector} {term3} as of {date}",
-        "{term1} {connector} {term2} {term3} {phrase}",
-        "the Company's {term1} {connector} {term2} totaling {value}",
-        "{term1} {term2} were {phrase} during {year}",
-        "{term1} {connector} {term2} {phrase} {connector} {term3}"
-    ]
+    return sentences
+
+
+def generate_deboost_dataset_concurrent(
+    total_batches=100,
+    batch_size=20,
+    max_workers=8,
+    max_words_per_sentence=8,
+    min_words_per_sentence=4
+):
+    """
+    Generate deboost dataset using concurrent processing with tqdm progress bar.
     
-    for _ in range(100):
-        template = random.choice(phrase_templates)
-        
-        # Mix terms from different categories
-        all_terms = accounting_buzzwords + gen_standalone + derivative_specific
-        term1 = random.choice(all_terms)
-        term2 = random.choice(all_terms)
-        term3 = random.choice(all_terms)
-        connector = random.choice(connectors)
-        phrase = random.choice(accounting_phrases)
-        
-        value = generate_value()
-        currency = random.choice(currency_codes)
-        money_unit = random.choice(["thousand", "million", "billion"])
-        value_str = f"{currency}{value} {money_unit}"
-        
-        month = random.choice(months)
-        day = random.randint(1, 28)
-        year = random.randint(2015, 2025)
-        date = f"{month} {day}, {year}"
-        
-        try:
-            sentence = template.format(
-                term1=term1, term2=term2, term3=term3,
-                connector=connector, phrase=phrase,
-                value=value_str, date=date, year=year
-            )
+    Args:
+        total_batches: Number of batches to generate
+        batch_size: Size of each batch
+        max_workers: Number of parallel workers
+        max_words_per_sentence: Max words per sentence
+        min_words_per_sentence: Min words per sentence
+    
+    Returns:
+        List of (sentence, label) tuples
+    """
+    all_sentences = []
+    
+    # Create progress bar
+    with tqdm(total=total_batches, desc="Generating deboost sentences", unit="batch") as pbar:
+        # Use ThreadPoolExecutor for I/O-bound or CPU-bound tasks
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit all tasks
+            futures = {
+                executor.submit(
+                    deboost_keywords_batch,
+                    batch_id=i,
+                    batch_size=batch_size,
+                    max_words_per_sentence=max_words_per_sentence,
+                    min_words_per_sentence=min_words_per_sentence
+                ): i for i in range(total_batches)
+            }
             
-            # Randomly assign to label 2 or 3
-            target_label = random.choice([2, 3])
-            sentences.append((sentence, target_label))
-        except:
-            continue
+            # Process completed tasks
+            for future in as_completed(futures):
+                batch_id = futures[future]
+                try:
+                    batch_sentences = future.result()
+                    all_sentences.extend(batch_sentences)
+                    pbar.update(1)
+                except Exception as e:
+                    print(f"\nError in batch {batch_id}: {e}")
+                    pbar.update(1)
     
     # Remove duplicates
-    sentences = list(set(sentences))
-    return sentences
+    print("\nRemoving duplicates...")
+    all_sentences = list(set(all_sentences))
+    
+    # Print statistics
+    label_counts = {}
+    for _, label in all_sentences:
+        label_counts[label] = label_counts.get(label, 0) + 1
+    
+    print(f"\nTotal unique sentences: {len(all_sentences)}")
+    print("Label distribution:")
+    for label in sorted(label_counts.keys()):
+        print(f"  Label {label}: {label_counts[label]} sentences")
+    
+    return all_sentences
 ```
 
 
@@ -7528,7 +7508,7 @@ def generate(size_per_label=100, max_workers=8):
             except Exception as e:
                 print(f"Error during generation: {e}")
     # Deboosting
-    all_samples.extend(deboost_keywords_parallel(size_per_label))
+    all_samples.extend(generate_deboost_dataset_concurrent(size_per_label))
 
     # --- Create and sort DataFrame ---
     df_new = pd.DataFrame(all_samples, columns=["sentence", "label"])
