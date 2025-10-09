@@ -7153,11 +7153,14 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
                 # Randomize commodity type if applicable
                 if prefix == "cp" and "commodity" in swap_type:
                     swap_type = re.sub("commodity", random.choice(commodities), swap_type)
+                if prefix == "ir" and "interest rate" in swap_type and random.random() < 0.5:
+                    swap_type = re.sub("interest rate", "", swap_type)
                 # Optionally add past/future year placeholders
                 if random.random() < 0.5:
                     swap_type = f"{swap_type} {random.randint(1990, 2025)}"
                 swaps.append(swap_type)
             if swaps:
+                swaps = list(set(swaps))
                 sentences.append((" ".join(swaps), label))
 
     
@@ -7168,9 +7171,8 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
     for _ in range(len(derivative_specific) * 3):
         sentence = []
         length = random.randint(2, 4)
-        for _ in range(length):
-            word = random.choice(derivative_specific)
-        sentence.append(word)
+        sentence = derivative_specific[:length]
+        random.shuffle(sentence)
         sentences.append((" ".join(sentence), 2))
 
     # --- 3. Contextless / irrelevant words (label 3) ---
@@ -7206,7 +7208,7 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
     words_to_deboost_label_3.extend([
         "put option contract", "collar", " call option contract",
         "over-the-counter", "receive-equity return, pay-fixed equity",
-        "receive-equity return, pay-floating equity", "equity collor", "total return"
+        "receive-equity return, pay-floating equity", "equity collar", "total return"
     ])
     # Add commodities as contextless phrases
     for commodity in commodities:
@@ -7215,7 +7217,7 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
         ])
     
 
-    for _ in range(batch_size):
+    for _ in range(batch_size * len(words_to_deboost_label_3) // 2):
         num_words = random.randint(1, max_words_per_sentence)
         selected_words = random.sample(words_to_deboost_label_3, num_words)
         words_with_context = []
@@ -7234,12 +7236,13 @@ def deboost_keywords_parallel(batch_size=20, max_words_per_sentence=3):
                 words_with_context.append(f"{currency_symbol}{value}")
         if random.random() < 0.5:
             words_with_context.append(f"{random.randint(1990, 2025)}")
-        sentence = " and ".join(words_with_context)
+        words_with_context = list(set(words_with_context))
+        random.shuffle(words_with_context)
+        sentence = " ".join(words_with_context)
         sentences.append((sentence, 3))
     # Remove duplicates
     sentences = list(set(sentences))
     return sentences
-            
 ```
 
 
@@ -7309,7 +7312,7 @@ def generate(size_per_label=100, max_workers=8):
             except Exception as e:
                 print(f"Error during generation: {e}")
     # Deboosting
-    all_samples.extend(deboost_keywords_parallel(size_per_label * numSwaps))
+    all_samples.extend(deboost_keywords_parallel(size_per_label))
 
     # --- Create and sort DataFrame ---
     df_new = pd.DataFrame(all_samples, columns=["sentence", "label"])
