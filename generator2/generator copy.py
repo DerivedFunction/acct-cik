@@ -766,7 +766,7 @@ def generate_emb_paragraph(
         labels["eq"] = 1
     return paragraph, labels, label
 
-def generate(size_per_label=100, max_workers=8):
+def generate(size_per_label=100):
     """
     Generate the dataset. Fixed:
       - Ensure DataFrame columns match the tuple order appended to all_samples.
@@ -829,7 +829,7 @@ def generate(size_per_label=100, max_workers=8):
         return futures
 
     # --- Parallel execution with tqdm progress bar ---
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+    with ThreadPoolExecutor(max_workers=min(8, size_per_label // 5)) as executor:
         futures = submit_tasks(executor)
         for future in tqdm(
             as_completed(futures),
