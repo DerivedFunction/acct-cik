@@ -1003,7 +1003,7 @@ def run_parallel_generation():
     results = {}
     with ThreadPoolExecutor(max_workers=len(tasks)) as executor:
         future_to_key = {executor.submit(func): key for key, func in tasks.items()}
-        for future in tqdm(as_completed(future_to_key), total=len(tasks), desc="Generating Templates", leave=True):
+        for future in tqdm(as_completed(future_to_key), total=len(tasks), desc="Generating W/Emb Templates", leave=True):
             key = future_to_key[future]
             try:
                 results[key] = future.result()
