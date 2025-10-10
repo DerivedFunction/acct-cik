@@ -189,6 +189,43 @@ hedge_may_use_verbs = [
 
 hedge_change_verbs = ["increase", "decrease", "affect", "impact"]
 
+commodities = [
+    "crude oil",
+    "natural gas",
+    "electricity",
+    "aluminum",
+    "copper",
+    "steel",
+    "corn",
+    "soybeans",
+    "grain",
+    "metals",
+    "titanium",
+    "fuel",
+    "diesel fuel",
+    "gasoline",
+    "raw materials",
+    "commodity",
+    "energy",
+    "resin",
+    "chemicals",
+    "lumber",
+]
+cost_types = [
+    "input costs",
+    "energy costs",
+    "fuel costs",
+    "raw material costs",
+    "manufacturing costs",
+    "mining costs",
+    "extraction costs",
+    "transportation costs",
+    "storage costs",
+    "commodity costs",
+    "production costs",
+    "lumber costs",
+]
+
 # Base sentence structures
 base_structures = [
     "{prefix}, {company} {verb} {amount_swap_order} {hedge_designation}",
@@ -312,7 +349,6 @@ generic_accounting_reasons = [
     "with changes in fair value recognized in earnings",
 ]
 
-# Interest Rate (IR) specific accounting reasons
 # Interest Rate (IR) specific accounting reasons
 ir_specific_reasons = [
     "resulting in a decrease in interest expense of {currency_code}{notional} {money_unit}",
@@ -823,9 +859,25 @@ merged_event_patterns = [
 ]
 
 
+# Other templates
+fx_currency_templates = [
+    "The currency hedged items are usually denominated in the following main currencies: {currencies}",
+    "{company}'s primary currency exposures include {currencies}",
+    "Foreign currency risk primarily relates to exposures in {currencies}",
+    "Our most significant currency exposures are to {currencies}",
+    "{company} faces foreign exchange risk primarily from {currencies}",
+    "In order to reduce foreign currency translation exposure from {currencies}, {company} seeks to denominate borrowings in the currencies of our principal assets and cash flows. These are primarily denominated in {currencies}",
+    "To minimize translation exposure, {company} aligns the currency composition of its debt with the currencies of its operating assets, primarily {currencies}",
+    "{company} reduces foreign currency translation risk by borrowing in the same currencies as its principal assets and cash flows, which are mainly {currencies}",
+    "{company} matches debt currency denomination to the currencies of its key operating assets to mitigate translation exposure, focusing on {currencies}",
+]
+
 # ==============================================================================
 # TEMPLATE GENERATION FUNCTIONS
 # ==============================================================================
+
+
+import itertools
 
 
 def to_sentence_case(text):
@@ -849,24 +901,43 @@ def to_sentence_case(text):
     return "".join(result)
 
 
+def _expand_pattern(pattern):
+    """Expand placeholders in a pattern using all combinations of replacement lists."""
+    placeholder_map = {
+        "{result}": all_event_results,
+        "{frequency}": settlement_frequencies,
+        "{termination_verb}": termination_verbs,
+        "{comparison}": comparison_phrases,
+        "{trend}": trend_descriptors,
+        "{purpose}": optional_purposes,
+        "{time_period}": time_periods,
+        "{no_replacement}": no_replacement_phrases,
+        "{dedesignation_action}": dedesignation_actions,
+        "{state}": state_descriptors,
+    }
+
+    # Identify placeholders present in the pattern
+    active_placeholders = [k for k in placeholder_map if k in pattern]
+    if not active_placeholders:
+        return [pattern]
+
+    # Create all possible combinations of replacements
+    replacement_lists = [placeholder_map[k] for k in active_placeholders]
+    expanded = []
+    for combo in itertools.product(*replacement_lists):
+        new_pattern = pattern
+        for key, val in zip(active_placeholders, combo):
+            new_pattern = new_pattern.replace(key, val)
+        expanded.append(new_pattern)
+    return expanded
+
+
 def generate_optional_templates():
     """Generate all optional/comparative templates."""
     templates = []
     for pattern in optional_template_patterns:
-        if "{comparison}" in pattern:
-            for comparison in comparison_phrases:
-                temp = pattern.replace("{comparison}", comparison)
-                templates.append(to_sentence_case(temp))
-        elif "{trend}" in pattern:
-            for trend in trend_descriptors:
-                temp = pattern.replace("{trend}", trend)
-                templates.append(to_sentence_case(temp))
-        elif "{purpose}" in pattern:
-            for purpose in optional_purposes:
-                temp = pattern.replace("{purpose}", purpose)
-                templates.append(to_sentence_case(temp))
-        else:
-            templates.append(to_sentence_case(pattern))
+        expanded = _expand_pattern(pattern)
+        templates.extend([to_sentence_case(t) for t in expanded])
     return templates
 
 
@@ -874,103 +945,28 @@ def generate_termination_templates():
     """Generate all merged event templates (termination, expiration, dedesignation)."""
     templates = []
     for pattern in merged_event_patterns:
-        # Common replacements
-        if "{time_period}" in pattern:
-            for time in time_periods:
-                temp = pattern.replace("{time_period}", time)
-                expanded = _expand_pattern_result(temp)
-                templates.extend([to_sentence_case(t) for t in expanded])
-        elif "{termination_verb}" in pattern:
-            for action in termination_verbs:
-                temp = pattern.replace("{termination_verb}", action)
-                expanded = _expand_pattern_result(temp)
-                templates.extend([to_sentence_case(t) for t in expanded])
-        elif "{no_replacement}" in pattern:
-            for no_rep in no_replacement_phrases:
-                temp = pattern.replace("{no_replacement}", no_rep)
-                expanded = _expand_pattern_result(temp)
-                templates.extend([to_sentence_case(t) for t in expanded])
-        elif "{dedesignation_action}" in pattern:
-            for ded_act in dedesignation_actions:
-                temp = pattern.replace("{dedesignation_action}", ded_act)
-                expanded = _expand_pattern_result(temp)
-                templates.extend([to_sentence_case(t) for t in expanded])
-        elif "{frequency}" in pattern:
-            for freq in settlement_frequencies:
-                temp = pattern.replace("{frequency}", freq)
-                expanded = _expand_pattern_result(temp)
-                templates.extend([to_sentence_case(t) for t in expanded])
-        else:
-            expanded = _expand_pattern_result(pattern)
-            templates.extend([to_sentence_case(t) for t in expanded])
+        expanded = _expand_pattern(pattern)
+        templates.extend([to_sentence_case(t) for t in expanded])
     return templates
+
 
 def generate_payment_templates():
-    # "Under each {swap_type}, settlements occur {frequency} for {currency_code}{notional} {{money_unit}, {result}",
+    """Generate payment-related templates."""
     templates = []
     for pattern in payment_phrases:
-        if "{result}" in pattern:
-            for result in payment_results:
-                temp = pattern.replace("{result}", result)
-                expanded = _expand_pattern_result(temp)
-                templates.extend([to_sentence_case(t) for t in expanded])
-        elif "{frequency}" in pattern:
-            for freq in settlement_frequencies:
-                temp = pattern.replace("{frequency}", freq)
-                expanded = _expand_pattern_result(temp)
-                templates.extend([to_sentence_case(t) for t in expanded])
-        else:
-            expanded = _expand_pattern_result(pattern)
-            templates.extend([to_sentence_case(t) for t in expanded])
+        expanded = _expand_pattern(pattern)
+        templates.extend([to_sentence_case(t) for t in expanded])
     return templates
-
-def _expand_pattern_result(pattern):
-    """Expand placeholders in a pattern using all combinations of replacement lists."""
-    # Map placeholders to their possible replacement lists
-    placeholder_map = {
-        "{result}": all_event_results,
-        "{frequency}": settlement_frequencies,
-        "{termination_verb}": termination_verbs
-        # Add more placeholders here:
-        # "{month}": months,
-        # "{year}": years,
-        # "{status}": statuses,
-    }
-
-    # Identify which placeholders exist in the pattern
-    active_placeholders = [
-        key for key in placeholder_map if key in pattern
-    ]
-
-    # If none, return as-is
-    if not active_placeholders:
-        return [pattern]
-
-    # Build combinations of all replacement values for present placeholders
-    replacement_lists = [placeholder_map[key] for key in active_placeholders]
-    combinations = itertools.product(*replacement_lists)
-
-    expanded = []
-    for combo in combinations:
-        new_pattern = pattern
-        for key, value in zip(active_placeholders, combo):
-            new_pattern = new_pattern.replace(key, value)
-        expanded.append(new_pattern)
-
-    return expanded
 
 
 def generate_hedge_position_templates(hedge_type="gen"):
     """
     Generate all template combinations for a specific hedge type.
-
     Args:
         hedge_type: One of "ir", "fx", "eq", "cp", "gen"
-
     Returns:
         List of all generated templates
     """
-    # Select appropriate accounting reasons based on hedge type
     accounting_reasons_map = {
         "ir": generic_accounting_reasons + ir_specific_reasons,
         "fx": generic_accounting_reasons + fx_specific_reasons,
@@ -984,29 +980,24 @@ def generate_hedge_position_templates(hedge_type="gen"):
 
     templates = []
 
-    # Generate single-year amount_swap_orders from patterns and connectors
-    amount_swap_orders = []
-    for pattern in amount_patterns:
-        for connector in amount_connectors:
-            amount_swap_orders.append(
-                to_sentence_case(pattern.replace("{connector}", connector))
-            )
+    # Single-year amount_swap_orders
+    amount_swap_orders = [
+        to_sentence_case(pattern.replace("{connector}", connector))
+        for pattern in amount_patterns
+        for connector in amount_connectors
+    ]
 
-    # Generate two-year amounts from patterns and connectors
-    two_year_amounts = []
-    for pattern in two_year_amount_patterns:
-        for connector in amount_connectors:
-            two_year_amounts.append(
-                to_sentence_case(pattern.replace("{connector}", connector))
-            )
-
-    # Generate three-year amounts from patterns and connectors
-    three_year_amounts = []
-    for pattern in three_year_amount_patterns:
-        for connector in amount_connectors:
-            three_year_amounts.append(
-                to_sentence_case(pattern.replace("{connector}", connector))
-            )
+    # Two-year and three-year versions
+    two_year_amounts = [
+        to_sentence_case(pattern.replace("{connector}", connector))
+        for pattern in two_year_amount_patterns
+        for connector in amount_connectors
+    ]
+    three_year_amounts = [
+        to_sentence_case(pattern.replace("{connector}", connector))
+        for pattern in three_year_amount_patterns
+        for connector in amount_connectors
+    ]
 
     # Single-year templates
     for prefix in time_prefixes:
@@ -1041,17 +1032,12 @@ def generate_hedge_position_templates(hedge_type="gen"):
                 )
                 templates.append(to_sentence_case(full))
 
-    # Historical templates with state descriptors
+    # Historical templates
     for template in historical_templates:
-        if "{state}" in template:
-            for state in state_descriptors:
-                if state:
-                    full = template.replace("{state}", state)
-                    templates.append(to_sentence_case(full))
-        else:
-            templates.append(to_sentence_case(template))
+        expanded = _expand_pattern(template)
+        templates.extend([to_sentence_case(t) for t in expanded])
 
-    # Accounting impact templates with hedge-type-specific reasons
+    # Accounting impact templates
     for template in accounting_impact_templates:
         if "{reason}" in template:
             for reason in accounting_reasons:
@@ -1060,17 +1046,17 @@ def generate_hedge_position_templates(hedge_type="gen"):
         else:
             templates.append(to_sentence_case(template))
 
-    # Two-year no-prior-year templates with patterns
+    # Two-year / Three-year "no prior year" templates
     for template in two_year_no_prior_templates:
         for pattern in two_year_no_prior_patterns:
-            full = template.replace("{no_prior_pattern}", pattern)
-            templates.append(to_sentence_case(full))
-
-    # Three-year no-prior-year templates with patterns
+            templates.append(
+                to_sentence_case(template.replace("{no_prior_pattern}", pattern))
+            )
     for template in three_year_no_prior_templates:
         for pattern in three_year_no_prior_patterns:
-            full = template.replace("{no_prior_pattern}", pattern)
-            templates.append(to_sentence_case(full))
+            templates.append(
+                to_sentence_case(template.replace("{no_prior_pattern}", pattern))
+            )
 
     return templates
 
@@ -1110,10 +1096,12 @@ derivative_keywords = {
     ),
 }
 
-ir_position_templates = generate_hedge_position_templates("ir")
-fx_position_templates = generate_hedge_position_templates("fx")
-cp_position_templates = generate_hedge_position_templates("cp")
-eq_position_templates = generate_hedge_position_templates("eq")
-gen_position_templates = generate_hedge_position_templates("gen")
 hedge_payment_templates = generate_payment_templates()
 hedge_termination_templates = generate_termination_templates()
+hedge_types = ["ir", "fx", "cp", "eq", "gen"]
+hedge_position_templates = {}
+for ht in hedge_types:
+    hedge_position_templates[ht] = generate_hedge_position_templates(ht)
+
+for i in hedge_position_templates["ir"]:
+    print(i)

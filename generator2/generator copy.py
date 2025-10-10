@@ -8,6 +8,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
 from template.hedges import *
+from template.common import *
+from template.other import *
 
 output_file = "./training_data.xlsx"
 company_name_file = "./names.xlsx"
@@ -20,8 +22,8 @@ pattern_notional = re.compile(f"notional", flags=re.IGNORECASE)
 pattern_spaces = re.compile(r"\s+")
 pattern_dots = re.compile(r"\.\.")
 
-# company_name_df = pd.read_excel(company_name_file)
-# company_names = list(company_name_df["name"])
+company_name_df = pd.read_excel(company_name_file)
+company_names = list(company_name_df["name"])
 
 
 def pick_company_name(company_name: str) -> str:
@@ -75,31 +77,300 @@ def cleanup(paragraph: str, reporting_year: int, checkBracket: bool = True):
     return paragraph
 def new_label():
     return {
-        "deriv": 0, # Derivative mention
-        "ir": 0, # IR Hedge user
-        "fx": 0, # FX Hedge user
-        "cp": 0, # CP Hedge user
-        "equity": 0, # EQ Hedge user
-        "embed": 0, # Embedded Der. user
-        "curr": 0, # Current Der. user
-        "hist": 0, # Historic/Past Der. User
-        "spec": 0, # Der. Speculative mention
-        "debt_ctx": 0, # Debt/IR context
-        "fx_ctx": 0, # FX context
-        "eq_ctx": 0, # EQ context (ex. stocks)
-        "comm_ctx": 0, # CP context (ex. fuel)
-        "emb_ctx": 0, # Embedded Der. context
-        "gen_ctx": 0, # Generic/ Der. context
-        "irrelevant": 0, # Irrelevant
+        "deriv": 0,  # Derivative mention
+        "gen": 0,  # Hedge User
+        "curr": 0,  # Current Der. user
+        "hist": 0,  # Historic/Past Der. User
+        "spec": 0,  # Der. Speculative mention
+        "ir": 0,  # IR/Debt Context
+        "fx": 0,  # FX Context
+        "cp": 0,  # CP Context
+        "eq": 0,  # EQ Context
+        "emb": 0,  # Embedded Der. user
+        "irr": 0,  # Irrelevant
     }
-# Already imported
-# ir_position_templates = generate_hedge_position_templates("ir")
-# fx_position_templates = generate_hedge_position_templates("fx")
-# cp_position_templates = generate_hedge_position_templates("cp")
-# eq_position_templates = generate_hedge_position_templates("eq")
-# gen_position_templates = generate_hedge_position_templates("gen")
-# derivative_keywords
 
-x = hedge_payment_templates
-for i in range(len(x)):
-    print(x[i])
+
+def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1990, 2025),
+    max_past_years=3, include_policy=None, company_name=None):
+    labels = new_label()
+    # Decide whether to include policy statements
+    if include_policy is None and random.random() < 0.15:
+        include_policy = True
+
+    # If has_active_derivative not given, default to speculative/policy
+    if has_active_derivative is None:
+        include_policy = True
+
+    # Pick company name
+    if company_name is None:
+        company_name = (
+            random.choice(company_names) if random.random() < 0.95 else "The Company"
+        )
+
+    # Determine swap type if not provided
+    if swapType is None:
+        swapType = random.choice(["ir", "fx", "cp", "eq", "gen"])
+    else:
+        swap_types = derivative_keywords[swapType]
+
+    # Currency and year setup
+    money_units = random.choice(money_unit_list)
+    currency_code = random.choice(currency_codes)
+    major_currency = random.choice(all_currencies)
+
+    current_year = random.randint(year_range[0], year_range[1])
+    reporting_year = current_year
+    num_past_years = random.randint(1, max_past_years)
+    past_years = sorted(
+        random.sample(range(current_year - 5, current_year), num_past_years)
+    )
+
+    # Swaps Setup
+    swaps_list = []
+    for _ in range(3):
+        swaps_list.append(random.choice(swap_types))
+        if random.random() < 0.5:
+            break
+    swaps = (
+        ", ".join(swaps_list[:-1]) + " and " + swaps_list[-1]
+        if len(swaps_list) > 1
+        else swaps_list[0]
+    )
+
+    # Commodity setup
+    commodity = random.choice(commodities)
+    selected_cps = ""
+    if swapType == "cp": # A various number of commodities
+        cp_list = [commodity if not commodity == "commodity" else commodity]
+        for _ in range(2):
+            cp_list.append(random.choice(commodities))
+            if random.random() < 0.5:
+                break
+        selected_cps = (
+            ", ".join(cp_list[:-1]) + " and " + cp_list[-1]
+            if len(cp_list) > 1
+            else cp_list[0]
+        )
+        selected_cps = selected_cps if random.random() < 0.85 else "commodity"
+    all_sentences = []
+
+    # =====================
+    # Assign multi-labels
+    # =====================
+    labels["deriv"] = 1  # Always a derivative mention
+    if swapType in ["ir", "fx", "cp", "eq"]:
+        labels[swapType] = 1  # Mark the hedge context
+        labels["gen"] = 1  # Always a hedge user
+
+    # Current / Historic / Speculative
+    if has_active_derivative is True:
+        labels["curr"] = 1
+    elif has_active_derivative is False:
+        labels["hist"] = 1
+    else:  # None or speculative
+        labels["spec"] = 1
+
+    def generate_debt():
+        debt_type_list = []
+        # Build the debt type combination
+        for _ in range(3):
+            debt_type_list.append(random.choice(debt_types_list))
+            if random.random() < 0.95:
+                break
+        selected_debt = (
+            ", ".join(debt_type_list[:-1]) + " and " + debt_type_list[-1]
+            if len(debt_type_list) > 1
+            else debt_type_list[0]
+        )
+        for _ in range(random.randint(1, 3)):
+            template = random.choice(debt_templates)
+            amount = generate_value(False)
+            amount2 = generate_value(False)
+            pct = generate_value(False, 8)
+            pct2 = generate_value(False, 20)
+            outstanding = random.randint(0, int(amount) // 2)
+            debt_type = random.choice(debt_types_list)
+            maturity_year = current_year + random.randint(3, 10)
+            years = random.randint(3, 10)
+            sentence = template.format(
+                amount=amount,
+                amount2=amount2,
+                year=maturity_year,
+                month=month,
+                outstanding=outstanding,
+                current_year=current_year,
+                debt_types=selected_debt,
+                debt_type=debt_type,
+                maturity_year=maturity_year,
+                company=pick_company_name(company_name),
+                currency_code=currency_code,
+                major_currency=major_currency,
+                money_unit=money_units,
+                end_day=end_day,
+                pct=pct,
+                pct2=pct2,
+                years=years,
+                hedge_type=hedge_type,
+            )
+        return sentence
+
+    def generate_derivative_sentences(positionOnly=False):
+        """Generate derivative-related sentences for FX, IR, CP, or generic types."""
+        sentences = []
+
+        # --- Common fields ---
+        verb = random.choice(hedge_use_verbs)
+        swap_type = random.choice(swap_types)
+        cost_type = random.choice(cost_types)
+        hedge_type = random.choice(hedge_types)
+        month = random.choice(months)
+        end_day = random.randint(28, 31)
+        quarter = random.choice(quarters)
+
+        # --- FX: add currency description sentence (0-1 chance) ---
+        if swapType == "fx" and random.random() < 0.6:
+            selected = random.sample(major_currencies, random.randint(2, 3))
+            if random.random() < 0.5:
+                selected += random.sample(european_currencies, random.randint(1, 2))
+            if random.random() < 0.4:
+                selected += random.sample(asian_currencies, random.randint(1, 2))
+            if random.random() < 0.3:
+                selected += random.sample(americas_currencies, random.randint(1, 2))
+            selected = list(dict.fromkeys(selected))
+            currency_list = (
+                ", ".join(selected[:-1]) + " and " + selected[-1]
+                if len(selected) > 1
+                else selected[0]
+            )
+            if random.random() < 0.3:
+                currency_list += " and other European and Latin American currencies"
+            sentences.append(
+                random.choice(fx_currency_templates).format(
+                    company=pick_company_name(company_name),
+                    currencies=currency_list,
+                )
+            )
+            # IR: Add a chance of debt
+        if swapType == "ir" and random.random() < 0.15:
+            sentences.append(generate_debt())
+
+        template = random.choice(hedge_position_templates[swapType])
+        # --- Time logic ---
+        year = current_year if has_active_derivative else current_year - 1
+        prev_year, prev2_year = year - 1, year - 2
+        old_year = random.choice(past_years) - 1 if past_years else prev_year
+        future_year = (
+            random.randint(current_year + 1, current_year + 5)
+            if has_active_derivative
+            else random.randint(old_year - 1, prev_year)
+        )
+
+        # --- Notionals ---
+        notional = (
+            generate_value(False)
+            if has_active_derivative
+            else (generate_value(False) if random.random() < 0.5 else 0)
+        )
+        prev_notional = generate_value()
+        prev2_notional = generate_value()
+        old_notional = generate_value(False)
+
+        # --- Build main sentence ---
+        sentence = template.format(
+            company=pick_company_name(company_name),
+            verb=verb,
+            swap_type=swap_type,
+            swap_types=selected_swap_list,
+            commodity=commodity,
+            month=month,
+            end_day=end_day,
+            quarter=quarter,
+            year=year,
+            prev_year=prev_year,
+            prev2_year=prev2_year,
+            old_year=old_year,
+            future_year=future_year,
+            currency_code=currency_code,
+            notional=notional,
+            prev_notional=prev_notional,
+            prev2_notional=prev2_notional,
+            old_notional=old_notional,
+            money_unit=money_units,
+            cost_type=cost_type,
+            hedge_type=hedge_type,
+        )
+        sentences.append(sentence)
+
+        # --- Expired hedges for non-active derivatives ---
+        if not has_active_derivative:
+            sentences.extend(expire_hedge())
+        # --- Chance of payment
+        if random.random() < 0.15:
+            sentences.extend(hedge_payment())
+        return sentences
+
+    def expire_hedge():
+        labels["hist"] = 1
+        # pick a random template from termination
+        template = random.choice(hedge_termination_templates)
+        swap_type = random.choice(swap_types)
+        term_year = random.choice(past_years) if past_years else current_year
+        verb = random.choice(hedge_use_verbs)
+        sentence = template.format(
+            company=pick_company_name(company_name),
+            swap_type=swap_type,
+            month=random.choice(months),
+            year=term_year,
+            end_day=random.randint(28, 31),
+            verb=verb,
+        )
+        return [sentence]
+
+    def hedge_payment():
+        # pick a random template from payment
+        template = random.choice(hedge_payment_templates)
+        swap_type = random.choice(swap_types)
+        notional = generate_value(False)
+        sentence = template.format(
+            company=pick_company_name(company_name),
+            swap_type=swap_type,
+            notional=notional,
+            currency_code=currency_code,
+            money_unit=money_units,
+        )
+        return [sentence]
+
+    def hedge_policy():
+        # Accounting policy (always)
+        act_template = random.choice(hedge_policy_templates)
+        swap_type = (
+            random.choice(swap_types) if random.random() < 0.5 else "derivatives"
+        )
+        hedge_type = random.choice(hedge_types)
+        all_sentences.append(
+            act_template.format(
+                company=pick_company_name(company_name),
+                swap_type=swap_type,
+                hedge_type=hedge_type,
+            )
+        )
+        # No trading policy (always)
+        nt_template = random.choice(hedge_no_trading_templates)
+        all_sentences.append(
+            nt_template.format(
+                company=pick_company_name(company_name),
+                verb=random.choice(hedge_may_use_verbs),
+            )
+        )
+        
+        # Chance of documentation:
+        if random.random() < 0.5:
+            
+
+        return []
+    # Main Execution
+    if has_active_derivative is None:
+        all_sentences.extend(hedge_policy())
+    else:
+        all_sentences.extend(generate_derivative_sentences())
