@@ -830,7 +830,7 @@ def generate(size_per_label=100):
         return futures
 
     # --- Parallel execution with tqdm progress bar ---
-    with ThreadPoolExecutor(max_workers=max(mp.cpu_count(), size_per_label // 5)) as executor:
+    with ThreadPoolExecutor(max_workers=max(mp.cpu_count() * 2, 8)) as executor:
         futures = submit_tasks(executor)
         for future in tqdm(
             as_completed(futures),
