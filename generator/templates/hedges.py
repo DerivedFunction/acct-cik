@@ -262,7 +262,7 @@ hedge_expiration_templates = [
     "In {month} {year}, all derivative positions, including {swap_type}, expired, with no new contracts {verb}",
 ]
 
-hedge_quarterly_event_templates = [
+hedge_quarterly_termination_templates = [
     "In the {quarter} quarter of {year}, {company} settled {currency_code}{notional} {money_unit} in {swap_type} agreements, resulting in cash proceeds of {currency_code}{settlement} {money_unit}",
     "During the {quarter} quarter of {year}, {swap_type} with notional amounts of {currency_code}{notional} {money_unit} were terminated, generating {currency_code}{settlement} {money_unit} in settlement payments to {company} ",
     "{company} unwound {currency_code}{notional} {money_unit} notional of {swap_type} in the {quarter} quarter of {year}, recognizing {currency_code}{settlement} {money_unit} in cash settlements",

@@ -26,6 +26,26 @@ pattern_dots = re.compile(r"\.\.")
 company_name_df = pd.read_excel(company_name_file)
 company_names = list(company_name_df["name"])
 
+def new_label():
+    return {
+        "deriv": 0,
+        "ir": 0,
+        "fx": 0,
+        "cp": 0,
+        "equity": 0,
+        "embed": 0,
+        "curr": 0,
+        "hist": 0,
+        "spec": 0,
+        "debt_ctx": 0,
+        "fx_ctx": 0,
+        "eq_ctx": 0,
+        "comm_ctx": 0,
+        "emb_ctx": 0,
+        "spec_ctx": 0,
+        "gen_ctx": 0,
+        "irrelevant": 0,
+    }
 
 def pick_company_name(company_name: str) -> str:
     return random.choices([company_name, "The Company"], weights=[0.75, 0.25], k=1)[0]
@@ -734,46 +754,23 @@ def generate_labeled_hedge_paragraph(
             include_policy (bool): Whether to include policy sentences with labels 0/1
                                   If None, randomly decides (70% chance)
             company_name (str): Company name to use
-
-        Returns:
-            tuple: (paragraph_text, label) where label {
-      "id2label": {
-        "0": "Derivative",
-        "1": "IR_Hedge",
-        "2": "FX_Hedge",
-        "3": "CP_Hedge",
-        "4": "Equity_or_Warrant",
-        "5": "Embedded_Derivative",
-        "6": "Current",
-        "7": "Historic",
-        "8": "Speculative_or_Policy",
-        "9": "Debt_Context",
-        "10": "FX_Context",
-        "11": "Equity_Context",
-        "12": "Commodity_or_Inventory_Context",
-        "13": "Embedded_Context",
-        "14": "Speculative_Context",
-        "15": "General_Context",
-        "16": "Irrelevant"
-      }
-    }
     """
 
-    labels  = [0 for _ in range(16)]  
-    # Decide whether to include policy statements for labels 0 and 1
-    if include_policy is None:
-        include_policy = random.random() < 0.15
+    labels = new_label()
 
-    # If label 2 (policy only), override to ensure policy is included
+    # Decide whether to include policy statements
+    if include_policy is None and random.random() < 0.15:
+        include_policy = True
+
+    # If has_active_derivative not given, default to speculative/policy
     if has_active_derivative is None:
         include_policy = True
 
+    # Pick company name
     if company_name is None:
-        # ~ 75% chance of company name
-        if random.random() < 0.75:
-            company_name = random.choice(company_names)
-        else:
-            company_name = "The Company"
+        company_name = (
+            random.choice(company_names) if random.random() < 0.75 else "The Company"
+        )
 
     # Determine swap type if not provided
     if swapType is None:
@@ -781,27 +778,22 @@ def generate_labeled_hedge_paragraph(
 
     # Handle mixed swap types
     if swapType == "mixed":
-        # Select 2-3 types to mix
         num_types = random.randint(2, 3)
         selected_types = random.sample(["ir", "fx", "cp"], num_types)
-
-        # Combine swap_types from selected categories
         swap_types = []
         for st in selected_types:
             swap_types.extend(derivative_keywords[st])
-        swap_types = list(dict.fromkeys(swap_types))  # Remove duplicates
-
-        # Store which types we're mixing for later use
+        swap_types = list(dict.fromkeys(swap_types))
         mixed_types = selected_types
     else:
         swap_types = derivative_keywords[swapType]
         mixed_types = None
 
+    # Currency and year setup
     money_units = random.choice(money_unit_list)
     currency_code = random.choice(currency_codes)
     major_currency = random.choice(all_currencies)
 
-    # Set up years
     current_year = random.randint(year_range[0], year_range[1])
     reporting_year = current_year
     num_past_years = random.randint(1, max_past_years)
@@ -810,43 +802,51 @@ def generate_labeled_hedge_paragraph(
     )
 
     commodity = random.choice(commodities)
-
     all_sentences = []
-    
-    # Determine label
-    if has_active_derivative is None:
-        if swapType == "gen":
-            label = 2  # Gen/Unknown Hedge Der. Speculative/Policy
-        elif swapType == "ir":
-            label = 14  # IR Hedge Speculative/Policy
-        elif swapType == "fx":
-            label = 15  # FX Hedge Speculative/Policy
-        elif swapType == "cp":
-            label = 16  # CP Hedge Speculative/Policy
 
-    elif has_active_derivative is True:
-        if swapType == "gen":
-            label = 0  # Gen/Unknown Hedge Der.
-        elif swapType == "ir":
-            label = 8  # IR Hedge
-        elif swapType == "fx":
-            label = 10  # FX Hedge
-        elif swapType == "cp":
-            label = 12  # CP Hedge
+    # =====================
+    # Assign multi-labels
+    # =====================
+    labels["deriv"] = 1  # Always a derivative mention
 
-    else:
-        if swapType == "gen":
-            label = 1  # Gen/Unknown Hedge Der. Historic
-        elif swapType == "ir":
-            label = 9  # IR Hedge Historic
-        elif swapType == "fx":
-            label = 11  # FX Hedge Historic
-        elif swapType == "cp":
-            label = 13  # CP Hedge Historic
+    if swapType in ["ir", "fx", "cp", "gen"]:
+        labels[swapType] = 1  # Mark the hedge type
 
-    def generate_fx_policy(current=False):
+    # Current / Historic / Speculative
+    if has_active_derivative is True:
+        labels["curr"] = 1
+    elif has_active_derivative is False:
+        labels["hist"] = 1
+    else:  # None or speculative
+        labels["spec"] = 1
+        labels["spec_ctx"] = 1
+
+    # Contextual relationships
+    if swapType == "ir":
+        labels["debt_ctx"] = 1
+    elif swapType == "fx":
+        labels["fx_ctx"] = 1
+    elif swapType == "cp":
+        labels["eq_ctx"] = 1
+    elif swapType == "gen" and include_policy:
+        labels["gen_ctx"] = 1
+
+    def generate_fx_policy():
         sentences = []
-        if current:
+        # Set the base labels for this FX policy block
+        labels["deriv"] = 1
+        labels["fx"] = 1
+        labels["fx_ctx"] = 1
+
+        # Set current/historic/speculative context
+        if has_active_derivative:
+            labels["curr"] = 1
+            labels["spec"] = 0  # override speculative since it's current
+        else:
+            labels["spec"] = 1
+            labels["spec_ctx"] = 1
+
+        if has_active_derivative:
             verbs = hedge_use_verbs
             mit_verbs = hedge_mitigation_verbs
         else:
@@ -973,7 +973,7 @@ def generate_labeled_hedge_paragraph(
         swap_type = random.choice(swap_types)
         verb = random.choice(hedge_use_verbs)
         collar_year = random.choice(past_years) if past_years else current_year
-        if current:
+        if has_active_derivative:
             collar_year = current_year
         sentence = template.format(
             company=pick_company_name(company_name),
@@ -987,9 +987,25 @@ def generate_labeled_hedge_paragraph(
         sentences.append(sentence)
         return sentences
 
-    def generate_ir_policy(current=False):
+    def generate_ir_policy():
+        labels["deriv"] = 1  # generic derivative mention
+        labels["ir"] = 1  # interest rate hedge
+        labels["debt_ctx"] = 1  # IR usually relates to debt context
+
+        if has_active_derivative:
+            labels["curr"] = 1
+        else:
+            labels["hist"] = 1  # mark as historic
+            if random.random() < 0.4:
+                labels["spec"] = 1  # some historic mentions can be speculative/policy
+
+        # Generic context
+        labels["gen_ctx"] = 1
+        if random.random() < 0.2:
+            labels["spec_ctx"] = 1  # sometimes policy discussion overlaps with IR
+
         sentences = []
-        if current:
+        if has_active_derivative:
             verbs = hedge_use_verbs
             mit_verbs = hedge_mitigation_verbs
         else:
@@ -1062,7 +1078,18 @@ def generate_labeled_hedge_paragraph(
         sentences.append(sentence)
         return sentences
 
-    def generate_cp_policy(commodity="commodity", current=False):
+    def generate_cp_policy(commodity="commodity"):
+        
+        labels["deriv"] = 1
+        labels["cp"] = 1
+        labels["comm_ctx"] = 1
+
+        if has_active_derivative:
+            labels["curr"] = 1
+        else:
+            labels["spec"] = 1
+            labels["spec_ctx"] = 1
+        
         sentences = []
         selected_cp = []
         for _ in range(3):
@@ -1085,7 +1112,7 @@ def generate_labeled_hedge_paragraph(
             else selected_co[0]
         )
         selected_co_list = selected_co_list if random.random() < 0.85 else "commodity"
-        if current:
+        if has_active_derivative:
             verbs = hedge_use_verbs
         else:
             verbs = hedge_may_use_verbs
@@ -1165,9 +1192,18 @@ def generate_labeled_hedge_paragraph(
         sentences.append(sentence)
         return sentences
 
-    def generate_hedge_policy(current=False):
+    def generate_hedge_policy():
+        labels["deriv"] = 1
+        labels["gen_ctx"] = 1
+        
+        if has_active_derivative:
+            labels["curr"] = 1
+        else:
+            labels["spec"] = 1
+            labels["spec_ctx"] = 1
+
         sentences = []
-        if current:
+        if has_active_derivative:
             verbs = hedge_use_verbs
             mit_verbs = hedge_mitigation_verbs
         else:
@@ -1223,7 +1259,10 @@ def generate_labeled_hedge_paragraph(
 
     def generate_hedge_policy_update():
         sentences = []
-
+        labels["deriv"] = 1
+        labels["spec"] = 1
+        labels["spec_ctx"] = 1
+        labels["gen_ctx"] = 1
         # ==============================
         # 1. ISSUANCE STATEMENT
         # ==============================
@@ -1369,6 +1408,8 @@ def generate_labeled_hedge_paragraph(
 
     def expire_hedge():
         sentences = []
+        labels["deriv"] = 1
+        labels["hist"] = 1
         # Termination (0-1)
         if random.random() < 0.05:
             template = random.choice(hedge_termination_templates)
@@ -1418,7 +1459,13 @@ def generate_labeled_hedge_paragraph(
 
     def generate_additional_events():
         sentences = []
-        template = random.choice(hedge_quarterly_event_templates)
+         labels["deriv"] = 1
+        # Inherit curr/hist from has_active_derivative status
+        if has_active_derivative:
+            labels["curr"] = 1
+        else:
+            labels["hist"] = 1
+        template = random.choice(hedge_quarterly_termination_templates)
         swap_type = random.choice(swap_types)
         past_year = random.choice(past_years)
         notional = generate_value(False)
@@ -1545,6 +1592,7 @@ def generate_labeled_hedge_paragraph(
             )
         # IR: Add a chance of debt
         if swapType == "ir" and random.random() < 0.15:
+            labels["debt_ctx"] = 1  # IR usually relates to debt context
             debt_type_list = []
             # Build the debt type combination
             for _ in range(3):
@@ -1674,6 +1722,10 @@ def generate_labeled_hedge_paragraph(
 
     # Label 2: Policy/disclosure only (no specific positions)
     if has_active_derivative is None:
+        labels["deriv"] = 1
+        labels["spec"] = 1
+        labels["spec_ctx"] = 1
+        labels["gen_ctx"] = 1
         # Accounting policy (always)
         act_template = random.choice(hedge_policy_templates)
         swap_type = (
@@ -1752,6 +1804,7 @@ def generate_labeled_hedge_paragraph(
     else:
         # Past event (0-1)
         if random.random() < 0.10:
+            labes["hist"] = 1
             template = random.choice(hedge_no_such_outstanding_template)
             swap_type = random.choice(swap_types)
             verb = random.choice(hedge_use_verbs)
@@ -1777,6 +1830,7 @@ def generate_labeled_hedge_paragraph(
     # Shuffle and select sentences
     random.shuffle(all_sentences)
     if has_active_derivative is None:
+        # Policy only no need for label management
         selected_sentences = all_sentences[:max_len]
     else:
         selected_sentences = all_sentences
@@ -1793,16 +1847,16 @@ def generate_labeled_hedge_paragraph(
                 sentences = generate_derivative_sentences(True)
         else:
             if swapType == "cp":
-                sentences = generate_cp_policy(commodity, has_active_derivative)
+                sentences = generate_cp_policy(commodity)
             elif swapType == "ir":
-                sentences = generate_ir_policy(has_active_derivative)
+                sentences = generate_ir_policy()
                 # Pick only 1-2 sentences
                 random.shuffle(sentences)
             elif swapType == "fx":
-                sentences = generate_fx_policy(has_active_derivative)
+                sentences = generate_fx_policy()
             else:
                 if random.random() < 0.5:
-                    sentences = generate_hedge_policy(has_active_derivative)
+                    sentences = generate_hedge_policy()
                 else:
                     sentences = generate_hedge_policy_update()
         sentences = sentences[: random.randint(1, 2)]
@@ -1815,7 +1869,7 @@ def generate_labeled_hedge_paragraph(
     # Clean up common formatting issues
     paragraph = cleanup(paragraph, reporting_year)
 
-    return paragraph, label
+    return paragraph, label, labels
 
 
 def generate_accounting_noise_paragraph(
