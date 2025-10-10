@@ -276,8 +276,34 @@ historical_templates = [
     "{swap_type} expires in {future_year}",
 ]
 
+gen_specific_context = [
+    "to protect against unfavorable changes in market conditions",
+    "to offset risks associated with forecasted transactions",
+    "to reduce overall earnings volatility",
+    "to enhance stability of financial performance",
+    "to manage risk exposure across multiple markets",
+    "to manage overall exposure to changes in market variables",
+    "to manage the company's aggregate risk profile",
+    "to align with the company's overall risk management objectives",
+    "to reduce variability in cash flows and earnings",
+    "to hedge exposures arising from normal business operations",
+    "to manage exposure to price, rate, or market changes",
+    "to provide more predictable financial outcomes",
+    "to stabilize cash flows from core operations",
+    "to limit adverse effects of market volatility",
+    "to hedge forecasted or anticipated transactions",
+    "to support financial risk management strategies",
+    "to manage exposures in accordance with the company's hedging policy",
+    "to mitigate exposure to broad market risks",
+    "to minimize the impact of market fluctuations on reported results",
+    "to reduce the impact of changing economic conditions",
+    "to maintain a balanced risk position",
+    "to manage enterprise-wide risk exposures",
+    "to reduce volatility in consolidated financial results",
+]
+
 # Generic accounting reasons (shared across all hedge types)
-generic_accounting_reasons = [
+gen_specific_results = [
     "resulting in {currency_code}{notional} {money_unit} of unrealized losses recorded in accumulated OCI",
     "resulting in fair value losses recorded in equity",
     "resulting in {currency_code}{notional} {money_unit} of unrealized gains recorded in accumulated OCI",
@@ -289,44 +315,22 @@ generic_accounting_reasons = [
     "with changes in fair value recognized in earnings",
 ]
 
-# Interest Rate (IR) specific accounting reasons
-ir_specific_reasons = [
-    "resulting in a decrease in interest expense of {currency_code}{notional} {money_unit}",
-    "resulting in an increase in interest expense of {currency_code}{notional} {money_unit}",
-    "effectively converting fixed-rate debt to floating-rate debt",
-    "effectively converting floating-rate debt to fixed-rate debt",
-    # REMOVED: "designated as hedges of the notes with a notional amount of {currency_code}{notional} {money_unit}, effectively converting portions of fixed-rate debt to floating rates",
-    "effectively converting portions of fixed-rate debt to floating rates",
+# Interest Rate (IR) — general/policy intent phrases ("to ...")
+ir_specific_context = [
     "to modify the interest rate characteristics of outstanding senior notes",
-    # REMOVED: "designated as fair value hedges of fixed-rate obligations",
-    # REMOVED: "designated as hedging instruments against changes in the fair value of fixed-rate debt",
     "to hedge interest rate exposure on a portion of its debt portfolio",
     "to convert fixed-rate senior notes to variable rates",
     "to manage interest rate risk on long-term debt",
-    # REMOVED: "designated as fair value hedges for its outstanding bonds",
     "to adjust the interest rate profile of its debt",
     "to hedge changes in the fair value of fixed-rate liabilities",
     "to manage exposure to interest rate fluctuations",
-    # REMOVED: "designated to hedge fixed-rate debt obligations",
     "to modify the interest rate structure of its senior notes",
     "to hedge the fair value of outstanding debt",
-    "to convert portions of its fixed-rate debt to floating rates",
-    # REMOVED: "designated as fair value hedges against changes in debt valuation",
     "to manage interest rate exposure on bonds",
     "to adjust the interest rate characteristics of long-term liabilities",
-    # REMOVED: "designated as hedges of fixed-rate note obligations",
     "to mitigate interest rate risk on debt issuances",
-    "effectively convert the hedged portion of debt to floating rates",
-    # REMOVED: "designated as fair value hedges",
     "to manage debt-related interest rate risk",
-    "hedging fixed-rate obligations",
-    # REMOVED: "designated as fair value hedges",
-    "to convert fixed-rate debt to floating rates",
     "to hedge fixed-rate debt obligations",
-    "scheduled to expire in {month} {future_year}",
-    "to hedge debt obligations, with an initial notional of {currency_code}{old_notional} {money_unit}, maturing in {future_year}",
-    "which carry notional amounts of {currency_code}{old_notional} {money_unit} and terminate in {future_year}",
-    "with a starting notional value of {currency_code}{old_notional} {money_unit}, declining annually until expiration in {month} {future_year}",
     "to optimize the interest rate profile of its debt portfolio, converting portions of fixed-rate debt to floating-rate instruments",
     "to adjust the effective interest rate composition of outstanding debt",
     "to reduce interest rate volatility on its debt obligations",
@@ -335,125 +339,111 @@ ir_specific_reasons = [
     "to manage the interest rate exposure of its long-term debt portfolio",
     "to convert portions of debt into instruments with more favorable interest rate terms",
     "to balance fixed and floating rate obligations",
-    "to manage cash flow risk",
     "to adjust the effective interest profile",
     "to limit the negative impact of interest rates",
     "to hedge against fluctuations in interest rates",
     "to manage exposure to changes in benchmark interest rates",
-    "to reduce cash flow variability from interest-bearing debt",
     "to stabilize the cost of borrowing",
     "to protect against unfavorable changes in long-term debt obligations",
     "to hedge interest rate risk on forecasted debt issuances",
-    # REMOVED: "designated as {hedge_type} hedges to hedge against changes in interest rates that could impact expected future issuances of debt",
-    # REMOVED: "designated as {hedge_type} hedges to lock in favorable interest rates prior to anticipated debt issuances",
-    # REMOVED: "designated as {hedge_type} hedges to hedge interest rate exposure on forecasted debt offerings",
     "to hedge against changes in interest rates that could impact expected future issuances of debt",
     "to lock in favorable interest rates prior to anticipated debt issuances",
     "to hedge interest rate exposure on forecasted debt offerings",
     "to mitigate the risk of rising interest rates on planned fixed-rate debt issuances",
-    # REMOVED: "as {hedge_type} hedges to secure interest rates for future debt issuances",
-    # REMOVED: "may designate as {hedge_type} hedges to manage interest rate risk",
     "to secure interest rates for future debt issuances",
     "to manage interest rate risk",
     "to protect against interest rate volatility for planned fixed-rate debt issuances",
-    # REMOVED: "as {hedge_type} hedges to lock in rates for anticipated debt financings",
-    # REMOVED: "designated as {hedge_type} hedges to stabilize future interest costs",
     "to lock in rates for anticipated debt financings",
     "to stabilize future interest costs",
     "to mitigate interest rate fluctuations on planned debt offerings",
-    # REMOVED: "designated as {hedge_type} hedges to secure rates for future fixed-rate debt",
     "to secure rates for future fixed-rate debt",
     "to manage interest rate exposure for anticipated debt issuances",
-    # REMOVED: "as {hedge_type} hedges to lock in rates prior to debt financings",
     "to lock in rates prior to debt financings",
     "to hedge against rising interest rates for planned debt issuances",
-    # REMOVED: "designates as {hedge_type} hedges in preparation for fixed-rate debt",
     "to stabilize interest rates for forecasted bond issuances",
-    # REMOVED: "implemented as {hedge_type} hedges to manage risk on future debt offerings",
     "to manage risk on future debt offerings",
     "to secure favorable rates for anticipated fixed-rate debt",
-    # REMOVED: "designates as {hedge_type} hedges to mitigate interest rate risk on planned financings",
     "to mitigate interest rate risk on planned financings",
-    "with quarterly settlements based on the differential between fixed and floating rates on notional amounts",
-    "converting floating rate exposure to fixed rates, with quarterly exchange of payment differentials based on notional values",
-    "with quarterly net settlements calculated on agreed notional principal amounts",
     "to limit the impact of interest rate changes on earnings and cash flows, and to lower overall borrowing costs",
-    "to borrow at fixed rates when it believes it is in its best interests to do so, and may enter into derivative financial instruments, such as {swap_types}, in order to limit its exposure to interest rate fluctuations",
+    "to limit its exposure to interest rate fluctuations",
     "to manage variable interest rate exposure over a medium- to long-term period",
-    "exposed to interest rate risk associated with fluctuations in interest rates on variable rate debt",
-    "recognize the gains and losses on derivative instruments as an adjustment to interest expense in the period the hedged interest payment affects earnings",
-    "manage interest costs by using a mix of fixed- and floating-rate debt",
     "to manage variable interest rate exposure",
-    "expose to the risk of increased interest expense if short-term interest rates rise",
+    "to manage interest costs by using a mix of fixed- and floating-rate debt",
 ]
+
+# Interest Rate (IR) — factual/realized results ("effectively...", "converting...", "hedging...")
+ir_specific_results = [
+    "effectively converting fixed-rate debt to floating-rate debt",
+    "effectively converting floating-rate debt to fixed-rate debt",
+    "effectively converting portions of fixed-rate debt to floating rates",
+    "effectively convert the hedged portion of debt to floating rates",
+    "converting floating rate exposure to fixed rates, with quarterly exchange of payment differentials based on notional values",
+    "with quarterly settlements based on the differential between fixed and floating rates on notional amounts",
+    "with quarterly net settlements calculated on agreed notional principal amounts",
+    "scheduled to expire in {month} {future_year}",
+    "to hedge debt obligations, with an initial notional of {currency_code}{old_notional} {money_unit}, maturing in {future_year}",
+    "which carry notional amounts of {currency_code}{old_notional} {money_unit} and terminate in {future_year}",
+    "with a starting notional value of {currency_code}{old_notional} {money_unit}, declining annually until expiration in {month} {future_year}",
+    "resulting in a decrease in interest expense of {currency_code}{notional} {money_unit}",
+    "resulting in an increase in interest expense of {currency_code}{notional} {money_unit}",
+    "recognizing the gains and losses on derivative instruments as an adjustment to interest expense in the period the hedged interest payment affects earnings",
+]
+
 # Foreign Exchange (FX) specific accounting reasons
-fx_specific_reasons = [
-    "offsetting foreign currency translation adjustments",
-    "mitigating exchange rate fluctuations on foreign currency denominated transactions",
-    "with translation gains of {currency_code}{notional} {money_unit} recognized in other comprehensive income",
-    "with translation losses of {currency_code}{notional} {money_unit} recognized in other comprehensive income",
-    "hedging net investment in foreign operations",
+# FX — general or policy intent ("to ...")
+fx_specific_context = [
     "to manage translation exposure",
     "to hedge foreign borrowings",
     "to hedge exposure to foreign currency fluctuations on cross-border transactions",
-    # REMOVED: "designated as cash flow hedges of forecasted foreign currency revenues",
-    # REMOVED: "designated as cash flow hedges due to changes in foreign exchange rates and are recorded at fair value",
     "to hedge forecasted foreign currency revenues",
-    "due to changes in foreign exchange rates and are recorded at fair value",
     "to manage translation risk of foreign subsidiaries",
     "to hedge anticipated foreign currency purchases",
     "to protect against volatility in foreign currency receivables",
     "to hedge forecasted foreign currency cash flows",
     "to manage currency risk",
     "to hedge forecasted foreign currency expenditures",
-    "mitigating exposure to foreign currency fluctuations",
-    # REMOVED: "designated as hedges of currency-denominated obligations",
     "to hedge currency-denominated obligations",
     "to hedge foreign currency exposures",
-    # REMOVED: "designated as cash flow hedges of forecasted transactions",
     "to hedge forecasted foreign currency transactions",
     "to hedge foreign exchange exposures",
-    "protecting against currency fluctuations",
     "to hedge intercompany transactions",
+    "to hedge intercompany exposures",
+    "to manage currency-denominated cash flows",
+]
+
+# FX — realized / factual results ("hedging ...", "mitigating ...", "offsetting ...", "protecting ...", etc.)
+fx_specific_results = [
+    "offsetting foreign currency translation adjustments",
+    "mitigating exchange rate fluctuations on foreign currency denominated transactions",
+    "with translation gains of {currency_code}{notional} {money_unit} recognized in other comprehensive income",
+    "with translation losses of {currency_code}{notional} {money_unit} recognized in other comprehensive income",
+    "hedging net investment in foreign operations",
+    "due to changes in foreign exchange rates and are recorded at fair value",
+    "mitigating exposure to foreign currency fluctuations",
     "hedging foreign-denominated cash flows",
     "mitigating foreign exchange risk",
-    # REMOVED: "designated as cash flow hedges of forecasted foreign currency transactions",
+    "protecting against currency fluctuations",
     "protecting against exchange rate movements",
-    # REMOVED: "designated as hedges of intercompany exposures",
-    "to hedge intercompany exposures",
-    # REMOVED: "designated to manage currency-denominated cash flows",
-    "to manage currency-denominated cash flows",
-    # REMOVED: "serving as cash flow hedges of forecasted currency transactions",
 ]
-# Equity (EQ) specific accounting reasons
-eq_specific_reasons = [
-    "offsetting market value changes in the underlying equity positions",
-    "mitigating exposure to equity market volatility",
-    "offsetting losses on equity investments",
-    "offsetting gains on equity investments",
+
+# Equity — general or policy intent ("to ...", "for ...", "intended ...", "as ...")
+eq_specific_context = [
     "to manage exposure to changes in the market price of its common stock and related equity-based compensation costs",
     "to hedge variability in compensation expense associated with changes in share price",
     "to mitigate exposure to equity price movements",
     "to manage market risks associated with fluctuations in stock price",
-    "hedging exposures tied to equity-based programs",
     "to offset potential volatility from changes in share price",
     "to reduce variability in reported expenses arising from equity-linked compensation",
-    # REMOVED: "designated as economic hedges of share price exposure",
     "as economic hedges of share price exposure",
     "to hedge the market price risk associated with stock-based compensation plans",
     "to mitigate equity-related market risk",
-    "linked to the value of its common stock or market indices",
     "to manage risks related to equity-linked compensation obligations",
-    "intended to hedge changes in equity market values",
     "to manage share price exposure",
     "to offset volatility in stock-based compensation expense",
     "to hedge changes in equity valuation",
     "to hedge exposure to its common stock value",
-    "related to equity-based compensation programs",
     "to manage equity-linked exposures",
     "to mitigate volatility in stock-based compensation costs",
-    # REMOVED: "remaining in effect as hedges of equity price risk",
-    "as hedges of equity price risk",
     "to manage changes in the value of its shares",
     "as part of its equity risk management strategy",
     "to hedge share price fluctuations",
@@ -487,13 +477,17 @@ eq_specific_reasons = [
     "to hedge equity-linked risks",
 ]
 
-# Commodity Price (CP) specific accounting reasons
-cp_specific_reasons = [
-    "offsetting {commodity} price fluctuations",
-    "mitigating exposure to volatile {commodity} prices",
-    "stabilizing cost of goods sold despite {commodity} price movements",
-    "hedging against increases in {commodity} costs",
-    "hedging against decreases in {commodity} sale prices",
+# Equity — realized/factual results ("hedging ...", "offsetting ...", "mitigating ...", etc.)
+eq_specific_results = [
+    "offsetting market value changes in the underlying equity positions",
+    "mitigating exposure to equity market volatility",
+    "offsetting losses on equity investments",
+    "offsetting gains on equity investments",
+    "hedging exposures tied to equity-based programs",
+    "linked to the value of its common stock or market indices",
+]
+# Commodity — general or policy intent ("to ...", "for ...", "intended ...")
+cp_specific_context = [
     "to hedge {commodity} price risk",
     "to manage {commodity} exposures",
     "to hedge forecasted {commodity} purchases or sales",
@@ -501,8 +495,6 @@ cp_specific_reasons = [
     "for {commodity} risk management",
     "to hedge volatility in {commodity} costs",
     "to mitigate {commodity} price exposure",
-    "effectively hedged volatility in {commodity} costs",
-    # REMOVED: "designated as hedges for {commodity} procurement",
     "to hedge {commodity} procurement",
     "to stabilize {commodity} costs",
     "to manage {commodity} price volatility",
@@ -513,22 +505,35 @@ cp_specific_reasons = [
     "to lock in pricing",
     "to manage {commodity} cost volatility",
     "to hedge forecasted {commodity} purchases",
-    "mitigating exposure to {commodity} price fluctuations",
-    "protecting against changes in {commodity} prices",
-    # REMOVED: "designated for hedging {commodity} exposures",
     "to stabilize input costs",
     "to hedge {commodity} procurement risks",
-    # REMOVED: "serving as {commodity} price hedges",
-    "protecting against {commodity} market volatility",
     "to hedge {commodity} procurement risk",
 ]
 
+# Commodity — realized/factual results ("hedging ...", "mitigating ...", "offsetting ...", "protecting ...", etc.)
+cp_specific_results = [
+    "offsetting {commodity} price fluctuations",
+    "mitigating exposure to volatile {commodity} prices",
+    "stabilizing cost of goods sold despite {commodity} price movements",
+    "hedging against increases in {commodity} costs",
+    "hedging against decreases in {commodity} sale prices",
+    "effectively hedged volatility in {commodity} costs",
+    "mitigating exposure to {commodity} price fluctuations",
+    "protecting against changes in {commodity} prices",
+    "protecting against {commodity} market volatility",
+]
+
 # Special templates for accounting impact
-accounting_impact_templates = [
-    "As of {month} {end_day}, {year}, {swap_type} were designated as {hedge_type} hedges, {reason}",
-    "At {end_day} {month}, {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}, {reason}",
+hedge_impact_templates = [
+    "As of {month} {end_day}, {year}, {swap_type} were designated as {hedge_type} hedges, {result}",
+    "At {end_day} {month}, {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}, {result}",
     "The net unrealized loss on the {swap_type} was {currency_code}{notional} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income",
     "The net unrealized gain on the {swap_type} was {currency_code}{notional} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income",
+]
+
+hedge_context_template = [
+    "{context}, {company} {verb} {swap_type}",
+    "{company} {verb} {swap_type}, {context}"
 ]
 
 # No-prior-year patterns (two-year)
@@ -1019,15 +1024,15 @@ def generate_hedge_position_templates(hedge_type="gen"):
     Returns:
         List of all generated templates
     """
-    accounting_reasons_map = {
-        "ir": generic_accounting_reasons + ir_specific_reasons,
-        "fx": generic_accounting_reasons + fx_specific_reasons,
-        "eq": generic_accounting_reasons + eq_specific_reasons,
-        "cp": generic_accounting_reasons + cp_specific_reasons,
-        "gen": generic_accounting_reasons,
+    accounting_results_map = {
+        "ir": gen_specific_results + ir_specific_results,
+        "fx": gen_specific_results + fx_specific_results,
+        "eq": gen_specific_results + eq_specific_results,
+        "cp": gen_specific_results + cp_specific_results,
+        "gen": gen_specific_results,
     }
-    accounting_reasons = accounting_reasons_map.get(
-        hedge_type.lower(), generic_accounting_reasons
+    accounting_results = accounting_results_map.get(
+        hedge_type.lower(), gen_specific_results
     )
 
     templates = []
@@ -1090,10 +1095,10 @@ def generate_hedge_position_templates(hedge_type="gen"):
         templates.extend([to_sentence_case(t) for t in expanded])
 
     # Accounting impact templates
-    for template in accounting_impact_templates:
-        if "{reason}" in template:
-            for reason in accounting_reasons:
-                full = template.replace("{reason}", reason)
+    for template in hedge_impact_templates:
+        if "{result}" in template:
+            for reason in accounting_results:
+                full = template.replace("{result}", reason)
                 templates.append(to_sentence_case(full))
         else:
             templates.append(to_sentence_case(template))
@@ -1110,6 +1115,22 @@ def generate_hedge_position_templates(hedge_type="gen"):
                 to_sentence_case(template.replace("{no_prior_pattern}", pattern))
             )
 
+    return templates
+def generate_hedge_context_templates(hedge_type="gen"):
+    hedge_context_map = {
+        "ir": ir_specific_context,
+        "fx": fx_specific_context,
+        "eq": eq_specific_context,
+        "cp": cp_specific_context,
+        "gen": gen_specific_context,
+    }
+    specific_context = hedge_context_map.get(hedge_type.lower(), gen_specific_context)
+
+    templates = []
+    for template in hedge_context_template: # Contains {context} to map
+        for context in specific_context:
+            full = template.replace("{context}", context)
+            templates.append(to_sentence_case(full))
     return templates
 
 
@@ -1152,8 +1173,11 @@ hedge_payment_templates = generate_payment_templates()
 hedge_termination_templates = generate_termination_templates()
 hedge_types = ["ir", "fx", "cp", "eq", "gen"]
 hedge_position_templates = {}
+hedge_context_templates = {}
 for ht in hedge_types:
     hedge_position_templates[ht] = generate_hedge_position_templates(ht)
+    hedge_context_templates[ht] = generate_hedge_context_templates(ht)
 
-# for i in hedge_position_templates["ir"]:
-#     print(i)
+
+for i in hedge_context_templates["ir"]:
+    print(i)
