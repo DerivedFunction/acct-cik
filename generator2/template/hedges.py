@@ -276,7 +276,7 @@ historical_templates = [
     "{swap_type} expires in {future_year}",
 ]
 
-gen_specific_context = [
+gen_specific_mitigation = [
     "to protect against unfavorable changes in market conditions",
     "to offset risks associated with forecasted transactions",
     "to reduce overall earnings volatility",
@@ -316,7 +316,7 @@ gen_specific_results = [
 ]
 
 # Interest Rate (IR) — general/policy intent phrases ("to ...")
-ir_specific_context = [
+ir_specific_mitigation = [
     "to modify the interest rate characteristics of outstanding senior notes",
     "to hedge interest rate exposure on a portion of its debt portfolio",
     "to convert fixed-rate senior notes to variable rates",
@@ -391,7 +391,7 @@ ir_specific_results = [
 
 # Foreign Exchange (FX) specific accounting reasons
 # FX — general or policy intent ("to ...")
-fx_specific_context = [
+fx_specific_mitigation = [
     "to manage translation exposure",
     "to hedge foreign borrowings",
     "to hedge exposure to foreign currency fluctuations on cross-border transactions",
@@ -427,7 +427,7 @@ fx_specific_results = [
 ]
 
 # Equity — general or policy intent ("to ...", "for ...", "intended ...", "as ...")
-eq_specific_context = [
+eq_specific_mitigation = [
     "to manage exposure to changes in the market price of its common stock and related equity-based compensation costs",
     "to hedge variability in compensation expense associated with changes in share price",
     "to mitigate exposure to equity price movements",
@@ -487,7 +487,7 @@ eq_specific_results = [
     "linked to the value of its common stock or market indices",
 ]
 # Commodity — general or policy intent ("to ...", "for ...", "intended ...")
-cp_specific_context = [
+cp_specific_mitigation = [
     "to hedge {commodity} price risk",
     "to manage {commodity} exposures",
     "to hedge forecasted {commodity} purchases or sales",
@@ -933,6 +933,103 @@ hedge_no_trading_templates = [
     "All derivative transactions are {verb} for hedging purposes and not for trading or speculation",
 ]
 
+# --- Generic context
+begin_gen_context_templates = [
+    "{company} is exposed to various market risks, including changes in interest rates, foreign exchange rates, commodity prices, and equity market values",
+    "As part of its overall risk management strategy, {company} monitors and manages exposure to fluctuations in market conditions",
+    "{company}'s operations and financial results are affected by changes in market factors such as interest rates, exchange rates, and commodity prices",
+    "Our global activities expose us to market risks that arise from changes in economic and financial conditions worldwide",
+    "As a diversified enterprise, {company} is subject to risks associated with fluctuations in market prices and rates",
+    "{company}'s risk management program addresses exposure to market risk, including movements in interest rates, currencies, and commodities",
+    "Due to the nature of its operations, {company} faces exposure to various financial market risks",
+    "Market risk represents the potential for losses arising from movements in market variables affecting {company}'s earnings or cash flows",
+    "{company}'s financial performance is influenced by volatility in interest rates, currency exchange rates, and other market prices",
+    "Operating in global markets, {company} is exposed to risks from changes in financial market conditions, which it manages through derivative and non-derivative instruments",
+]
+
+# --- Combined FX + IR context ---
+begin_fx_ir_context_templates = [
+    "{company}'s global operations expose it to various market risks, including fluctuations in foreign currency exchange rates and interest rates",
+    "Our business operations in multiple countries result in exposure to foreign currency exchange rate movements and interest rate volatility",
+    "{company} operates in numerous international markets, which subjects us to risks from changes in currency exchange rates and interest rates",
+    "{company}'s multinational operations are impacted by foreign currency movements and interest rate changes in various markets",
+    "As a global entity, {company} faces exposure to exchange rate volatility and interest rate risks in its operations",
+    "Operating in various jurisdictions, {company} is exposed to fluctuations in foreign currencies and interest rate movements",
+    "Our global business model results in exposure to foreign exchange rate changes and interest rate fluctuations",
+    "As a multinational company, {company} is subject to risks from currency movements and interest rate volatility across regions",
+    "Our global operations are impacted by changes in foreign exchange rates and varying interest rate environments",
+    "{company} faces currency exchange and interest rate risks due to its operations in multiple international markets",
+]
+
+# --- FX-specific context ---
+begin_fx_context_templates = [
+    "{company}'s international operations expose it to risks arising from fluctuations in foreign currency exchange rates",
+    "Due to its global footprint, {company} is exposed to currency translation and transaction risks",
+    "Our cross-border operations result in exposure to changes in exchange rates between functional and reporting currencies",
+    "{company} operates subsidiaries in various countries, creating exposure to foreign currency movements",
+    "As a global enterprise, {company} faces risks related to fluctuations in exchange rates across its international markets",
+    "Our revenues, expenses, and cash flows are subject to variability due to foreign currency exchange rate changes",
+    "Operating in multiple currencies, {company} is exposed to volatility in exchange rates that can affect its financial results",
+    "As part of its global operations, {company} is subject to risks arising from changes in currency values",
+    "Foreign currency movements impact {company}'s consolidated financial position and cash flows",
+    "{company} faces currency-related risks due to its extensive international operations",
+]
+
+# --- IR-specific context ---
+begin_ir_context_templates = [
+    "{company} is exposed to market risks arising from changes in interest rates on its debt and investment portfolios",
+    "Our financing activities expose us to fluctuations in interest rates that impact borrowing costs and returns on investments",
+    "{company} faces exposure to changes in market interest rates affecting both variable-rate debt and interest-bearing assets",
+    "As part of its funding strategy, {company} manages risks associated with interest rate movements",
+    "Our exposure to interest rate volatility arises primarily from debt obligations and cash management activities",
+    "{company}'s borrowing costs and investment income are influenced by changes in prevailing interest rate environments",
+    "Operating in multiple financial markets, {company} is subject to risks from changes in benchmark interest rates",
+    "{company} actively monitors and manages its exposure to interest rate fluctuations through derivative and non-derivative instruments",
+    "Interest rate volatility can materially affect {company}'s financing costs and overall liquidity position",
+    "Changes in interest rate conditions across markets affect {company}'s funding and hedging strategies",
+]
+
+begin_eq_context_templates = [
+    "{company} is exposed to market risks related to fluctuations in the price of its common stock and other equity instruments",
+    "Volatility in equity markets affects {company}'s exposure to equity-linked compensation and investment values",
+    "{company}'s share-based compensation costs are influenced by changes in its stock price and market conditions",
+    "As part of its equity risk management, {company} monitors exposure to stock market fluctuations",
+    "{company}'s financial results are impacted by changes in equity market valuations",
+    "Movements in equity indices can affect {company}'s exposure to equity-linked obligations",
+    "As a publicly traded entity, {company} is exposed to risks associated with market price movements of its shares",
+    "{company} faces risks arising from fluctuations in the value of equity-based instruments",
+    "Equity market volatility may influence {company}'s compensation expenses and investment performance",
+    "{company}'s exposure to equity price movements arises primarily from its stock-based compensation and equity investments",
+]
+
+begin_cp_context_templates = [
+    "{company} is exposed to market risks arising from changes in {commodities} prices that affect its production costs and revenues",
+    "Fluctuations in {commodities} prices can impact {company}'s profitability and cost structure",
+    "As part of its operations, {company} is exposed to volatility in {commodities} prices",
+    "Changes in {commodities} prices can influence {company}'s margins and overall financial performance",
+    "{company}'s cost of goods sold is affected by variability in {commodities} market prices",
+    "Our operations are subject to risks associated with changes in the prices of key commodities such as {commodities}",
+    "{company} faces exposure to {commodities} market volatility, which can impact both input costs and sales prices",
+    "The profitability of {company}'s operations depends in part on the stability of {commodities} prices",
+    "As part of its risk management strategy, {company} monitors and manages exposure to {commodities} price fluctuations",
+    "{company} faces risks related to volatility in {commodities} markets that affect its operating results",
+]
+
+# --- Shared placeholders for extension ---
+begin_context_placeholders = [
+    "particularly through its international subsidiaries and cross-border transactions",
+    "arising from sales, purchases, and borrowings denominated in foreign currencies",
+    "through operations spanning North America, Europe, and Asia",
+    "as a result of foreign investments and intercompany funding activities",
+    "driven by the mix of currencies in which it conducts business",
+    "from exposure to both local and international interest rate environments",
+    "primarily related to its global financing and treasury activities",
+    "due to variability in exchange and interest rates across markets where it operates",
+    "from transactions conducted in currencies other than its functional currency",
+    "through its diverse portfolio of foreign operations and financing arrangements",
+]
+
+
 # ==============================================================================
 # TEMPLATE GENERATION FUNCTIONS
 # ==============================================================================
@@ -1116,21 +1213,44 @@ def generate_hedge_position_templates(hedge_type="gen"):
             )
 
     return templates
-def generate_hedge_context_templates(hedge_type="gen"):
+def generate_hedge_mitigation_templates(hedge_type="gen"):
     hedge_context_map = {
-        "ir": ir_specific_context,
-        "fx": fx_specific_context,
-        "eq": eq_specific_context,
-        "cp": cp_specific_context,
-        "gen": gen_specific_context,
+        "ir": ir_specific_mitigation,
+        "fx": fx_specific_mitigation,
+        "eq": eq_specific_mitigation,
+        "cp": cp_specific_mitigation,
+        "gen": gen_specific_mitigation,
     }
-    specific_context = hedge_context_map.get(hedge_type.lower(), gen_specific_context)
+    specific_mitigation = hedge_context_map.get(hedge_type.lower(), gen_specific_mitigation)
 
     templates = []
     for template in hedge_context_template: # Contains {context} to map
-        for context in specific_context:
+        for context in specific_mitigation:
             full = template.replace("{context}", context)
             templates.append(to_sentence_case(full))
+    return templates
+
+
+def generate_hedge_begin_context_templates(hedge_type="gen"):
+    hedge_context_map = {
+        "ir": begin_ir_context_templates + begin_fx_ir_context_templates,
+        "fx": begin_fx_context_templates + begin_fx_ir_context_templates,
+        "cp": begin_cp_context_templates,
+        "eq": begin_eq_context_templates,
+        "gen": begin_gen_context_templates,
+    }
+
+    # Select the correct context set; fallback to generic if unknown
+    specific_mitigation = hedge_context_map.get(
+        hedge_type.lower(), begin_gen_context_templates
+    )
+
+    templates = []
+
+    # Combine context with placeholder endings
+    for context in specific_mitigation:
+        for placeholder in begin_context_placeholders:
+            templates.append(f"{context}, {placeholder}.")
     return templates
 
 
@@ -1173,11 +1293,12 @@ hedge_payment_templates = generate_payment_templates()
 hedge_termination_templates = generate_termination_templates()
 hedge_types = ["ir", "fx", "cp", "eq", "gen"]
 hedge_position_templates = {}
-hedge_context_templates = {}
+hedge_mitigation_templates = {}
+hedge_begin_context_templates = {}
 for ht in hedge_types:
     hedge_position_templates[ht] = generate_hedge_position_templates(ht)
-    hedge_context_templates[ht] = generate_hedge_context_templates(ht)
+    hedge_mitigation_templates[ht] = generate_hedge_mitigation_templates(ht)
+    hedge_begin_context_templates[ht] = generate_hedge_begin_context_templates(ht)    
 
-
-for i in hedge_context_templates["ir"]:
+for i in hedge_mitigation_templates["ir"]:
     print(i)

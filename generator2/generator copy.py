@@ -406,9 +406,17 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
 
     def hedge_type_policy():
         sentences = []
-        # context template (company, verb)
-        ctx_template = random.choice(hedge_context_templates[swapType])
+        # begin context template (company, verb)
+        beg_ctx_template = random.choice(hedge_begin_context_templates[swapType])
         verb = random.choice(hedge_use_verbs) if has_active_derivative else random.choice(hedge_may_use_verbs)
+        sentences.append(
+            beg_ctx_template.format(
+                company=pick_company_name(company_name),
+                verb=verb,
+            )
+        )
+        # mitigation template
+        ctx_template = random.choice(hedge_mitigation_templates[swapType])
         sentences.append(
             ctx_template.format(
                 company=pick_company_name(company_name),
