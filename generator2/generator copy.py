@@ -71,9 +71,7 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
     if paragraph.find("{") != -1 or (paragraph.find("[") != -1 and checkBracket):
         print("Error in format", paragraph)
     paragraph = (
-        f"<reportingYear>{reporting_year}</reportingYear> "
-        + ". ".join(selected_sentences)
-        + "."
+        f"<reportingYear>{reporting_year}</reportingYear> {paragraph}."
     )
     return paragraph
 def new_label():
@@ -112,8 +110,7 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
     # Determine swap type if not provided
     if swapType is None:
         swapType = random.choice(["ir", "fx", "cp", "eq", "gen"])
-    else:
-        swap_types = derivative_keywords[swapType]
+    swap_types = derivative_keywords[swapType]
 
     # Currency and year setup
     money_units = random.choice(money_unit_list)
@@ -126,6 +123,12 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
     past_years = sorted(
         random.sample(range(current_year - 5, current_year), num_past_years)
     )
+    month = random.choice(months)
+    end_day = random.randint(28, 31)
+    quarter = random.choice(quarters)
+    
+    cost_type = random.choice(cost_types)
+    hedge_type = random.choice(hedge_types)
 
     # Swaps Setup
     swaps_list = []
@@ -224,11 +227,6 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
         # --- Common fields ---
         verb = random.choice(hedge_use_verbs)
         swap_type = random.choice(swap_types)
-        cost_type = random.choice(cost_types)
-        hedge_type = random.choice(hedge_types)
-        month = random.choice(months)
-        end_day = random.randint(28, 31)
-        quarter = random.choice(quarters)
 
         # --- FX: add currency description sentence (0-1 chance) ---
         if swapType == "fx" and random.random() < 0.6:
@@ -277,13 +275,13 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
         prev_notional = generate_value()
         prev2_notional = generate_value()
         old_notional = generate_value(False)
-
+        print(template)
         # --- Build main sentence ---
         sentence = template.format(
             company=pick_company_name(company_name),
             verb=verb,
             swap_type=swap_type,
-            swap_types=selected_swap_list,
+            swap_types=swaps,
             commodity=commodity,
             month=month,
             end_day=end_day,
@@ -323,6 +321,7 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
             company=pick_company_name(company_name),
             swap_type=swap_type,
             month=random.choice(months),
+            quarter=quarter,
             year=term_year,
             end_day=random.randint(28, 31),
             verb=verb,
@@ -340,6 +339,7 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
             notional=notional,
             currency_code=currency_code,
             money_unit=money_units,
+            month=month,
         )
         return [sentence]
 
@@ -350,7 +350,6 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
         swap_type = (
             random.choice(swap_types) if random.random() < 0.5 else "derivatives"
         )
-        hedge_type = random.choice(hedge_types)
         sentences.append(
             act_template.format(
                 company=pick_company_name(company_name),
@@ -383,6 +382,7 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
             method = random.choice(hedge_methods)
             metric = random.choice(hedge_metrics)
             standard = random.choice(hedge_standards)
+            frequency=random.choice(frequencies)
             sentences.append(
                 eff_template.format(
                     company=pick_company_name(company_name),
@@ -391,6 +391,8 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
                     method=method,
                     metric=metric,
                     standard=standard,
+                    frequency=frequency,
+                    hedge_type=hedge_type
                 )
             )
         else: # company, freqency
@@ -413,6 +415,8 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
             beg_ctx_template.format(
                 company=pick_company_name(company_name),
                 verb=verb,
+                swap_type=swaps,
+                commodities=selected_cps,
             )
         )
         # mitigation template
@@ -421,8 +425,11 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
             ctx_template.format(
                 company=pick_company_name(company_name),
                 verb=verb,
+                swap_type=swaps,
+                commodity=selected_cps,
             )
         )
+        return sentences
 
     # Main Execution
     if has_active_derivative is None:
@@ -434,3 +441,12 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
             all_sentences.extend(hedge_type_policy())
 
     return cleanup(all_sentences, current_year)
+
+
+swapTypes = ["ir", "fx", "cp", "eq", "gen"]
+all_paragraphs = []
+for _ in range(10):
+    for swap in swapTypes:
+        all_paragraphs.append(generate_hedge_paragraph(True, swap))
+        all_paragraphs.append(generate_hedge_paragraph(False, swap))
+    all_paragraphs.append(generate_hedge_paragraph(None))

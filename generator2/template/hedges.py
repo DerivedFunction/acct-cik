@@ -98,7 +98,6 @@ derivative_template = {
         "",
     ],
     "GEN_TYPES": [
-        "equity swap",
         "swap",
         "future",
         "forward",
@@ -116,10 +115,13 @@ derivative_template = {
         "collar strategies",
         "purchased call option contracts",
         "over-the-counter contract",
+        "total return swap",
+    ],
+    "EQ_STANDALONE": [
         "receive-equity return, pay-fixed equity swap",
         "receive-equity return, pay-floating equity swap",
         "equity collar",
-        "total return swap",
+        "equity swap",
     ],
 }
 
@@ -525,8 +527,8 @@ cp_specific_results = [
 
 # Special templates for accounting impact
 hedge_impact_templates = [
-    "As of {month} {end_day}, {year}, {swap_type} were designated as {hedge_type} hedges, {result}",
-    "At {end_day} {month}, {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}, {result}",
+    "As of {month} {end_day}, {year}, {swap_type} were designated as {hedge_type} hedges, {impact_result}",
+    "At {end_day} {month}, {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}, {impact_result}",
     "The net unrealized loss on the {swap_type} was {currency_code}{notional} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income",
     "The net unrealized gain on the {swap_type} was {currency_code}{notional} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income",
 ]
@@ -672,14 +674,14 @@ settlement_frequencies = [
 # Payment phrases
 payment_phrases = [
     # Settlement patterns (merged)
-    "Under each {swap_type}, settlements occur {frequency} for {currency_code}{notional} {money_unit}, {result}",
-    "Each {swap_type} settles {frequency} for {currency_code}{notional} {money_unit}, {result}",
-    "{frequency} payments of {currency_code}{notional} {money_unit} are required under each {swap_type}, {result}",
-    "For every {swap_type}, {frequency} payments of {currency_code}{notional} {money_unit} are made, {result}",
-    "Each {swap_type} involves {frequency} settlements of {currency_code}{notional} {money_unit}, {result}",
-    "{frequency} settlements under each {swap_type} for {currency_code}{notional} {money_unit} {result}",
-    "Each {swap_type} calls for {frequency} payments of {currency_code}{notional} {money_unit}, {result}",
-    "Each {swap_type} entails {frequency} settlement of {currency_code}{notional} {money_unit}, {result}",
+    "Under each {swap_type}, settlements occur {frequency} for {currency_code}{notional} {money_unit}, {pay_result}",
+    "Each {swap_type} settles {frequency} for {currency_code}{notional} {money_unit}, {pay_result}",
+    "{frequency} payments of {currency_code}{notional} {money_unit} are required under each {swap_type}, {pay_result}",
+    "For every {swap_type}, {frequency} payments of {currency_code}{notional} {money_unit} are made, {pay_result}",
+    "Each {swap_type} involves {frequency} settlements of {currency_code}{notional} {money_unit}, {pay_result}",
+    "{frequency} settlements under each {swap_type} for {currency_code}{notional} {money_unit} {pay_result}",
+    "Each {swap_type} calls for {frequency} payments of {currency_code}{notional} {money_unit}, {pay_result}",
+    "Each {swap_type} entails {frequency} settlement of {currency_code}{notional} {money_unit}, {pay_result}",
 ]
 # Settlement result phrases
 payment_results = [
@@ -762,21 +764,21 @@ dedesignation_specific_results = [
 ]
 
 # All event results (combined settlement_results, no_position_results, dedesignation_specific_results)
-all_event_results =  no_position_results + dedesignation_specific_results
+termination_event_results =  no_position_results + dedesignation_specific_results
 
 # Merged event template patterns (termination, expiration, dedesignation, settlement)
 merged_event_patterns = [
     # Termination patterns
-    "{time_period}, {company} {termination_verb} all remaining {swap_type} agreements. {result}",
-    "{time_period}, all previously designated {swap_type} were {termination_verb}, {result}",
-    "{company} {termination_verb} all {swap_type} positions {time_period}, {result}",
-    "All outstanding {swap_type} matured or were {termination_verb} {time_period}, {result}",
-    "{time_period}, {company} {termination_verb} all {swap_type} agreements, {result}",
-    "{time_period}, {company} {termination_verb} {swap_type} positions, {result}",
-    "{time_period}, all {swap_type} were {termination_verb}, {result}",
-    "{company} {termination_verb} all outstanding {swap_type} {time_period}, {result}",
-    "{time_period}, {company} {termination_verb} its {swap_type} portfolio, {result}",
-    "{time_period}, all {swap_type} agreements were {termination_verb}, {result}",
+    "{time_period}, {company} {termination_verb} all remaining {swap_type} agreements. {term_result}",
+    "{time_period}, all previously designated {swap_type} were {termination_verb}, {term_result}",
+    "{company} {termination_verb} all {swap_type} positions {time_period}, {term_result}",
+    "All outstanding {swap_type} matured or were {termination_verb} {time_period}, {term_result}",
+    "{time_period}, {company} {termination_verb} all {swap_type} agreements, {term_result}",
+    "{time_period}, {company} {termination_verb} {swap_type} positions, {term_result}",
+    "{time_period}, all {swap_type} were {termination_verb}, {term_result}",
+    "{company} {termination_verb} all outstanding {swap_type} {time_period}, {term_result}",
+    "{time_period}, {company} {termination_verb} its {swap_type} portfolio, {term_result}",
+    "{time_period}, all {swap_type} agreements were {termination_verb}, {term_result}",
     "As of {month} {end_day}, {year}, there were no such {swap_type} outstanding",
     # Expiration patterns
     "All previously outstanding derivatives {termination_verb} {time_period}, {no_replacement}",
@@ -791,16 +793,16 @@ merged_event_patterns = [
     "{time_period}, {company}'s derivative portfolio of {swap_type} was fully settled, {no_replacement}",
     # De-designation patterns
     "{company} {dedesignation_action} all of our {swap_type} {time_period}",
-    "{company} {dedesignation_action} {swap_type} {time_period}, {result}",
+    "{company} {dedesignation_action} {swap_type} {time_period}, {term_result}",
     "All {swap_type} were {dedesignation_action} as hedging instruments {time_period}",
     "{time_period}, {company} {dedesignation_action} all outstanding {swap_type}",
-    "{time_period}, all {swap_type} were {dedesignation_action}, {result}",
-    "All {swap_type} were {dedesignation_action} {time_period}, {result}",
+    "{time_period}, all {swap_type} were {dedesignation_action}, {term_result}",
+    "All {swap_type} were {dedesignation_action} {time_period}, {term_result}",
     "{time_period}, all {swap_type} lost their hedge designation status",
     # Quarterly termination with settlement patterns
-    "{time_period}, {company} {termination_verb} {swap_type} with {frequency} settlements, {result}",
-    "{time_period}, all {swap_type} were {termination_verb} {frequency}, {result}",
-    "{company} conducted {frequency} {termination_verb} of {swap_type} {time_period}, {result}",
+    "{time_period}, {company} {termination_verb} {swap_type} with {frequency} settlements, {term_result}",
+    "{time_period}, all {swap_type} were {termination_verb} {frequency}, {term_result}",
+    "{company} conducted {frequency} {termination_verb} of {swap_type} {time_period}, {term_result}",
 ]
 
 
@@ -1058,7 +1060,7 @@ def to_sentence_case(text):
 def _expand_pattern(pattern):
     """Expand placeholders in a pattern using all combinations of replacement lists."""
     placeholder_map = {
-        "{result}": all_event_results,
+        "{term_result}": termination_event_results,
         "{frequency}": settlement_frequencies,
         "{termination_verb}": termination_verbs,
         "{comparison}": comparison_phrases,
@@ -1068,6 +1070,7 @@ def _expand_pattern(pattern):
         "{no_replacement}": no_replacement_phrases,
         "{dedesignation_action}": dedesignation_actions,
         "{state}": state_descriptors,
+        "{pay_result}": payment_results,
     }
 
     # Identify placeholders present in the pattern
@@ -1193,9 +1196,9 @@ def generate_hedge_position_templates(hedge_type="gen"):
 
     # Accounting impact templates
     for template in hedge_impact_templates:
-        if "{result}" in template:
+        if "{impact_result}" in template:
             for reason in accounting_results:
-                full = template.replace("{result}", reason)
+                full = template.replace("{impact_result}", reason)
                 templates.append(to_sentence_case(full))
         else:
             templates.append(to_sentence_case(template))
@@ -1287,6 +1290,7 @@ derivative_keywords = {
         derivative_template["GEN_TYPES"],
         derivative_template["GEN_STANDALONE"],
     ),
+    "eq": expand_derivative_terms([], [], derivative_template["EQ_STANDALONE"]),
 }
 
 hedge_payment_templates = generate_payment_templates()
@@ -1300,5 +1304,5 @@ for ht in hedge_types:
     hedge_mitigation_templates[ht] = generate_hedge_mitigation_templates(ht)
     hedge_begin_context_templates[ht] = generate_hedge_begin_context_templates(ht)    
 
-for i in hedge_mitigation_templates["ir"]:
-    print(i)
+# for i in hedge_payment_templates:
+#     print(i)
