@@ -541,6 +541,21 @@ def generate_hedge_paragraph(
                     frequency=frequency,
                 )
             )
+        # Risk
+        if random.random() < 0.5:
+            materiality_choice = random.choice(materiality)
+            template = random.choice(risk_templates)
+            item = (
+                random.choice(swap_types)
+                if random.random() < 0.5
+                else random.choice(risk_items_derivative)
+            )
+            template.format(
+                item=item,
+                company=pick_company_name(company_name),
+                materiality=materiality_choice,
+            )
+            sentences.append(template)
         random.shuffle(sentences)
         return sentences
 
@@ -923,11 +938,6 @@ def generate_noise_paragraph(
 ):
     labels = new_label()
     labels['irr'] = 1
-    if noise_type in ['eq', 'warr']:
-        labels['eq'] = 1
-        labels['warr'] = 1
-    else:
-        labels[noise_type] = 1
 
     # Setup common variables
     if company_name is None:
@@ -1109,44 +1119,27 @@ def generate_noise_paragraph(
         return sentences
 
     template_pool = []
-    if noise_type == 'eq' or noise_type == 'warr':
-        template_pool.extend(equity_warrant_templates)
-        template_pool.extend(equity_warrant_activity_templates)
-        template_pool.extend(stock_debt_issuance_templates)
-        template_pool.extend(registration_statement_templates)
-        template_pool.extend(market_impact_templates)
-        template_pool.extend(warrant_adjustment_templates)
-        template_pool.extend(fair_value_snapshot_templates)
-        template_pool.extend(share_reservation_templates)
-        template_pool.extend(outstanding_options_templates)
-        template_pool.extend(dilution_concern_templates)
-        template_pool.extend(capital_raising_impact_templates)
-        template_pool.extend(warrant_debt_issuance_templates)
-        template_pool.extend(warrant_amortization_templates)
-        template_pool.extend(stock_comp_templates)
-        template_pool.extend(stock_comp_valuation_templates)
-        template_pool.extend(stock_price_templates)
-    elif noise_type == 'cp':
-        template_pool.extend(inventory_templates)
-        template_pool.extend(inventory_writedown_templates)
-        template_pool.extend(commodity_price_exposure_templates)
-        template_pool.extend(commodity_cost_impact_templates)
-        template_pool.extend(commodity_inventory_valuation_templates)
-        template_pool.extend(commodity_pricing_strategies_templates)
-        template_pool.extend(commodity_supply_risk_templates)
-        template_pool.extend(commodity_exposure_quantification_templates)
-        template_pool.extend(physical_commodity_operations_templates)
-    elif noise_type == 'ir':
-        template_pool.extend(debt_templates)
-        template_pool.extend(debt_covenant_templates)
-    elif noise_type == 'fx':
-        template_pool.extend(foreign_currency_exposure_templates)
-        template_pool.extend(foreign_currency_translation_templates)
-        template_pool.extend(foreign_currency_transaction_templates)
-        template_pool.extend(functional_currency_templates)
-        template_pool.extend(fx_impact_on_results_templates)
-        template_pool.extend(intercompany_fx_templates)
-
+    all_sentences = []
+    if noise_type == 'eq' or noise_type == 'warr': # ex. equity, warrant, stock
+        labels["eq"] = 1
+        template_pool.extend(noise_templates["EQ"])
+    elif noise_type == 'cp': # ex. inventory
+        labels["cp"] = 1
+        template_pool.extend(noise_templates["CP"])
+    elif noise_type == 'ir': # ex. debt
+        labels["ir"] = 1
+        template_pool.extend(noise_templates["IR"])
+    elif noise_type == 'fx': # ex. currency
+        labels["fx"] = 1
+        template_pool.extend(noise_templates["FX"])
+    elif noise_type == "deriv": # ex. derivative lawsuits (irr)
+        template_pool.extend(noise_templates["LAW"])
+    elif noise_type == "spec": # ex. acct standards (irr)
+        all_sentences = generate_other_policy_update()
+    else:
+        for template_list in noise_templates.values(): # Everything else can be mixed together
+            if template_list not in ["IR", "FX", "CP", "EQ", "LAW", "DER"]:
+                template_pool.extend(template_list)
     if not template_pool:
         return None, None, None
 
@@ -1221,7 +1214,6 @@ def generate_noise_paragraph(
         "{change}": str(generate_value(False)),
     }
 
-    all_sentences = []
     for _ in range(2, 4):
         template = random.choice(template_pool)
         sentence = template
@@ -1230,11 +1222,11 @@ def generate_noise_paragraph(
             value = replacements.get(key, "a relevant value")
             sentence = sentence.replace(key, str(value))
         all_sentences.append(sentence)
-    labels = new_label()
 
     label = get_primary_label(labels)
     paragraph = cleanup(all_sentences, reporting_year, checkBracket=False)
-
+    if paragraph.find("warrants") != -1: # Sometimes warrants will appear
+        labels["warr"] = 1
     return paragraph, labels, label
 
 def generate(size_per_label=100):
@@ -1299,10 +1291,12 @@ def generate(size_per_label=100):
 
         # Noise Generation
         noise_count = count * 2
-        noise_types = ['eq', 'warr', 'cp', 'ir', 'fx']
+        noise_types = ['eq', 'cp', 'ir', 'fx']
         for _ in range(noise_count):
             for noise_type in noise_types:
                 futures.append(executor.submit(generate_noise_paragraph, noise_type=noise_type))
+        for _ in range(size_per_label): # Any random noise
+            futures.append(executor.submit(generate_noise_paragraph, noise_type=None))
 
         return futures
 

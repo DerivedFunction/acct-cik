@@ -1703,7 +1703,7 @@ noise_templates = {
         self_insured_risks,
         coverage_types,
     ],
-    "FX": [
+    "FX": [ # FX related
         foreign_currency_exposure_templates,
         foreign_currency_translation_templates,
         foreign_currency_transaction_templates,
@@ -1711,7 +1711,7 @@ noise_templates = {
         fx_impact_on_results_templates,
         intercompany_fx_templates,
     ],
-    "CP": [
+    "CP": [ # CP related
         commodity_price_exposure_templates,
         commodity_cost_impact_templates,
         commodity_inventory_valuation_templates,
@@ -1723,6 +1723,7 @@ noise_templates = {
         inventory_methods,
         inventory_writedown_templates,
     ],
+    # Speculative policy related
     "STD": [
         shared_issuers,
         other_topics,
@@ -1744,7 +1745,7 @@ noise_templates = {
         general_additional_features,
         general_policy_templates,
     ],
-    "EQ": [
+    "EQ": [ # Equity related
         equity_warrant_templates,
         equity_warrant_activity_templates,
         stock_debt_issuance_templates,
@@ -1765,8 +1766,9 @@ noise_templates = {
         trading_volume_templates,
         volatility_levels,
     ],
+    # IR related
     "IR": [debt_templates, debt_types_list, debt_covenant_templates],
-    "RISK": [
+    "RISK": [ # Risk
         risk_templates,
         risk_items_derivative,
         risk_items_other,
