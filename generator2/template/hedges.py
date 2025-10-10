@@ -159,7 +159,12 @@ hedge_standards = [
     "ASC 815",  # Derivatives and Hedging
     "Topic 815",  # Derivatives and Hedging
 ]
-
+hedge_topics = [
+    "derivatives and hedging",
+    "hedging activities",
+    "cash flow hedges",
+    "fair value hedges",
+]
 commodities = [
     "crude oil", "natural gas", "electricity", "aluminum", "copper", "steel",
     "corn", "soybeans", "grain", "metals", "titanium", "fuel",

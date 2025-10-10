@@ -88,7 +88,7 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
 
     if (
         paragraph.find("{") != -1
-        or paragraph.find(".." ) != -1
+        or paragraph.find("..") != -1
         or (paragraph.find("[") != -1 and checkBracket)
     ):
         print("Error in format", paragraph)
@@ -510,9 +510,7 @@ def generate_hedge_paragraph(
         if random.random() < 0.5:
             doc_template = random.choice(hedge_documentation_templates)
             sentences.append(
-                doc_template.format(
-                    company=pick_company_name(company_name), hedge_type=hedge_type
-                )
+                doc_template.format(company=pick_company_name(company_name), hedge_type=hedge_type)
             )
         # Chance of hedge effectiveness or hedge ineffectiveness (frequency, verb, swap_type, method, metric, standard)
         if random.random() < 0.5:
@@ -767,6 +765,167 @@ def generate_emb_paragraph(
         labels["eq"] = 1
     return paragraph, labels, label
 
+def generate_noise_paragraph(
+    noise_type,
+    year_range=(1990, 2025),
+    max_past_years: int = 3,
+    company_name=None,
+):
+    labels = new_label()
+    labels['irr'] = 1
+    if noise_type in ['eq', 'warr']:
+        labels['eq'] = 1
+        labels['warr'] = 1
+    else:
+        labels[noise_type] = 1
+
+    # Setup common variables
+    if company_name is None:
+        company_name = random.choice(company_names) if random.random() < 0.95 else "The Company"
+
+    money_units = random.choice(money_unit_list)
+    currency_code = random.choice(currency_codes)
+    major_currency = random.choice(all_currencies)
+
+    current_year = random.randint(year_range[0], year_range[1])
+    reporting_year = current_year
+    num_past_years = random.randint(1, max_past_years)
+    past_years = sorted(random.sample(range(current_year - 5, current_year), num_past_years))
+    month = random.choice(months)
+    end_day = random.randint(28, 31)
+    quarter = random.choice(quarters)
+    prev_year = current_year - 1
+
+    # Specific variables for noise templates
+    amount = generate_value(False)
+    prev_amount = generate_value(False)
+    shares = generate_value(False, 1000000)
+    price = generate_value(False, 100)
+    expiry_year = current_year + random.randint(1, 10)
+    event = random.choice(warrant_events)
+    value = generate_value(False)
+    net_shares = generate_value(False, int(shares/2)) if shares > 0 else 0
+    pct = generate_value(False, 100)
+    pct2 = generate_value(False, 100)
+    outstanding = generate_value(False)
+    debt_types = random.choice(debt_types_list)
+    maturity_year = current_year + random.randint(3, 10)
+    years = random.randint(3, 10)
+    
+    template_pool = []
+    if noise_type == 'eq' or noise_type == 'warr':
+        template_pool.extend(equity_warrant_templates)
+        template_pool.extend(equity_warrant_activity_templates)
+        template_pool.extend(stock_debt_issuance_templates)
+        template_pool.extend(registration_statement_templates)
+        template_pool.extend(market_impact_templates)
+        template_pool.extend(warrant_adjustment_templates)
+        template_pool.extend(fair_value_snapshot_templates)
+        template_pool.extend(share_reservation_templates)
+        template_pool.extend(outstanding_options_templates)
+        template_pool.extend(dilution_concern_templates)
+        template_pool.extend(capital_raising_impact_templates)
+        template_pool.extend(warrant_debt_issuance_templates)
+        template_pool.extend(warrant_amortization_templates)
+        template_pool.extend(stock_comp_templates)
+        template_pool.extend(stock_comp_valuation_templates)
+        template_pool.extend(stock_price_templates)
+    elif noise_type == 'cp':
+        template_pool.extend(inventory_templates)
+        template_pool.extend(inventory_writedown_templates)
+        template_pool.extend(commodity_price_exposure_templates)
+        template_pool.extend(commodity_cost_impact_templates)
+        template_pool.extend(commodity_inventory_valuation_templates)
+        template_pool.extend(commodity_pricing_strategies_templates)
+        template_pool.extend(commodity_supply_risk_templates)
+        template_pool.extend(commodity_exposure_quantification_templates)
+        template_pool.extend(physical_commodity_operations_templates)
+    elif noise_type == 'ir':
+        template_pool.extend(debt_templates)
+        template_pool.extend(debt_covenant_templates)
+    elif noise_type == 'fx':
+        template_pool.extend(foreign_currency_exposure_templates)
+        template_pool.extend(foreign_currency_translation_templates)
+        template_pool.extend(foreign_currency_transaction_templates)
+        template_pool.extend(functional_currency_templates)
+        template_pool.extend(fx_impact_on_results_templates)
+        template_pool.extend(intercompany_fx_templates)
+
+    if not template_pool:
+        return None, None, None
+
+    template = random.choice(template_pool)
+
+    replacements = {
+        "{company}": pick_company_name(company_name),
+        "{shares}": str(shares),
+        "{shares1}": str(generate_value(False, 1000000)),
+        "{shares2}": str(generate_value(False, 1000000)),
+        "{currency_code}": currency_code,
+        "{price}": str(price),
+        "{price2}": str(generate_value(False, 100)),
+        "{expiry_year}": str(expiry_year),
+        "{month}": month,
+        "{end_day}": str(end_day),
+        "{year}": str(current_year),
+        "{prev_year}": str(prev_year),
+        "{prev_month}": random.choice(months),
+        "{amount}": str(amount),
+        "{prev_amount}": str(prev_amount),
+        "{money_unit}": money_units,
+        "{event}": event,
+        "{value}": str(value),
+        "{value1}": str(generate_value(False)),
+        "{value2}": str(generate_value(False)),
+        "{net_shares}": str(net_shares),
+        "{quarter}": quarter,
+        "{financing_type}": random.choice(financing_types),
+        "{days}": str(random.randint(30, 180)),
+        "{pct}": str(pct),
+        "{pct2}": str(pct2),
+        "{asset_type}": random.choice(asset_types),
+        "{debt_types_list}": random.choice(debt_types_list),
+        "{service_type}": random.choice(service_types),
+        "{items}": "Raw materials and finished goods",
+        "{method}": random.choice(inventory_methods),
+        "{reserve}": str(generate_value(False)),
+        "{outstanding}": str(outstanding),
+        "{debt_types}": debt_types,
+        "{debt_type}": random.choice(debt_types_list),
+        "{maturity_year}": str(maturity_year),
+        "{years}": str(years),
+        "{ratio}": str(random.randint(2, 5)),
+        "{coverage}": str(random.randint(2, 5)),
+        "{major_currency}": major_currency,
+        "{currency2}": random.choice(all_currencies),
+        "{currency3}": random.choice(all_currencies),
+        "{location}": "other income (expense)",
+        "{reported_pct}": str(generate_value(False, 100)),
+        "{commodity}": random.choice(commodities),
+        "{commodity2}": random.choice(commodities),
+        "{commodity3}": random.choice(commodities),
+        "{low_price}": str(generate_value(False, 50)),
+        "{high_price}": str(generate_value(False, 200)),
+        "{unit}": "barrel",
+        "{volume}": str(generate_value(False, 100000)),
+        "{cost}": str(generate_value(False, 100)),
+        "{prev_cost}": str(generate_value(False, 100)),
+        "{change}": str(generate_value(False)),
+    }
+
+    sentence = template
+    all_placeholders = re.findall(r'{\w+}', sentence)
+    for key in all_placeholders:
+        value = replacements.get(key, "a relevant value")
+        sentence = sentence.replace(key, str(value))
+
+    all_sentences = [sentence]
+
+    label = get_primary_label(labels)
+    paragraph = cleanup(all_sentences, reporting_year, checkBracket=False)
+
+    return paragraph, labels, label
+
 def generate(size_per_label=100):
     """
     Generate the dataset. Fixed:
@@ -826,6 +985,13 @@ def generate(size_per_label=100):
             futures.append(executor.submit(generate_emb_paragraph, use_case='current'))
             futures.append(executor.submit(generate_emb_paragraph, use_case='historical'))
             futures.append(executor.submit(generate_emb_paragraph, use_case='speculative'))
+
+        # Noise Generation
+        noise_count = count * 2
+        noise_types = ['eq', 'warr', 'cp', 'ir', 'fx']
+        for _ in range(noise_count):
+            for noise_type in noise_types:
+                futures.append(executor.submit(generate_noise_paragraph, noise_type=noise_type))
 
         return futures
 
