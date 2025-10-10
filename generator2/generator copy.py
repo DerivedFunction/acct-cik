@@ -21,7 +21,7 @@ pattern_we_is = re.compile(r"We is", flags=re.IGNORECASE)
 pattern_nil = re.compile(r" (0|0.0) (thousand|million|billion)", flags=re.IGNORECASE)
 pattern_notional = re.compile(f"notional", flags=re.IGNORECASE)
 pattern_spaces = re.compile(r"\s+")
-pattern_dots = re.compile(r"\.\.")
+pattern_dots = re.compile(r"\.+")
 
 company_name_df = pd.read_excel(company_name_file)
 company_names = list(company_name_df["name"])
@@ -84,7 +84,11 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
     paragraph = pattern_dots.sub(".", paragraph)  # Remove double periods
 
-    if paragraph.find("{") != -1 or (paragraph.find("[") != -1 and checkBracket):
+    if (
+        paragraph.find("{") != -1
+        or paragraph.find("..") != -1
+        or (paragraph.find("[") != -1 and checkBracket)
+    ):
         print("Error in format", paragraph)
 
     paragraph = f"<reportingYear>{reporting_year}</reportingYear> {paragraph}."
@@ -232,6 +236,7 @@ def generate_hedge_paragraph(
 
     cost_type = random.choice(cost_types)
     hedge_type = random.choice(hedge_types)
+    swap_type = random.choice(swap_types)
 
     # Swaps Setup
     swaps_list = []
@@ -347,7 +352,6 @@ def generate_hedge_paragraph(
 
         # --- Common fields ---
         verb = random.choice(hedge_use_verbs)
-        swap_type = random.choice(swap_types)
 
         # --- FX: add currency description sentence (0-1 chance) ---
         if swapType == "fx" and random.random() < 0.6:
@@ -400,7 +404,6 @@ def generate_hedge_paragraph(
         prev_notional = generate_value()
         prev2_notional = generate_value()
         old_notional = generate_value(False)
-
 
         # --- Notionals ---
         notional = (
