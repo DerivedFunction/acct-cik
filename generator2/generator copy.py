@@ -63,7 +63,11 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
     Join sentences into a paragraph and apply sanitizing regexes.
     Fixed: assign results of regex.sub back to paragraph so substitutions take effect.
     """
-    paragraph = ". ".join(all_sentences)
+    paragraph = ""
+    try:
+        paragraph = ". ".join(all_sentences)
+    except:
+        print(all_sentences)
 
     # Apply substitutions and assign back to paragraph
     paragraph = pattern_we_s.sub("Our", paragraph)
@@ -268,7 +272,7 @@ def generate_hedge_paragraph(
     if include_policy:
         labels["spec"] = 1 # speculative mention
 
-    def generate_debt():
+    def generate_debt() -> list[str]:
         sentences = []
         debt_type_list = []
         # Build the debt type combination
@@ -314,7 +318,7 @@ def generate_hedge_paragraph(
             sentences.append(sentence)
         return sentences
 
-    def generate_derivative_sentences():
+    def generate_derivative_sentences() -> list[str]:
         """Generate derivative-related sentences for FX, IR, CP, or generic types."""
         sentences = []
 
@@ -347,7 +351,7 @@ def generate_hedge_paragraph(
             )
             # IR: Add a chance of debt
         if swapType == "ir" and random.random() < 0.15:
-            sentences.append(generate_debt())
+            sentences.extend(generate_debt())
 
         template = random.choice(hedge_position_templates[swapType])
         # --- Time logic ---
@@ -405,7 +409,7 @@ def generate_hedge_paragraph(
         random.shuffle(sentences)
         return sentences
 
-    def expire_hedge():
+    def expire_hedge() -> str:
         labels["hist"] = 1
         # pick a random template from termination
         template = random.choice(hedge_termination_templates)
@@ -423,7 +427,7 @@ def generate_hedge_paragraph(
         )
         return sentence
 
-    def hedge_payment():
+    def hedge_payment() -> str:
         # pick a random template from payment
         template = random.choice(hedge_payment_templates)
         swap_type = random.choice(swap_types)
@@ -438,7 +442,7 @@ def generate_hedge_paragraph(
         )
         return sentence
 
-    def hedge_policy():
+    def hedge_policy() -> list[str]:
         sentences = []
         # Accounting policy (always)
         act_template = random.choice(hedge_policy_templates)
@@ -502,7 +506,7 @@ def generate_hedge_paragraph(
         random.shuffle(sentences)
         return sentences
 
-    def hedge_type_policy():
+    def hedge_type_policy() -> list[str]:
         labels[swapType] = 1
         labels["gen"] = 1
         labels["spec"] = 1
