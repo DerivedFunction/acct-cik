@@ -25,7 +25,7 @@ pattern_dots = re.compile(r"\.\.")
 
 company_name_df = pd.read_excel(company_name_file)
 company_names = list(company_name_df["name"])
- 
+
 
 def pick_company_name(company_name: str) -> str:
     return random.choices([company_name, "The Company"], weights=[0.75, 0.25], k=1)[0]
@@ -55,7 +55,7 @@ def generate_value(haveZero=True, upperlimit=1000):
     return value
 
 
-def cleanup(paragraph: str, checkBracket: bool = True):
+def cleanup(paragraph: str, reporting_year: int, checkBracket: bool = True):
     pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
     if random.random() < 0.25:  # Chance to replace values with nil
@@ -70,6 +70,11 @@ def cleanup(paragraph: str, checkBracket: bool = True):
 
     if paragraph.find("{") != -1 or (paragraph.find("[") != -1 and checkBracket):
         print("Error in format", paragraph)
+    paragraph = (
+        f"<reportingYear>{reporting_year}</reportingYear> "
+        + ". ".join(selected_sentences)
+        + "."
+    )
     return paragraph
 
 def generate_derivative_liability_paragraph(
@@ -701,13 +706,8 @@ def generate_derivative_liability_paragraph(
     selected_sentences = all_sentences[:max_len]
     selected_sentences = [s[0].upper() + s[1:] if s else "" for s in all_sentences]
     # Create paragraph
-    paragraph = (
-        f"<reportingYear>{reporting_year}</reportingYear> "
-        + ". ".join(selected_sentences)
-        + "."
-    )
     # Clean up common formatting issues
-    paragraph = cleanup(paragraph)
+    paragraph = cleanup(paragraph, reporting_year)
     return paragraph, label
 
 def generate_labeled_hedge_paragraph(
@@ -1812,19 +1812,10 @@ def generate_labeled_hedge_paragraph(
     selected_sentences = [
         s[0].upper() + s[1:] if s and len(s) > 0 else "" for s in selected_sentences
     ]
-
-    # Create paragraph
-    paragraph = (
-        f"<reportingYear>{reporting_year}</reportingYear> "
-        + ". ".join(selected_sentences)
-        + "."
-    )
-
     # Clean up common formatting issues
-    paragraph = cleanup(paragraph)
+    paragraph = cleanup(paragraph, reporting_year)
 
     return paragraph, label
-
 
 
 def generate_accounting_noise_paragraph(
@@ -3722,14 +3713,9 @@ def generate_accounting_noise_paragraph(
         if random.random() < 0.25 or len(sentence) > 400:
             break
     selected_sentences = [s[0].upper() + s[1:] if s else "" for s in selected_sentences]
-    # Create paragraph
-    paragraph = (
-        f"<reportingYear>{reporting_year}</reportingYear> "
-        + ". ".join(selected_sentences)
-        + "."
-    )
+
     # Clean up common formatting issues
-    paragraph = cleanup(paragraph, False)
+    paragraph = cleanup(paragraph, reporting_year, False)
 
     return paragraph, 3
 
