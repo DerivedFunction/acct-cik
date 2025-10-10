@@ -11,6 +11,7 @@ import json
 from template.hedges import *
 from template.common import *
 from template.other import *
+from template.w_emb import *
 
 output_file = "./training_data.xlsx"
 company_name_file = "./names.xlsx"
@@ -21,7 +22,7 @@ pattern_we_is = re.compile(r"We is", flags=re.IGNORECASE)
 pattern_nil = re.compile(r" (0|0.0) (thousand|million|billion)", flags=re.IGNORECASE)
 pattern_notional = re.compile(f"notional", flags=re.IGNORECASE)
 pattern_spaces = re.compile(r"\s+")
-pattern_dots = re.compile(r"\.+")
+pattern_dots = re.compile(r"\. +")
 
 company_name_df = pd.read_excel(company_name_file)
 company_names = list(company_name_df["name"])
@@ -75,7 +76,8 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
 
     if random.random() < 0.25:  # Chance to replace values with nil
         paragraph = pattern_nil.sub(
-            random.choice([" nil", " 0", " 0.0", " 0.00"]), paragraph
+            random.choice([" nil", " 0", " 0.0", " 0.00"]),
+            paragraph,
         )
 
     if random.random() < 0.5:
@@ -86,7 +88,7 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
 
     if (
         paragraph.find("{") != -1
-        or paragraph.find("..") != -1
+        or paragraph.find(".." ) != -1
         or (paragraph.find("[") != -1 and checkBracket)
     ):
         print("Error in format", paragraph)
@@ -181,7 +183,7 @@ def new_label():
         # -----------------
         # Special derivative types
         # -----------------
-        "warr": 0,  # Warrant Derivatives
+        "warr": 0,  # Warrants
         "emb": 0,  # Embedded derivatives
         "irr": 0,  # Irrelevant / not a hedge
         # -----------------
@@ -593,6 +595,178 @@ def generate_hedge_paragraph(
     label = get_primary_label(labels)
     return cleanup(all_sentences, current_year), labels, label
 
+def generate_warrant_paragraph(
+    use_case,  # 'current', 'historical', or 'speculative'
+    year_range=(1990, 2025),
+    max_past_years: int = 3,
+    company_name=None,
+):
+    labels = new_label()
+    labels['warr'] = 1
+    labels['deriv'] = 1
+
+    if use_case == 'current':
+        labels['curr'] = 1
+    elif use_case == 'historical':
+        labels['hist'] = 1
+    elif use_case == 'speculative':
+        labels['spec'] = 1
+
+    # Setup common variables
+    if company_name is None:
+        company_name = random.choice(company_names) if random.random() < 0.95 else "The Company"
+    
+    money_units = random.choice(money_unit_list)
+    currency_code = random.choice(currency_codes)
+    
+    current_year = random.randint(year_range[0], year_range[1])
+    reporting_year = current_year
+    num_past_years = random.randint(1, max_past_years)
+    past_years = sorted(random.sample(range(current_year - 5, current_year), num_past_years))
+    month = random.choice(months)
+    end_day = random.randint(28, 31)
+    
+    # Warrant specific variables
+    shares = generate_value(False, 1000000)
+    price = generate_value(False, 100)
+    expiry_year = current_year + random.randint(1, 10)
+    amount = generate_value(False)
+    settlement_year = random.choice(past_years) if past_years else current_year - 1
+
+    # Select template pool
+    if use_case == 'current':
+        template_pool = sum(warrant_templates_for_ml['current_use'], [])
+    elif use_case == 'historical':
+        template_pool = sum(warrant_templates_for_ml['historical_use'], [])
+    else: # speculative
+        template_pool = sum(warrant_templates_for_ml['speculative'], [])
+
+    if not template_pool:
+        return None, None, None
+
+    template = random.choice(template_pool)
+
+    # Format sentence
+    replacements = {
+        "{{company}}": pick_company_name(company_name),
+        "{{shares}}": str(shares),
+        "{{currency_code}}": currency_code,
+        "{{price}}": str(price),
+        "{{expiry_year}}": str(expiry_year),
+        "{{month}}": month,
+        "{{end_day}}": str(end_day),
+        "{{year}}": str(current_year),
+        "{{amount}}": str(amount),
+        "{{money_unit}}": money_units,
+        "{{settlement_year}}": str(settlement_year),
+        "{{current_year}}": str(current_year),
+        "{{verb}}": random.choice(assessment_verbs),
+        "{{model}}": random.choice(valuation_models),
+        "{{location}}": random.choice(fv_change_locations),
+    }
+    
+    sentence = template
+    for key, value in replacements.items():
+        sentence = sentence.replace(key, value)
+
+    all_sentences = [sentence]
+    
+    label = get_primary_label(labels)
+    paragraph = cleanup(all_sentences, reporting_year)
+    
+    return paragraph, labels, label
+
+def generate_emb_paragraph(
+    use_case,  # 'current', 'historical', or 'speculative'
+    year_range=(1990, 2025),
+    max_past_years: int = 3,
+    company_name=None,
+):
+    labels = new_label()
+    labels['emb'] = 1
+    labels['deriv'] = 1
+
+    if use_case == 'current':
+        labels['curr'] = 1
+    elif use_case == 'historical':
+        labels['hist'] = 1
+    elif use_case == 'speculative':
+        labels['spec'] = 1
+
+    # Setup common variables
+    if company_name is None:
+        company_name = random.choice(company_names) if random.random() < 0.95 else "The Company"
+    
+    money_units = random.choice(money_unit_list)
+    currency_code = random.choice(currency_codes)
+    
+    current_year = random.randint(year_range[0], year_range[1])
+    reporting_year = current_year
+    prev_year = current_year - 1
+    num_past_years = random.randint(1, max_past_years)
+    past_years = sorted(random.sample(range(current_year - 5, current_year), num_past_years))
+    month = random.choice(months)
+    end_day = random.randint(28, 31)
+    
+    # Embedded deriv specific variables
+    amount = generate_value(False)
+    prev_amount = generate_value(False)
+    principal = generate_value(False, 1000000)
+    embedded_fv = generate_value(False, int(principal/10)) if principal > 0 else 0
+    
+    # Select template pool
+    if use_case == 'current':
+        template_pool = sum(embedded_templates_for_ml['current_use'], [])
+    elif use_case == 'historical':
+        template_pool = sum(embedded_templates_for_ml['historical_use'], [])
+    else: # speculative
+        template_pool = sum(embedded_templates_for_ml['speculative'], [])
+
+    if not template_pool:
+        return None, None, None
+
+    template = random.choice(template_pool)
+
+    # Format sentence
+    replacements = {
+        "{{company}}": pick_company_name(company_name),
+        "{{currency_code}}": currency_code,
+        "{{month}}": month,
+        "{{end_day}}": str(end_day),
+        "{{year}}": str(current_year),
+        "{{prev_year}}": str(prev_year),
+        "{{amount}}": str(amount),
+        "{{prev_amount}}": str(prev_amount),
+        "{{money_unit}}": money_units,
+        "{{current_year}}": str(current_year),
+        "{{settlement_year}}": str(random.choice(past_years) if past_years else current_year - 1),
+        "{{verb}}": random.choice(assessment_verbs),
+        "{{model}}": random.choice(valuation_models),
+        "{{location}}": random.choice(fv_change_locations),
+        "{{host_contract}}": random.choice(host_contracts),
+        "{{embedded_type}}": random.choice(embedded_types),
+        "{{currency_pair}}": random.choice(currency_pairs),
+        "{{principal}}": str(principal),
+        "{{embedded_fv}}": str(embedded_fv),
+        "{{change_direction}}": random.choice(change_directions),
+        "{{assumptions}}": random.choice(valuation_assumptions),
+        "{{gain_loss}}": random.choice(gain_loss_indicators),
+        "{{target}}": random.choice(company_names),
+        "{{price}}": str(generate_value(False, 100)),
+        "{{shares}}": str(generate_value(False, 1000000)),
+        "{{expiry_year}}": str(current_year + random.randint(1, 10)),
+    }
+
+    sentence = template
+    for key, value in replacements.items():
+        sentence = sentence.replace(key, value)
+
+    all_sentences = [sentence]
+    
+    label = get_primary_label(labels)
+    paragraph = cleanup(all_sentences, reporting_year)
+    
+    return paragraph, labels, label
 
 def generate(size_per_label=100, max_workers=8):
     """
@@ -644,6 +818,16 @@ def generate(size_per_label=100, max_workers=8):
                 )
             )
 
+        # Warrant and Embedded Derivative Generation
+        warr_emb_count = count * 2 
+        for _ in range(warr_emb_count):
+            futures.append(executor.submit(generate_warrant_paragraph, use_case='current'))
+            futures.append(executor.submit(generate_warrant_paragraph, use_case='historical'))
+            futures.append(executor.submit(generate_warrant_paragraph, use_case='speculative'))
+            futures.append(executor.submit(generate_emb_paragraph, use_case='current'))
+            futures.append(executor.submit(generate_emb_paragraph, use_case='historical'))
+            futures.append(executor.submit(generate_emb_paragraph, use_case='speculative'))
+
         return futures
 
     # --- Parallel execution with tqdm progress bar ---
@@ -654,12 +838,14 @@ def generate(size_per_label=100, max_workers=8):
             total=len(futures),
             desc="Generating samples",
         ):
-            paragraph, labels, label = future.result()
-            # Defensive checks to catch wrong tuple order early
-            assert isinstance(paragraph, str), "expected paragraph string as first item"
-            assert isinstance(labels, dict), "expected labels dict as second item"
-            assert isinstance(label, (int,)), "expected integer label as third item"
-            all_samples.append((paragraph, labels, label))
+            result = future.result()
+            if result and result[0] is not None:
+                paragraph, labels, label = result
+                # Defensive checks to catch wrong tuple order early
+                assert isinstance(paragraph, str), "expected paragraph string as first item"
+                assert isinstance(labels, dict), "expected labels dict as second item"
+                assert isinstance(label, int), "expected integer label as third item"
+                all_samples.append((paragraph, labels, label))
 
     # --- Create and sort DataFrame ---
     # IMPORTANT: tuple order is (sentence, labels_dict, label_int) so columns must match that order

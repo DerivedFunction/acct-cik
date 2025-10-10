@@ -420,7 +420,7 @@ convertible_redemption_patterns = [
 ]
 
 # No longer outstanding phrases
-no_longer_outstanding = [
+emb_no_longer_outstanding = [
     "{{company}} no longer has any embedded derivative liabilities as all instruments containing bifurcated features were settled, converted, or matured by {{settlement_year}}",
     "As of {{month}} {{end_day}}, {{current_year}}, there are no outstanding embedded derivatives. All such liabilities were extinguished in {{settlement_year}}",
     "No embedded derivatives remain outstanding as of year-end {{current_year}}. The last remaining instruments were settled in {{settlement_year}}",
@@ -671,7 +671,7 @@ def generate_embedded_past_templates():
                     temp = temp.replace("{past_action}", action)
                     templates.append(temp.replace("{{verb}}", verb))
     # Add no longer outstanding
-    templates.extend(no_longer_outstanding)
+    templates.extend(emb_no_longer_outstanding)
     return templates
 
 
@@ -1206,3 +1206,153 @@ warrant_full_disclosure_templates = generate_warrant_full_disclosure_templates()
 embedded_full_disclosure_templates = generate_embedded_full_disclosure_templates()
 convertible_full_disclosure_templates = generate_convertible_full_disclosure_templates()
 warrant_historical_full_templates = generate_warrant_historical_full_templates()
+
+# ==============================================================================
+# TEMPLATE SETS FOR ML MODEL LABELS
+# ==============================================================================
+
+# For label "warr": 0 (Warrant Derivatives)
+# Use these template sets to identify warrant users and mentions
+
+warrant_templates_for_ml = {
+    # CURRENT WARRANT USERS (warr=1, curr=1)
+    "current_use": [
+        warrant_issuance_templates,  # Active issuance disclosures
+        warrant_fv_templates,  # Fair value measurements (current)
+        warrant_remeasurement_templates,  # Active remeasurement disclosures
+        warrant_full_disclosure_templates,  # Complete current disclosures
+        down_round_features,  # Down round provisions (current)
+    ],
+    # HISTORICAL WARRANT USERS (warr=1, hist=1)
+    "historical_use": [
+        warrant_past_templates,  # Past warrant holdings
+        warrant_extinguishment_templates,  # Settled/expired warrants
+        warrant_historical_full_templates,  # Complete historical disclosures
+    ],
+    # SPECULATIVE/POLICY MENTIONS (warr=1, spec=1)
+    "speculative": [
+        # Filter warrant_liability_reasons for policy statements
+        # Example: "Warrants accounted for as liabilities have the potential to be settled in cash..."
+        warrant_liability_reasons,
+    ],
+}
+
+# For label "emb": 0 (Embedded Derivatives)
+# Use these template sets to identify embedded derivative users and mentions
+
+embedded_templates_for_ml = {
+    # CURRENT EMBEDDED DERIVATIVE USERS (emb=1, curr=1)
+    "current_use": [
+        embedded_identification_templates,  # Active embedded derivative identification
+        embedded_types_templates,  # Specific embedded types (current)
+        convertible_debt_templates,  # Convertible debt with embedded features
+        embedded_fv_templates,  # Fair value measurements (current)
+        embedded_valuation_templates,  # Valuation methodologies (current)
+        embedded_fv_change_templates,  # Fair value changes (current period)
+        embedded_fx_templates,  # Embedded FX derivatives (current)
+        embedded_full_disclosure_templates,  # Complete current disclosures
+        convertible_full_disclosure_templates,  # Complete convertible debt disclosures
+        embedded_types_full_disclosure_templates,  # Complete type disclosures
+        embedded_valuation_full_disclosure_templates,  # Complete valuation disclosures
+        earnout_templates,  # Current earnout liabilities
+        earnout_full_disclosure_templates,  # Complete earnout disclosures
+    ],
+    # HISTORICAL EMBEDDED DERIVATIVE USERS (emb=1, hist=1)
+    "historical_use": [
+        embedded_past_templates,  # Past embedded derivatives
+        convertible_redemption_templates,  # Redeemed/converted debt
+        convertible_redemption_full_disclosure_templates,  # Complete redemption disclosures
+        settlement_templates,  # Settlement/conversion events
+        settlement_full_disclosure_templates,  # Complete settlement disclosures
+        earnout_past_templates,  # Historical earnouts
+        earnout_historical_full_disclosure_templates,  # Complete earnout history
+        emb_no_longer_outstanding,  # No longer outstanding statements
+    ],
+    # SPECULATIVE/POLICY MENTIONS (emb=1, spec=1)
+    "speculative": [
+        ccr_assessment_templates,  # CCR assessment discussions
+        ccr_assessment_neutral,  # Neutral CCR assessments
+        additional_standalone,  # Policy statements (SFAS 155, etc.)
+        # Filter for policy language like "may", "would", "could"
+    ],
+}
+
+# For general derivative liability context (not warrant/embedded specific)
+general_deriv_liability_templates = {
+    "general_context": [
+        deriv_liability_general_templates,  # General derivative liability discussions
+    ],
+}
+
+# ==============================================================================
+# USAGE GUIDE FOR ML MODEL
+# ==============================================================================
+
+"""
+LABEL ASSIGNMENT LOGIC:
+
+1. WARRANT IDENTIFICATION (warr=1):
+   - Current use (curr=1): Match against warrant_templates_for_ml["current_use"]
+   - Historical use (hist=1): Match against warrant_templates_for_ml["historical_use"]
+   - Speculative (spec=1): Match against warrant_templates_for_ml["speculative"]
+
+2. EMBEDDED DERIVATIVE IDENTIFICATION (emb=1):
+   - Current use (curr=1): Match against embedded_templates_for_ml["current_use"]
+   - Historical use (hist=1): Match against embedded_templates_for_ml["historical_use"]
+   - Speculative (spec=1): Match against embedded_templates_for_ml["speculative"]
+
+3. COMBINATION RULES:
+   - A sentence can have warr=1 AND emb=1 if both are mentioned
+   - A sentence can have curr=1 AND hist=1 if discussing both periods
+   - spec=1 typically excludes curr=1 or hist=1 (unless mixed disclosure)
+
+4. KEY DISTINGUISHING FEATURES:
+
+   CURRENT USE indicators:
+   - "As of [date]", "At year-end [year]"
+   - "outstanding", "active", "maintains"
+   - Present tense verbs: "has", "holds", "maintains"
+   - Fair value measurements with current dates
+   
+   HISTORICAL USE indicators:
+   - "During [past year]", "In [past year]"
+   - "expired", "settled", "extinguished", "converted"
+   - Past tense verbs: "had", "issued", "recorded"
+   - "no longer", "previously", "former"
+   
+   SPECULATIVE indicators:
+   - "may", "could", "would", "potential"
+   - Policy descriptions without specific amounts/dates
+   - General accounting guidance references
+   - Assessment methodologies without conclusions
+
+5. IRRELEVANT (irr=1):
+   - Not applicable for warrant/embedded since these ARE derivative types
+   - Only use irr=1 if the text is about non-derivative financial instruments
+
+EXAMPLE CLASSIFICATIONS:
+
+"As of December 31, 2023, the Company has outstanding warrants to purchase 
+1,000,000 shares at $10 per share"
+→ warr=1, curr=1, deriv=1
+
+"In 2021, all outstanding warrants expired unexercised"
+→ warr=1, hist=1, deriv=1
+
+"The Company may issue warrants in connection with future financing transactions"
+→ warr=1, spec=1, deriv=1
+
+"The Company has identified embedded derivatives within convertible notes 
+that require bifurcation under ASC 815"
+→ emb=1, curr=1, deriv=1
+
+"Convertible notes issued in 2020 were fully converted to equity in 2022"
+→ emb=1, hist=1, deriv=1
+
+"Management evaluates whether embedded features are clearly and closely related"
+→ emb=1, spec=1, deriv=1
+
+"The Company issued warrants with embedded derivatives in the form of 
+down-round protection"
+→ warr=1, emb=1, curr=1, deriv=1
+"""
