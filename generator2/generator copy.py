@@ -529,7 +529,8 @@ def generate_hedge_paragraph(
                 commodity=selected_cps,
             )
         )
-        return sentences
+        random.shuffle(sentences)
+        return ". ".join(sentences) + "."
 
     # Main Execution
     if has_active_derivative is None:
