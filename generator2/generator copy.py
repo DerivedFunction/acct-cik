@@ -192,10 +192,10 @@ def new_label():
 
 
 def generate_hedge_paragraph(
-    has_active_derivative,
+    has_active_derivative: bool,
     swapType=None,
     year_range=(1990, 2025),
-    max_past_years=3,
+    max_past_years: int = 3,
     include_policy=None,
     company_name=None,
 ):
