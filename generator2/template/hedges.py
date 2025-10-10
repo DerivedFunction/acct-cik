@@ -1253,7 +1253,7 @@ def generate_hedge_begin_context_templates(hedge_type="gen"):
     # Combine context with placeholder endings
     for context in specific_mitigation:
         for placeholder in begin_context_placeholders:
-            templates.append(f"{context}, {placeholder}.")
+            templates.append(f"{context}, {placeholder}")
     return templates
 
 
