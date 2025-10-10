@@ -100,3 +100,6 @@ def new_label():
 # gen_position_templates = generate_hedge_position_templates("gen")
 # derivative_keywords
 
+x = hedge_payment_templates
+for i in range(len(x)):
+    print(x[i])

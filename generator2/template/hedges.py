@@ -1,3 +1,5 @@
+import itertools
+
 # Derivatives
 derivative_template = {
     "IR_PLACEHOLDER": [
@@ -311,36 +313,38 @@ generic_accounting_reasons = [
 ]
 
 # Interest Rate (IR) specific accounting reasons
+# Interest Rate (IR) specific accounting reasons
 ir_specific_reasons = [
     "resulting in a decrease in interest expense of {currency_code}{notional} {money_unit}",
     "resulting in an increase in interest expense of {currency_code}{notional} {money_unit}",
     "effectively converting fixed-rate debt to floating-rate debt",
     "effectively converting floating-rate debt to fixed-rate debt",
-    "designated as hedges of the notes with a notional amount of {currency_code}{notional} {money_unit}, effectively converting portions of fixed-rate debt to floating rates",
+    # REMOVED: "designated as hedges of the notes with a notional amount of {currency_code}{notional} {money_unit}, effectively converting portions of fixed-rate debt to floating rates",
+    "effectively converting portions of fixed-rate debt to floating rates",
     "to modify the interest rate characteristics of outstanding senior notes",
-    "designated as fair value hedges of fixed-rate obligations",
-    "designated as hedging instruments against changes in the fair value of fixed-rate debt",
+    # REMOVED: "designated as fair value hedges of fixed-rate obligations",
+    # REMOVED: "designated as hedging instruments against changes in the fair value of fixed-rate debt",
     "to hedge interest rate exposure on a portion of its debt portfolio",
     "to convert fixed-rate senior notes to variable rates",
     "to manage interest rate risk on long-term debt",
-    "designated as fair value hedges for its outstanding bonds",
+    # REMOVED: "designated as fair value hedges for its outstanding bonds",
     "to adjust the interest rate profile of its debt",
     "to hedge changes in the fair value of fixed-rate liabilities",
     "to manage exposure to interest rate fluctuations",
-    "designated to hedge fixed-rate debt obligations",
+    # REMOVED: "designated to hedge fixed-rate debt obligations",
     "to modify the interest rate structure of its senior notes",
     "to hedge the fair value of outstanding debt",
     "to convert portions of its fixed-rate debt to floating rates",
-    "designated as fair value hedges against changes in debt valuation",
+    # REMOVED: "designated as fair value hedges against changes in debt valuation",
     "to manage interest rate exposure on bonds",
     "to adjust the interest rate characteristics of long-term liabilities",
-    "designated as hedges of fixed-rate note obligations",
+    # REMOVED: "designated as hedges of fixed-rate note obligations",
     "to mitigate interest rate risk on debt issuances",
     "effectively convert the hedged portion of debt to floating rates",
-    "designated as fair value hedges",
+    # REMOVED: "designated as fair value hedges",
     "to manage debt-related interest rate risk",
     "hedging fixed-rate obligations",
-    "designated as fair value hedges",
+    # REMOVED: "designated as fair value hedges",
     "to convert fixed-rate debt to floating rates",
     "to hedge fixed-rate debt obligations",
     "scheduled to expire in {month} {future_year}",
@@ -364,25 +368,36 @@ ir_specific_reasons = [
     "to stabilize the cost of borrowing",
     "to protect against unfavorable changes in long-term debt obligations",
     "to hedge interest rate risk on forecasted debt issuances",
-    "designated as {hedge_type} hedges to hedge against changes in interest rates that could impact expected future issuances of debt",
-    "designated as {hedge_type} hedges to lock in favorable interest rates prior to anticipated debt issuances",
-    "designated as {hedge_type} hedges to hedge interest rate exposure on forecasted debt offerings",
+    # REMOVED: "designated as {hedge_type} hedges to hedge against changes in interest rates that could impact expected future issuances of debt",
+    # REMOVED: "designated as {hedge_type} hedges to lock in favorable interest rates prior to anticipated debt issuances",
+    # REMOVED: "designated as {hedge_type} hedges to hedge interest rate exposure on forecasted debt offerings",
+    "to hedge against changes in interest rates that could impact expected future issuances of debt",
+    "to lock in favorable interest rates prior to anticipated debt issuances",
+    "to hedge interest rate exposure on forecasted debt offerings",
     "to mitigate the risk of rising interest rates on planned fixed-rate debt issuances",
-    "as {hedge_type} hedges to secure interest rates for future debt issuances",
-    "may designate as {hedge_type} hedges to manage interest rate risk",
+    # REMOVED: "as {hedge_type} hedges to secure interest rates for future debt issuances",
+    # REMOVED: "may designate as {hedge_type} hedges to manage interest rate risk",
+    "to secure interest rates for future debt issuances",
+    "to manage interest rate risk",
     "to protect against interest rate volatility for planned fixed-rate debt issuances",
-    "as {hedge_type} hedges to lock in rates for anticipated debt financings",
-    "designated as {hedge_type} hedges to stabilize future interest costs",
+    # REMOVED: "as {hedge_type} hedges to lock in rates for anticipated debt financings",
+    # REMOVED: "designated as {hedge_type} hedges to stabilize future interest costs",
+    "to lock in rates for anticipated debt financings",
+    "to stabilize future interest costs",
     "to mitigate interest rate fluctuations on planned debt offerings",
-    "designated as {hedge_type} hedges to secure rates for future fixed-rate debt",
+    # REMOVED: "designated as {hedge_type} hedges to secure rates for future fixed-rate debt",
+    "to secure rates for future fixed-rate debt",
     "to manage interest rate exposure for anticipated debt issuances",
-    "as {hedge_type} hedges to lock in rates prior to debt financings",
+    # REMOVED: "as {hedge_type} hedges to lock in rates prior to debt financings",
+    "to lock in rates prior to debt financings",
     "to hedge against rising interest rates for planned debt issuances",
-    "designates as {hedge_type} hedges in preparation for fixed-rate debt",
+    # REMOVED: "designates as {hedge_type} hedges in preparation for fixed-rate debt",
     "to stabilize interest rates for forecasted bond issuances",
-    "implemented as {hedge_type} hedges to manage risk on future debt offerings",
+    # REMOVED: "implemented as {hedge_type} hedges to manage risk on future debt offerings",
+    "to manage risk on future debt offerings",
     "to secure favorable rates for anticipated fixed-rate debt",
-    "designates as {hedge_type} hedges to mitigate interest rate risk on planned financings",
+    # REMOVED: "designates as {hedge_type} hedges to mitigate interest rate risk on planned financings",
+    "to mitigate interest rate risk on planned financings",
     "with quarterly settlements based on the differential between fixed and floating rates on notional amounts",
     "converting floating rate exposure to fixed rates, with quarterly exchange of payment differentials based on notional values",
     "with quarterly net settlements calculated on agreed notional principal amounts",
@@ -395,7 +410,6 @@ ir_specific_reasons = [
     "to manage variable interest rate exposure",
     "expose to the risk of increased interest expense if short-term interest rates rise",
 ]
-
 # Foreign Exchange (FX) specific accounting reasons
 fx_specific_reasons = [
     "offsetting foreign currency translation adjustments",
@@ -403,23 +417,134 @@ fx_specific_reasons = [
     "with translation gains of {currency_code}{notional} {money_unit} recognized in other comprehensive income",
     "with translation losses of {currency_code}{notional} {money_unit} recognized in other comprehensive income",
     "hedging net investment in foreign operations",
+    "to manage translation exposure",
+    "to hedge foreign borrowings",
+    "to hedge exposure to foreign currency fluctuations on cross-border transactions",
+    # REMOVED: "designated as cash flow hedges of forecasted foreign currency revenues",
+    # REMOVED: "designated as cash flow hedges due to changes in foreign exchange rates and are recorded at fair value",
+    "to hedge forecasted foreign currency revenues",
+    "due to changes in foreign exchange rates and are recorded at fair value",
+    "to manage translation risk of foreign subsidiaries",
+    "to hedge anticipated foreign currency purchases",
+    "to protect against volatility in foreign currency receivables",
+    "to hedge forecasted foreign currency cash flows",
+    "to manage currency risk",
+    "to hedge forecasted foreign currency expenditures",
+    "mitigating exposure to foreign currency fluctuations",
+    # REMOVED: "designated as hedges of currency-denominated obligations",
+    "to hedge currency-denominated obligations",
+    "to hedge foreign currency exposures",
+    # REMOVED: "designated as cash flow hedges of forecasted transactions",
+    "to hedge forecasted foreign currency transactions",
+    "to hedge foreign exchange exposures",
+    "protecting against currency fluctuations",
+    "to hedge intercompany transactions",
+    "hedging foreign-denominated cash flows",
+    "mitigating foreign exchange risk",
+    # REMOVED: "designated as cash flow hedges of forecasted foreign currency transactions",
+    "protecting against exchange rate movements",
+    # REMOVED: "designated as hedges of intercompany exposures",
+    "to hedge intercompany exposures",
+    # REMOVED: "designated to manage currency-denominated cash flows",
+    "to manage currency-denominated cash flows",
+    # REMOVED: "serving as cash flow hedges of forecasted currency transactions",
 ]
-
 # Equity (EQ) specific accounting reasons
 eq_specific_reasons = [
     "offsetting market value changes in the underlying equity positions",
     "mitigating exposure to equity market volatility",
     "offsetting losses on equity investments",
     "offsetting gains on equity investments",
+    "to manage exposure to changes in the market price of its common stock and related equity-based compensation costs",
+    "to hedge variability in compensation expense associated with changes in share price",
+    "to mitigate exposure to equity price movements",
+    "to manage market risks associated with fluctuations in stock price",
+    "hedging exposures tied to equity-based programs",
+    "to offset potential volatility from changes in share price",
+    "to reduce variability in reported expenses arising from equity-linked compensation",
+    # REMOVED: "designated as economic hedges of share price exposure",
+    "as economic hedges of share price exposure",
+    "to hedge the market price risk associated with stock-based compensation plans",
+    "to mitigate equity-related market risk",
+    "linked to the value of its common stock or market indices",
+    "to manage risks related to equity-linked compensation obligations",
+    "intended to hedge changes in equity market values",
+    "to manage share price exposure",
+    "to offset volatility in stock-based compensation expense",
+    "to hedge changes in equity valuation",
+    "to hedge exposure to its common stock value",
+    "related to equity-based compensation programs",
+    "to manage equity-linked exposures",
+    "to mitigate volatility in stock-based compensation costs",
+    # REMOVED: "remaining in effect as hedges of equity price risk",
+    "as hedges of equity price risk",
+    "to manage changes in the value of its shares",
+    "as part of its equity risk management strategy",
+    "to hedge share price fluctuations",
+    "to manage exposure to its common stock price volatility",
+    "to hedge variability in equity-based compensation expenses",
+    "to mitigate equity price risk",
+    "to manage stock price fluctuations",
+    "to hedge equity-related exposures",
+    "to offset share price volatility",
+    "to reduce variability in equity-linked compensation costs",
+    "to manage market risks tied to stock-based compensation",
+    "to hedge equity market risk",
+    "to manage equity price movements",
+    "to hedge equity-based compensation obligations",
+    "to hedge equity price changes",
+    "to mitigate volatility in equity-based compensation",
+    "to manage equity valuation risks",
+    "to manage equity price volatility",
+    "to hedge stock-based compensation costs",
+    "to mitigate volatility in equity compensation expenses",
+    "to manage share price fluctuations",
+    "to hedge equity market risks",
+    "to hedge equity price exposure",
+    "to manage stock price volatility",
+    "to hedge equity-based compensation costs",
+    "to manage share price risk",
+    "to mitigate equity price volatility",
+    "to hedge stock-based compensation risks",
+    "to manage equity market risk",
+    "to manage stock-based compensation costs",
+    "to hedge equity-linked risks",
 ]
 
 # Commodity Price (CP) specific accounting reasons
 cp_specific_reasons = [
-    "offsetting commodity price fluctuations",
-    "mitigating exposure to volatile commodity prices",
-    "stabilizing cost of goods sold despite commodity price movements",
-    "hedging against increases in raw material costs",
-    "hedging against decreases in commodity sale prices",
+    "offsetting {commodity} price fluctuations",
+    "mitigating exposure to volatile {commodity} prices",
+    "stabilizing cost of goods sold despite {commodity} price movements",
+    "hedging against increases in {commodity} costs",
+    "hedging against decreases in {commodity} sale prices",
+    "to hedge {commodity} price risk",
+    "to manage {commodity} exposures",
+    "to hedge forecasted {commodity} purchases or sales",
+    "to manage fluctuations in {commodity} prices",
+    "for {commodity} risk management",
+    "to hedge volatility in {commodity} costs",
+    "to mitigate {commodity} price exposure",
+    "effectively hedged volatility in {commodity} costs",
+    # REMOVED: "designated as hedges for {commodity} procurement",
+    "to hedge {commodity} procurement",
+    "to stabilize {commodity} costs",
+    "to manage {commodity} price volatility",
+    "to hedge {commodity} exposures",
+    "to mitigate risks from {commodity} price swings",
+    "to protect against {commodity} market fluctuations",
+    "to manage {commodity} exposure",
+    "to lock in pricing",
+    "to manage {commodity} cost volatility",
+    "to hedge forecasted {commodity} purchases",
+    "mitigating exposure to {commodity} price fluctuations",
+    "protecting against changes in {commodity} prices",
+    # REMOVED: "designated for hedging {commodity} exposures",
+    "to stabilize input costs",
+    "to hedge {commodity} procurement risks",
+    # REMOVED: "serving as {commodity} price hedges",
+    "protecting against {commodity} market volatility",
+    "to hedge {commodity} procurement risk",
 ]
 
 # Special templates for accounting impact
@@ -515,14 +640,14 @@ optional_purposes = [
 
 # Base optional template patterns
 optional_template_patterns = [
-    "{{company}} also have {{verb}} {{swap_type}} {purpose}. Such {{swap_type}} had a notional value of {{currency_code}}{{notional1}} {{money_unit}} and {{currency_code}}{{notional2}} {{money_unit}} as of {{month}} {{end_day}}, {{year}} and {{month}} {{end_day}}, {{prev_year}}, respectively",
-    "{{company}} {{verb}} {{swap_type}} with notional values of {{currency_code}}{{notional1}} {{money_unit}} as of {{month}} {{end_day}}, {{year}} {comparison} {{currency_code}}{{notional2}} {{money_unit}} as of {{month}} {{end_day}}, {{prev_year}}",
-    "As of {{month}} {{end_day}}, {{year}}, {{company}} {{verb}} {{swap_type}} with a notional value of {{currency_code}}{{notional1}} {{money_unit}}, {comparison} {{currency_code}}{{notional2}} {{money_unit}} in the prior year",
-    "{{company}} {{verb}} {{swap_type}} {purpose}, {trend} {{currency_code}}{{notional2}} {{money_unit}} as of {{month}} {{end_day}}, {{prev_year}} to {{currency_code}}{{notional1}} {{money_unit}} as of {{month}} {{end_day}}, {{year}}",
-    "As of {{month}} {{end_day}}, {{year}}, {{swap_type}} with a notional value of {{currency_code}}{{notional1}} {{money_unit}} were in place, {comparison} {{currency_code}}{{notional2}} {{money_unit}} as of {{month}} {{end_day}}, {{prev_year}}",
-    "In {{year}}, {{swap_type}} with a notional value of {{currency_code}}{{notional1}} {{money_unit}} were active, {comparison} {{currency_code}}{{notional2}} {{money_unit}} in {{prev_year}}",
-    "As of {{month}} {{end_day}}, {{year}}, {{company}}'s {{swap_type}} portfolio had a notional value of {{currency_code}}{{notional1}} {{money_unit}}, {comparison} {{currency_code}}{{notional2}} {{money_unit}} in {{prev_year}}",
-    "At year-end {{year}}, {{swap_type}} with a notional amount of {{currency_code}}{{notional1}} {{money_unit}} were {{verb}} {purpose}, {comparison} {{currency_code}}{{notional2}} {{money_unit}} in {{prev_year}}",
+    "{company} also have {verb} {swap_type} {purpose}. Such {swap_type} had a notional value of {currency_code}{notional1} {money_unit} and {currency_code}{notional2} {money_unit} as of {month} {end_day}, {year} and {month} {end_day}, {prev_year}, respectively",
+    "{company} {verb} {swap_type} with notional values of {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year} {comparison} {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
+    "As of {month} {end_day}, {year}, {company} {verb} {swap_type} with a notional value of {currency_code}{notional1} {money_unit}, {comparison} {currency_code}{notional2} {money_unit} in the prior year",
+    "{company} {verb} {swap_type} {purpose}, {trend} {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year} to {currency_code}{notional1} {money_unit} as of {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were in place, {comparison} {currency_code}{notional2} {money_unit} as of {month} {end_day}, {prev_year}",
+    "In {year}, {swap_type} with a notional value of {currency_code}{notional1} {money_unit} were active, {comparison} {currency_code}{notional2} {money_unit} in {prev_year}",
+    "As of {month} {end_day}, {year}, {company}'s {swap_type} portfolio had a notional value of {currency_code}{notional1} {money_unit}, {comparison} {currency_code}{notional2} {money_unit} in {prev_year}",
+    "At year-end {year}, {swap_type} with a notional amount of {currency_code}{notional1} {money_unit} were {verb} {purpose}, {comparison} {currency_code}{notional2} {money_unit} in {prev_year}",
 ]
 
 # ------------------------------------------------------------------------------
@@ -531,19 +656,19 @@ optional_template_patterns = [
 
 # Time periods
 time_periods = [
-    "In the {{quarter}} quarter of {{year}}",
-    "During the {{quarter}} quarter of {{year}}",
-    "In {{month}} {{year}}",
-    "During {{month}} {{year}}",
-    "In {{year}}",
-    "During {{year}}",
-    "prior to {{month}} {{end_day}}, {{year}}",
-    "prior to year-end {{year}}",
-    "As of {{month}} {{end_day}}, {{year}}",
+    "In the {quarter} quarter of {year}",
+    "During the {quarter} quarter of {year}",
+    "In {month} {year}",
+    "During {month} {year}",
+    "In {year}",
+    "During {year}",
+    "prior to {month} {end_day}, {year}",
+    "prior to year-end {year}",
+    "As of {month} {end_day}, {year}",
 ]
 
 # Action verbs (shared across all events)
-action_verbs = [
+termination_verbs = [
     "terminated",
     "settled",
     "closed out",
@@ -563,9 +688,20 @@ settlement_frequencies = [
     "monthly",
     "semi-annually",
 ]
-
+# Payment phrases
+payment_phrases = [
+    # Settlement patterns (merged)
+    "Under each {swap_type}, settlements occur {frequency} for {currency_code}{notional} {money_unit}, {result}",
+    "Each {swap_type} settles {frequency} for {currency_code}{notional} {money_unit}, {result}",
+    "{frequency} payments of {currency_code}{notional} {money_unit} are required under each {swap_type}, {result}",
+    "For every {swap_type}, {frequency} payments of {currency_code}{notional} {money_unit} are made, {result}",
+    "Each {swap_type} involves {frequency} settlements of {currency_code}{notional} {money_unit}, {result}",
+    "{frequency} settlements under each {swap_type} for {currency_code}{notional} {money_unit} {result}",
+    "Each {swap_type} calls for {frequency} payments of {currency_code}{notional} {money_unit}, {result}",
+    "Each {swap_type} entails {frequency} settlement of {currency_code}{notional} {money_unit}, {result}",
+]
 # Settlement result phrases
-settlement_results = [
+payment_results = [
     "with all gains and losses recognized upon payment",
     "with the resulting gains and losses fully recorded",
     "and all gains and losses are realized as they occur",
@@ -578,50 +714,50 @@ settlement_results = [
 
 # Result phrases - no outstanding positions (shared)
 no_position_results = [
-    "{{company}} {{verb}} no outstanding derivative positions as of year-end {{year}}",
-    "resulting in no outstanding hedge positions as of {{month}} {{end_day}}, {{year}}",
+    "{company} {verb} no outstanding derivative positions as of year-end {year}",
+    "resulting in no outstanding hedge positions as of {month} {end_day}, {year}",
     "with no derivative instruments remaining at period end",
     "leaving no active derivative positions at year-end",
-    "resulting in no active hedges as of {{month}} {{end_day}}, {{year}}",
+    "resulting in no active hedges as of {month} {end_day}, {year}",
     "leaving no derivative instruments outstanding",
-    "with no remaining hedge positions at year-end {{year}}",
+    "with no remaining hedge positions at year-end {year}",
     "resulting in no active derivative contracts at period end",
-    "leaving no outstanding hedges as of {{month}} {{end_day}}, {{year}}",
+    "leaving no outstanding hedges as of {month} {end_day}, {year}",
     "with no derivative positions remaining at year-end",
     "resulting in no active hedges at period end",
     "with no hedges remaining at year-end",
     "resulting in no outstanding derivative instruments",
     "leaving no active derivative positions",
-    "with no hedges in place at {{month}} {{end_day}}, {{year}}",
+    "with no hedges in place at {month} {end_day}, {year}",
     "with no derivatives outstanding at year-end",
     "resulting in no active hedge positions",
     "leaving no derivative contracts at period end",
-    "with no outstanding hedges as of {{month}} {{end_day}}, {{year}}",
-    "there were no such {{swap_type}} outstanding",
+    "with no outstanding hedges as of {month} {end_day}, {year}",
+    "there were no such {swap_type} outstanding",
 ]
 
 # No-replacement phrases (for expirations specifically)
 no_replacement_phrases = [
-    "with no new positions {{verb}} during the year",
+    "with no new positions {verb} during the year",
     "with no replacement hedges executed during the remainder of the fiscal year",
-    "and {{company}} elected not to enter into new derivative contracts during the period",
+    "and {company} elected not to enter into new derivative contracts during the period",
     "and no new hedging instruments were established for the fiscal year",
     "with no new derivative positions initiated",
     "with no new hedges entered during the year",
-    "and {{company}} did not execute new derivative contracts",
+    "and {company} did not execute new derivative contracts",
     "with no replacement hedges established",
-    "and no new derivative instruments were {{verb}} during the fiscal year",
+    "and no new derivative instruments were {verb} during the fiscal year",
     "with no new positions taken",
-    "and {{company}} chose not to initiate new hedges",
+    "and {company} chose not to initiate new hedges",
     "with no new derivative contracts executed",
     "leaving no active hedges for the remainder of the year",
     "with no new hedges established",
     "with no new positions entered",
-    "and {{company}} did not replace them with new hedges",
+    "and {company} did not replace them with new hedges",
     "with no new derivative contracts initiated",
     "and no further hedging instruments were established",
     "with no new hedges entered into",
-    "with no new contracts {{verb}}",
+    "with no new contracts {verb}",
 ]
 
 # De-designation specific actions
@@ -645,56 +781,46 @@ dedesignation_specific_results = [
 ]
 
 # All event results (combined settlement_results, no_position_results, dedesignation_specific_results)
-all_event_results = settlement_results + no_position_results + dedesignation_specific_results
+all_event_results =  no_position_results + dedesignation_specific_results
 
 # Merged event template patterns (termination, expiration, dedesignation, settlement)
 merged_event_patterns = [
     # Termination patterns
-    "{time_period}, {{company}} {action_verb} all remaining {{swap_type}} agreements. {result}",
-    "{time_period}, all previously designated {{swap_type}} were {action_verb}, {result}",
-    "{{company}} {action_verb} all {{swap_type}} positions {time_period}, {result}",
-    "All outstanding {{swap_type}} matured or were {action_verb} {time_period}, {result}",
-    "{time_period}, {{company}} {action_verb} all {{swap_type}} agreements, {result}",
-    "{time_period}, {{company}} {action_verb} {{swap_type}} positions, {result}",
-    "{time_period}, all {{swap_type}} were {action_verb}, {result}",
-    "{{company}} {action_verb} all outstanding {{swap_type}} {time_period}, {result}",
-    "{time_period}, {{company}} {action_verb} its {{swap_type}} portfolio, {result}",
-    "{time_period}, all {{swap_type}} agreements were {action_verb}, {result}",
-    "As of {{month}} {{end_day}}, {{year}}, there were no such {{swap_type}} outstanding",
+    "{time_period}, {company} {termination_verb} all remaining {swap_type} agreements. {result}",
+    "{time_period}, all previously designated {swap_type} were {termination_verb}, {result}",
+    "{company} {termination_verb} all {swap_type} positions {time_period}, {result}",
+    "All outstanding {swap_type} matured or were {termination_verb} {time_period}, {result}",
+    "{time_period}, {company} {termination_verb} all {swap_type} agreements, {result}",
+    "{time_period}, {company} {termination_verb} {swap_type} positions, {result}",
+    "{time_period}, all {swap_type} were {termination_verb}, {result}",
+    "{company} {termination_verb} all outstanding {swap_type} {time_period}, {result}",
+    "{time_period}, {company} {termination_verb} its {swap_type} portfolio, {result}",
+    "{time_period}, all {swap_type} agreements were {termination_verb}, {result}",
+    "As of {month} {end_day}, {year}, there were no such {swap_type} outstanding",
     # Expiration patterns
-    "All previously outstanding derivatives {action_verb} {time_period}, {no_replacement}",
-    "{{company}}'s derivative portfolio was fully {action_verb} {time_period} {no_replacement}",
-    "Outstanding hedge positions {action_verb} throughout {{year}}, {no_replacement}",
-    "{time_period}, all existing {{swap_type}} {action_verb}, {no_replacement}",
-    "{time_period}, all {{swap_type}} contracts {action_verb}, {no_replacement}",
-    "{{company}}'s {{swap_type}} portfolio fully {action_verb} {time_period}, {no_replacement}",
-    "{time_period}, all outstanding {{swap_type}} {action_verb}, {no_replacement}",
-    "{time_period}, {{company}}'s {{swap_type}} positions {action_verb}, {no_replacement}",
-    "All {{swap_type}} {action_verb} {time_period}, {no_replacement}",
-    "{time_period}, {{company}}'s derivative portfolio of {{swap_type}} was fully settled, {no_replacement}",
+    "All previously outstanding derivatives {termination_verb} {time_period}, {no_replacement}",
+    "{company}'s derivative portfolio was fully {termination_verb} {time_period} {no_replacement}",
+    "Outstanding hedge positions {termination_verb} throughout {year}, {no_replacement}",
+    "{time_period}, all existing {swap_type} {termination_verb}, {no_replacement}",
+    "{time_period}, all {swap_type} contracts {termination_verb}, {no_replacement}",
+    "{company}'s {swap_type} portfolio fully {termination_verb} {time_period}, {no_replacement}",
+    "{time_period}, all outstanding {swap_type} {termination_verb}, {no_replacement}",
+    "{time_period}, {company}'s {swap_type} positions {termination_verb}, {no_replacement}",
+    "All {swap_type} {termination_verb} {time_period}, {no_replacement}",
+    "{time_period}, {company}'s derivative portfolio of {swap_type} was fully settled, {no_replacement}",
     # De-designation patterns
-    "{{company}} {dedesignation_action} all of our {{swap_type}} {time_period}",
-    "{{company}} {dedesignation_action} {{swap_type}} {time_period}, {result}",
-    "All {{swap_type}} were {dedesignation_action} as hedging instruments {time_period}",
-    "{time_period}, {{company}} {dedesignation_action} all outstanding {{swap_type}}",
-    "{time_period}, all {{swap_type}} were {dedesignation_action}, {result}",
-    "All {{swap_type}} were {dedesignation_action} {time_period}, {result}",
-    "{time_period}, all {{swap_type}} lost their hedge designation status",
-    # Settlement patterns (merged)
-    "Under each {{swap_type}}, settlements occur {frequency} for {{currency_code}}{{notional}} {{money_unit}}, {result}",
-    "Each {{swap_type}} settles {frequency} for {{currency_code}}{{notional}} {{money_unit}}, {result}",
-    "{frequency_cap} payments of {{currency_code}}{{notional}} {{money_unit}} are required under each {{swap_type}}, {result}",
-    "For every {{swap_type}}, {frequency} payments of {{currency_code}}{{notional}} {{money_unit}} are made, {result}",
-    "Each {{swap_type}} involves {frequency} settlements of {{currency_code}}{{notional}} {{money_unit}}, {result}",
-    "{frequency_cap} settlements under each {{swap_type}} for {{currency_code}}{{notional}} {{money_unit}} {result}",
-    "Each {{swap_type}} calls for {frequency} payments of {{currency_code}}{{notional}} {{money_unit}}, {result}",
-    "Each {{swap_type}} entails {frequency} settlement of {{currency_code}}{{notional}} {{money_unit}}, {result}",
+    "{company} {dedesignation_action} all of our {swap_type} {time_period}",
+    "{company} {dedesignation_action} {swap_type} {time_period}, {result}",
+    "All {swap_type} were {dedesignation_action} as hedging instruments {time_period}",
+    "{time_period}, {company} {dedesignation_action} all outstanding {swap_type}",
+    "{time_period}, all {swap_type} were {dedesignation_action}, {result}",
+    "All {swap_type} were {dedesignation_action} {time_period}, {result}",
+    "{time_period}, all {swap_type} lost their hedge designation status",
     # Quarterly termination with settlement patterns
-    "{time_period}, {{company}} {action_verb} {{swap_type}} with {frequency} settlements, {result}",
-    "{time_period}, all {{swap_type}} were {action_verb} {frequency}, {result}",
-    "{{company}} conducted {frequency} {action_verb} of {{swap_type}} {time_period}, {result}",
+    "{time_period}, {company} {termination_verb} {swap_type} with {frequency} settlements, {result}",
+    "{time_period}, all {swap_type} were {termination_verb} {frequency}, {result}",
+    "{company} conducted {frequency} {termination_verb} of {swap_type} {time_period}, {result}",
 ]
-
 
 
 # ==============================================================================
@@ -744,51 +870,93 @@ def generate_optional_templates():
     return templates
 
 
-def generate_event_templates():
-    """Generate all merged event templates (termination, expiration, dedesignation, settlement)."""
+def generate_termination_templates():
+    """Generate all merged event templates (termination, expiration, dedesignation)."""
     templates = []
     for pattern in merged_event_patterns:
         # Common replacements
         if "{time_period}" in pattern:
             for time in time_periods:
                 temp = pattern.replace("{time_period}", time)
-                expanded = _expand_pattern(temp)
+                expanded = _expand_pattern_result(temp)
                 templates.extend([to_sentence_case(t) for t in expanded])
-        elif "{action_verb}" in pattern:
-            for action in action_verbs:
-                temp = pattern.replace("{action_verb}", action)
-                expanded = _expand_pattern(temp)
+        elif "{termination_verb}" in pattern:
+            for action in termination_verbs:
+                temp = pattern.replace("{termination_verb}", action)
+                expanded = _expand_pattern_result(temp)
                 templates.extend([to_sentence_case(t) for t in expanded])
         elif "{no_replacement}" in pattern:
             for no_rep in no_replacement_phrases:
                 temp = pattern.replace("{no_replacement}", no_rep)
-                expanded = _expand_pattern(temp)
+                expanded = _expand_pattern_result(temp)
                 templates.extend([to_sentence_case(t) for t in expanded])
         elif "{dedesignation_action}" in pattern:
             for ded_act in dedesignation_actions:
                 temp = pattern.replace("{dedesignation_action}", ded_act)
-                expanded = _expand_pattern(temp)
+                expanded = _expand_pattern_result(temp)
                 templates.extend([to_sentence_case(t) for t in expanded])
         elif "{frequency}" in pattern:
             for freq in settlement_frequencies:
                 temp = pattern.replace("{frequency}", freq)
-                temp = temp.replace("{frequency_cap}", freq.capitalize())
-                expanded = _expand_pattern(temp)
+                expanded = _expand_pattern_result(temp)
                 templates.extend([to_sentence_case(t) for t in expanded])
         else:
-            expanded = _expand_pattern(pattern)
+            expanded = _expand_pattern_result(pattern)
             templates.extend([to_sentence_case(t) for t in expanded])
     return templates
 
+def generate_payment_templates():
+    # "Under each {swap_type}, settlements occur {frequency} for {currency_code}{notional} {{money_unit}, {result}",
+    templates = []
+    for pattern in payment_phrases:
+        if "{result}" in pattern:
+            for result in payment_results:
+                temp = pattern.replace("{result}", result)
+                expanded = _expand_pattern_result(temp)
+                templates.extend([to_sentence_case(t) for t in expanded])
+        elif "{frequency}" in pattern:
+            for freq in settlement_frequencies:
+                temp = pattern.replace("{frequency}", freq)
+                expanded = _expand_pattern_result(temp)
+                templates.extend([to_sentence_case(t) for t in expanded])
+        else:
+            expanded = _expand_pattern_result(pattern)
+            templates.extend([to_sentence_case(t) for t in expanded])
+    return templates
 
-def _expand_pattern(pattern):
-    """Helper to expand common placeholders like {result}."""
+def _expand_pattern_result(pattern):
+    """Expand placeholders in a pattern using all combinations of replacement lists."""
+    # Map placeholders to their possible replacement lists
+    placeholder_map = {
+        "{result}": all_event_results,
+        "{frequency}": settlement_frequencies,
+        "{termination_verb}": termination_verbs
+        # Add more placeholders here:
+        # "{month}": months,
+        # "{year}": years,
+        # "{status}": statuses,
+    }
+
+    # Identify which placeholders exist in the pattern
+    active_placeholders = [
+        key for key in placeholder_map if key in pattern
+    ]
+
+    # If none, return as-is
+    if not active_placeholders:
+        return [pattern]
+
+    # Build combinations of all replacement values for present placeholders
+    replacement_lists = [placeholder_map[key] for key in active_placeholders]
+    combinations = itertools.product(*replacement_lists)
+
     expanded = []
-    if "{result}" in pattern:
-        for result in all_event_results:
-            expanded.append(pattern.replace("{result}", result))
-    else:
-        expanded.append(pattern)
+    for combo in combinations:
+        new_pattern = pattern
+        for key, value in zip(active_placeholders, combo):
+            new_pattern = new_pattern.replace(key, value)
+        expanded.append(new_pattern)
+
     return expanded
 
 
@@ -947,3 +1115,5 @@ fx_position_templates = generate_hedge_position_templates("fx")
 cp_position_templates = generate_hedge_position_templates("cp")
 eq_position_templates = generate_hedge_position_templates("eq")
 gen_position_templates = generate_hedge_position_templates("gen")
+hedge_payment_templates = generate_payment_templates()
+hedge_termination_templates = generate_termination_templates()
