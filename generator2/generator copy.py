@@ -454,7 +454,6 @@ def generate_hedge_paragraph(
         labels["hist"] = 1
         # pick a random template from termination
         template = random.choice(hedge_termination_templates)
-        swap_type = random.choice(swap_types)
         term_year = random.choice(past_years) if past_years else current_year
         verb = random.choice(hedge_use_verbs)
         sentence = template.format(
@@ -471,7 +470,6 @@ def generate_hedge_paragraph(
     def hedge_payment() -> str:
         # pick a random template from payment
         template = random.choice(hedge_payment_templates)
-        swap_type = random.choice(swap_types)
         notional = generate_value(False)
         sentence = template.format(
             company=pick_company_name(company_name),
@@ -518,7 +516,6 @@ def generate_hedge_paragraph(
         if random.random() < 0.5:
             eff_template = random.choice(hedge_effectiveness_templates)
             verb = random.choice(assessment_verbs)
-            swap_type = random.choice(swap_types)
             method = random.choice(hedge_methods)
             metric = random.choice(hedge_metrics)
             standard = random.choice(hedge_standards)
