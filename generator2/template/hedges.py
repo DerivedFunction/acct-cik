@@ -876,10 +876,6 @@ fx_currency_templates = [
 # TEMPLATE GENERATION FUNCTIONS
 # ==============================================================================
 
-
-import itertools
-
-
 def to_sentence_case(text):
     """Convert text to sentence case."""
     if not text.strip():
