@@ -670,7 +670,9 @@ def generate_warrant_paragraph(
 
     label = get_primary_label(labels)
     paragraph = cleanup(all_sentences, reporting_year)
-
+    # If it has teh words shares or stock, mark it as equity
+    if paragraph.find("stock") != -1 or paragraph.find("share") != -1 or paragraph.find("equit") != -1:
+        labels["eq"] = 1
     return paragraph, labels, label
 
 def generate_emb_paragraph(
@@ -693,10 +695,10 @@ def generate_emb_paragraph(
     # Setup common variables
     if company_name is None:
         company_name = random.choice(company_names) if random.random() < 0.95 else "The Company"
-    
+
     money_units = random.choice(money_unit_list)
     currency_code = random.choice(currency_codes)
-    
+
     current_year = random.randint(year_range[0], year_range[1])
     reporting_year = current_year
     prev_year = current_year - 1
@@ -704,13 +706,13 @@ def generate_emb_paragraph(
     past_years = sorted(random.sample(range(current_year - 5, current_year), num_past_years))
     month = random.choice(months)
     end_day = random.randint(28, 31)
-    
+
     # Embedded deriv specific variables
     amount = generate_value(False)
     prev_amount = generate_value(False)
     principal = generate_value(False, 1000000)
     embedded_fv = generate_value(False, int(principal/10)) if principal > 0 else 0
-    
+
     # Select template pool
     if use_case == 'current':
         template_pool = sum(embedded_templates_for_ml['current_use'], [])
@@ -752,10 +754,16 @@ def generate_emb_paragraph(
         sentence = sentence.replace(key, value)
 
     all_sentences = [sentence]
-    
+
     label = get_primary_label(labels)
     paragraph = cleanup(all_sentences, reporting_year)
-    
+    # If it has teh words shares or stock, mark it as equity
+    if (
+        paragraph.find("stock") != -1
+        or paragraph.find("share") != -1
+        or paragraph.find("equit") != -1
+    ):
+        labels["eq"] = 1
     return paragraph, labels, label
 
 def generate(size_per_label=100, max_workers=8):
