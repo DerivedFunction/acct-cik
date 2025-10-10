@@ -172,3 +172,30 @@ balance_sheet_locations = [
     "the consolidated statements of operations",
     "statement of operations",
 ]
+
+geographies = [
+    "North America, Europe, and Asia",
+    "over 50 countries worldwide",
+    "the United States and international markets",
+    "global markets",
+    "developed and emerging markets",
+]
+
+cities = [
+    "San Francisco",
+    "New York",
+    "Boston",
+    "Chicago",
+    "Austin",
+    "Seattle",
+    "Atlanta",
+]
+states = [
+    "California",
+    "New York",
+    "Massachusetts",
+    "Illinois",
+    "Texas",
+    "Washington",
+    "Georgia",
+]
