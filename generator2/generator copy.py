@@ -126,7 +126,7 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
     month = random.choice(months)
     end_day = random.randint(28, 31)
     quarter = random.choice(quarters)
-    
+
     cost_type = random.choice(cost_types)
     hedge_type = random.choice(hedge_types)
 
@@ -275,7 +275,6 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
         prev_notional = generate_value()
         prev2_notional = generate_value()
         old_notional = generate_value(False)
-        print(template)
         # --- Build main sentence ---
         sentence = template.format(
             company=pick_company_name(company_name),
@@ -440,13 +439,91 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
         if include_policy:
             all_sentences.extend(hedge_type_policy())
 
-    return cleanup(all_sentences, current_year)
+    return cleanup(all_sentences, current_year), labels
 
 
-swapTypes = ["ir", "fx", "cp", "eq", "gen"]
-all_paragraphs = []
-for _ in range(10):
-    for swap in swapTypes:
-        all_paragraphs.append(generate_hedge_paragraph(True, swap))
-        all_paragraphs.append(generate_hedge_paragraph(False, swap))
-    all_paragraphs.append(generate_hedge_paragraph(None))
+def generate(size_per_label=100, max_workers=8):
+    all_samples = []
+    swap_types = ["ir", "fx", "cp", "gen"]
+    numSwaps = len(swap_types)
+    count = size_per_label // numSwaps
+    swap_counts = count * 3
+
+    def submit_tasks(executor):
+        futures = []
+        # Parallel hedge generation
+        for prefix in swap_types:
+            for _ in range(swap_counts):
+                futures.append(
+                    executor.submit(
+                        generate_hedge_paragraph,
+                        has_active_derivative=True,
+                        swapType=prefix,
+                    )
+                )
+            for _ in range(swap_counts):
+                futures.append(
+                    executor.submit(
+                        generate_hedge_paragraph,
+                        has_active_derivative=False,
+                        swapType=prefix,
+                    )
+                )
+            for _ in range(count):
+                futures.append(
+                    executor.submit(
+                        generate_hedge_paragraph,
+                        has_active_derivative=None,
+                        swapType=prefix,
+                    )
+                )
+
+        # # Parallel liability paragraphs
+        # for label_type in [4, 5, 6, 7, 3]:
+        #     for _ in range(count // 2):
+        #         futures.append(
+        #             executor.submit(
+        #                 generate_derivative_liability_paragraph, label_type=label_type
+        #             )
+        #         )
+
+        # # Parallel accounting noise
+        # for _ in range(size_per_label * 2):
+        #     futures.append(executor.submit(generate_accounting_noise_paragraph))
+
+        return futures
+
+    # --- Parallel execution with tqdm progress bar ---
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = submit_tasks(executor)
+        for future in tqdm(
+            as_completed(futures),
+            total=len(futures),
+            desc="Generating samples",
+        ):
+            # try:
+            paragraph, label = future.result()
+            all_samples.append((paragraph, label))
+            # except Exception as e:
+            #     print(f"Error during generation: {e}")
+    # Deboosting
+    # all_samples.extend(generate_deboost_dataset_concurrent(size_per_label))
+
+    # --- Create and sort DataFrame ---
+    df_new = pd.DataFrame(all_samples, columns=["sentence", "label"])
+    df_new.sort_values(by=["label", "sentence"], ascending=[True, True], inplace=True)
+    df_new.reset_index(drop=True, inplace=True)
+
+    # --- Write or append to Excel ---
+    try:
+        book = load_workbook(output_file)
+        with pd.ExcelWriter(
+            output_file, engine="openpyxl", mode="a", if_sheet_exists="overlay"
+        ) as writer:
+            df_new.to_excel(writer, sheet_name="Generated_Data", index=False)
+    except FileNotFoundError:
+        df_new.to_excel(output_file, sheet_name="Generated_Data", index=False)
+
+    print(f"\n{len(all_samples)} samples written/appended to {output_file} (sorted)")
+
+generate(1000)

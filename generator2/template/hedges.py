@@ -1295,11 +1295,11 @@ derivative_keywords = {
 
 hedge_payment_templates = generate_payment_templates()
 hedge_termination_templates = generate_termination_templates()
-hedge_types = ["ir", "fx", "cp", "eq", "gen"]
 hedge_position_templates = {}
 hedge_mitigation_templates = {}
 hedge_begin_context_templates = {}
-for ht in hedge_types:
+swap_t = ["ir", "fx", "cp", "eq", "gen"]
+for ht in swap_t:
     hedge_position_templates[ht] = generate_hedge_position_templates(ht)
     hedge_mitigation_templates[ht] = generate_hedge_mitigation_templates(ht)
     hedge_begin_context_templates[ht] = generate_hedge_begin_context_templates(ht)    
