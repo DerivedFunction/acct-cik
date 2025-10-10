@@ -277,8 +277,7 @@ def generate_hedge_paragraph(
 
     # Always mark a derivative mention
     labels["deriv"] = 1
-    labels[swapType] = 1  # Context for the specific hedge type
-
+    
     # -----------------------
     # Actual use
     # -----------------------
@@ -349,6 +348,7 @@ def generate_hedge_paragraph(
         return sentences
 
     def generate_derivative_sentences() -> list[str]:
+        labels[swapType] = 1  # Context for the specific hedge type
         """Generate derivative-related sentences for FX, IR, CP, or generic types."""
         sentences = []
 
@@ -484,6 +484,8 @@ def generate_hedge_paragraph(
         return sentence
 
     def hedge_policy() -> list[str]:
+        labels["spec"] = 1 #  A speculation
+        labels[swapType] = 0 # Not related to any swap
         sentences = []
         # Accounting policy (always)
         act_template = random.choice(hedge_policy_templates)
@@ -595,6 +597,7 @@ def generate_hedge_paragraph(
         sentences = []
         labels["deriv"] = 1
         labels["spec"] = 1
+        labels[swapType] = 0 # Not related to any swap
         # ==============================
         # 1. ISSUANCE STATEMENT
         # ==============================
@@ -742,13 +745,13 @@ def generate_hedge_paragraph(
     if has_active_derivative is None:
         if swapType is not None:
             # Specific hedge type policy
-            if random.random() < 0.75:
-                all_sentences.extend(hedge_type_policy())
-            else:
-                all_sentences.extend(generate_hedge_policy_update())
+            all_sentences.extend(hedge_type_policy())
         else:
             # Generic policy if no hedge type is given
-            all_sentences.extend(hedge_policy())
+            if random.random() < 0.65:
+                all_sentences.extend(hedge_policy())
+            else:
+                all_sentences.extend(generate_hedge_policy_update())
     else:
         all_sentences.extend(generate_derivative_sentences())
         # Chance to include policy
