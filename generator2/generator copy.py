@@ -88,7 +88,7 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
 
     if (
         paragraph.find("{") != -1
-        or paragraph.find("..") != -1
+        or paragraph.find(".." ) != -1
         or (paragraph.find("[") != -1 and checkBracket)
     ):
         print("Error in format", paragraph)
@@ -576,11 +576,161 @@ def generate_hedge_paragraph(
         random.shuffle(sentences)
         return sentences
 
+    def generate_hedge_policy_update():
+        sentences = []
+        labels["deriv"] = 1
+        labels["spec"] = 1
+        # ==============================
+        # 1. ISSUANCE STATEMENT
+        # ==============================
+        template = random.choice(hedge_change_policy_templates)
+        issuer = random.choice(shared_issuers)
+        standard = random.choice(hedge_standards)
+        topic = random.choice(
+            [
+                "derivatives and hedging",
+                "hedging activities",
+                "cash flow hedges",
+                "fair value hedges",
+            ]
+        )
+        purpose = random.choice(shared_purposes)
+        description = random.choice(hedging_descriptions)
+        extra = random.choice(hedging_additional_features)
+
+        issue_month = random.choice(months)
+        issue_year = random.randint(current_year - 8, current_year)
+        effective_year = issue_year + random.randint(2, 4)
+        eff_month = random.choice(months)
+        eff_day = random.randint(15, 31)
+
+        issuance_sentence = template.format(
+            month=issue_month,
+            year=issue_year,
+            issuer=issuer,
+            standard=standard,
+            topic=topic,
+            purpose=purpose,
+            description=description,
+            additional_feature=extra,
+            eff_month=eff_month,
+            eff_day=eff_day,
+            eff_year=effective_year,
+            company=pick_company_name(company_name),
+        )
+        sentences.append(issuance_sentence)
+
+        # Optional: Add effective date
+        if random.random() < 0.25:
+            eff_line = random.choice(shared_effective_date_templates).format(
+                company=pick_company_name(company_name),
+                month=eff_month,
+                day=random.randint(15, 31),
+                end_day=random.randint(15, 31),
+                year=effective_year,
+            )
+            sentences.append(eff_line)
+
+        # Optional: Add transition/disclosure/practical expedient
+        if random.random() < 0.2:
+            trans_line = random.choice(shared_transition_templates).format(
+                company=pick_company_name(company_name),
+                method=random.choice(shared_adoption_methods),
+                feature=random.choice(shared_transition_features),
+            )
+            sentences.append(trans_line)
+
+        if random.random() < 0.2:
+            disclosure_line = random.choice(shared_disclosure_change_templates).format(
+                company=pick_company_name(company_name),
+                disclosure_topic=random.choice(
+                    ["derivative disclosures", "risk management strategies"]
+                ),
+                disclosure_topic2=random.choice(
+                    ["hedge effectiveness", "notional amounts"]
+                ),
+                year=effective_year,
+            )
+            sentences.append(disclosure_line)
+
+        if random.random() < 0.15:
+            expedient_line = random.choice(shared_practical_expedient_templates).format(
+                company=pick_company_name(company_name),
+                expedient_description=random.choice(shared_transition_features),
+            )
+            sentences.append(expedient_line)
+
+        # ==============================
+        # 2. ADOPTION STATEMENT
+        # ==============================
+        adopt_template = random.choice(shared_adoption_status_templates)
+        adopt_standard = random.choice(hedge_standards)
+        adopt_method = random.choice(shared_adoption_methods)
+        adopt_month = random.choice(months)
+        adopt_day = random.randint(1, 28)
+        adopt_year = random.randint(current_year - 8, current_year + 4)
+
+        adoption_sentence = adopt_template.format(
+            company=pick_company_name(company_name),
+            standard=adopt_standard,
+            method=adopt_method,
+            month=adopt_month,
+            day=adopt_day,
+            year=adopt_year,
+        )
+        sentences.append(adoption_sentence)
+
+        # Optional: Adoption impact
+        if random.random() < 0.25:
+            impact_line = random.choice(shared_adoption_impact_templates).format(
+                company=pick_company_name(company_name),
+                impact=random.choice(
+                    [
+                        "a reduction in earnings volatility",
+                        "an increase in OCI from effective hedge portions",
+                        "no material impact on the consolidated financial statements",
+                    ]
+                ),
+            )
+            sentences.append(impact_line)
+
+        # ==============================
+        # 3. EVALUATION STATEMENT
+        # ==============================
+        evaluation_sentence = random.choice(shared_evaluation_templates).format(
+            company=pick_company_name(company_name)
+        )
+        sentences.append(evaluation_sentence)
+
+        # Optional: Recently issued pronouncement
+        if random.random() < 0.2:
+            pronouncement = random.choice(shared_recent_pronouncement_templates).format(
+                company=pick_company_name(company_name),
+                issuer=random.choice(shared_issuers),
+                standard=random.choice(hedge_standards),
+                topic=random.choice(
+                    [
+                        "hedging relationships",
+                        "cash flow hedge presentation",
+                        "fair value hedge accounting",
+                    ]
+                ),
+                month=random.choice(months),
+                year=random.randint(current_year - 2, current_year),
+                adoption_year=random.randint(current_year, current_year + 3),
+            )
+            sentences.append(pronouncement)
+
+        return sentences
+
     # Main Execution
     if has_active_derivative is None:
         if swapType is not None:
             # Specific hedge type policy
-            all_sentences.extend(hedge_type_policy())
+            if random.random() < 0.75:
+                all_sentences.extend(hedge_type_policy())
+            else:
+                all_sentences.extend(generate_hedge_policy_update())
         else:
             # Generic policy if no hedge type is given
             all_sentences.extend(hedge_policy())
@@ -811,7 +961,7 @@ def generate_noise_paragraph(
     debt_types = random.choice(debt_types_list)
     maturity_year = current_year + random.randint(3, 10)
     years = random.randint(3, 10)
-    
+
     template_pool = []
     if noise_type == 'eq' or noise_type == 'warr':
         template_pool.extend(equity_warrant_templates)
@@ -855,6 +1005,19 @@ def generate_noise_paragraph(
         return None, None, None
 
     template = random.choice(template_pool)
+    # Commodity setup
+    commodity = random.choice(commodities)
+    cp_list = [commodity if not commodity == "commodity" else commodity]
+    for _ in range(2):
+        cp_list.append(random.choice(commodities))
+        if random.random() < 0.5:
+            break
+    selected_cps = (
+        ", ".join(cp_list[:-1]) + " and " + cp_list[-1]
+        if len(cp_list) > 1
+        else cp_list[0]
+    )
+    selected_cps = selected_cps if random.random() < 0.85 else "commodity"
 
     replacements = {
         "{company}": pick_company_name(company_name),
@@ -886,7 +1049,7 @@ def generate_noise_paragraph(
         "{asset_type}": random.choice(asset_types),
         "{debt_types_list}": random.choice(debt_types_list),
         "{service_type}": random.choice(service_types),
-        "{items}": "Raw materials and finished goods",
+        "{items}": selected_cps,
         "{method}": random.choice(inventory_methods),
         "{reserve}": str(generate_value(False)),
         "{outstanding}": str(outstanding),
@@ -899,14 +1062,14 @@ def generate_noise_paragraph(
         "{major_currency}": major_currency,
         "{currency2}": random.choice(all_currencies),
         "{currency3}": random.choice(all_currencies),
-        "{location}": "other income (expense)",
+        "{location}": random.choice(balance_sheet_locations),
         "{reported_pct}": str(generate_value(False, 100)),
-        "{commodity}": random.choice(commodities),
+        "{commodity}": selected_cps,
         "{commodity2}": random.choice(commodities),
         "{commodity3}": random.choice(commodities),
         "{low_price}": str(generate_value(False, 50)),
         "{high_price}": str(generate_value(False, 200)),
-        "{unit}": "barrel",
+        "{unit}": random.choice(volume_units),
         "{volume}": str(generate_value(False, 100000)),
         "{cost}": str(generate_value(False, 100)),
         "{prev_cost}": str(generate_value(False, 100)),

@@ -1372,7 +1372,7 @@ other_topics = [
     "insurance contracts",
 ]
 
-other_standard_names = [
+other_standards = [
     "ASU 2016-02",  # Leases (ASC 842)
     "ASU 2014-09",  # Revenue Recognition (ASC 606)
     "ASU 2016-13",  # Credit Losses (ASC 326)
@@ -1418,7 +1418,7 @@ shared_effective_date_templates = [
 ]
 
 shared_adoption_status_templates = [
-    "{company} adopted this guidance on {month} {day}, {year} using the {method}",
+    "{company} adopted this guidance on {month} {day}, {year} using the {acct_method}",
     "{company} adopted {standard} effective {month} {day}, {year}",
     "{company} early adopted the standard in {year}",
     "{company} will adopt the guidance in fiscal year {year}",
@@ -1455,10 +1455,10 @@ shared_evaluation_templates = [
 ]
 
 shared_transition_templates = [
-    "{company} will apply the {method} upon adoption",
+    "{company} will apply the {acct_method} upon adoption",
     "{company} elected to apply the practical expedients available under the transition guidance",
-    "{company} intends to adopt the standard using the {method} with {feature}",
-    "{company} selected the {method} for transition purposes",
+    "{company} intends to adopt the standard using the {acct_method} with {feature}",
+    "{company} selected the {acct_method} for transition purposes",
 ]
 
 shared_transition_features = [

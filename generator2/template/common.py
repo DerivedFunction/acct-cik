@@ -165,3 +165,10 @@ volume_units = [
     "bushel",
     "board foot",
 ]
+balance_sheet_locations = [
+    "other income (expense), net",
+    "other comprehensive income",
+    "earnings",
+    "the consolidated statements of operations",
+    "statement of operations",
+]
