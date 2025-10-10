@@ -614,17 +614,17 @@ def generate_warrant_paragraph(
     # Setup common variables
     if company_name is None:
         company_name = random.choice(company_names) if random.random() < 0.95 else "The Company"
-    
+
     money_units = random.choice(money_unit_list)
     currency_code = random.choice(currency_codes)
-    
+
     current_year = random.randint(year_range[0], year_range[1])
     reporting_year = current_year
     num_past_years = random.randint(1, max_past_years)
     past_years = sorted(random.sample(range(current_year - 5, current_year), num_past_years))
     month = random.choice(months)
     end_day = random.randint(28, 31)
-    
+
     # Warrant specific variables
     shares = generate_value(False, 1000000)
     price = generate_value(False, 100)
@@ -666,17 +666,18 @@ def generate_warrant_paragraph(
         "{elimination}": random.choice(elimination_phrases),
         "{extinguishment}": random.choice(extinguishment_phrases),
         "{location}": random.choice(fv_change_locations),
+        "{quarter}": random.choice(quarters),
     }
-    
+
     sentence = template
     for key, value in replacements.items():
         sentence = sentence.replace(key, value)
 
     all_sentences = [sentence]
-    
+
     label = get_primary_label(labels)
     paragraph = cleanup(all_sentences, reporting_year)
-    
+
     return paragraph, labels, label
 
 def generate_emb_paragraph(
@@ -762,6 +763,7 @@ def generate_emb_paragraph(
         "{elimination}": random.choice(elimination_phrases),
         "{extinguishment}": random.choice(extinguishment_phrases),
         "{location}": random.choice(fv_change_locations),
+        "{quarter}": random.choice(quarters)
     }
 
     sentence = template
