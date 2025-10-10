@@ -82,7 +82,7 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
         paragraph = pattern_notional.sub("", paragraph)
 
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
-    paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
+    paragraph = pattern_dots.sub(".", paragraph)  # Remove double periods
 
     if paragraph.find("{") != -1 or (paragraph.find("[") != -1 and checkBracket):
         print("Error in format", paragraph)
@@ -378,14 +378,29 @@ def generate_hedge_paragraph(
 
         template = random.choice(hedge_position_templates[swapType])
         # --- Time logic ---
-        year = current_year if has_active_derivative else current_year - 1
+        if has_active_derivative:
+            year = current_year
+        else:
+            # 50-50 chance: current year or previous year
+            year = current_year if random.random() < 0.5 else current_year - 1
+
         prev_year, prev2_year = year - 1, year - 2
-        old_year = random.choice(past_years) - 1 if past_years else prev_year
+        old_year = random.choice(past_years) if past_years else prev_year
+
         future_year = (
             random.randint(current_year + 1, current_year + 5)
             if has_active_derivative
             else random.randint(old_year - 1, prev_year)
         )
+
+        # --- Notionals ---
+        notional = generate_value(False) if has_active_derivative else 0
+
+        # Previous notionals can still have some values for context
+        prev_notional = generate_value()
+        prev2_notional = generate_value()
+        old_notional = generate_value(False)
+
 
         # --- Notionals ---
         notional = (
