@@ -4276,24 +4276,46 @@ def generate_labeled_hedge_paragraph(
     company_name=None,
 ):
     """
-    Generate a synthetic hedge paragraph with known label.
+        Generate a synthetic hedge paragraph with known label.
 
-    Args:
-        has_active_derivative (bool or None):
-            - True: firm has active derivative in reporting year (label=0)
-            - False: firm does not have active derivative (label=1)
-            - None: policy/disclosure only, no specific positions (label=2)
-        swap_type (str): Type of derivative ('ir', 'fx', 'cp', 'gen')
-        year_range (tuple): (min_year, max_year) for the reporting year
-        max_past_years (int): Max number of prior years to include
-        max_len (int): Maximum number of sentences
-        include_policy (bool): Whether to include policy sentences with labels 0/1
-                              If None, randomly decides (70% chance)
-        company_name (str): Company name to use
+        Args:
+            has_active_derivative (bool or None):
+                - True: firm has active derivative in reporting year (label=0)
+                - False: firm does not have active derivative (label=1)
+                - None: policy/disclosure only, no specific positions (label=2)
+            swap_type (str): Type of derivative ('ir', 'fx', 'cp', 'gen')
+            year_range (tuple): (min_year, max_year) for the reporting year
+            max_past_years (int): Max number of prior years to include
+            max_len (int): Maximum number of sentences
+            include_policy (bool): Whether to include policy sentences with labels 0/1
+                                  If None, randomly decides (70% chance)
+            company_name (str): Company name to use
 
-    Returns:
-        tuple: (paragraph_text, label) where label is 0, 1, or 2
+        Returns:
+            tuple: (paragraph_text, label) where label {
+      "id2label": {
+        "0": "Derivative",
+        "1": "IR_Hedge",
+        "2": "FX_Hedge",
+        "3": "CP_Hedge",
+        "4": "Equity_or_Warrant",
+        "5": "Embedded_Derivative",
+        "6": "Current",
+        "7": "Historic",
+        "8": "Speculative_or_Policy",
+        "9": "Debt_Context",
+        "10": "FX_Context",
+        "11": "Equity_Context",
+        "12": "Commodity_or_Inventory_Context",
+        "13": "Embedded_Context",
+        "14": "Speculative_Context",
+        "15": "General_Context",
+        "16": "Irrelevant"
+      }
+    }
     """
+
+    labels  = [0 for _ range(16)]  
     # Decide whether to include policy statements for labels 0 and 1
     if include_policy is None:
         include_policy = random.random() < 0.15
@@ -4346,7 +4368,7 @@ def generate_labeled_hedge_paragraph(
     commodity = random.choice(commodities)
 
     all_sentences = []
-
+    
     # Determine label
     if has_active_derivative is None:
         if swapType == "gen":
@@ -5043,7 +5065,6 @@ def generate_labeled_hedge_paragraph(
         end_day = random.randint(28, 31)
         quarter = random.choice(quarters)
 
-
         selected_swap = []
         for _ in range(3):
             selected_swap.append(random.choice(swap_types))
@@ -5119,7 +5140,7 @@ def generate_labeled_hedge_paragraph(
                     pct=pct,
                     pct2=pct2,
                     years=years,
-                    hedge_type=hedge_type
+                    hedge_type=hedge_type,
                 )
                 sentences.append(sentence)
 
@@ -5146,7 +5167,11 @@ def generate_labeled_hedge_paragraph(
         else:
             if chance:
                 # generic fallback
-                template = random.choice(hedge_position_templates if random.random() < 0.85 else eq_position_templates)
+                template = random.choice(
+                    hedge_position_templates
+                    if random.random() < 0.85
+                    else eq_position_templates
+                )
             else:
                 template = random.choice(hedge_may_use_templates)
                 verb = random.choice(hedge_use_verbs)
@@ -5313,7 +5338,11 @@ def generate_labeled_hedge_paragraph(
         selected_sentences = all_sentences
     # Context sentences
     if include_policy or len(selected_sentences) < 2:
-        if has_active_derivative is not None and random.random() < 0.33 or len(selected_sentences) < 2:
+        if (
+            has_active_derivative is not None
+            and random.random() < 0.33
+            or len(selected_sentences) < 2
+        ):
             if random.random() < 0.35:
                 sentences = generate_additional_events()
             else:
