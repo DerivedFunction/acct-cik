@@ -152,26 +152,38 @@ def get_primary_label(labels: dict) -> int:
 
 def new_label():
     return {
-        # Context
-        "ir": 0, # Ex. debt
-        "fx": 0, # Ex. fx currency
-        "cp": 0, # Ex. cp prices
-        "eq": 0, # stock
-        "deriv": 0,  # generic derivative mention
-        # Actual use
-        "ir_use": 0, # Ex. int rate swaps
-        "fx_use": 0, # cross-currency swaps
-        "cp_use": 0, # commodity-price forward
-        "eq_use": 0, # equity swap
-        "gen_use": 0,  # any hedge use (flagged for any use)
-        # Time / status
-        "curr": 0,  # current derivative user
-        "hist": 0,  # historic/past derivative user
-        "spec": 0,  # speculative mention
-        # Other
-        "warr": 0,
-        "emb": 0,
-        "irr": 0,
+        # -----------------
+        # Context / Mention flags
+        # -----------------
+        "ir": 0,  # Interest rate derivative mentioned
+        "fx": 0,  # FX derivative mentioned
+        "cp": 0,  # Commodity derivative mentioned
+        "eq": 0,  # Equity derivative mentioned
+        "gen": 0,  # Generic derivative mention (not type-specific)
+        # -----------------
+        # Actual use flags
+        # -----------------
+        "ir_use": 0,  # Actively used interest rate derivative
+        "fx_use": 0,  # Actively used FX derivative
+        "cp_use": 0,  # Actively used commodity derivative
+        "eq_use": 0,  # Actively used equity derivative
+        "gen_use": 0,  # Actively used generic derivative (any hedge)
+        # -----------------
+        # Time / Status flags
+        # -----------------
+        "curr": 0,  # Current derivative user
+        "hist": 0,  # Historic/past derivative user
+        "spec": 0,  # Speculative mention (not confirmed use)
+        # -----------------
+        # Special derivative types
+        # -----------------
+        "warr": 0,  # Warrants
+        "emb": 0,  # Embedded derivatives
+        "irr": 0,  # Irrelevant / not a hedge
+        # -----------------
+        # Optional overall derivative flag
+        # -----------------
+        "deriv": 0,  # Any derivative mention (context + use)
     }
 
 
@@ -253,24 +265,35 @@ def generate_hedge_paragraph(
     # =====================
     # Assign multi-labels. The training data is only specific, but we need to watch out during actual model classification
     # =====================
-    # Hedge context
-    if swapType in ["ir", "fx", "cp", "eq"]:
-        labels[swapType] = 1  # context
-        labels["deriv"] = 1  # always a derivative mention
+    # Initialize labels
+    labels = new_label()
 
+    # Always mark a derivative mention
+    labels["deriv"] = 1
+    labels[swapType] = 1  # Context for the specific hedge type
+
+    # -----------------------
     # Actual use
-    if has_active_derivative is True:
+    # -----------------------
+    if has_active_derivative is not None:
+        # Mark specific hedge type as used
         labels[f"{swapType}_use"] = 1
-        labels["gen"] = 1  # hedge user
-        labels["curr"] = 1
-    elif has_active_derivative is False:
-        labels[f"{swapType}_use"] = 1
-        labels["hist"] = 1
-        labels["gen"] = 1  # hedge user
 
-    # Speculative
+        # Mark generic hedge use
+        labels["gen_use"] = 1
+
+        # Mark current vs historic
+        if has_active_derivative:
+            labels["curr"] = 1
+        else:
+            labels["hist"] = 1
+
+    # -----------------------
+    # Speculative mention
+    # -----------------------
     if include_policy:
-        labels["spec"] = 1 # speculative mention
+        # Only set spec if not actively using (optional, depends on your logic)
+        labels["spec"] = 1
 
     def generate_debt() -> list[str]:
         sentences = []
@@ -400,7 +423,7 @@ def generate_hedge_paragraph(
         sentences.append(sentence)
 
         # --- Expired hedges for non-active derivatives ---
-        if not has_active_derivative:
+        if not has_active_derivative and random.random() < 0.05:
             sentences.append(expire_hedge())
         # --- Chance of payment
         if random.random() < 0.15:
@@ -508,7 +531,6 @@ def generate_hedge_paragraph(
 
     def hedge_type_policy() -> list[str]:
         labels[swapType] = 1
-        labels["gen"] = 1
         labels["spec"] = 1
         sentences = []
         # begin context template (company, verb)
