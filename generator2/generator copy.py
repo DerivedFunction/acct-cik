@@ -6,6 +6,7 @@ import re
 import string
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
+import json
 
 from template.hedges import *
 from template.common import *
@@ -37,10 +38,13 @@ def generate_value(haveZero=True, upperlimit=1000):
         chance = 0.1
     else:
         chance = 0
-        
+
     upperlimit = int(upperlimit)
-    value = 0.0 if random.random() < chance else (1
-    if upperlimit <= 1 else random.randint(1, upperlimit))
+    value = (
+        0.0
+        if random.random() < chance
+        else (1 if upperlimit <= 1 else random.randint(1, upperlimit))
+    )
 
     if random.random() < 0.5:
         divisor = random.choice([10, 100])
@@ -70,10 +74,61 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
 
     if paragraph.find("{") != -1 or (paragraph.find("[") != -1 and checkBracket):
         print("Error in format", paragraph)
-    paragraph = (
-        f"<reportingYear>{reporting_year}</reportingYear> {paragraph}."
-    )
+    paragraph = f"<reportingYear>{reporting_year}</reportingYear> {paragraph}."
     return paragraph
+
+
+def get_primary_label(labels: dict) -> int:
+    """Convert multi-hot label dict into single categorical label (for id2label)."""
+
+    # Irrelevant override
+    if labels["irr"]:
+        return 3
+
+    # -------------------------
+    #  Interest Rate (IR)
+    # -------------------------
+    if labels["ir"]:
+        if labels["spec"]:
+            return 14
+        if labels["hist"]:
+            return 9
+        return 8
+
+    # -------------------------
+    #  Foreign Exchange (FX)
+    # -------------------------
+    if labels["fx"]:
+        if labels["spec"]:
+            return 15
+        if labels["hist"]:
+            return 11
+        return 10
+
+    # -------------------------
+    #  Commodity Price (CP)
+    # -------------------------
+    if labels["cp"]:
+        if labels["spec"]:
+            return 16
+        if labels["hist"]:
+            return 13
+        return 12
+
+    # -------------------------
+    #  Generic Hedge
+    # -------------------------
+    if labels["gen"] or labels["deriv"]:
+        if labels["spec"]:
+            return 2
+        if labels["hist"]:
+            return 1
+        return 0
+
+    # Default fallback
+    return 3  # Irrelevant
+
+
 def new_label():
     return {
         "deriv": 0,  # Derivative mention
@@ -85,13 +140,20 @@ def new_label():
         "fx": 0,  # FX Context
         "cp": 0,  # CP Context
         "eq": 0,  # EQ Context
+        "warr": 0,  # Derivative Warrants
         "emb": 0,  # Embedded Der. user
         "irr": 0,  # Irrelevant
     }
 
 
-def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1990, 2025),
-    max_past_years=3, include_policy=None, company_name=None):
+def generate_hedge_paragraph(
+    has_active_derivative,
+    swapType=None,
+    year_range=(1990, 2025),
+    max_past_years=3,
+    include_policy=None,
+    company_name=None,
+):
     labels = new_label()
     # Decide whether to include policy statements
     if include_policy is None and random.random() < 0.15:
@@ -145,7 +207,7 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
     # Commodity setup
     commodity = random.choice(commodities)
     selected_cps = ""
-    if swapType == "cp": # A various number of commodities
+    if swapType == "cp":  # A various number of commodities
         cp_list = [commodity if not commodity == "commodity" else commodity]
         for _ in range(2):
             cp_list.append(random.choice(commodities))
@@ -381,7 +443,7 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
             method = random.choice(hedge_methods)
             metric = random.choice(hedge_metrics)
             standard = random.choice(hedge_standards)
-            frequency=random.choice(frequencies)
+            frequency = random.choice(frequencies)
             sentences.append(
                 eff_template.format(
                     company=pick_company_name(company_name),
@@ -391,10 +453,10 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
                     metric=metric,
                     standard=standard,
                     frequency=frequency,
-                    hedge_type=hedge_type
+                    hedge_type=hedge_type,
                 )
             )
-        else: # company, freqency
+        else:  # company, freqency
             ineff_template = random.choice(hedge_ineffectiveness_templates)
             frequency = random.choice(frequencies)
             sentences.append(
@@ -409,7 +471,11 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
         sentences = []
         # begin context template (company, verb)
         beg_ctx_template = random.choice(hedge_begin_context_templates[swapType])
-        verb = random.choice(hedge_use_verbs) if has_active_derivative else random.choice(hedge_may_use_verbs)
+        verb = (
+            random.choice(hedge_use_verbs)
+            if has_active_derivative
+            else random.choice(hedge_may_use_verbs)
+        )
         sentences.append(
             beg_ctx_template.format(
                 company=pick_company_name(company_name),
@@ -439,7 +505,8 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
         if include_policy:
             all_sentences.extend(hedge_type_policy())
 
-    return cleanup(all_sentences, current_year), labels
+    label = get_primary_label(labels)
+    return cleanup(all_sentences, current_year), labels, label
 
 
 def generate(size_per_label=100, max_workers=8):
@@ -502,15 +569,20 @@ def generate(size_per_label=100, max_workers=8):
             desc="Generating samples",
         ):
             # try:
-            paragraph, label = future.result()
-            all_samples.append((paragraph, label))
+            paragraph, labels, label = future.result()
+            all_samples.append((paragraph, labels, label))
             # except Exception as e:
             #     print(f"Error during generation: {e}")
     # Deboosting
     # all_samples.extend(generate_deboost_dataset_concurrent(size_per_label))
 
     # --- Create and sort DataFrame ---
-    df_new = pd.DataFrame(all_samples, columns=["sentence", "label"])
+    df_new = pd.DataFrame(all_samples, columns=["sentence", "label", "labels"])
+
+    # Convert labels dicts → JSON strings for Excel compatibility
+    df_new["labels"] = df_new["labels"].apply(json.dumps)
+
+    # Sort and reset index
     df_new.sort_values(by=["label", "sentence"], ascending=[True, True], inplace=True)
     df_new.reset_index(drop=True, inplace=True)
 
