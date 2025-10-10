@@ -585,8 +585,8 @@ cp_specific_reasons = [
 
 # Special templates for accounting impact
 accounting_impact_templates = [
-    "{time_prefix}, {swap_type} were designated as {hedge_type} hedges, {reason}",
-    "{time_prefix}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}, {reason}",
+    "As of {month} {end_day}, {year}, {swap_type} were designated as {hedge_type} hedges, {reason}",
+    "At {end_day} {month}, {year}, {company} {verb} {swap_type} with a total notional amount of {currency_code}{notional} {money_unit}, {reason}",
     "The net unrealized loss on the {swap_type} was {currency_code}{notional} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income",
     "The net unrealized gain on the {swap_type} was {currency_code}{notional} {money_unit} at {month} {end_day}, {year} and is reflected in accumulated other comprehensive income",
 ]
