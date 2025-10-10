@@ -1,4 +1,5 @@
 import itertools
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ==============================================================================
 # MODULAR DERIVATIVE LIABILITIES TEMPLATE SYSTEM
@@ -31,12 +32,11 @@ valuation_models = [
 
 # Fair value change locations (shared)
 fv_change_locations = [
-    "other income (expense), net",
-    "change in fair value of derivative liabilities",
-    "other comprehensive income",
+    "other income (expense)",
     "earnings",
-    "the consolidated statements of operations",
-    "statement of operations",
+    "the consolidated statement of operations",
+    "other expense",
+    "changes in fair value of derivative liabilities",
 ]
 
 # Gain/loss indicators (shared)
@@ -666,33 +666,6 @@ def generate_convertible_redemption_templates():
         templates.extend(_expand_pattern(pattern))
     return templates
 
-
-# ==============================================================================
-# GENERATE ALL TEMPLATE SETS
-# ==============================================================================
-
-warrant_issuance_templates = generate_warrant_issuance_templates()
-warrant_fv_templates = generate_warrant_fv_templates()
-warrant_remeasurement_templates = generate_warrant_remeasurement_templates()
-earnout_templates = generate_earnout_templates()
-embedded_identification_templates = generate_embedded_identification_templates()
-embedded_types_templates = generate_embedded_types_templates()
-ccr_assessment_templates = generate_ccr_templates()
-embedded_fv_templates = generate_embedded_fv_templates()
-embedded_valuation_templates = generate_embedded_valuation_templates()
-embedded_fv_change_templates = generate_embedded_fv_change_templates()
-convertible_debt_templates = generate_convertible_debt_templates()
-embedded_fx_templates = generate_embedded_fx_templates()
-settlement_templates = generate_settlement_templates()
-warrant_past_templates = generate_warrant_past_templates()
-warrant_extinguishment_templates = generate_warrant_extinguishment_templates()
-earnout_past_templates = generate_earnout_past_templates()
-embedded_past_templates = generate_embedded_past_templates()
-convertible_redemption_templates = generate_convertible_redemption_templates()
-additional_standalone_templates = generate_additional_standalone_templates()
-
-# General derivative liability templates (no generation needed)
-deriv_liability_general_templates = deriv_liability_general
 # ==============================================================================
 # SEQUENTIAL TEMPLATE COMBINATIONS
 # ==============================================================================
@@ -702,7 +675,6 @@ warrant_full_disclosure_patterns = [
     "{issuance} {classification} {remeasurement}",
     "{issuance} {classification}",
 ]
-
 
 def generate_warrant_full_disclosure_templates():
     """Generate complete warrant disclosure sequences."""
@@ -727,7 +699,6 @@ embedded_full_disclosure_patterns = [
     "{identification} {ccr_assessment} {outcome}",
     "{identification} {ccr_assessment}",
 ]
-
 
 def generate_embedded_full_disclosure_templates():
     """Generate complete embedded derivative disclosure sequences."""
@@ -761,7 +732,6 @@ convertible_full_disclosure_patterns = [
     "{issuance} {bifurcation}",
 ]
 
-
 def generate_convertible_full_disclosure_templates():
     """Generate complete convertible debt disclosure sequences."""
     templates = []
@@ -782,7 +752,6 @@ warrant_historical_full_patterns = [
     "{historical} {extinguishment} {final_adjustment}",
     "{historical} {extinguishment}",
 ]
-
 
 def generate_warrant_historical_full_templates():
     """Generate complete historical warrant disclosure sequences."""
@@ -814,7 +783,6 @@ earnout_full_disclosure_patterns = [
     "{recording} {settlement_terms}",
 ]
 
-
 def generate_earnout_full_disclosure_templates():
     """Generate complete earnout disclosure sequences."""
     templates = []
@@ -840,7 +808,6 @@ embedded_fx_full_disclosure_patterns = [
     "{fx_identification} {ccr_analysis} {bifurcation_decision}",
     "{fx_identification} {ccr_analysis}",
 ]
-
 
 def generate_embedded_fx_full_disclosure_templates():
     """Generate complete embedded FX disclosure sequences."""
@@ -869,7 +836,6 @@ embedded_types_full_disclosure_patterns = [
     "{type_description} {fv_measurement}",
 ]
 
-
 def generate_embedded_types_full_disclosure_templates():
     """Generate complete embedded derivative type disclosure sequences."""
     templates = []
@@ -890,7 +856,6 @@ embedded_valuation_full_disclosure_patterns = [
     "{methodology} {fv_result}",
     "{methodology}",
 ]
-
 
 def generate_embedded_valuation_full_disclosure_templates():
     """Generate complete embedded valuation disclosure sequences."""
@@ -916,7 +881,6 @@ settlement_full_disclosure_patterns = [
     "{settlement_action} {financial_impact} {final_status}",
     "{settlement_action} {financial_impact}",
 ]
-
 
 def generate_settlement_full_disclosure_templates():
     """Generate complete settlement/conversion disclosure sequences."""
@@ -950,7 +914,6 @@ earnout_historical_full_disclosure_patterns = [
     "{past_recording} {settlement_action}",
 ]
 
-
 def generate_earnout_historical_full_disclosure_templates():
     """Generate complete earnout historical disclosure sequences."""
     templates = []
@@ -976,7 +939,6 @@ convertible_redemption_full_disclosure_patterns = [
     "{redemption_action} {derivative_impact} {balance_status}",
     "{redemption_action} {derivative_impact}",
 ]
-
 
 def generate_convertible_redemption_full_disclosure_templates():
     """Generate complete convertible redemption disclosure sequences."""
@@ -1004,28 +966,86 @@ def generate_convertible_redemption_full_disclosure_templates():
     return templates
 
 
-# Generate all additional sequential templates
-earnout_full_disclosure_templates = generate_earnout_full_disclosure_templates()
-embedded_fx_full_disclosure_templates = generate_embedded_fx_full_disclosure_templates()
-embedded_types_full_disclosure_templates = (
-    generate_embedded_types_full_disclosure_templates()
-)
-embedded_valuation_full_disclosure_templates = (
-    generate_embedded_valuation_full_disclosure_templates()
-)
-settlement_full_disclosure_templates = generate_settlement_full_disclosure_templates()
-earnout_historical_full_disclosure_templates = (
-    generate_earnout_historical_full_disclosure_templates()
-)
-convertible_redemption_full_disclosure_templates = (
-    generate_convertible_redemption_full_disclosure_templates()
-)
+def run_parallel_generation():
+    tasks = {
+        "warrant_issuance_templates": generate_warrant_issuance_templates,
+        "warrant_fv_templates": generate_warrant_fv_templates,
+        "warrant_remeasurement_templates": generate_warrant_remeasurement_templates,
+        "earnout_templates": generate_earnout_templates,
+        "embedded_identification_templates": generate_embedded_identification_templates,
+        "embedded_types_templates": generate_embedded_types_templates,
+        "ccr_assessment_templates": generate_ccr_templates,
+        "embedded_fv_templates": generate_embedded_fv_templates,
+        "embedded_valuation_templates": generate_embedded_valuation_templates,
+        "embedded_fv_change_templates": generate_embedded_fv_change_templates,
+        "convertible_debt_templates": generate_convertible_debt_templates,
+        "embedded_fx_templates": generate_embedded_fx_templates,
+        "settlement_templates": generate_settlement_templates,
+        "warrant_past_templates": generate_warrant_past_templates,
+        "warrant_extinguishment_templates": generate_warrant_extinguishment_templates,
+        "earnout_past_templates": generate_earnout_past_templates,
+        "embedded_past_templates": generate_embedded_past_templates,
+        "convertible_redemption_templates": generate_convertible_redemption_templates,
+        "additional_standalone_templates": generate_additional_standalone_templates,
+        "warrant_full_disclosure_templates": generate_warrant_full_disclosure_templates,
+        "embedded_full_disclosure_templates": generate_embedded_full_disclosure_templates,
+        "convertible_full_disclosure_templates": generate_convertible_full_disclosure_templates,
+        "warrant_historical_full_templates": generate_warrant_historical_full_templates,
+        "earnout_full_disclosure_templates": generate_earnout_full_disclosure_templates,
+        "embedded_fx_full_disclosure_templates": generate_embedded_fx_full_disclosure_templates,
+        "embedded_types_full_disclosure_templates": generate_embedded_types_full_disclosure_templates,
+        "embedded_valuation_full_disclosure_templates": generate_embedded_valuation_full_disclosure_templates,
+        "settlement_full_disclosure_templates": generate_settlement_full_disclosure_templates,
+        "earnout_historical_full_disclosure_templates": generate_earnout_historical_full_disclosure_templates,
+        "convertible_redemption_full_disclosure_templates": generate_convertible_redemption_full_disclosure_templates,
+    }
 
-# Generate all sequential templates
-warrant_full_disclosure_templates = generate_warrant_full_disclosure_templates()
-embedded_full_disclosure_templates = generate_embedded_full_disclosure_templates()
-convertible_full_disclosure_templates = generate_convertible_full_disclosure_templates()
-warrant_historical_full_templates = generate_warrant_historical_full_templates()
+    results = {}
+    with ThreadPoolExecutor() as executor:
+        future_to_key = {executor.submit(func): key for key, func in tasks.items()}
+        for future in as_completed(future_to_key):
+            key = future_to_key[future]
+            try:
+                results[key] = future.result()
+            except Exception as exc:
+                print(f'{key} generated an exception: {exc}')
+    return results
+
+generated_templates = run_parallel_generation()
+
+warrant_issuance_templates = generated_templates.get("warrant_issuance_templates", [])
+warrant_fv_templates = generated_templates.get("warrant_fv_templates", [])
+warrant_remeasurement_templates = generated_templates.get("warrant_remeasurement_templates", [])
+earnout_templates = generated_templates.get("earnout_templates", [])
+embedded_identification_templates = generated_templates.get("embedded_identification_templates", [])
+embedded_types_templates = generated_templates.get("embedded_types_templates", [])
+ccr_assessment_templates = generated_templates.get("ccr_assessment_templates", [])
+embedded_fv_templates = generated_templates.get("embedded_fv_templates", [])
+embedded_valuation_templates = generated_templates.get("embedded_valuation_templates", [])
+embedded_fv_change_templates = generated_templates.get("embedded_fv_change_templates", [])
+convertible_debt_templates = generated_templates.get("convertible_debt_templates", [])
+embedded_fx_templates = generated_templates.get("embedded_fx_templates", [])
+settlement_templates = generated_templates.get("settlement_templates", [])
+warrant_past_templates = generated_templates.get("warrant_past_templates", [])
+warrant_extinguishment_templates = generated_templates.get("warrant_extinguishment_templates", [])
+earnout_past_templates = generated_templates.get("earnout_past_templates", [])
+embedded_past_templates = generated_templates.get("embedded_past_templates", [])
+convertible_redemption_templates = generated_templates.get("convertible_redemption_templates", [])
+additional_standalone_templates = generated_templates.get("additional_standalone_templates", [])
+warrant_full_disclosure_templates = generated_templates.get("warrant_full_disclosure_templates", [])
+embedded_full_disclosure_templates = generated_templates.get("embedded_full_disclosure_templates", [])
+convertible_full_disclosure_templates = generated_templates.get("convertible_full_disclosure_templates", [])
+warrant_historical_full_templates = generated_templates.get("warrant_historical_full_templates", [])
+earnout_full_disclosure_templates = generated_templates.get("earnout_full_disclosure_templates", [])
+embedded_fx_full_disclosure_templates = generated_templates.get("embedded_fx_full_disclosure_templates", [])
+embedded_types_full_disclosure_templates = generated_templates.get("embedded_types_full_disclosure_templates", [])
+embedded_valuation_full_disclosure_templates = generated_templates.get("embedded_valuation_full_disclosure_templates", [])
+settlement_full_disclosure_templates = generated_templates.get("settlement_full_disclosure_templates", [])
+earnout_historical_full_disclosure_templates = generated_templates.get("earnout_historical_full_disclosure_templates", [])
+convertible_redemption_full_disclosure_templates = generated_templates.get("convertible_redemption_full_disclosure_templates", [])
+
+# General derivative liability templates (no generation needed)
+deriv_liability_general_templates = deriv_liability_general
 
 # ==============================================================================
 # TEMPLATE SETS FOR ML MODEL LABELS
