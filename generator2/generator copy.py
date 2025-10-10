@@ -88,70 +88,86 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
 
 
 def get_primary_label(labels: dict) -> int:
-    """Convert multi-hot label dict into single categorical label (for id2label)."""
+    """
+    Convert multi-hot label dict into a single categorical label.
 
-    # Irrelevant override
-    if labels["irr"]:
+    Prioritization:
+      1. Actual use (_use) → Current or Historic
+      2. Speculative mentions (spec)
+      3. Context only (no _use) → Current
+      4. Irrelevant
+    """
+
+    # --- Irrelevant override ---
+    if labels.get("irr"):
         return 3
 
-    # -------------------------
-    #  Interest Rate (IR)
-    # -------------------------
-    if labels["ir"]:
-        if labels["spec"]:
-            return 14
-        if labels["hist"]:
-            return 9
-        return 8
+    # --- Derivative Warrants ---
+    if labels.get("warr"):
+        return 5 if labels.get("hist") else 4
 
-    # -------------------------
-    #  Foreign Exchange (FX)
-    # -------------------------
-    if labels["fx"]:
-        if labels["spec"]:
-            return 15
-        if labels["hist"]:
-            return 11
-        return 10
+    # --- Embedded Derivatives ---
+    if labels.get("emb"):
+        return 7 if labels.get("hist") else 6
 
-    # -------------------------
-    #  Commodity Price (CP)
-    # -------------------------
-    if labels["cp"]:
-        if labels["spec"]:
-            return 16
-        if labels["hist"]:
-            return 13
-        return 12
+    # --- Hedge types mapping ---
+    hedge_map = {
+        "ir": (8, 9, 14),
+        "fx": (10, 11, 15),
+        "cp": (12, 13, 16),
+        "eq": (0, 1, 2),
+        "gen": (0, 1, 2),
+    }
 
-    # -------------------------
-    #  Generic Hedge
-    # -------------------------
-    if labels["gen"] or labels["deriv"]:
-        if labels["spec"]:
-            return 2
-        if labels["hist"]:
-            return 1
-        return 0
+    # Check actual use first
+    for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
+        if labels.get(f"{hedge_type}_use"):
+            curr_id, hist_id, spec_id = hedge_map[hedge_type]
+            if labels.get("curr"):
+                return curr_id
+            if labels.get("hist"):
+                return hist_id
+            if labels.get("spec"):
+                return spec_id
+            # Default fallback to current if only _use is flagged
+            return curr_id
 
-    # Default fallback
-    return 3  # Irrelevant
+    # Check speculative mention without actual use
+    for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
+        if labels.get(hedge_type) and labels.get("spec"):
+            return hedge_map[hedge_type][2]
+
+    # Check context only (no actual use)
+    for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
+        if labels.get(hedge_type):
+            return hedge_map[hedge_type][0]  # default to current
+
+    # Default fallback to irrelevant
+    return 3
 
 
 def new_label():
     return {
-        "deriv": 0,  # Derivative mention
-        "gen": 0,  # Hedge User
-        "curr": 0,  # Current Der. user
-        "hist": 0,  # Historic/Past Der. User
-        "spec": 0,  # Der. Speculative mention
-        "ir": 0,  # IR/Debt Context
-        "fx": 0,  # FX Context
-        "cp": 0,  # CP Context
-        "eq": 0,  # EQ Context
-        "warr": 0,  # Derivative Warrants
-        "emb": 0,  # Embedded Der. user
-        "irr": 0,  # Irrelevant
+        # Context
+        "ir": 0, # Ex. debt
+        "fx": 0, # Ex. fx currency
+        "cp": 0, # Ex. cp prices
+        "eq": 0, # stock
+        "deriv": 0,  # generic derivative mention
+        # Actual use
+        "ir_use": 0, # Ex. int rate swaps
+        "fx_use": 0, # cross-currency swaps
+        "cp_use": 0, # commodity-price forward
+        "eq_use": 0, # equity swap
+        "gen_use": 0,  # any hedge use (flagged for any use)
+        # Time / status
+        "curr": 0,  # current derivative user
+        "hist": 0,  # historic/past derivative user
+        "spec": 0,  # speculative mention
+        # Other
+        "warr": 0,
+        "emb": 0,
+        "irr": 0,
     }
 
 
@@ -231,21 +247,26 @@ def generate_hedge_paragraph(
     all_sentences = []
 
     # =====================
-    # Assign multi-labels
+    # Assign multi-labels. The training data is only specific, but we need to watch out during actual model classification
     # =====================
-    labels["deriv"] = 1  # Always a derivative mention
+    # Hedge context
     if swapType in ["ir", "fx", "cp", "eq"]:
-        labels[swapType] = 1  # Mark the hedge context
-        labels["gen"] = 1  # Always a hedge user
+        labels[swapType] = 1  # context
+        labels["deriv"] = 1  # always a derivative mention
 
-    # Current / Historic / Speculative
+    # Actual use
     if has_active_derivative is True:
+        labels[f"{swapType}_use"] = 1
+        labels["gen"] = 1  # hedge user
         labels["curr"] = 1
-    if has_active_derivative is False:
+    elif has_active_derivative is False:
+        labels[f"{swapType}_use"] = 1
         labels["hist"] = 1
-
-    if include_policy is True:
-        labels["spec"] = 1
+        labels["gen"] = 1  # hedge user
+        
+    # Speculative
+    if include_policy:
+        labels["spec"] = 1 # speculative mention
 
     def generate_debt():
         sentences = []
@@ -476,9 +497,12 @@ def generate_hedge_paragraph(
                     frequency=frequency,
                 )
             )
-        return sentences
+        return ". ".join(sentences) + "."
 
     def hedge_type_policy():
+        labels[swapType] = 1
+        labels["gen"] = 1
+        labels["spec"] = 1
         sentences = []
         # begin context template (company, verb)
         beg_ctx_template = random.choice(hedge_begin_context_templates[swapType])
