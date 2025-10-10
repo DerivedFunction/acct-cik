@@ -134,7 +134,7 @@ hedge_may_mitigation_verbs = ["may attempt","may seek","may pursue","may underta
 
 hedge_use_verbs = ["entered into", "executed", "utilized", "employed", "used", "had", "reported", "maintained", "committed", "implemented", 
                    "applied", "engaged in", "pursued", "utilizes", "employs", "uses", "maintains", "has", "have", "applies", "reports"]
-hedge_may_use_verbs = [ "may engage in", "may commit in", "may implement", "may enter into", "may utilize", "may employ", "may use", "may apply", "may have", "may pursu ]
+hedge_may_use_verbs = [ "may engage in", "may commit in", "may implement", "may enter into", "may utilize", "may employ", "may use", "may apply", "may have", "may pursue" ]
 
 hedge_change_verbs = ["increase", "decrease", "affect", "impact"]
 
@@ -145,6 +145,7 @@ hedge_methods = [
     "the dollar-offset method",
     "prospective and retrospective testing",
 ]
+
 hedge_standards = [
     "ASC 815",
     "applicable accounting guidance",

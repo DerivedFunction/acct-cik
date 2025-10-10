@@ -363,10 +363,28 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
                 verb=random.choice(hedge_may_use_verbs),
             )
         )
-        
+
         # Chance of documentation:
         if random.random() < 0.5:
-            
+            doc_template = random.choice(hedge_documentation_templates)
+            all_sentences.append(
+                doc_template.format(
+                    company=pick_company_name(company_name),
+                    hedge_type=hedge_type
+                )
+            )
+        # Chance of hedge effectiveness or hedge ineffectiveness (frequency, verb, swap_type, method, metric, standard)
+        if random.random() < 0.5:
+            eff_template = random.choice(hedge_effectiveness_templates)
+            verb = random.choice(hedge_use_verbs)
+            swap_type = random.choice(swap_types)
+            method = random.choice(hedge_methods)
+            metric = random.choice(hedge_metrics)
+            standard = random.choice(hedge_standards)
+            all_sentences.append(
+                eff_template.format(
+                    company=pick_company_name(company_name),
+                    
 
         return []
     # Main Execution
