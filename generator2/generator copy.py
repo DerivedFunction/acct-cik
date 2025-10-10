@@ -962,6 +962,152 @@ def generate_noise_paragraph(
     maturity_year = current_year + random.randint(3, 10)
     years = random.randint(3, 10)
 
+    def generate_other_policy_update():
+        sentences = []
+
+        # ==============================
+        # 1. ISSUANCE STATEMENT
+        # ==============================
+        template = random.choice(general_policy_templates)
+        issuer = random.choice(shared_issuers)
+        standard = random.choice(other_standards)
+        topic = random.choice(other_topics)
+        purpose = random.choice(shared_purposes)
+        description = random.choice(general_descriptions)
+        extra = random.choice(general_additional_features)
+
+        issue_month = random.choice(months)
+        issue_year = random.randint(current_year - 5, current_year)
+        effective_year = issue_year + random.randint(2, 4)
+        eff_month = random.choice(months)
+        eff_day = random.randint(15, 31)
+
+        issuance_sentence = template.format(
+            month=issue_month,
+            year=issue_year,
+            issuer=issuer,
+            standard=standard,
+            topic=topic,
+            purpose=purpose,
+            description=description,
+            additional_feature=extra,
+            eff_month=eff_month,
+            eff_day=eff_day,
+            eff_year=effective_year,
+            company=pick_company_name(company_name),
+        )
+        sentences.append(issuance_sentence)
+
+        # Optional: Add effective date, transition, disclosure, expedient
+        if random.random() < 0.3:
+            eff_line = random.choice(shared_effective_date_templates).format(
+                company=pick_company_name(company_name),
+                month=eff_month,
+                day=random.randint(1, 28),
+                end_day=random.randint(15, 31),
+                year=effective_year,
+            )
+            sentences.append(eff_line)
+
+        if random.random() < 0.2:
+            trans_line = random.choice(shared_transition_templates).format(
+                company=pick_company_name(company_name),
+                method=random.choice(shared_adoption_methods),
+                feature=random.choice(shared_transition_features),
+            )
+            sentences.append(trans_line)
+
+        if random.random() < 0.25:
+            disclosure_line = random.choice(shared_disclosure_change_templates).format(
+                company=pick_company_name(company_name),
+                disclosure_topic=random.choice(
+                    [
+                        "lease assets",
+                        "revenue recognition policies",
+                        "credit loss assumptions",
+                    ]
+                ),
+                disclosure_topic2=random.choice(
+                    ["disaggregation of revenue", "allowance methodology"]
+                ),
+                year=effective_year,
+            )
+            sentences.append(disclosure_line)
+
+        if random.random() < 0.15:
+            expedient_line = random.choice(shared_practical_expedient_templates).format(
+                company=pick_company_name(company_name),
+                expedient_description=random.choice(shared_transition_features),
+            )
+            sentences.append(expedient_line)
+
+        # ==============================
+        # 2. ADOPTION STATEMENT
+        # ==============================
+        adopt_template = random.choice(shared_adoption_status_templates)
+        adopt_standard = random.choice(other_standards)
+        adopt_method = random.choice(shared_adoption_methods)
+        adopt_month = random.choice(months)
+        adopt_day = random.randint(1, 28)
+        adopt_year = random.randint(current_year - 8, current_year + 4)
+
+        adoption_sentence = adopt_template.format(
+            company=pick_company_name(company_name),
+            standard=adopt_standard,
+            method=adopt_method,
+            month=adopt_month,
+            day=adopt_day,
+            year=adopt_year,
+        )
+        sentences.append(adoption_sentence)
+
+        # Optional: Adoption impact
+        if random.random() < 0.3:
+            impact_line = random.choice(shared_adoption_impact_templates).format(
+                company=pick_company_name(company_name),
+                impact=random.choice(
+                    [
+                        "recognition of additional lease liabilities",
+                        "a change in timing of revenue recognition",
+                        "no material impact on consolidated results",
+                    ]
+                ),
+            )
+            sentences.append(impact_line)
+
+        # ==============================
+        # 3. EVALUATION STATEMENT
+        # ==============================
+        evaluation_sentence = random.choice(shared_evaluation_templates).format(
+            company=pick_company_name(company_name)
+        )
+        sentences.append(evaluation_sentence)
+
+        # Optional: Recently issued pronouncement
+        if random.random() < 0.25:
+            pronouncement = random.choice(shared_recent_pronouncement_templates).format(
+                company=pick_company_name(company_name),
+                issuer=random.choice(shared_issuers),
+                standard=random.choice(other_standards),
+                topic=random.choice(other_topics),
+                month=random.choice(months),
+                year=random.randint(current_year - 2, current_year),
+                adoption_year=random.randint(current_year, current_year + 3),
+            )
+            sentences.append(pronouncement)
+
+        # Risk
+        materiality_choice = random.choice(materiality)
+        template = random.choice(risk_templates)
+        item = random.choice(risk_items_other)
+        sentence = template.format(
+            item=item,
+            company=pick_company_name(company_name),
+            materiality=materiality_choice,
+        )
+        sentences.append(sentence)
+        return sentences
+
     template_pool = []
     if noise_type == 'eq' or noise_type == 'warr':
         template_pool.extend(equity_warrant_templates)
@@ -1004,7 +1150,6 @@ def generate_noise_paragraph(
     if not template_pool:
         return None, None, None
 
-    template = random.choice(template_pool)
     # Commodity setup
     commodity = random.choice(commodities)
     cp_list = [commodity if not commodity == "commodity" else commodity]
@@ -1076,13 +1221,16 @@ def generate_noise_paragraph(
         "{change}": str(generate_value(False)),
     }
 
-    sentence = template
-    all_placeholders = re.findall(r'{\w+}', sentence)
-    for key in all_placeholders:
-        value = replacements.get(key, "a relevant value")
-        sentence = sentence.replace(key, str(value))
-
-    all_sentences = [sentence]
+    all_sentences = []
+    for _ in range(2, 4):
+        template = random.choice(template_pool)
+        sentence = template
+        all_placeholders = re.findall(r'{\w+}', sentence)
+        for key in all_placeholders:
+            value = replacements.get(key, "a relevant value")
+            sentence = sentence.replace(key, str(value))
+        all_sentences.append(sentence)
+    labels = new_label()
 
     label = get_primary_label(labels)
     paragraph = cleanup(all_sentences, reporting_year, checkBracket=False)
