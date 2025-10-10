@@ -59,9 +59,16 @@ def generate_value(haveZero=True, upperlimit=1000):
 
 
 def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = True):
+    """
+    Join sentences into a paragraph and apply sanitizing regexes.
+    Fixed: assign results of regex.sub back to paragraph so substitutions take effect.
+    """
     paragraph = ". ".join(all_sentences)
-    pattern_we_s.sub("Our", paragraph)
+
+    # Apply substitutions and assign back to paragraph
+    paragraph = pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
+
     if random.random() < 0.25:  # Chance to replace values with nil
         paragraph = pattern_nil.sub(
             random.choice([" nil", " 0", " 0.0", " 0.00"]), paragraph
@@ -69,11 +76,13 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
 
     if random.random() < 0.5:
         paragraph = pattern_notional.sub("", paragraph)
+
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
     paragraph = pattern_dots.sub("", paragraph)  # Remove double periods
 
     if paragraph.find("{") != -1 or (paragraph.find("[") != -1 and checkBracket):
         print("Error in format", paragraph)
+
     paragraph = f"<reportingYear>{reporting_year}</reportingYear> {paragraph}."
     return paragraph
 
@@ -156,7 +165,7 @@ def generate_hedge_paragraph(
 ):
     labels = new_label()
     # Decide whether to include policy statements
-    if include_policy is None and random.random() < 0.15:
+    if include_policy is None and random.random() < 0.35:
         include_policy = True
 
     # If has_active_derivative not given, default to speculative/policy
@@ -239,6 +248,7 @@ def generate_hedge_paragraph(
         labels["spec"] = 1
 
     def generate_debt():
+        sentences = []
         debt_type_list = []
         # Build the debt type combination
         for _ in range(3):
@@ -280,9 +290,10 @@ def generate_hedge_paragraph(
                 years=years,
                 hedge_type=hedge_type,
             )
-        return sentence
+            sentences.append(sentence)
+        return ". ".join(sentences) + "."
 
-    def generate_derivative_sentences(positionOnly=False):
+    def generate_derivative_sentences():
         """Generate derivative-related sentences for FX, IR, CP, or generic types."""
         sentences = []
 
@@ -498,7 +509,12 @@ def generate_hedge_paragraph(
 
     # Main Execution
     if has_active_derivative is None:
-        all_sentences.extend(hedge_policy())
+        if swapType is not None:
+            # Specific hedge type policy
+            all_sentences.extend(hedge_type_policy())
+        else:
+            # Generic policy if no hedge type is given
+            all_sentences.extend(hedge_policy())
     else:
         all_sentences.extend(generate_derivative_sentences())
         # Chance to include policy
@@ -510,6 +526,12 @@ def generate_hedge_paragraph(
 
 
 def generate(size_per_label=100, max_workers=8):
+    """
+    Generate the dataset. Fixed:
+      - Ensure DataFrame columns match the tuple order appended to all_samples.
+      - Convert the 'labels' dict column to JSON strings before sorting.
+      - Add a defensive assertion that each item is (sentence, labels_dict, label_int).
+    """
     all_samples = []
     swap_types = ["ir", "fx", "cp", "gen"]
     numSwaps = len(swap_types)
@@ -544,19 +566,14 @@ def generate(size_per_label=100, max_workers=8):
                         swapType=prefix,
                     )
                 )
-
-        # # Parallel liability paragraphs
-        # for label_type in [4, 5, 6, 7, 3]:
-        #     for _ in range(count // 2):
-        #         futures.append(
-        #             executor.submit(
-        #                 generate_derivative_liability_paragraph, label_type=label_type
-        #             )
-        #         )
-
-        # # Parallel accounting noise
-        # for _ in range(size_per_label * 2):
-        #     futures.append(executor.submit(generate_accounting_noise_paragraph))
+        for _ in range(count):
+            futures.append(
+                executor.submit(
+                    generate_hedge_paragraph,
+                    has_active_derivative=None,
+                    swapType=None,
+                )
+            )
 
         return futures
 
@@ -568,21 +585,21 @@ def generate(size_per_label=100, max_workers=8):
             total=len(futures),
             desc="Generating samples",
         ):
-            # try:
             paragraph, labels, label = future.result()
+            # Defensive checks to catch wrong tuple order early
+            assert isinstance(paragraph, str), "expected paragraph string as first item"
+            assert isinstance(labels, dict), "expected labels dict as second item"
+            assert isinstance(label, (int,)), "expected integer label as third item"
             all_samples.append((paragraph, labels, label))
-            # except Exception as e:
-            #     print(f"Error during generation: {e}")
-    # Deboosting
-    # all_samples.extend(generate_deboost_dataset_concurrent(size_per_label))
 
     # --- Create and sort DataFrame ---
-    df_new = pd.DataFrame(all_samples, columns=["sentence", "label", "labels"])
+    # IMPORTANT: tuple order is (sentence, labels_dict, label_int) so columns must match that order
+    df_new = pd.DataFrame(all_samples, columns=["sentence", "labels", "label"])
 
     # Convert labels dicts → JSON strings for Excel compatibility
     df_new["labels"] = df_new["labels"].apply(json.dumps)
 
-    # Sort and reset index
+    # Sort by numeric label and sentence text (both are hashable/scalar)
     df_new.sort_values(by=["label", "sentence"], ascending=[True, True], inplace=True)
     df_new.reset_index(drop=True, inplace=True)
 
