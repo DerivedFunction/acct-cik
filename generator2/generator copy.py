@@ -263,7 +263,7 @@ def generate_hedge_paragraph(
         labels[f"{swapType}_use"] = 1
         labels["hist"] = 1
         labels["gen"] = 1  # hedge user
-        
+
     # Speculative
     if include_policy:
         labels["spec"] = 1 # speculative mention
@@ -312,7 +312,7 @@ def generate_hedge_paragraph(
                 hedge_type=hedge_type,
             )
             sentences.append(sentence)
-        return ". ".join(sentences) + "."
+        return sentences
 
     def generate_derivative_sentences():
         """Generate derivative-related sentences for FX, IR, CP, or generic types."""
@@ -397,10 +397,12 @@ def generate_hedge_paragraph(
 
         # --- Expired hedges for non-active derivatives ---
         if not has_active_derivative:
-            sentences.extend(expire_hedge())
+            sentences.append(expire_hedge())
         # --- Chance of payment
         if random.random() < 0.15:
-            sentences.extend(hedge_payment())
+            sentences.append(hedge_payment())
+
+        random.shuffle(sentences)
         return sentences
 
     def expire_hedge():
@@ -419,7 +421,7 @@ def generate_hedge_paragraph(
             end_day=random.randint(28, 31),
             verb=verb,
         )
-        return [sentence]
+        return sentence
 
     def hedge_payment():
         # pick a random template from payment
@@ -434,7 +436,7 @@ def generate_hedge_paragraph(
             money_unit=money_units,
             month=month,
         )
-        return [sentence]
+        return sentence
 
     def hedge_policy():
         sentences = []
@@ -497,7 +499,8 @@ def generate_hedge_paragraph(
                     frequency=frequency,
                 )
             )
-        return ". ".join(sentences) + "."
+        random.shuffle(sentences)
+        return sentences
 
     def hedge_type_policy():
         labels[swapType] = 1
@@ -530,7 +533,7 @@ def generate_hedge_paragraph(
             )
         )
         random.shuffle(sentences)
-        return ". ".join(sentences) + "."
+        return sentences
 
     # Main Execution
     if has_active_derivative is None:
