@@ -31,11 +31,12 @@ valuation_models = [
 
 # Fair value change locations (shared)
 fv_change_locations = [
-    "other income (expense)",
+    "other income (expense), net",
+    "change in fair value of derivative liabilities",
+    "other comprehensive income",
     "earnings",
-    "the consolidated statement of operations",
-    "other expense",
-    "changes in fair value of derivative liabilities",
+    "the consolidated statements of operations",
+    "statement of operations",
 ]
 
 # Gain/loss indicators (shared)
@@ -507,14 +508,12 @@ def _expand_pattern(pattern):
         expanded.append(new_pattern)
     return expanded
 
-
 def generate_warrant_issuance_templates():
     """Generate all warrant issuance templates."""
     templates = []
     for connector in warrant_issuance_connectors:
         templates.extend(_expand_pattern(f"{connector} {{reason}}"))
     return templates
-
 
 def generate_warrant_fv_templates():
     """Generate all warrant fair value templates."""
@@ -524,17 +523,17 @@ def generate_warrant_fv_templates():
             templates.extend(_expand_pattern(f"{determination} {timing}"))
     return templates
 
-
 def generate_warrant_remeasurement_templates():
     """Generate all warrant remeasurement templates."""
     templates = []
     for remeasure in warrant_remeasurement:
         templates.extend(_expand_pattern(remeasure))
     # Add reasons
-    templates.extend(warrant_liability_reasons)
-    templates.extend(down_round_features)
+    for reason in warrant_liability_reasons:
+        templates.extend(_expand_pattern(reason))
+    for feature in down_round_features:
+        templates.extend(_expand_pattern(feature))
     return templates
-
 
 def generate_earnout_templates():
     """Generate all earnout templates."""
@@ -544,6 +543,12 @@ def generate_earnout_templates():
             templates.extend(_expand_pattern(f"{recording} {settlement}"))
     return templates
 
+def generate_additional_standalone_templates():
+    """Generate all additional standalone templates."""
+    templates = []
+    for phrase in additional_standalone:
+        templates.extend(_expand_pattern(phrase))
+    return templates
 
 def generate_embedded_identification_templates():
     """Generate all embedded derivative identification templates."""
@@ -551,9 +556,8 @@ def generate_embedded_identification_templates():
     for phrase in embedded_identification:
         templates.extend(_expand_pattern(phrase))
     # Add standalone
-    templates.extend(additional_standalone)
+    templates.extend(generate_additional_standalone_templates())
     return templates
-
 
 def generate_embedded_types_templates():
     """Generate all embedded derivative type templates."""
@@ -561,7 +565,6 @@ def generate_embedded_types_templates():
     for desc in embedded_type_descriptions:
         templates.extend(_expand_pattern(desc))
     return templates
-
 
 def generate_ccr_templates():
     """Generate all clearly and closely related assessment templates."""
@@ -571,7 +574,6 @@ def generate_ccr_templates():
     ):
         templates.extend(_expand_pattern(assessment))
     return templates
-
 
 def generate_embedded_fv_templates():
     """Generate all embedded derivative fair value templates."""
@@ -687,6 +689,7 @@ warrant_extinguishment_templates = generate_warrant_extinguishment_templates()
 earnout_past_templates = generate_earnout_past_templates()
 embedded_past_templates = generate_embedded_past_templates()
 convertible_redemption_templates = generate_convertible_redemption_templates()
+additional_standalone_templates = generate_additional_standalone_templates()
 
 # General derivative liability templates (no generation needed)
 deriv_liability_general_templates = deriv_liability_general
@@ -1028,9 +1031,16 @@ warrant_historical_full_templates = generate_warrant_historical_full_templates()
 # TEMPLATE SETS FOR ML MODEL LABELS
 # ==============================================================================
 
+warrant_liability_reasons_templates = []
+for reason in warrant_liability_reasons:
+    warrant_liability_reasons_templates.extend(_expand_pattern(reason))
+
+down_round_features_templates = []
+for feature in down_round_features:
+    down_round_features_templates.extend(_expand_pattern(feature))
+
 # For label "warr": 0 (Warrant Derivatives)
 # Use these template sets to identify warrant users and mentions
-
 warrant_templates_for_ml = {
     # CURRENT WARRANT USERS (warr=1, curr=1)
     "current_use": [
@@ -1038,7 +1048,7 @@ warrant_templates_for_ml = {
         warrant_fv_templates,  # Fair value measurements (current)
         warrant_remeasurement_templates,  # Active remeasurement disclosures
         warrant_full_disclosure_templates,  # Complete current disclosures
-        down_round_features,  # Down round provisions (current)
+        down_round_features_templates,  # Down round provisions (current)
     ],
     # HISTORICAL WARRANT USERS (warr=1, hist=1)
     "historical_use": [
@@ -1048,9 +1058,7 @@ warrant_templates_for_ml = {
     ],
     # SPECULATIVE/POLICY MENTIONS (warr=1, spec=1)
     "speculative": [
-        # Filter warrant_liability_reasons for policy statements
-        # Example: "Warrants accounted for as liabilities have the potential to be settled in cash..."
-        warrant_liability_reasons,
+        warrant_liability_reasons_templates,
     ],
 }
 
@@ -1088,9 +1096,7 @@ embedded_templates_for_ml = {
     # SPECULATIVE/POLICY MENTIONS (emb=1, spec=1)
     "speculative": [
         ccr_assessment_templates,  # CCR assessment discussions
-        ccr_assessment_neutral,  # Neutral CCR assessments
-        additional_standalone,  # Policy statements (SFAS 155, etc.)
-        # Filter for policy language like "may", "would", "could"
+        additional_standalone_templates,  # Policy statements (SFAS 155, etc.)
     ],
 }
 

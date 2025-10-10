@@ -165,20 +165,3 @@ volume_units = [
     "bushel",
     "board foot",
 ]
-assessment_verbs = [
-    "assessed",
-    "evaluated",
-    "tested",
-    "measured",
-    "analyzed",
-    "conducted",
-    "performed",
-]
-balance_sheet_locations = [
-    "other income (expense), net",
-    "change in fair value of derivative liabilities",
-    "other comprehensive income",
-    "earnings",
-    "the consolidated statements of operations",
-    "statement of operations",
-]
