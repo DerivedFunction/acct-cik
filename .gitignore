@@ -7,3 +7,4 @@ model
 logs
 *.db-journal
 *.parquet
+*.pyc

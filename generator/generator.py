@@ -759,7 +759,7 @@ def generate_labeled_hedge_paragraph(
     }
     """
 
-    labels  = [0 for _ range(16)]  
+    labels  = [0 for _ in range(16)]  
     # Decide whether to include policy statements for labels 0 and 1
     if include_policy is None:
         include_policy = random.random() < 0.15
