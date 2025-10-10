@@ -1,4 +1,6 @@
 import itertools
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
 
 # Derivatives
 derivative_template = {
@@ -1216,6 +1218,7 @@ def generate_hedge_position_templates(hedge_type="gen"):
             )
 
     return templates
+
 def generate_hedge_mitigation_templates(hedge_type="gen"):
     hedge_context_map = {
         "ir": ir_specific_mitigation,
@@ -1293,16 +1296,34 @@ derivative_keywords = {
     "eq": expand_derivative_terms([], [], derivative_template["EQ_STANDALONE"]),
 }
 
-hedge_payment_templates = generate_payment_templates()
-hedge_termination_templates = generate_termination_templates()
+tasks = {
+    "hedge_payment_templates": (generate_payment_templates, []),
+    "hedge_termination_templates": (generate_termination_templates, []),
+}
+swap_t = ["ir", "fx", "cp", "eq", "gen"]
+for ht in swap_t:
+    tasks[f"hedge_position_templates_{ht}"] = (generate_hedge_position_templates, [ht])
+    tasks[f"hedge_mitigation_templates_{ht}"] = (generate_hedge_mitigation_templates, [ht])
+    tasks[f"hedge_begin_context_templates_{ht}"] = (generate_hedge_begin_context_templates, [ht])
+
+results = {}
+with ThreadPoolExecutor(max_workers=len(tasks)) as executor:
+    future_to_key = {executor.submit(func, *args): key for key, (func, args) in tasks.items()}
+    for future in tqdm(as_completed(future_to_key), total=len(tasks), desc="Generating hedge templates"):
+        key = future_to_key[future]
+        try:
+            results[key] = future.result()
+        except Exception as exc:
+            print(f'{key} generated an exception: {exc}')
+            results[key] = []
+
+hedge_payment_templates = results["hedge_payment_templates"]
+hedge_termination_templates = results["hedge_termination_templates"]
+
 hedge_position_templates = {}
 hedge_mitigation_templates = {}
 hedge_begin_context_templates = {}
-swap_t = ["ir", "fx", "cp", "eq", "gen"]
 for ht in swap_t:
-    hedge_position_templates[ht] = generate_hedge_position_templates(ht)
-    hedge_mitigation_templates[ht] = generate_hedge_mitigation_templates(ht)
-    hedge_begin_context_templates[ht] = generate_hedge_begin_context_templates(ht)    
-
-# for i in hedge_payment_templates:
-#     print(i)
+    hedge_position_templates[ht] = results[f"hedge_position_templates_{ht}"]
+    hedge_mitigation_templates[ht] = results[f"hedge_mitigation_templates_{ht}"]
+    hedge_begin_context_templates[ht] = results[f"hedge_begin_context_templates_{ht}"]
