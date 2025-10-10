@@ -22,11 +22,10 @@ pattern_we_is = re.compile(r"We is", flags=re.IGNORECASE)
 pattern_nil = re.compile(r" (0|0.0) (thousand|million|billion)", flags=re.IGNORECASE)
 pattern_notional = re.compile(f"notional", flags=re.IGNORECASE)
 pattern_spaces = re.compile(r"\s+")
-pattern_dots = re.compile(r"\. +")
+pattern_dots = re.compile(r"\.+")
 
 company_name_df = pd.read_excel(company_name_file)
 company_names = list(company_name_df["name"])
-
 
 def pick_company_name(company_name: str) -> str:
     return random.choices([company_name, "The Company"], weights=[0.75, 0.25], k=1)[0]
@@ -663,6 +662,10 @@ def generate_warrant_paragraph(
         "{{verb}}": random.choice(assessment_verbs),
         "{{model}}": random.choice(valuation_models),
         "{{location}}": random.choice(fv_change_locations),
+        "{event}": random.choice(warrant_events),
+        "{elimination}": random.choice(elimination_phrases),
+        "{extinguishment}": random.choice(extinguishment_phrases),
+        "{location}": random.choice(fv_change_locations),
     }
     
     sentence = template
@@ -743,18 +746,22 @@ def generate_emb_paragraph(
         "{{verb}}": random.choice(assessment_verbs),
         "{{model}}": random.choice(valuation_models),
         "{{location}}": random.choice(fv_change_locations),
-        "{{host_contract}}": random.choice(host_contracts),
+        "{host_contract}": random.choice(host_contracts),
         "{{embedded_type}}": random.choice(embedded_types),
-        "{{currency_pair}}": random.choice(currency_pairs),
+        "{{currency_pair}}": f"{random.choice(currency_codes)}/{random.choice(currency_codes)}",
         "{{principal}}": str(principal),
         "{{embedded_fv}}": str(embedded_fv),
-        "{{change_direction}}": random.choice(change_directions),
+        "{change_direction}": random.choice(change_directions),
         "{{assumptions}}": random.choice(valuation_assumptions),
-        "{{gain_loss}}": random.choice(gain_loss_indicators),
+        "{gain_loss}": random.choice(gain_loss_indicators),
         "{{target}}": random.choice(company_names),
         "{{price}}": str(generate_value(False, 100)),
         "{{shares}}": str(generate_value(False, 1000000)),
         "{{expiry_year}}": str(current_year + random.randint(1, 10)),
+        "{event}": random.choice(warrant_events),
+        "{elimination}": random.choice(elimination_phrases),
+        "{extinguishment}": random.choice(extinguishment_phrases),
+        "{location}": random.choice(fv_change_locations),
     }
 
     sentence = template
@@ -870,4 +877,4 @@ def generate(size_per_label=100, max_workers=8):
 
     print(f"\n{len(all_samples)} samples written/appended to {output_file} (sorted)")
 
-generate(1000)
+generate(10)
