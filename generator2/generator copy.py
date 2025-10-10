@@ -159,11 +159,11 @@ def new_label():
         # -----------------
         # Context / Mention flags
         # -----------------
-        "ir": 0,  # Interest rate derivative mentioned
-        "fx": 0,  # FX derivative mentioned
-        "cp": 0,  # Commodity derivative mentioned
-        "eq": 0,  # Equity derivative mentioned
-        "gen": 0,  # Generic derivative mention (not type-specific)
+        "ir": 0,  # Interest rate context mentioned
+        "fx": 0,  # FX context mentioned
+        "cp": 0,  # Commodity context mentioned
+        "eq": 0,  # Equity context mentioned
+        "gen": 0,  # Generic derivative context mention (not type-specific)
         # -----------------
         # Actual use flags
         # -----------------
@@ -181,7 +181,7 @@ def new_label():
         # -----------------
         # Special derivative types
         # -----------------
-        "warr": 0,  # Warrants
+        "warr": 0,  # Warrant Derivatives
         "emb": 0,  # Embedded derivatives
         "irr": 0,  # Irrelevant / not a hedge
         # -----------------
