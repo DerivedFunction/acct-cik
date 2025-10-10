@@ -1123,27 +1123,26 @@ def generate_noise_paragraph(
 
     template_pool = []
     all_sentences = []
-    if noise_type == 'eq' or noise_type == 'warr': # ex. equity, warrant, stock
+    if noise_type == "eq" or noise_type == "warr":  # ex. equity, warrant, stock
         labels["eq"] = 1
         template_pool.extend(noise_templates["EQ"])
-    elif noise_type == 'cp': # ex. inventory
+    elif noise_type == "cp":  # ex. inventory
         labels["cp"] = 1
         template_pool.extend(noise_templates["CP"])
-    elif noise_type == 'ir': # ex. debt
+    elif noise_type == "ir":  # ex. debt
         labels["ir"] = 1
         template_pool.extend(noise_templates["IR"])
-    elif noise_type == 'fx': # ex. currency
+    elif noise_type == "fx":  # ex. currency
         labels["fx"] = 1
         template_pool.extend(noise_templates["FX"])
-    elif noise_type == "deriv": # ex. derivative lawsuits (irr)
+    elif noise_type == "deriv":  # ex. derivative lawsuits (irr)
         template_pool.extend(noise_templates["LAW"])
-    elif noise_type == "spec": # ex. acct standards (irr)
+    elif noise_type == "spec":  # ex. acct standards (irr)
         all_sentences = generate_other_policy_update()
     else:
-        for template_list in noise_templates.values(): # Everything else can be mixed together
-            if template_list not in ["IR", "FX", "CP", "EQ", "LAW", "DER"]:
-                template_pool.extend(template_list)
-    if not template_pool:
+        # Everything else can be mixed together
+        template_pool.extend(other_templates)
+    if not template_pool and not all_sentences:
         return None, None, None
 
     # Commodity setup
