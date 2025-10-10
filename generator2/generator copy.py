@@ -54,7 +54,8 @@ def generate_value(haveZero=True, upperlimit=1000):
     return value
 
 
-def cleanup(paragraph: str, reporting_year: int, checkBracket: bool = True):
+def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = True):
+    paragraph = ". ".join(all_sentences)
     pattern_we_s.sub("Our", paragraph)
     paragraph = pattern_we_is.sub("We are", paragraph)
     if random.random() < 0.25:  # Chance to replace values with nil
@@ -168,7 +169,7 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
         labels["curr"] = 1
     if has_active_derivative is False:
         labels["hist"] = 1
-    
+
     if include_policy is True:
         labels["spec"] = 1
 
@@ -405,7 +406,16 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
 
     def hedge_type_policy():
         sentences = []
-        
+        # context template (company, verb)
+        ctx_template = random.choice(hedge_context_templates[swapType])
+        verb = random.choice(hedge_use_verbs) if has_active_derivative else random.choice(hedge_may_use_verbs)
+        sentences.append(
+            ctx_template.format(
+                company=pick_company_name(company_name),
+                verb=verb,
+            )
+        )
+
     # Main Execution
     if has_active_derivative is None:
         all_sentences.extend(hedge_policy())
@@ -413,5 +423,6 @@ def generate_hedge_paragraph(has_active_derivative, swapType=None, year_range=(1
         all_sentences.extend(generate_derivative_sentences())
         # Chance to include policy
         if include_policy:
-            all_sentences.extend(hedge_policy())
-    
+            all_sentences.extend(hedge_type_policy())
+
+    return cleanup(all_sentences, current_year)
