@@ -43,7 +43,7 @@ sec_toc_patterns = [
     "Item 15. Exhibits, Financial Statement Schedules {page}",
     "SIGNATURES {page}",
 ]
-# ============ LITIGATION AND LEGAL MATTERS ============
+# ============ LITIGATION AND LEGAL MATTERS ============ 
 
 litigation_templates = [
     "{company} is involved in various legal proceedings and claims arising in the ordinary course of business, including {case_types}",
@@ -123,7 +123,7 @@ allegations = [
     "violation of antidiscrimination provisions under Title VII",
     "failure to comply with OSHA workplace safety regulations",
 ]
-# ============ EQUITY WARRANTS (NON-DERIVATIVE) ============
+# ============ EQUITY WARRANTS (NON-DERIVATIVE) ============ 
 
 equity_warrant_templates = [
     "{company} has {shares} equity-classified warrants outstanding with an exercise price of {currency_code}{price} per share, exercisable until {expiry_year}",
@@ -187,7 +187,7 @@ warrant_events = [
     "mezzanine financing agreements",
 ]
 
-# ============ REVENUE RECOGNITION ============
+# ============ REVENUE RECOGNITION ============ 
 
 revenue_recognition_templates = [
     "{company} recognizes revenue when control of promised goods or services is transferred to customers in an amount that reflects the consideration expected to be received",
@@ -223,20 +223,20 @@ deferred_revenue_templates = [
     "Deferred revenue balances are expected to be recognized as revenue consistent with the satisfaction of contractual obligations over time",
 ]
 
-# ============ INVENTORY ============
+# ============ INVENTORY ============ 
 
 inventory_templates = [
-    "{items} inventories are stated at the lower of cost or net realizable value, with cost determined using the {method} method",
+    "{commodities} inventories are stated at the lower of cost or net realizable value, with cost determined using the {method} method",
     "{company} values inventory using the {method} cost method and regularly reviews for obsolescence",
-    "Inventory consists of {items} valued at the lower of cost (determined by {method}) or net realizable value",
-    "As of {month} {end_day}, {year}, {items} inventories totaled {currency_code}{amount} {money_unit}, net of obsolescence reserves of {currency_code}{reserve} {money_unit}",
-    "{items} inventories are reviewed periodically for slow-moving or obsolete items, with reserves recorded when necessary to reduce carrying values",
-    "{items} inventories are stated at standard cost (approximating actual cost) under the {method} method, adjusted to net realizable value if necessary",
-    "{items} are valued at purchase cost while manufactured inventories include labor and overhead allocated using the {method} method",
-    "{items} inventory is written down to market value when estimated selling prices are less than cost",
+    "Inventory consists of {commodities} valued at the lower of cost (determined by {method}) or net realizable value",
+    "As of {month} {end_day}, {year}, {commodities} inventories totaled {currency_code}{amount} {money_unit}, net of obsolescence reserves of {currency_code}{reserve} {money_unit}",
+    "{commodities} inventories are reviewed periodically for slow-moving or obsolete items, with reserves recorded when necessary to reduce carrying values",
+    "{commodities} inventories are stated at standard cost (approximating actual cost) under the {method} method, adjusted to net realizable value if necessary",
+    "{commodities} are valued at purchase cost while manufactured inventories include labor and overhead allocated using the {method} method",
+    "{commodities} inventory is written down to market value when estimated selling prices are less than cost",
     "As of {month} {end_day}, {year}, {company} maintained obsolescence reserves of {currency_code}{reserve} {money_unit} against total inventories of {currency_code}{amount} {money_unit}",
-    "{items} inventory include {items} valued at the lower of cost (determined by {method}) or net realizable value",
-    "{company} records provisions for excess and obsolete {items} inventories based on expected future demand, market conditions, and {items} life cycles",
+    "{commodities} inventory include {commodities} valued at the lower of cost (determined by {method}) or net realizable value",
+    "{company} records provisions for excess and obsolete {commodities} inventories based on expected future demand, market conditions, and {commodities} life cycles",
 ]
 
 inventory_methods = [
@@ -250,22 +250,22 @@ inventory_methods = [
 ]
 
 inventory_writedown_templates = [
-    "During {year}, {company} recorded {items} inventory write-downs of {currency_code}{amount} {money_unit} due to obsolescence and excess quantities",
-    "{items} inventory reserves increased by {currency_code}{amount} {money_unit} in {year} to reflect lower of cost or market adjustments",
-    "{company} recognized {currency_code}{amount} {money_unit} in charges related to slow-moving and obsolete {items} inventory during {year}",
-    "{items} inventory obsolescence charges totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
-    "As of {month} {end_day}, {year}, {company} maintained {items} reserves of {currency_code}{amount} {money_unit} for excess and obsolete inventories",
+    "During {year}, {company} recorded {commodities} inventory write-downs of {currency_code}{amount} {money_unit} due to obsolescence and excess quantities",
+    "{commodities} inventory reserves increased by {currency_code}{amount} {money_unit} in {year} to reflect lower of cost or market adjustments",
+    "{company} recognized {currency_code}{amount} {money_unit} in charges related to slow-moving and obsolete {commodities} inventory during {year}",
+    "{commodities} inventory obsolescence charges totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, {company} maintained {commodities} reserves of {currency_code}{amount} {money_unit} for excess and obsolete inventories",
     "Write-downs of {currency_code}{amount} {money_unit} were recorded in {year} primarily related to discontinued product lines",
     "{company} recorded {currency_code}{amount} {money_unit} in inventory write-downs due to declining market demand during {year}",
     "Charges for inventory valuation adjustments were {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in the prior year",
     "{company} recorded inventory write-downs associated with aging components and spare parts totaling {currency_code}{amount} {money_unit} during {year}",
-    " {items} inventory reserves increased to {currency_code}{amount} {money_unit} at year-end {year}, reflecting adjustments for lower selling prices and product obsolescence",
+    " {commodities} inventory reserves increased to {currency_code}{amount} {money_unit} at year-end {year}, reflecting adjustments for lower selling prices and product obsolescence",
     "Total charges of {currency_code}{amount} {money_unit} were recognized in cost of goods sold for inventory write-downs in {year}",
     "Inventory write-downs of {currency_code}{amount} {money_unit} were partially offset by recoveries of {currency_code}{prev_amount} {money_unit} related to previously reserved items",
     "{company} established new reserves of {currency_code}{amount} {money_unit} in {year} for excess quantities, reflecting updated demand forecasts",
 ]
 
-# ============ PROPERTY, PLANT & EQUIPMENT ============
+# ============ PROPERTY, PLANT & EQUIPMENT ============ 
 
 ppe_templates = [
     "Property, plant and equipment are stated at cost less accumulated depreciation, which is computed using the straight-line method over estimated useful lives",
@@ -342,7 +342,7 @@ asset_types = [
     "renewable energy facilities",
 ]
 
-# ============ LEASES ============
+# ============ LEASES ============ 
 
 lease_templates = [
     "{company} leases office space, manufacturing facilities, and equipment under operating and finance leases with terms ranging from {min_term} to {max_term} years",
@@ -368,7 +368,7 @@ lease_commitment_templates = [
     "Lease commitments include renewal options reasonably certain to be exercised, totaling {currency_code}{amount} {money_unit}",
 ]
 
-# ============ GOODWILL AND INTANGIBLES ============
+# ============ GOODWILL AND INTANGIBLES ============ 
 
 goodwill_templates = [
     "Goodwill totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}, and is not amortized but tested for impairment annually",
@@ -391,7 +391,7 @@ intangible_types = [
     "brand names, proprietary technology, and customer relationships",
 ]
 
-# ============ DEBT AND CREDIT FACILITIES ============
+# ============ DEBT AND CREDIT FACILITIES ============ 
 
 debt_templates = [
     # General facilities and balances
@@ -464,7 +464,7 @@ debt_covenant_templates = [
     "{company}\'s credit agreements require maintenance of specified leverage and coverage ratios, which {company} met as of {month} {end_day}, {year}",
 ]
 
-# ============ INCOME TAXES ============
+# ============ INCOME TAXES ============ 
 
 tax_templates = [
     "The provision for income taxes was {currency_code}{amount} {money_unit} for {year}, resulting in an effective tax rate of {rate}%",
@@ -487,7 +487,7 @@ uncertain_tax_templates = [
     "It is reasonably possible that {currency_code}{amount} {money_unit} of unrecognized tax benefits could be recognized within the next twelve months",
 ]
 
-# ============ STOCK-BASED COMPENSATION ============
+# ============ STOCK-BASED COMPENSATION ============ 
 
 stock_comp_templates = [
     "Stock-based compensation expense was {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
@@ -503,7 +503,7 @@ stock_comp_valuation_templates = [
     "The weighted-average grant-date fair value of options granted during {year} was {currency_code}{amount} per share",
 ]
 
-# ============ PENSION AND POSTRETIREMENT BENEFITS ============
+# ============ PENSION AND POSTRETIREMENT BENEFITS ============ 
 
 pension_templates = [
     "{company} sponsors defined benefit pension plans covering certain employees, with plan assets of {currency_code}{assets} {money_unit} and projected benefit obligations of {currency_code}{obligations} {money_unit} as of {month} {end_day}, {year}",
@@ -519,7 +519,7 @@ opeb_templates = [
     "{company}\'s postretirement benefit plans are unfunded, with liabilities recorded in other long-term liabilities",
 ]
 
-# ============ COMMITMENTS AND CONTINGENCIES ============
+# ============ COMMITMENTS AND CONTINGENCIES ============ 
 
 purchase_commitment_templates = [
     "{company} has purchase commitments with suppliers totaling approximately {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
@@ -542,7 +542,7 @@ guarantee_types = [
     "intellectual property indemnifications and debt guarantees",
 ]
 
-# ============ RESTRUCTURING ============
+# ============ RESTRUCTURING ============ 
 
 restructuring_templates = [
     "During {year}, {company} initiated a restructuring plan to {purpose}, resulting in charges of {currency_code}{amount} {money_unit}",
@@ -565,7 +565,7 @@ restructuring_expense_types = [
     "workforce reductions and lease terminations",
 ]
 
-# ============ ACQUISITIONS (NON-DERIVATIVE ASPECTS) ============
+# ============ ACQUISITIONS (NON-DERIVATIVE ASPECTS) ============ 
 
 acquisition_templates = [
     "In {month} {year}, {company} acquired {target} for total consideration of {currency_code}{amount} {money_unit} in cash",
@@ -940,7 +940,7 @@ clawback_templates = [
     "The Board may require reimbursement of performance-based compensation under the clawback policy if performance goals are not actually achieved",
     "Incentive compensation paid to executives is subject to clawback provisions as required by the Dodd-Frank Act and SEC regulations",
 ]
-# ========== MARKET PRICES AND TRADING ==========
+# ========== MARKET PRICES AND TRADING ========== 
 stock_price_templates = [
     '{company} \'s common stock trades on the {exchange} under the ticker symbol "{ticker}"',
     "Shares of common stock closed at {currency_code}{price} on {month} {end_day}, {year}, compared to {currency_code}{prev_price} at {month} {end_day}, {prev_year}",
@@ -969,7 +969,7 @@ trading_volume_templates = [
 
 volatility_levels = ["elevated", "moderate", "reduced", "increased", "stable"]
 
-# ========== ABOUT {company} / BUSINESS DESCRIPTION ==========
+# ========== ABOUT {company} / BUSINESS DESCRIPTION ========== 
 company_description_templates = [
     "{company} is a {industry} company that {business_activity}",
     "{company} operates in the {industry} sector, providing {products_services} to customers in {geography}",
@@ -1008,7 +1008,7 @@ segment_examples = [
     "Technology, Healthcare, and Industrial",
 ]
 
-# ========== HEDGE FUNDS AND INSTITUTIONAL OWNERSHIP ==========
+# ========== HEDGE FUNDS AND INSTITUTIONAL OWNERSHIP ========== 
 institutional_ownership_templates = [
     "As of {month} {end_day}, {year}, institutional investors held approximately {pct}% of {company}\'s outstanding shares",
     "{fund_name} reported a {pct}% ownership stake in {company} as of {month} {end_day}, {year}",
@@ -1039,7 +1039,7 @@ insider_actions = [
     "net sales",
 ]
 
-# ========== FORWARD-LOOKING STATEMENTS ==========
+# ========== FORWARD-LOOKING STATEMENTS ========== 
 forward_looking_templates = [
     "This report contains forward-looking statements within the meaning of the Private Securities Litigation Reform Act of 1995",
     "Forward-looking statements include, but are not limited to, statements regarding {topics}",
@@ -1080,7 +1080,7 @@ safe_harbor_templates = [
     "This document contains forward-looking statements that are protected by the safe harbor provisions for such statements",
 ]
 
-# ========== ANALYST COVERAGE AND ESTIMATES ==========
+# ========== ANALYST COVERAGE AND ESTIMATES ========== 
 analyst_coverage_templates = [
     "{company} is currently covered by {number} equity research analysts",
     "Analyst consensus estimates for {year} project earnings per share of {currency_code}{eps} and revenue of {currency_code}{revenue} {money_unit}",
@@ -1090,7 +1090,7 @@ analyst_coverage_templates = [
     "{company} does not provide guidance but is followed by several sell-side analysts who publish earnings estimates",
 ]
 
-# ========== CREDIT RATINGS ==========
+# ========== CREDIT RATINGS ========== 
 credit_rating_templates = [
     "{company}\'s senior unsecured debt is rated {rating} by {agency} and {rating2} by {agency2}",
     "{agency} maintains a {rating} credit rating on {company} with a {outlook} outlook",
@@ -1105,7 +1105,7 @@ credit_ratings = ["BBB+", "BBB", "BBB-", "A-", "A", "Baa1", "Baa2", "Baa3"]
 rating_outlooks = ["stable", "positive", "negative", "under review"]
 rating_actions = ["upgraded", "downgraded", "affirmed", "revised"]
 
-# ========== DIVIDEND AND CAPITAL ALLOCATION ==========
+# ========== DIVIDEND AND CAPITAL ALLOCATION ========== 
 dividend_policy_templates = [
     "{company} has paid consecutive quarterly dividends since {year}",
     "In {month} {year}, the Board of Directors declared a quarterly dividend of {currency_code}{amount} per share, payable on {month} {end_day}, {year}",
@@ -1125,7 +1125,7 @@ share_repurchase_templates = [
     "No shares were repurchased during {year} as {company} prioritized debt reduction and organic growth investments",
 ]
 
-# ========== COMPETITIVE LANDSCAPE ==========
+# ========== COMPETITIVE LANDSCAPE ========== 
 competition_templates = [
     "{company} operates in a highly competitive industry characterized by {characteristics}",
     "Principal competitors include {competitor1}, {competitor2}, and {competitor3}",
@@ -1157,7 +1157,7 @@ competitive_advantages = [
     "vertically integrated operations, cost structure, and distribution network",
 ]
 
-# ========== REGULATORY AND COMPLIANCE ==========
+# ========== REGULATORY AND COMPLIANCE ========== 
 regulatory_templates = [
     "{company} is subject to extensive regulation by {regulators} governing {areas}",
     "Compliance with environmental, health, and safety regulations resulted in costs of approximately {currency_code}{amount} {money_unit} during {year}",
@@ -1182,7 +1182,7 @@ regulatory_areas = [
     "marketing practices, product labeling, and quality standards",
 ]
 
-# ========== INSURANCE AND RISK MANAGEMENT ==========
+# ========== INSURANCE AND RISK MANAGEMENT ========== 
 insurance_templates = [
     "{company} maintains insurance coverage for property, casualty, general liability, and other risks in amounts considered adequate",
     "Self-insurance reserves totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
@@ -1205,61 +1205,9 @@ coverage_types = [
 ]
 
 
-# ========== FOREIGN CURRENCY RISK/TRANSLATION (NON-DERIVATIVE) ==========
+# ========== FOREIGN CURRENCY RISK/TRANSLATION (NON-DERIVATIVE) ========== 
 
 foreign_currency_exposure_templates = [
-    "{company} operates in multiple countries and is exposed to foreign currency exchange rate fluctuations {major_currency} in that affect reported revenues and expenses",
-    "{company}\'s international operations subject it to foreign currency risks, primarily related to the {major_currency}, {currency2}, and {currency3}",
-    "Foreign currency transaction in {major_currency} gains and losses are recorded in {location} as incurred",
-    "Substantially all of {company}\'s foreign subsidiaries use {major_currency} as their local currency",
-    "{company}\'s results of operations are affected by changes in foreign currency exchange rates, particularly movements in the {major_currency} and {currency2}",
-]
-
-foreign_currency_translation_templates = [
-    "Assets and liabilities of foreign subsidiaries are translated to {major_currency} at period-end exchange rates, while income and expenses are translated at average exchange rates for the period",
-    "Translation adjustments resulting from the process of translating foreign currency financial statements into {major_currency} are recorded in accumulated other comprehensive income",
-    "The cumulative translation adjustment recorded in accumulated other comprehensive income was {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
-    "Foreign currency translation adjustments decreased stockholders' equity by {currency_code}{amount} {money_unit} during {year}",
-    "{company} recorded a foreign currency translation loss of {currency_code}{amount} {money_unit} in other comprehensive income for the year ended {month} {end_day}, {year}",
-    "The weakening of the {major_currency} against the {currency2} resulted in an unfavorable translation impact of {currency_code}{amount} {money_unit} in {year}",
-    "Changes in foreign exchange rates resulted in translation gains of {currency_code}{amount} {money_unit} recorded in other comprehensive income during {year}",
-]
-
-foreign_currency_transaction_templates = [
-    "Foreign currency transaction gains (losses) included in {location} totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
-    "{company} recognized foreign exchange losses of {currency_code}{amount} {money_unit} during {year}, primarily related to intercompany balances denominated in {major_currency}",
-    "{company} recorded foreign currency transaction losses of {currency_code}{amount} {money_unit} in {year} compared to gains of {currency_code}{prev_amount} {money_unit} in {prev_year}",
-    "Foreign exchange gains and losses on remeasurement of monetary assets and liabilities totaled {currency_code}{amount} {money_unit} in {year}",
-    "Transaction gains and losses on foreign currency ({major_currency}) denominated receivables and payables are recognized in earnings as exchange rates fluctuate",
-]
-
-functional_currency_templates = [
-    "The functional currency for most of {company}\'s foreign subsidiaries is the local currency of the country in which the subsidiary operates",
-    "For subsidiaries operating in highly inflationary economies, the {major_currency} is used as the functional currency",
-    "{company} determines the functional currency of each subsidiary based on the primary economic environment in which the entity operates",
-    "The functional currencies of {company}\'s significant foreign operations include the {major_currency}, {currency2}, and {currency3}",
-    "Remeasurement of foreign subsidiary financial statements from local currency to functional currency resulted in gains of {currency_code}{amount} {money_unit} in {year}",
-]
-
-fx_impact_on_results_templates = [
-    "Foreign currency exchange rate fluctuations had an unfavorable impact on revenues of approximately {currency_code}{amount} {money_unit}, or {pct}%, during {year}",
-    "Changes in foreign exchange rates negatively impacted operating income by {currency_code}{amount} {money_unit} in {year}",
-    "Foreign currency movements had a favorable effect on revenues of {pct}% in {year}, primarily due to strengthening of the {major_currency}",
-    "Excluding the impact of foreign currency translation, revenues would have increased {pct}% in {year} compared to {prev_year}",
-    "The translation impact of changes in foreign exchange rates decreased reported revenues by {currency_code}{amount} {money_unit} year-over-year",
-    "On a constant currency basis, revenues increased {pct}% compared to the prior year, versus {reported_pct}% on a reported basis",
-]
-
-intercompany_fx_templates = [
-    "{company} has intercompany loans denominated in various currencies that are remeasured each reporting period with gains and losses recorded in earnings",
-    "Intercompany foreign currency transactions resulted in remeasurement losses of {currency_code}{amount} {money_unit} during {year}",
-    "{company} has {currency_code}{amount} {money_unit} in intercompany receivables denominated in {major_currency} as of {month} {end_day}, {year}",
-    "Remeasurement of intercompany balances denominated in currencies other than the functional currency resulted in losses of {currency_code}{amount} {money_unit} in {year}",
-]
-
-# ========== COMMODITY PRICES/RISK/INVENTORY (NON-DERIVATIVE) ==========
-
-commodity_price_exposure_templates = [
     "{company}\'s operating results are affected by changes in commodity prices, particularly {commodity} and {commodity2}",
     "{company} is exposed to price volatility for key raw materials including {commodity}, {commodity2}, and {commodity3}",
     "Commodity price fluctuations, particularly for {commodity}, can significantly impact {company}\'s cost structure and margins",
@@ -1316,7 +1264,7 @@ physical_commodity_operations_templates = [
     "{company} maintains proved reserves of {volume} {unit} of {commodity} as of {month} {end_day}, {year}",
 ]
 
-# ========== SHARED / GENERIC ==========
+# ========== SHARED / GENERIC ========== 
 shared_issuers = [
     "FASB",
     "Financial Accounting Standards Board",
@@ -1473,7 +1421,7 @@ shared_standards_templates = [
     "During {year}, the {issuer} released updated guidance on {topic}",
 ]
 
-# ========== HEDGING / DERIVATIVE POLICY ==========
+# ========== HEDGING / DERIVATIVE POLICY ========== 
 hedging_descriptions = [
     "expand presentation and disclosure requirements, change how companies assess hedge effectiveness, and eliminate separate measurement of hedge ineffectiveness",
     "improves alignment of hedge accounting with risk management strategies",
@@ -1495,7 +1443,7 @@ hedge_change_policy_templates = [
     "The amendment to Topic 815 {description} and {additional_feature}. Effective for fiscal years beginning after {month} {eff_day}, {year}",
 ]
 
-# ========== GENERAL ACCOUNTING POLICY ==========
+# ========== GENERAL ACCOUNTING POLICY ========== 
 general_descriptions = [
     "requires recognition of lease assets and liabilities for operating leases",
     "changes the impairment model for financial instruments to an expected credit loss model",
@@ -1522,23 +1470,23 @@ general_policy_templates = [
     "During {year}, the {issuer} issued guidance under {standard} to {purpose}. {description}. Additionally, it {additional_feature}",
 ]
 
-# ==============================
+# ============================== 
 # Counterparty / Credit Risk Templates
-# ==============================
+# ============================== 
 risk_templates = [
-    "Based upon certain factors, including a review of the {item} for {company}\'s counterparties, {company} determined its counterparty credit risk to be {materiality}",
-    "After assessing {item} and other indicators for {company}\'s derivative counterparties, management concluded that counterparty exposure is {materiality}",
-    "{company} periodically reviews {item} and other market data to evaluate counterparty credit risk, which was determined to be {materiality}",
-    "Based on a review of {item} and internal assessments, {company} concluded that exposure to counterparty credit risk is {materiality}",
-    "{company} monitors {item} as part of its evaluation of counterparty credit exposure associated with derivative contracts",
-    "Considering {item}, credit ratings, and exposure limits, {company} determined that counterparty risk is {materiality}",
-    "{company} evaluates {item} to assess potential credit exposure under its derivative contracts and considers such exposure to be {materiality}",
-    "Taking into account {item} and the financial strength of counterparties, {company} considers the overall counterparty credit risk to be {materiality}",
+    "Based upon certain factors, including a review of the {risk_item} for {company}\'s counterparties, {company} determined its counterparty credit risk to be {materiality}",
+    "After assessing {risk_item} and other indicators for {company}\'s derivative counterparties, management concluded that counterparty exposure is {materiality}",
+    "{company} periodically reviews {risk_item} and other market data to evaluate counterparty credit risk, which was determined to be {materiality}",
+    "Based on a review of {risk_item} and internal assessments, {company} concluded that exposure to counterparty credit risk is {materiality}",
+    "{company} monitors {risk_item} as part of its evaluation of counterparty credit exposure associated with derivative contracts",
+    "Considering {risk_item}, credit ratings, and exposure limits, {company} determined that counterparty risk is {materiality}",
+    "{company} evaluates {risk_item} to assess potential credit exposure under its derivative contracts and considers such exposure to be {materiality}",
+    "Taking into account {risk_item} and the financial strength of counterparties, {company} considers the overall counterparty credit risk to be {materiality}",
 ]
 
-# ==============================
+# ============================== 
 # Risk Items
-# ==============================
+# ============================== 
 
 # Derivative / Hedging-Related Risk Items
 risk_items_derivative = [

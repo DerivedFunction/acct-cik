@@ -1114,7 +1114,7 @@ def generate_noise_paragraph(
         template = random.choice(risk_templates)
         item = random.choice(risk_items_other)
         sentence = template.format(
-            item=item,
+            risk_item=item,
             company=pick_company_name(company_name),
             materiality=materiality_choice,
         )
