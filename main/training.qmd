@@ -227,6 +227,7 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 model.to(device)
 print(f"Model loaded to {device}")
 
+
 def get_primary_label(labels: dict) -> int:
     """
     Convert multi-hot label dict into a single categorical label.
@@ -252,11 +253,11 @@ def get_primary_label(labels: dict) -> int:
 
     # --- Hedge type label map ---
     hedge_map = {
-        "gen": (0, 1, 2),
         "ir": (3, 4, 5),
         "fx": (6, 7, 8),
         "cp": (9, 10, 11),
         "eq": (12, 13, 14),
+        "gen": (0, 1, 2),
     }
 
     # --- 1. Check for actual use ---
@@ -309,7 +310,7 @@ def predict_batch(sentences: list[str]):
         primary_label_id = get_primary_label(predicted_labels_dict)
         primary_label = primary_id2label.get(primary_label_id, "Unknown")
         results.append((predicted_labels_dict, primary_label))
-    
+
     return results
 ```
 
