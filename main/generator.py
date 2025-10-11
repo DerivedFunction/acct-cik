@@ -65,9 +65,11 @@ def cleanup(all_sentences: list[str], reporting_year: int, fullCheck: bool = Tru
     Fixed: assign results of regex.sub back to paragraph so substitutions take effect.
     """
     paragraph = ""
-    # Capitalize each sentence
+    # Capitalize the first letter
     for i in range(len(all_sentences)):
-        all_sentences[i] = all_sentences[i].capitalize()
+        sentence = all_sentences[i]
+        sentence = sentence[0].upper() + sentence[1:]
+        all_sentences[i] = sentence
     try:
         paragraph = ". ".join(all_sentences)
     except:
