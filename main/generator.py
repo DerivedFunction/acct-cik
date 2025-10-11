@@ -1243,7 +1243,10 @@ def generate_noise_paragraph(
         "{year}": str(current_year),
         "{prev_year}": str(prev_year),
         "{prev_month}": random.choice(months),
+        "{next_year}": str(current_year + 1),
+        "{next2_year}": str(current_year + 2), 
         "{amount}": str(amount),
+        "{amount2}": str(generate_value(False)),
         "{prev_amount}": str(prev_amount),
         "{money_unit}": money_units,
         "{event}": event,
@@ -1252,7 +1255,8 @@ def generate_noise_paragraph(
         "{net_shares}": str(net_shares),
         "{quarter}": quarter,
         "{financing_type}": random.choice(financing_types),
-        "{days}": str(random.randint(30, 180)),
+        "{days}": str(random.randint(30, 90)),
+        "{prev_days}": str(random.randint(90, 180)),
         "{pct}": str(pct),
         "{pct2}": str(pct2),
         "{asset_type}": random.choice(asset_types),
@@ -1321,7 +1325,9 @@ def generate_noise_paragraph(
         "{transition_feature}": random.choice(shared_transition_features),
         "{adoption_impact}": random.choice(adoption_impacts),
         "{words}": random.choice(forward_looking_words),
-        "{increase_decrease}": random.choice(["increase", "decrease"])
+        "{increase_decrease}": random.choice(["increase", "decrease", "improved","decreased"]),
+        "{target}": random.choice(company_names),
+        "{volatility_levels}": random.choice(volatility_levels),
         }
 
     if template_pool:

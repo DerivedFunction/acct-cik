@@ -108,7 +108,7 @@ litigation_assessment_templates = [
 ]
 
 specific_lawsuit_templates = [
-    "In {month} {year}, a lawsuit was filed against {company} in the {court_name} alleging {lawsuit_allegation}. {company} filed a motion to dismiss in {month} {dismiss_year}",
+    "In {month} {year}, a lawsuit was filed against {company} in the {court_name} alleging {lawsuit_allegation}. {company} filed a motion to dismiss in {month} {year}",
     "{company} is defending a class action lawsuit filed in {year} claiming {lawsuit_allegation}, with damages sought of approximately {currency_code}{amount} {money_unit}",
     "During {year}, {company} reached a settlement in a lawsuit related to {lawsuit_allegation} for {currency_code}{amount} {money_unit}, which was accrued in prior periods",
     "A complaint was filed against {company} in the {court_name} during {quarter} quarter {year} alleging {lawsuit_allegation}",
@@ -440,7 +440,7 @@ asset_types = [
 lease_templates = [
     "{company} leases office space, manufacturing facilities, and equipment under operating and finance leases with terms ranging from {min_term} to {max_term} years",
     "As of {month} {end_day}, {year}, {company} had operating lease right-of-use assets of {currency_code}{amount} {money_unit} and lease liabilities of {currency_code}{liability} {money_unit}",
-    "{company} adopted ASC 842 effective {month} {adoption_year}, recognizing right-of-use assets and lease liabilities for operating leases",
+    "{company} adopted ASC 842 effective {month} {year}, recognizing right-of-use assets and lease liabilities for operating leases",
     "Total lease expense for {year} was {currency_code}{amount} {money_unit}, including both operating and finance lease costs",
     "Lease liabilities are measured at the present value of future lease payments, discounted using {company}\'s incremental borrowing rate",
     "Short-term leases and variable lease payments are excluded from right-of-use assets and liabilities under ASC 842",
@@ -889,7 +889,7 @@ service_types = [
 
 # Balance sheet changes templates
 balance_sheet_change_templates = [
-    "Accounts payable increased by {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} as of {month} {end_day}, {year}, primarily due to {bs_reason}",
+    "Accounts payable increased by {currency_code}{amount} {money_unit} to {currency_code}{value1} {money_unit} as of {month} {end_day}, {year}, primarily due to {bs_reason}",
     "Accounts receivable decreased {currency_code}{amount} {money_unit} during {year}, reflecting {bs_reason}",
     "Inventories increased {currency_code}{amount} {money_unit} from {month} {end_day}, {prev_year} to {month} {end_day}, {year} due to {bs_reason}",
     "Accrued liabilities increased by {currency_code}{amount} {money_unit} year-over-year, primarily attributable to {accrued_reason}",
@@ -898,7 +898,7 @@ balance_sheet_change_templates = [
 
 working_capital_templates = [
     "Working capital was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{prev_amount} {money_unit} at {month} {end_day}, {prev_year}",
-    "Changes in operating assets and liabilities resulted in a {currency_code}{direction} of {currency_code}{amount} {money_unit} in cash from operations during {year}",
+    "Changes in operating assets and liabilities resulted in a {currency_code}{amount2} of {currency_code}{amount} {money_unit} in cash from operations during {year}",
     "{company}\'s working capital increased by {currency_code}{amount} {money_unit} during {year}, driven primarily by {wc_reason}",
     "Net changes in operating assets and liabilities used {currency_code}{amount} {money_unit} of cash during {year}",
 ]
@@ -908,7 +908,7 @@ ar_templates = [
     "The allowance for doubtful accounts was {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}, compared to {currency_code}{prev_amount} {money_unit} in the prior year",
     "Days sales outstanding decreased from {prev_days} days to {days} days during {year}",
     "{company} recorded bad debt expense of {currency_code}{amount} {money_unit} during {year}",
-    "Accounts receivable, net of allowances, increased {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} at year-end {year}",
+    "Accounts receivable, net of allowances, increased {currency_code}{amount} {money_unit} to {currency_code}{value1} {money_unit} at year-end {year}",
 ]
 
 
@@ -928,7 +928,7 @@ accrued_liabilities_templates = [
 ]
 
 other_current_assets_templates = [
-    "Other current assets increased {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} at {month} {end_day}, {year}, primarily due to {asset_reason}",
+    "Other current assets increased {currency_code}{amount} {money_unit} to {currency_code}{value1} {money_unit} at {month} {end_day}, {year}, primarily due to {asset_reason}",
     "Prepaid expenses decreased by {currency_code}{amount} {money_unit} during {year}",
     "Other receivables totaled {currency_code}{amount} {money_unit} at year-end {year}",
     "Current assets, excluding cash, increased {currency_code}{amount} {money_unit} year-over-year",
@@ -938,18 +938,18 @@ other_liabilities_templates = [
     "Other long-term liabilities increased by {currency_code}{amount} {money_unit} during {year}, primarily related to {liability_reason}",
     "{company}\'s current liabilities totaled {currency_code}{amount} {money_unit} at {month} {end_day}, {year}",
     "Total liabilities increased from {currency_code}{prev_amount} {money_unit} to {currency_code}{amount} {money_unit} during {year}",
-    "Non-current liabilities decreased {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} at year-end {year}",
+    "Non-current liabilities decreased {currency_code}{amount} {money_unit} to {currency_code}{value1} {money_unit} at year-end {year}",
 ]
 
 retained_earnings_templates = [
     "Retained earnings increased by {currency_code}{amount} {money_unit} during {year}, reflecting net income of {currency_code}{value1} {money_unit} less dividends of {currency_code}{div} {money_unit}",
     "Accumulated deficit was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}",
-    "{company} reported a net loss of {currency_code}{amount} {money_unit} for {year}, increasing accumulated deficit to {currency_code}{ending} {money_unit}",
+    "{company} reported a net loss of {currency_code}{amount} {money_unit} for {year}, increasing accumulated deficit to {currency_code}{value1} {money_unit}",
     "Retained earnings totaled {currency_code}{amount} {money_unit} at year-end {year}",
 ]
 
 stockholders_equity_templates = [
-    "Total stockholders' equity increased {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} at {month} {end_day}, {year}",
+    "Total stockholders' equity increased {currency_code}{amount} {money_unit} to {currency_code}{value1} {money_unit} at {month} {end_day}, {year}",
     "Stockholders' equity was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{prev_amount} {money_unit} at {month} {end_day}, {prev_year}",
     "The increase in stockholders' equity of {currency_code}{amount} {money_unit} was primarily due to {equity_reason}",
     "Total equity increased by {currency_code}{amount} {money_unit} during {year}",
@@ -1349,16 +1349,16 @@ severance_templates = [
 ]
 
 employment_agreement_templates = [
-    "{company} entered into an employment agreement with its Chief Executive Officer in {month} {year} providing for an annual base salary of {currency_code}{value1} {money_unit} and target annual bonus of {bonus_pct}% of salary",
+    "{company} entered into an employment agreement with its Chief Executive Officer in {month} {year} providing for an annual base salary of {currency_code}{value1} {money_unit} and target annual bonus of {pct}% of salary",
     "The CEO\'s employment agreement, effective {month} {year}, includes a base salary of {currency_code}{value1} {money_unit} with annual merit increase eligibility and participation in long-term incentive programs",
     "Under the terms of the CEO employment agreement, the executive receives an annual base salary of {currency_code}{value1} {money_unit}, subject to annual review by the Board of Trustees",
-    "The employment agreement with the Chief Executive Officer provides for base compensation of {currency_code}{value1} {money_unit} and eligibility for annual performance bonuses up to {bonus_pct}% of base salary",
+    "The employment agreement with the Chief Executive Officer provides for base compensation of {currency_code}{value1} {money_unit} and eligibility for annual performance bonuses up to {pct}% of base salary",
 ]
 
 compensation_committee_templates = [
     "The Compensation Committee of the Board of Directors reviews and approves all executive compensation, including salary, bonuses, and equity grants",
     "Executive compensation decisions are made by the Compensation Committee based on peer group benchmarking and company performance",
-    "The Compensation Committee engaged {consultant} as its independent compensation consultant to advise on executive pay practices",
+    "The Compensation Committee engaged {company} as its independent compensation consultant to advise on executive pay practices",
     "Annual executive compensation is determined by the Compensation Committee after considering financial performance, individual contributions, and market data",
 ]
 
@@ -1370,7 +1370,7 @@ say_on_pay_templates = [
 ]
 
 deferred_comp_templates = [
-    "Certain executives participate in a non-qualified deferred compensation plan allowing deferral of up to {pct}% of base salary and {bonus_pct}% of bonuses",
+    "Certain executives participate in a non-qualified deferred compensation plan allowing deferral of up to {pct}% of base salary and {pct}% of bonuses",
     "{company} maintains a deferred compensation plan for executives with a total liability of {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "Executive officers may elect to defer receipt of cash bonuses and equity awards under {company}\'s non-qualified deferred compensation plan",
     "Deferred compensation obligations to executives totaled {currency_code}{amount} {money_unit} at year-end {year}, primarily invested in mutual fund equivalents",
@@ -1458,12 +1458,12 @@ clawback_templates = [
 # ========== MARKET PRICES AND TRADING ==========
 stock_price_templates = [
     '{company} \'s common stock trades on the {exchange} under the ticker symbol "{ticker}"',
-    "Shares of common stock closed at {currency_code}{price} on {month} {end_day}, {year}, compared to {currency_code}{prev_price} at {month} {end_day}, {prev_year}",
+    "Shares of common stock closed at {currency_code}{price} on {month} {end_day}, {year}, compared to {currency_code}{price2} at {month} {end_day}, {prev_year}",
     "{company}\'s stock price ranged from a low of {currency_code}{value1} to a high of {currency_code}{value2} during {year}",
     "Average daily trading volume was approximately {volume} shares during {year}",
-    "{company}\'s market capitalization was approximately {currency_code}{market_cap} {money_unit} as of {month} {end_day}, {year}",
+    "{company}\'s market capitalization was approximately {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "Shares outstanding totaled {shares} as of {month} {end_day}, {year}",
-    "The closing stock price on {month} {end_day}, {year} represented a {direction} of {pct}% from the prior year-end closing price",
+    "The closing stock price on {month} {end_day}, {year} represented a {amount2} of {pct}% from the prior year-end closing price",
 ]
 
 exchanges = [
@@ -1479,7 +1479,7 @@ trading_volume_templates = [
     "During {year}, approximately {volume} shares were traded on public exchanges",
     "{company}\'s shares experienced {volatility} trading activity during {year}",
     "Average daily trading volume increased {pct}% in {year} compared to {prev_year}",
-    "Trading liquidity {improved_decreased} during {year}, with average daily volume of {volume} shares",
+    "Trading liquidity {increase_decrease} during {year}, with average daily volume of {volume} shares",
 ]
 
 volatility_levels = ["elevated", "moderate", "reduced", "increased", "stable"]
@@ -1702,7 +1702,7 @@ institutional_ownership_templates = [
     "Beneficial ownership by institutional investors increased to {pct}% as of {month} {end_day}, {year}",
     "Hedge funds and asset managers collectively own approximately {pct}% of outstanding common stock",
     "{fund_name} disclosed a {pct}% position in {company} in its {form} filing dated {month} {year}",
-    "Institutional ownership decreased from {prev_pct}% to {pct}% during {year}",
+    "Institutional ownership decreased from {pct2}% to {pct}% during {year}",
     "{company}\'s top ten institutional shareholders hold approximately {pct}% of outstanding shares",
 ]
 
@@ -1825,7 +1825,7 @@ forward_looking_words = [
     "strategy, tactic, plan, approach, method",
     "opportunity, chance, possibility, opening, break",
     "momentum, impetus, drive, thrust, force",
-    "trajectory, path, course, route, direction",
+    "trajectory, path, course, route, amount2",
 ]
 
 risk_factors_examples = [
@@ -1897,7 +1897,7 @@ safe_harbor_templates = [
 analyst_coverage_templates = [
     "{company} is currently covered by {number} equity research analysts",
     "Analyst consensus estimates for {year} project earnings per share of {currency_code}{price} and revenue of {currency_code}{amount} {money_unit}",
-    "The average analyst price target is {currency_code}{target}, representing {direction} of {pct}% from current levels",
+    "The average analyst price target is {currency_code}{target}, representing {amount2} of {pct}% from current levels",
     "{number} analysts have buy ratings, {number2} have hold ratings, and {number3} have sell ratings on the stock",
     "Analyst estimates for {year} range from {currency_code}{value1} to {currency_code}{value2} per share",
     "{company} does not provide guidance but is followed by several sell-side analysts who publish earnings estimates",
@@ -1922,7 +1922,7 @@ rating_actions = ["upgraded", "downgraded", "affirmed", "revised"]
 dividend_policy_templates = [
     "{company} has paid consecutive quarterly dividends since {year}",
     "In {month} {year}, the Board of Directors declared a quarterly dividend of {currency_code}{amount} per share, payable on {month} {end_day}, {year}",
-    "The dividend payout ratio was {pct}% for {year}, compared to {prev_pct}% in {prev_year}",
+    "The dividend payout ratio was {pct}% for {year}, compared to {pct2}% in {prev_year}",
     "{company} targets returning {pct}% to {pct2}% of free cash flow to shareholders through dividends and share repurchases",
     "Annual dividends totaled {currency_code}{amount} per share in {year}, representing a yield of {pct}% based on year-end stock price",
     "{company} does not currently pay a dividend and retains earnings to fund growth initiatives",
@@ -2471,7 +2471,7 @@ commodity_cost_impact_templates = [
     "Changes in {commodities} prices unfavorably impacted gross margin by {pct} percentage points in {year}",
     "{company} experienced cost inflation of {currency_code}{amount} {money_unit} in {year}, primarily driven by higher {commodities} prices",
     "Commodity costs increased {pct}% year-over-year, driven primarily by {commodities} price appreciation",
-    "Raw material price increases, particularly for {commodities}, reduced gross profit margin from {prev_pct}% to {pct}% in {year}",
+    "Raw material price increases, particularly for {commodities}, reduced gross profit margin from {pct2}% to {pct}% in {year}",
     "{company} absorbed {currency_code}{amount} {money_unit} in commodity cost inflation during {year} through operational efficiencies and pricing actions",
 ]
 
@@ -2511,7 +2511,7 @@ physical_commodity_operations_templates = [
     "{company} owns and operates {commodities} production facilities with annual capacity of {volume} {unit}",
     "{company} produced {volume} {unit} of {commodities} during {year}, a {pct}% increase from the prior year",
     "{company}\'s {commodities} operations generated revenues of {currency_code}{amount} {money_unit} in {year}",
-    "Production costs for {commodites} averaged {currency_code}{cost} per {unit} in {year}, compared to {currency_code}{prev_cost} in {prev_year}",
+    "Production costs for {commodities} averaged {currency_code}{cost} per {unit} in {year}, compared to {currency_code}{prev_cost} in {prev_year}",
     "{company} maintains proved reserves of {volume} {unit} of {commodities} as of {month} {end_day}, {year}",
 ]
 
@@ -2658,7 +2658,7 @@ shared_practical_expedient_templates = [
 
 shared_recent_pronouncement_templates = [
     "Recently issued accounting pronouncements not yet adopted include {standard}, which addresses {topic}",
-    "In {month} {year}, the {issuer} issued {standard} related to {topic}, which {company} will adopt in {adoption_year}",
+    "In {month} {year}, the {issuer} issued {standard} related to {topic}, which {company} will adopt in {year}",
     "Management continues to monitor new accounting pronouncements issued by the {issuer} for potential impact",
     "Other new accounting guidance issued but not yet effective is not expected to have a material impact on the consolidated financial statements",
     "{company} reviews all recently issued accounting standards to determine their applicability and impact",
