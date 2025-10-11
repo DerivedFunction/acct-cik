@@ -1231,6 +1231,8 @@ def generate_noise_paragraph(
 
     replacements = {
         "{company}": pick_company_name(company_name),
+        "{company2}": pick_company_name(company_name),
+        "{company3}": pick_company_name(company_name),
         "{integer}": str(random.randint(1, 10000)),
         "{shares}": str(shares),
         "{shares1}": str(generate_value(False, 1000000)),
@@ -1340,6 +1342,16 @@ def generate_noise_paragraph(
         "{perq_type}": random.choice(perq_types),
         "{mission_statement}": random.choice(mission_statements),
         "{industry}": random.choice(industries),
+        "{segment_names}": random.choice(segment_examples),
+        "{rating2}": random.choice(credit_ratings),
+        "{agency2}": random.choice(credit_agencies),
+        "{rating3}": random.choice(credit_ratings),
+        "{agency3}": random.choice(credit_agencies),
+        "{outlook}": random.choice(rating_outlooks),
+        "{eff_day}": str(random.randint(1, 28)),
+        "{risk_item}": random.choice(risk_items_other),
+        "{form}": random.choice(sec_forms),
+        "{state}": random.choice(states),
     }
 
     if template_pool:

@@ -1697,11 +1697,11 @@ segment_examples = [
 # ========== HEDGE FUNDS AND INSTITUTIONAL OWNERSHIP ==========
 institutional_ownership_templates = [
     "As of {month} {end_day}, {year}, institutional investors held approximately {pct}% of {company}\'s outstanding shares",
-    "{fund_name} reported a {pct}% ownership stake in {company} as of {month} {end_day}, {year}",
-    "{company}\'s largest shareholders include {fund_name} ({pct}%), {fund_name2} ({pct2}%), and other institutional investors",
+    "{company2} reported a {pct}% ownership stake in {company} as of {month} {end_day}, {year}",
+    "{company}\'s largest shareholders include {company2} ({pct}%), {company3} ({pct2}%), and other institutional investors",
     "Beneficial ownership by institutional investors increased to {pct}% as of {month} {end_day}, {year}",
     "Hedge funds and asset managers collectively own approximately {pct}% of outstanding common stock",
-    "{fund_name} disclosed a {pct}% position in {company} in its {form} filing dated {month} {year}",
+    "{company2} disclosed a {pct}% position in {company} in its {form} filing dated {month} {year}",
     "Institutional ownership decreased from {pct2}% to {pct}% during {year}",
     "{company}\'s top ten institutional shareholders hold approximately {pct}% of outstanding shares",
 ]
