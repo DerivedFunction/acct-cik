@@ -98,7 +98,12 @@ def cleanup(all_sentences: list[str], reporting_year: int, fullCheck: bool = Tru
         or paragraph.find("[") != -1
         ) or paragraph.find("__NOT_FOUND__") != -1
     ):
-        print("Error in format", paragraph)
+        # If it is a not found, print out the __NOT_FOUND__{key}
+        if paragraph.find("__NOT_FOUND__") != -1:
+            key = paragraph[paragraph.find("{") : paragraph.find("}") + 1]
+            print(f"Placeholder not found for {key}")
+        else:
+            print("Error in format", paragraph)
 
     paragraph = f"<reportingYear>{reporting_year}</reportingYear> {paragraph}."
     return paragraph

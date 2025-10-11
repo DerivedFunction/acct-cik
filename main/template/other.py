@@ -453,7 +453,7 @@ lease_templates = [
 lease_commitment_templates = [
     "Future minimum lease payments under non-cancellable operating leases total {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "The weighted-average remaining lease term for operating leases is {years} years as of {month} {end_day}, {year}",
-    "The weighted-average discount rate used to measure lease liabilities was {rate}% as of {month} {end_day}, {year}",
+    "The weighted-average discount rate used to measure lease liabilities was {pct}% as of {month} {end_day}, {year}",
     "Operating lease payments are expected to total {currency_code}{amount} {money_unit} over the next five years",
     "Maturities of lease liabilities are {currency_code}{amount} {money_unit} in {next_year}, {currency_code}{amount2} {money_unit} in {next2_year}, and {currency_code}{amount3} {money_unit} thereafter",
     "As of {month} {end_day}, {year}, undiscounted future lease payments totaled {currency_code}{amount} {money_unit}, with a present value of {currency_code}{pv_amount} {money_unit}",
@@ -580,8 +580,8 @@ debt_covenant_templates = [
 # ============ INCOME TAXES ============
 
 tax_templates = [
-    "The provision for income taxes was {currency_code}{amount} {money_unit} for {year}, resulting in an effective tax rate of {rate}%",
-    "The effective tax rate for {year} was {rate}%, compared to {prev_rate}% in the prior year",
+    "The provision for income taxes was {currency_code}{amount} {money_unit} for {year}, resulting in an effective tax rate of {pct}%",
+    "The effective tax rate for {year} was {pct}%, compared to {prev_rate}% in the prior year",
     "Deferred tax assets as of {month} {end_day}, {year} totaled {currency_code}{amount} {money_unit}, primarily related to {tax_sources_examples}",
     "{company} has net operating loss carryforwards of {currency_code}{amount} {money_unit} that expire between {start_year} and {end_year}",
 ]
@@ -942,7 +942,7 @@ other_liabilities_templates = [
 ]
 
 retained_earnings_templates = [
-    "Retained earnings increased by {currency_code}{amount} {money_unit} during {year}, reflecting net income of {currency_code}{ni} {money_unit} less dividends of {currency_code}{div} {money_unit}",
+    "Retained earnings increased by {currency_code}{amount} {money_unit} during {year}, reflecting net income of {currency_code}{value1} {money_unit} less dividends of {currency_code}{div} {money_unit}",
     "Accumulated deficit was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}",
     "{company} reported a net loss of {currency_code}{amount} {money_unit} for {year}, increasing accumulated deficit to {currency_code}{ending} {money_unit}",
     "Retained earnings totaled {currency_code}{amount} {money_unit} at year-end {year}",
@@ -1459,7 +1459,7 @@ clawback_templates = [
 stock_price_templates = [
     '{company} \'s common stock trades on the {exchange} under the ticker symbol "{ticker}"',
     "Shares of common stock closed at {currency_code}{price} on {month} {end_day}, {year}, compared to {currency_code}{prev_price} at {month} {end_day}, {prev_year}",
-    "{company}\'s stock price ranged from a low of {currency_code}{low} to a high of {currency_code}{high} during {year}",
+    "{company}\'s stock price ranged from a low of {currency_code}{value1} to a high of {currency_code}{value2} during {year}",
     "Average daily trading volume was approximately {volume} shares during {year}",
     "{company}\'s market capitalization was approximately {currency_code}{market_cap} {money_unit} as of {month} {end_day}, {year}",
     "Shares outstanding totaled {shares} as of {month} {end_day}, {year}",
@@ -1896,10 +1896,10 @@ safe_harbor_templates = [
 # ========== ANALYST COVERAGE AND ESTIMATES ==========
 analyst_coverage_templates = [
     "{company} is currently covered by {number} equity research analysts",
-    "Analyst consensus estimates for {year} project earnings per share of {currency_code}{eps} and revenue of {currency_code}{revenue} {money_unit}",
+    "Analyst consensus estimates for {year} project earnings per share of {currency_code}{price} and revenue of {currency_code}{amount} {money_unit}",
     "The average analyst price target is {currency_code}{target}, representing {direction} of {pct}% from current levels",
     "{number} analysts have buy ratings, {number2} have hold ratings, and {number3} have sell ratings on the stock",
-    "Analyst estimates for {year} range from {currency_code}{low} to {currency_code}{high} per share",
+    "Analyst estimates for {year} range from {currency_code}{value1} to {currency_code}{value2} per share",
     "{company} does not provide guidance but is followed by several sell-side analysts who publish earnings estimates",
 ]
 
