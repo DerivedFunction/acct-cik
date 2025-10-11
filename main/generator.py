@@ -974,6 +974,7 @@ def generate_sec_noise():
         "market_value": f"{random.randint(10**6, 10**9):,}",
         "shares_outstanding": f"{random.randint(50_000_000, 200_000_000):,}",
         "date": f"{random.randint(1, 12)}/{random.randint(1, 28)}/{random.randint(2000, 2024)}",
+        "page": random.randint(1, 200),
     }
 
     # Format phrases from templates
@@ -1315,6 +1316,7 @@ def generate_noise_paragraph(
         "{transition_feature}": random.choice(shared_transition_features),
         "{adoption_impact}": random.choice(adoption_impacts),
         "{words}": random.choice(forward_looking_words),
+        "{increase_decrease}": random.choice(["increase", "decrease"])
         }
 
     if template_pool:
@@ -1323,7 +1325,7 @@ def generate_noise_paragraph(
             sentence = template
             all_placeholders = re.findall(r'{\w+}', sentence)
             for key in all_placeholders:
-                value = replacements.get(key, "__NOT_FOUND__")
+                value = replacements.get(key, f"__NOT_FOUND__{key}")
                 sentence = sentence.replace(key, str(value))
             all_sentences.append(sentence)
     # Fix any remaining placeholders

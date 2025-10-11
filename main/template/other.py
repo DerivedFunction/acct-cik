@@ -296,7 +296,7 @@ deferred_revenue_templates = [
     "Deferred revenue balances are expected to be recognized as revenue consistent with the satisfaction of contractual obligations over time",
 ]
 
-# ============ INVENTORY ============ 
+# ============ INVENTORY ============
 
 inventory_templates = [
     "{commodities} inventories are stated at the lower of cost or net realizable value, with cost determined using the {inventory_method} method",
@@ -338,7 +338,7 @@ inventory_writedown_templates = [
     "{company} established new reserves of {currency_code}{amount} {money_unit} in {year} for excess quantities, reflecting updated demand forecasts",
 ]
 
-# ============ PROPERTY, PLANT & EQUIPMENT ============ 
+# ============ PROPERTY, PLANT & EQUIPMENT ============
 
 ppe_templates = [
     "Property, plant and equipment are stated at cost less accumulated depreciation, which is computed using the straight-line method over estimated useful lives",
@@ -435,7 +435,7 @@ asset_types = [
     "renewable energy facilities",
 ]
 
-# ============ LEASES ============ 
+# ============ LEASES ============
 
 lease_templates = [
     "{company} leases office space, manufacturing facilities, and equipment under operating and finance leases with terms ranging from {min_term} to {max_term} years",
@@ -461,7 +461,7 @@ lease_commitment_templates = [
     "Lease commitments include renewal options reasonably certain to be exercised, totaling {currency_code}{amount} {money_unit}",
 ]
 
-# ============ GOODWILL AND INTANGIBLES ============ 
+# ============ GOODWILL AND INTANGIBLES ============
 
 goodwill_templates = [
     "Goodwill totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}, and is not amortized but tested for impairment annually",
@@ -504,7 +504,7 @@ intangible_types = [
     "patents, trademarks, and customer contracts",
 ]
 
-# ============ DEBT AND CREDIT FACILITIES ============ 
+# ============ DEBT AND CREDIT FACILITIES ============
 
 debt_templates = [
     # General facilities and balances
@@ -577,7 +577,7 @@ debt_covenant_templates = [
     "{company}\'s credit agreements require maintenance of specified leverage and coverage ratios, which {company} met as of {month} {end_day}, {year}",
 ]
 
-# ============ INCOME TAXES ============ 
+# ============ INCOME TAXES ============
 
 tax_templates = [
     "The provision for income taxes was {currency_code}{amount} {money_unit} for {year}, resulting in an effective tax rate of {rate}%",
@@ -601,7 +601,7 @@ uncertain_tax_templates = [
     "It is reasonably possible that {currency_code}{amount} {money_unit} of unrecognized tax benefits could be recognized within the next twelve months",
 ]
 
-# ============ STOCK-BASED COMPENSATION ============ 
+# ============ STOCK-BASED COMPENSATION ============
 
 stock_comp_templates = [
     "Stock-based compensation expense was {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
@@ -617,7 +617,7 @@ stock_comp_valuation_templates = [
     "The weighted-average grant-date fair value of options granted during {year} was {currency_code}{amount} per share",
 ]
 
-# ============ PENSION AND POSTRETIREMENT BENEFITS ============ 
+# ============ PENSION AND POSTRETIREMENT BENEFITS ============
 
 pension_templates = [
     "{company} sponsors defined benefit pension plans covering certain employees, with plan assets of {currency_code}{assets} {money_unit} and projected benefit obligations of {currency_code}{obligations} {money_unit} as of {month} {end_day}, {year}",
@@ -633,7 +633,7 @@ opeb_templates = [
     "{company}\'s postretirement benefit plans are unfunded, with liabilities recorded in other long-term liabilities",
 ]
 
-# ============ COMMITMENTS AND CONTINGENCIES ============ 
+# ============ COMMITMENTS AND CONTINGENCIES ============
 
 purchase_commitment_templates = [
     "{company} has purchase commitments with suppliers totaling approximately {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
@@ -658,7 +658,7 @@ guarantee_types = [
     
 ]
 
-# ============ RESTRUCTURING ============ 
+# ============ RESTRUCTURING ============
 
 restructuring_templates = [
     "During {year}, {company} initiated a restructuring plan to {restructuring_purpose}, resulting in charges of {currency_code}{amount} {money_unit}",
@@ -688,7 +688,7 @@ restructuring_expense_types = [
     "workforce reductions and lease terminations",
 ]
 
-# ============ ACQUISITIONS (NON-DERIVATIVE ASPECTS) ============ 
+# ============ ACQUISITIONS (NON-DERIVATIVE ASPECTS) ============
 
 acquisition_templates = [
     "In {month} {year}, {company} acquired {target} for total consideration of {currency_code}{amount} {money_unit} in cash",
@@ -1238,15 +1238,15 @@ equity_reasons = [
 
 # CEO and executive compensation templates
 ceo_compensation_templates = [
-    "{company}\'s Chief Executive Officer received total compensation of {currency_code}{amount} {money_unit} for {year}, consisting of {currency_code}{salary} {money_unit} in base salary, {currency_code}{bonus} {money_unit} in cash bonuses, and {currency_code}{equity} {money_unit} in equity awards",
-    "For the year ended {month} {end_day}, {year}, the CEO\'s compensation package totaled {currency_code}{amount} {money_unit}, including base salary of {currency_code}{salary} {money_unit} and performance-based incentives of {currency_code}{bonus} {money_unit}",
+    "{company}'s Chief Executive Officer received total compensation of {currency_code}{amount} {money_unit} for {year}, consisting of {currency_code}{value1} {money_unit} in base salary, {currency_code}{value2} {money_unit} in cash bonuses, and {currency_code}{prev_amount} {money_unit} in equity awards",
+    "For the year ended {month} {end_day}, {year}, the CEO's compensation package totaled {currency_code}{amount} {money_unit}, including base salary of {currency_code}{value1} {money_unit} and performance-based incentives of {currency_code}{prev_amount} {money_unit}",
     "Total compensation for the Chief Executive Officer was {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in {prev_year}",
     "The CEO received {currency_code}{amount} {money_unit} in total compensation during {year}, comprised of salary, annual incentive compensation, and long-term equity grants",
 ]
 
 executive_compensation_templates = [
-    "Total compensation for {company}\'s five highest-paid executives was {currency_code}{amount} {money_unit} for {year}",
-    "The named executive officers received aggregate compensation of {currency_code}{amount} {money_unit} in {year}, including {currency_code}{equity} {money_unit} in stock-based awards",
+    "Total compensation for {company}'s five highest-paid executives was {currency_code}{amount} {money_unit} for {year}",
+    "The named executive officers received aggregate compensation of {currency_code}{amount} {money_unit} in {year}, including {currency_code}{prev_amount} {money_unit} in stock-based awards",
     "Compensation for senior management totaled {currency_code}{amount} {money_unit} during {year}, representing {increase_decrease} of {change}% from the prior year",
     "Executive compensation expense, including salaries, bonuses, and equity awards, totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
 ]
@@ -1349,10 +1349,10 @@ severance_templates = [
 ]
 
 employment_agreement_templates = [
-    "{company} entered into an employment agreement with its Chief Executive Officer in {month} {year} providing for an annual base salary of {currency_code}{salary} {money_unit} and target annual bonus of {bonus_pct}% of salary",
-    "The CEO\'s employment agreement, effective {month} {year}, includes a base salary of {currency_code}{salary} {money_unit} with annual merit increase eligibility and participation in long-term incentive programs",
-    "Under the terms of the CEO employment agreement, the executive receives an annual base salary of {currency_code}{salary} {money_unit}, subject to annual review by the Board of Trustees",
-    "The employment agreement with the Chief Executive Officer provides for base compensation of {currency_code}{salary} {money_unit} and eligibility for annual performance bonuses up to {bonus_pct}% of base salary",
+    "{company} entered into an employment agreement with its Chief Executive Officer in {month} {year} providing for an annual base salary of {currency_code}{value1} {money_unit} and target annual bonus of {bonus_pct}% of salary",
+    "The CEO\'s employment agreement, effective {month} {year}, includes a base salary of {currency_code}{value1} {money_unit} with annual merit increase eligibility and participation in long-term incentive programs",
+    "Under the terms of the CEO employment agreement, the executive receives an annual base salary of {currency_code}{value1} {money_unit}, subject to annual review by the Board of Trustees",
+    "The employment agreement with the Chief Executive Officer provides for base compensation of {currency_code}{value1} {money_unit} and eligibility for annual performance bonuses up to {bonus_pct}% of base salary",
 ]
 
 compensation_committee_templates = [
@@ -1455,7 +1455,7 @@ clawback_templates = [
     "The Board may require reimbursement of performance-based compensation under the clawback policy if performance goals are not actually achieved",
     "Incentive compensation paid to executives is subject to clawback provisions as required by the Dodd-Frank Act and SEC regulations",
 ]
-# ========== MARKET PRICES AND TRADING ========== 
+# ========== MARKET PRICES AND TRADING ==========
 stock_price_templates = [
     '{company} \'s common stock trades on the {exchange} under the ticker symbol "{ticker}"',
     "Shares of common stock closed at {currency_code}{price} on {month} {end_day}, {year}, compared to {currency_code}{prev_price} at {month} {end_day}, {prev_year}",
@@ -1484,7 +1484,7 @@ trading_volume_templates = [
 
 volatility_levels = ["elevated", "moderate", "reduced", "increased", "stable"]
 
-# ========== ABOUT {company} / BUSINESS DESCRIPTION ========== 
+# ========== ABOUT {company} / BUSINESS DESCRIPTION ==========
 company_description_templates = [
     "{company} is a {industry} company that {business_activity}",
     "{company} operates in the {industry} sector, providing {products_services} to customers in {geography}",
@@ -1694,7 +1694,7 @@ segment_examples = [
     "Mergers & Acquisitions, Debt Capital Markets, and Equity Capital Markets",
 ]
 
-# ========== HEDGE FUNDS AND INSTITUTIONAL OWNERSHIP ========== 
+# ========== HEDGE FUNDS AND INSTITUTIONAL OWNERSHIP ==========
 institutional_ownership_templates = [
     "As of {month} {end_day}, {year}, institutional investors held approximately {pct}% of {company}\'s outstanding shares",
     "{fund_name} reported a {pct}% ownership stake in {company} as of {month} {end_day}, {year}",
@@ -1725,7 +1725,7 @@ insider_actions = [
     "net sales",
 ]
 
-# ========== FORWARD-LOOKING STATEMENTS ========== 
+# ========== FORWARD-LOOKING STATEMENTS ==========
 forward_looking_templates = [
     "This report contains forward-looking statements within the meaning of the Private Securities Litigation Reform Act of 1995",
     "Forward-looking statements include, but are not limited to, statements regarding {topics}",
@@ -1893,7 +1893,7 @@ safe_harbor_templates = [
     "This document contains forward-looking statements that are protected by the safe harbor provisions for such statements",
 ]
 
-# ========== ANALYST COVERAGE AND ESTIMATES ========== 
+# ========== ANALYST COVERAGE AND ESTIMATES ==========
 analyst_coverage_templates = [
     "{company} is currently covered by {number} equity research analysts",
     "Analyst consensus estimates for {year} project earnings per share of {currency_code}{eps} and revenue of {currency_code}{revenue} {money_unit}",
@@ -1903,7 +1903,7 @@ analyst_coverage_templates = [
     "{company} does not provide guidance but is followed by several sell-side analysts who publish earnings estimates",
 ]
 
-# ========== CREDIT RATINGS ========== 
+# ========== CREDIT RATINGS ==========
 credit_rating_templates = [
     "{company}\'s senior unsecured debt is rated {rating} by {agency} and {rating2} by {agency2}",
     "{agency} maintains a {rating} credit rating on {company} with a {outlook} outlook",
@@ -1918,7 +1918,7 @@ credit_ratings = ["BBB+", "BBB", "BBB-", "A-", "A", "Baa1", "Baa2", "Baa3"]
 rating_outlooks = ["stable", "positive", "negative", "under review"]
 rating_actions = ["upgraded", "downgraded", "affirmed", "revised"]
 
-# ========== DIVIDEND AND CAPITAL ALLOCATION ========== 
+# ========== DIVIDEND AND CAPITAL ALLOCATION ==========
 dividend_policy_templates = [
     "{company} has paid consecutive quarterly dividends since {year}",
     "In {month} {year}, the Board of Directors declared a quarterly dividend of {currency_code}{amount} per share, payable on {month} {end_day}, {year}",
@@ -1938,7 +1938,7 @@ share_repurchase_templates = [
     "No shares were repurchased during {year} as {company} prioritized debt reduction and organic growth investments",
 ]
 
-# ========== COMPETITIVE LANDSCAPE ========== 
+# ========== COMPETITIVE LANDSCAPE ==========
 competition_templates = [
     "{company} operates in a highly competitive industry characterized by {competitive_characteristics}",
     "Principal competitors include {competitor1}, {competitor2}, and {competitor3}",
@@ -2129,7 +2129,7 @@ competitive_advantages = [
     "strong brand recognition, customer loyalty",
 ]
 
-# ========== REGULATORY AND COMPLIANCE ========== 
+# ========== REGULATORY AND COMPLIANCE ==========
 regulatory_templates = [
     "{company} is subject to extensive regulation by {regulatory_agencies} governing {regulatory_areas}",
     "Compliance with environmental, health, and safety regulations resulted in costs of approximately {currency_code}{amount} {money_unit} during {year}",
@@ -2191,7 +2191,7 @@ regulatory_areas = [
     "sports regulations, athlete welfare, and anti-doping policies",
 ]
 
-# ========== INSURANCE AND RISK MANAGEMENT ========== 
+# ========== INSURANCE AND RISK MANAGEMENT ==========
 insurance_templates = [
     "{company} maintains insurance coverage for property, casualty, general liability, and other risks in amounts considered adequate",
     "Self-insurance reserves totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
@@ -2397,7 +2397,7 @@ insurance_incidents = [
 ]
 
 
-# ========== FOREIGN CURRENCY RISK/TRANSLATION (NON-DERIVATIVE) ========== 
+# ========== FOREIGN CURRENCY RISK/TRANSLATION (NON-DERIVATIVE) ==========
 
 foreign_currency_exposure_templates = [
     "{company}\'s operating results are affected by changes in commodity prices, particularly {commodities}",
@@ -2456,7 +2456,7 @@ intercompany_fx_templates = [
     "Remeasurement of intercompany balances denominated in currencies other than the functional currency resulted in losses of {currency_code}{amount} {money_unit} in {year}",
 ]
 
-# ========== COMMODITY PRICES/RISK/INVENTORY (NON-DERIVATIVE) ========== 
+# ========== COMMODITY PRICES/RISK/INVENTORY (NON-DERIVATIVE) ==========
 
 commodity_price_exposure_templates = [
     "{company}\'s operating results are affected by changes in commodity prices, particularly {commodities}",
@@ -2515,7 +2515,7 @@ physical_commodity_operations_templates = [
     "{company} maintains proved reserves of {volume} {unit} of {commodities} as of {month} {end_day}, {year}",
 ]
 
-# ========== SHARED / GENERIC ========== 
+# ========== SHARED / GENERIC ==========
 shared_issuers = [
     "FASB",
     "Financial Accounting Standards Board",
@@ -2672,7 +2672,7 @@ shared_standards_templates = [
     "During {year}, the {issuer} released updated guidance on {topic}",
 ]
 
-# ========== HEDGING / DERIVATIVE POLICY ========== 
+# ========== HEDGING / DERIVATIVE POLICY ==========
 hedging_descriptions = [
     "expand presentation and disclosure requirements, change how companies assess hedge effectiveness, and eliminate separate measurement of hedge ineffectiveness",
     "improves alignment of hedge accounting with risk management strategies",
@@ -2694,7 +2694,7 @@ hedge_change_policy_templates = [
     "The amendment to Topic 815 {hedge_description} and {hedge_feature}. Effective for fiscal years beginning after {month} {eff_day}, {year}",
 ]
 
-# ========== GENERAL ACCOUNTING POLICY ========== 
+# ========== GENERAL ACCOUNTING POLICY ==========
 general_descriptions = [
     "requires recognition of lease assets and liabilities for operating leases",
     "changes the impairment model for financial instruments to an expected credit loss model",
@@ -2721,9 +2721,9 @@ general_policy_templates = [
     "During {year}, the {issuer} issued guidance under {standard} to {standard_purpose}. {policy_description}. Additionally, it {policy_feature}",
 ]
 
-# ============================== 
+# ==============================
 # Counterparty / Credit Risk Templates
-# ============================== 
+# ==============================
 risk_templates = [
     "Based upon certain factors, including a review of the {risk_item} for {company}\'s counterparties, {company} determined its counterparty credit risk to be {materiality}",
     "After assessing {risk_item} and other indicators for {company}\'s derivative counterparties, management concluded that counterparty exposure is {materiality}",
@@ -2735,9 +2735,9 @@ risk_templates = [
     "Taking into account {risk_item} and the financial strength of counterparties, {company} considers the overall counterparty credit risk to be {materiality}",
 ]
 
-# ============================== 
+# ==============================
 # Risk Items
-# ============================== 
+# ==============================
 
 # Derivative / Hedging-Related Risk Items
 risk_items_derivative = [
@@ -2864,10 +2864,6 @@ adoption_impacts = [
 ]
 
 noise_templates: dict[str, list[list[str]]] = {
-    "SEC_BEG": [
-        sec_toc_patterns,
-        sec_phrases,
-    ],
     "REVENUE": [
         revenue_recognition_templates,
         deferred_revenue_templates,
