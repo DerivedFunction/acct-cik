@@ -96,7 +96,7 @@ def cleanup(all_sentences: list[str], reporting_year: int, fullCheck: bool = Tru
         paragraph.find("{") != -1
         or paragraph.find(".." ) != -1
         or paragraph.find("[") != -1
-        )
+        ) or paragraph.find("__NOT_FOUND__") != -1
     ):
         print("Error in format", paragraph)
 
@@ -1314,7 +1314,8 @@ def generate_noise_paragraph(
         "{adoption_method}": random.choice(shared_adoption_methods),
         "{transition_feature}": random.choice(shared_transition_features),
         "{adoption_impact}": random.choice(adoption_impacts),
-    }
+        "{words}": random.choice(forward_looking_words),
+        }
 
     if template_pool:
         for _ in range(random.randint(3, 4)):
@@ -1322,7 +1323,7 @@ def generate_noise_paragraph(
             sentence = template
             all_placeholders = re.findall(r'{\w+}', sentence)
             for key in all_placeholders:
-                value = replacements.get(key, "a relevant value")
+                value = replacements.get(key, "__NOT_FOUND__")
                 sentence = sentence.replace(key, str(value))
             all_sentences.append(sentence)
     # Fix any remaining placeholders
