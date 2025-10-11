@@ -316,6 +316,7 @@ def generate_hedge_paragraph(
     # -----------------------
     # Actual use
     # -----------------------
+    labels["gen"] = 1
     if has_active_derivative is not None:
         # Mark specific hedge type as used
         labels[f"{swapType}_use"] = 1
@@ -519,7 +520,6 @@ def generate_hedge_paragraph(
     def hedge_policy() -> list[str]:
         labels["spec"] = 1 #  A speculation
         labels[swapType] = 0 # Not related to any swap
-        labels["gen"] = 1 # Generic
         sentences = []
         # Accounting policy (always)
         act_template = random.choice(hedge_policy_templates)
@@ -632,7 +632,6 @@ def generate_hedge_paragraph(
         sentences = []
         labels["spec"] = 1
         labels[swapType] = 0 # Not related to any swap
-        labels["gen"] = 1
         # ==============================
         # 1. ISSUANCE STATEMENT
         # ==============================
