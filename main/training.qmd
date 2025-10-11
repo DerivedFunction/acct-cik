@@ -23,6 +23,7 @@ from transformers import (
     AutoModelForSequenceClassification,
     TrainingArguments,
     Trainer,
+    DataCollatorWithPadding,
 )
 import numpy as np
 from sklearn.metrics import f1_score, roc_auc_score, accuracy_score
