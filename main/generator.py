@@ -332,7 +332,6 @@ def generate_hedge_paragraph(
             amount2 = generate_value(False)
             pct = generate_value(False, 1, 8)
             pct2 = generate_value(False, 1, 20)
-            outstanding = random.randint(0, int(amount) // 2)
             debt_type = random.choice(debt_types_list)
             maturity_year = current_year + random.randint(3, 10)
             years = random.randint(3, 10)
@@ -341,7 +340,6 @@ def generate_hedge_paragraph(
                 amount2=amount2,
                 year=maturity_year,
                 month=month,
-                outstanding=outstanding,
                 current_year=current_year,
                 debt_types=selected_debt,
                 debt_type=debt_type,
@@ -353,7 +351,7 @@ def generate_hedge_paragraph(
                 end_day=end_day,
                 pct=pct,
                 pct2=pct2,
-                years=years,
+                small_int=years,
                 hedge_type=hedge_type,
             )
             sentences.append(sentence)

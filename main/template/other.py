@@ -836,9 +836,9 @@ warrant_amortization_templates = [
     "Warrant costs totaling {currency_code}{amount} were recorded as debt issuance costs and amortized to interest expense over the term of the debt",
     "{company} amortizes debt issuance costs, including the value of warrants issued, to interest expense using the effective interest method",
     "Amortization of warrant-related debt issuance costs totaled {currency_code}{amount} for the year ended {month} {end_day}, {year}",
-    "The relative fair value of the warrants was recorded as a debt discount and is being amortized to non-cash interest expense over the life of the {debt_types_list} using the effective interest method",
+    "The relative fair value of the warrants was recorded as a debt discount and is being amortized to non-cash interest expense over the life of the {debt_types} using the effective interest method",
     "The initial value of the warrants was recorded in Additional Paid-In Capital and, as they are classified as equity, they are not subsequently remeasured",
-    "Amortization of the debt discount related to the warrants issued with the {debt_types_list} totaled {currency_code}{amount} and {currency_code}{amount2} for the years ended {year} and {prev_year}, respectively",
+    "Amortization of the debt discount related to the warrants issued with the {debt_types} totaled {currency_code}{amount} and {currency_code}{amount2} for the years ended {year} and {prev_year}, respectively",
     "The warrants are exercisable for a term of five years at an exercise price of {currency_code}{amount} per share, subject to anti-dilution provisions similar to the provisions set forth in the Notes and expire on {month} {year}",
 ]
 
