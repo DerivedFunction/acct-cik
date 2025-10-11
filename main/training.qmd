@@ -20,7 +20,8 @@ from sklearn.model_selection import train_test_split
 from datasets import Dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer, DataCollatorWithPadding
 import numpy as np
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+from sklearn.metrics import f1_score, roc_auc_score, accuracy_score
+from transformers import EvalPrediction
 import json
 ```
 
@@ -32,8 +33,20 @@ MODEL_PATH = "derivative-classifier"
 MODEL_USER = "DerivedFunction"
 FINE_TUNE_MODEL = "ProsusAI/finbert"
 MODEL_NAME = f"{MODEL_USER}/{MODEL_PATH}" if not FINE_TUNE_MODEL else FINE_TUNE_MODEL
-KEYWORDS_FILE = "./keywords_find.json"
 ```
+
+## Define Labels
+
+```{python}
+labels = [
+    "ir", "fx", "cp", "eq", "gen",
+    "ir_use", "fx_use", "cp_use", "eq_use", "gen_use",
+    "curr", "hist", "spec", "warr", "emb", "irr", "deriv"
+]
+id2label = {i: label for i, label in enumerate(labels)}
+label2id = {label: i for i, label in enumerate(labels)}
+```
+
 
 # Data Preparation
 
@@ -45,12 +58,19 @@ This step loads your labeled Excel file and prepares it for the model.
 # Load the labeled data
 df = pd.read_excel(EXCEL_PATH)
 # Drop rows where 'final_output' or 'label' might be empty
-df.dropna(subset=["sentence", "label"], inplace=True)
+df.dropna(subset=["sentence", "labels"], inplace=True)
+
+# Convert the labels from a JSON string to a list of 0s and 1s
+def format_labels(row):
+    label_dict = json.loads(row['labels'])
+    return [label_dict.get(label, 0) for label in labels]
+
+df["labels"] = df.apply(format_labels, axis=1)
 
 # Split the data into training and validation sets
 train_df, val_df = train_test_split(
     df, test_size=0.2, random_state=42
-)  #  stratify=df['label']
+)
 
 print(f"Training set size: {len(train_df)}")
 print(f"Validation set size: {len(val_df)}")
@@ -79,7 +99,11 @@ We'll load the FinBERT tokenizer to convert sentences into a format the model un
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 # Replace your old tokenize_function with this one
 def tokenize_function(examples):
-    return tokenizer(examples["sentence"], truncation=True, max_length=512)
+    # Tokenize the sentence
+    tokenized_input = tokenizer(examples["sentence"], truncation=True, max_length=512)
+    # Add the labels
+    tokenized_input["labels"] = examples["labels"]
+    return tokenized_input
 
 tokenized_train_dataset = train_dataset.map(tokenize_function, batched=True)
 tokenized_val_dataset = val_dataset.map(tokenize_function, batched=True)
@@ -90,17 +114,30 @@ tokenized_val_dataset = val_dataset.map(tokenize_function, batched=True)
 This function will calculate performance metrics during training so we can see how well the model is learning.
 
 ```{python}
-def compute_metrics(pred):
-    labels = pred.label_ids
-    preds = pred.predictions.argmax(-1)
-    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='weighted')
-    acc = accuracy_score(labels, preds)
-    return {
-        'accuracy': acc,
-        'f1': f1,
-        'precision': precision,
-        'recall': recall
-    }
+def multi_label_metrics(predictions, labels, threshold=0.5):
+    # first, apply sigmoid on predictions which are of shape (batch_size, num_labels)
+    sigmoid = torch.nn.Sigmoid()
+    probs = sigmoid(torch.Tensor(predictions))
+    # next, use threshold to turn them into integer predictions
+    y_pred = np.zeros(probs.shape)
+    y_pred[np.where(probs >= threshold)] = 1
+    # finally, compute metrics
+    y_true = labels
+    f1_micro_average = f1_score(y_true=y_true, y_pred=y_pred, average='micro')
+    roc_auc = roc_auc_score(y_true, y_pred, average = 'micro')
+    accuracy = accuracy_score(y_true, y_pred)
+    # return as dictionary
+    metrics = {'f1': f1_micro_average,
+               'roc_auc': roc_auc,
+               'accuracy': accuracy}
+    return metrics
+
+def compute_metrics(p: EvalPrediction):
+    preds = p.predictions[0] if isinstance(p.predictions, tuple) else p.predictions
+    result = multi_label_metrics(
+        predictions=preds, 
+        labels=p.label_ids)
+    return result
 ```
 
 ## Training
@@ -108,21 +145,12 @@ def compute_metrics(pred):
 Here, we define the training parameters and launch the fine-tuning process. 🚀
 
 ```{python}
-# Define the model, specifying we have 5 labels (1 new label from model checkpoint)
-with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
-    keyword_data = json.load(f)
-id2label = {int(k): v for k, v in keyword_data["id2label"].items()}
-label2id = {v: int(k) for k, v in keyword_data["id2label"].items()}
-
 model = AutoModelForSequenceClassification.from_pretrained(
     MODEL_NAME,
-    num_labels=len(id2label),
+    problem_type="multi_label_classification", 
+    num_labels=len(labels),
     id2label=id2label,
     label2id=label2id,
-    # Allow loading even if the checkpoint's head has a different size.
-    # This prevents the RuntimeError when you add/remove labels compared to
-    # the original checkpoint. The classification head weights will be
-    # randomly initialized for the mismatched entries.
     ignore_mismatched_sizes=True,
 )
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -143,6 +171,7 @@ training_args = TrainingArguments(
     eval_strategy="epoch",  # Evaluate at the end of each epoch
     save_strategy="epoch",  # Save the model at the end of each epoch
     load_best_model_at_end=True,  # Load the best model found during training
+    metric_for_best_model="f1",
 )
 
 ```
@@ -180,25 +209,15 @@ EXCEL_PATH = "./training_data.xlsx"
 MODEL_PATH = "derivative-type-classifier"
 MODEL_USER = "DerivedFunction"
 MODEL_NAME = f"{MODEL_USER}/{MODEL_PATH}"
-KEYWORDS_FILE = "./keywords_find.json"
-
-with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
-    keyword_data = json.load(f)
-id2label = {int(k): v for k, v in keyword_data["id2label"].items()}
-label2id = {v: int(k) for k, v in keyword_data["id2label"].items()}
 
 # Load tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForSequenceClassification.from_pretrained(
     MODEL_NAME,
-    num_labels=len(id2label),
+    problem_type="multi_label_classification",
+    num_labels=len(labels),
     id2label=id2label,
     label2id=label2id,
-    # Allow loading even if the checkpoint's head has a different size.
-    # This prevents the RuntimeError when you add/remove labels compared to
-    # the original checkpoint. The classification head weights will be
-    # randomly initialized for the mismatched entries.
-    ignore_mismatched_sizes=True,
 )
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 model.to(device)
@@ -222,7 +241,11 @@ inputs = {k: v.to(device) for k, v in inputs.items()}
 with torch.no_grad():
     outputs = model(**inputs)
     logits = outputs.logits
-    predicted_ids = torch.argmax(logits, dim=1).tolist()
-    print([id2label[i] for i in predicted_ids])
+    sigmoid = torch.nn.Sigmoid()
+    probs = sigmoid(logits.squeeze().cpu())
+    predictions = np.zeros(probs.shape)
+    predictions[np.where(probs >= 0.5)] = 1
+    predicted_labels = [id2label[idx] for idx, label in enumerate(predictions) if label == 1.0]
+    print(predicted_labels)
 
 ```
