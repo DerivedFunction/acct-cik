@@ -625,6 +625,10 @@ trend_descriptors = [
     "with notional amounts increasing from",
     "with notional values of",
     "had a notional value of",
+    "with amounts decreasing from",
+    "with amounts increasing from",
+    "with values of",
+    "had a value of",
 ]
 
 # Optional hedge purposes
