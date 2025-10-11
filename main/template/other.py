@@ -104,7 +104,7 @@ litigation_assessment_templates = [
     "{company} believes it has meritorious defenses and intends to vigorously defend against these claims",
     "{company} intend to vigorously defend against these claims. At this time, {company} cannot predict the outcome, or provide a reasonable estimate or range of estimates of the possible outcome or loss, if any, in this matter",
     "Based on currently available information, management does not expect these matters to result in a material loss",
-    "{company} has {verb} the likelihood of loss as remote and has not recorded any provisions related to these contingencies",
+    "{company} has {assess_verb} the likelihood of loss as remote and has not recorded any provisions related to these contingencies",
 ]
 
 specific_lawsuit_templates = [
@@ -438,7 +438,7 @@ asset_types = [
 # ============ LEASES ============
 
 lease_templates = [
-    "{company} leases office space, manufacturing facilities, and equipment under operating and finance leases with terms ranging from {min_term} to {max_term} years",
+    "{company} leases office space, manufacturing facilities, and equipment under operating and finance leases with terms ranging from {months} to {months2} years",
     "As of {month} {end_day}, {year}, {company} had operating lease right-of-use assets of {currency_code}{amount} {money_unit} and lease liabilities of {currency_code}{liability} {money_unit}",
     "{company} adopted ASC 842 effective {month} {year}, recognizing right-of-use assets and lease liabilities for operating leases",
     "Total lease expense for {year} was {currency_code}{amount} {money_unit}, including both operating and finance lease costs",
@@ -467,7 +467,7 @@ goodwill_templates = [
     "Goodwill totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}, and is not amortized but tested for impairment annually",
     "{company} performs its annual goodwill impairment test in the {quarter} quarter of each year",
     "No goodwill impairment was recorded during {year} as the fair value of reporting units exceeded their carrying values",
-    "Goodwill is allocated to reporting units and {verb} for impairment at least annually or when indicators of impairment exist",
+    "Goodwill is allocated to reporting units and {assess_verb} for impairment at least annually or when indicators of impairment exist",
 ]
 
 intangible_templates = [
@@ -508,11 +508,11 @@ intangible_types = [
 
 debt_templates = [
     # General facilities and balances
-    "{company} maintains a {currency_code}{amount} {money_unit} revolving credit facility that expires in {year}, with {currency_code}{outstanding} {money_unit} outstanding as of {month} {end_day}, {current_year}, with annual interest rate of {pct}%",
+    "{company} maintains a {currency_code}{amount} {money_unit} revolving credit facility that expires in {maturity_year}, with {currency_code}{outstanding} {money_unit} outstanding as of {month} {end_day}, {year}, with annual interest rate of {pct}%",
     "As of {month} {end_day}, {year}, {company} had total long-term debt of {currency_code}{amount} {money_unit}, consisting primarily of {debt_types}, with an average interest rate of {pct}% and {pct2}%, respectively",
     "Long-term debt, with an annual interest rate of {pct}% as of {month} {end_day}, {year} totaled {currency_code}{amount} {money_unit}, consisting of {debt_types}",
     "At year-end {year}, {company} reported total debt of {currency_code}{amount} {money_unit} with interest rates ranging from {pct}% to {pct2}%, including {debt_types}",
-    "{company}\'s outstanding borrowings under its revolving credit facility totaled {currency_code}{outstanding} {money_unit} with average interest rate of {pct}% to {pct2}% as of {month} {end_day}, {year}",
+    "{company}'s outstanding borrowings under its revolving credit facility totaled {currency_code}{outstanding} {money_unit} with average interest rate of {pct}% to {pct2}% as of {month} {end_day}, {year}",
     "As of {month} {end_day}, {year}, there was {currency_code}{outstanding} {money_unit} outstanding on the {debt_type} and {currency_code}{outstanding} {money_unit} outstanding on {debt_types}",
     # Issuances and repayments
     "During {year}, {company} issued {currency_code}{amount} {money_unit} in {debt_types} with a maturity date of {maturity_year} and a weighted average interest rate of {pct}%",
@@ -522,9 +522,9 @@ debt_templates = [
     "In {year}, {company} refinanced {currency_code}{amount} {money_unit} of existing {debt_type} at interest rate of {pct}%, extending the maturity to {maturity_year}",
     # Interest rate and maturity details
     "As of year-end {year}, {company} had total {debt_type} of {currency_code}{amount} {money_unit}, {currency_code}{amount2} {money_unit} of which was fixed rate debt with a weighted average interest rate of {pct}% to {pct2}%",
-    "The weighted average interest rate on {company}\'s {debt_type} was approximately {pct}% as of {month} {end_day}, {year}",
-    "As of {month} {end_day}, {year}, {company}\'s {debt_type} had a weighted average maturity of {years} years",
-    "As of {month} {end_day}, {year}, {company}\'s variable-rate borrowings bore interest at an average rate of {pct}%",
+    "The weighted average interest rate on {company}'s {debt_type} was approximately {pct}% as of {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, {company}'s {debt_type} had a weighted average maturity of {years} years",
+    "As of {month} {end_day}, {year}, {company}'s variable-rate borrowings bore interest at an average rate of {pct}%",
     "Interest expense related to {debt_type} for {year} was approximately {currency_code}{amount} {money_unit}",
     "At {month} {year}, {company} repaid {currency_code}{amount} {money_unit} of the {currency_code}{amount2} {money_unit} borrowed",
     # Other specialized cases
@@ -532,7 +532,7 @@ debt_templates = [
     "Proceeds from the {debt_type} issuance were used to repay existing borrowings and for general corporate purposes",
     "In {year}, {company} retired {currency_code}{amount} {money_unit} of {debt_type} upon maturity",
     "At {month} {end_day}, {year}, unamortized debt issuance costs related to {debt_type} totaled {currency_code}{amount} {money_unit}",
-    "The fair value of {company}\'s {debt_type} was estimated at {currency_code}{amount2} {money_unit} as of {month} {end_day}, {year}",
+    "The fair value of {company}'s {debt_type} was estimated at {currency_code}{amount2} {money_unit} as of {month} {end_day}, {year}",
 ]
 
 debt_types_list = [
@@ -1487,11 +1487,11 @@ volatility_levels = ["elevated", "moderate", "reduced", "increased", "stable"]
 # ========== ABOUT {company} / BUSINESS DESCRIPTION ==========
 company_description_templates = [
     "{company} is a {industry} company that {business_activity}",
-    "{company} operates in the {industry} sector, providing {products_services} to customers in {geography}",
-    "{company} was founded in {founding_year} and is headquartered in {city}, {state}",
-    "{company} is a leading provider of {products_services} serving the {market_segment} market",
+    "{company} operates in the {industry} sector, providing {industry} to customers in {geography}",
+    "{company} was founded in {year} and is headquartered in {city}, {state}",
+    "{company} is a leading provider of {industry} serving the {market_segment} market",
     "{company}\'s principal business activities include {activities}",
-    "{company} employs approximately {employees} people across {locations} locations worldwide as of {month} {end_day}, {year}",
+    "{company} employs approximately {integer} people across {locations} locations worldwide as of {month} {end_day}, {year}",
     "{company} operates through {segments} reportable segments: {segment_names}",
     "{company}\'s mission is to {mission_statement}",
 ]
@@ -1593,7 +1593,7 @@ industries = [
     "personal care",
 ]
 
-business_activities = [
+mission_statements = [
     "develops, manufactures, and sells innovative products",
     "provides technology solutions and services to enterprise customers",
     "manufactures and distributes consumer products globally",

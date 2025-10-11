@@ -1231,6 +1231,7 @@ def generate_noise_paragraph(
 
     replacements = {
         "{company}": pick_company_name(company_name),
+        "{integer}": str(random.randint(1, 10000)),
         "{shares}": str(shares),
         "{shares1}": str(generate_value(False, 1000000)),
         "{shares2}": str(generate_value(False, 1000000)),
@@ -1239,14 +1240,17 @@ def generate_noise_paragraph(
         "{price2}": str(generate_value(False, 100)),
         "{expiry_year}": str(expiry_year),
         "{month}": month,
+        "{months}": random.randint(1, 6),
+        "{months2}": random.randint(6, 12),
         "{end_day}": str(end_day),
         "{year}": str(current_year),
         "{prev_year}": str(prev_year),
         "{prev_month}": random.choice(months),
         "{next_year}": str(current_year + 1),
-        "{next2_year}": str(current_year + 2), 
+        "{next2_year}": str(current_year + 2),
         "{amount}": str(amount),
         "{amount2}": str(generate_value(False)),
+        "{amount3}": str(generate_value(False)),
         "{prev_amount}": str(prev_amount),
         "{money_unit}": money_units,
         "{event}": event,
@@ -1328,6 +1332,13 @@ def generate_noise_paragraph(
         "{increase_decrease}": random.choice(["increase", "decrease", "improved","decreased"]),
         "{target}": random.choice(company_names),
         "{volatility_levels}": random.choice(volatility_levels),
+        "{assess_verb}": random.choice(assessment_verbs),
+        "{exchange}": random.choice(exchanges),
+        "{vesting_period}": random.choice(vesting_periods),
+        "{perq_type}": random.choice(perq_types),
+        "{mission_statement}": random.choice(mission_statements),
+        "{industry}": random.choice(industries),
+        
         }
 
     if template_pool:
