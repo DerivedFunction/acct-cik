@@ -1234,6 +1234,7 @@ def generate_noise_paragraph(
         "{company2}": pick_company_name(company_name),
         "{company3}": pick_company_name(company_name),
         "{integer}": str(random.randint(1, 10000)),
+        "{short_int}": random.randint(10, 50),
         "{shares}": str(shares),
         "{shares1}": str(generate_value(False, 1000000)),
         "{shares2}": str(generate_value(False, 1000000)),
@@ -1246,6 +1247,7 @@ def generate_noise_paragraph(
         "{months2}": random.randint(6, 12),
         "{end_day}": str(end_day),
         "{year}": str(current_year),
+        "{past_year}": random.randint(1985, current_year - 1),
         "{prev_year}": str(prev_year),
         "{prev_month}": random.choice(months),
         "{next_year}": str(current_year + 1),
@@ -1362,7 +1364,7 @@ def generate_noise_paragraph(
         "{agency3}": random.choice(credit_agencies),
         "{risk_factors}": random.choice(risk_factors_examples),
         "{rating_action}": random.choice(rating_actions),
-        "{p_metrics}": random.choice(performance_metrics),
+        "{p_metric}": random.choice(performance_metrics),
         
         
     }

@@ -583,7 +583,7 @@ tax_templates = [
     "The provision for income taxes was {currency_code}{amount} {money_unit} for {year}, resulting in an effective tax rate of {pct}%",
     "The effective tax rate for {year} was {pct}%, compared to {prev_rate}% in the prior year",
     "Deferred tax assets as of {month} {end_day}, {year} totaled {currency_code}{amount} {money_unit}, primarily related to {tax_sources_examples}",
-    "{company} has net operating loss carryforwards of {currency_code}{amount} {money_unit} that expire between {start_year} and {end_year}",
+    "{company} has net operating loss carryforwards of {currency_code}{amount} {money_unit} that expire between {past_year} and {next2_year}",
 ]
 
 tax_sources = [
@@ -694,7 +694,7 @@ acquisition_templates = [
     "In {month} {year}, {company} acquired {target} for total consideration of {currency_code}{amount} {money_unit} in cash",
     "{company} completed the acquisition of {target} during {year} for {currency_code}{amount} {money_unit}, which was funded through {acquisition_funding}",
     "During {year}, {company} acquired {target} to expand its {acquisition_purpose}",
-    "The acquisition of {target} in {year} resulted in {currency_code}{goodwill} {money_unit} of goodwill and {currency_code}{intangibles} {money_unit} of identifiable intangible assets",
+    "The acquisition of {target} in {year} resulted in {currency_code}{amount} {money_unit} of goodwill and {currency_code}{amount2} {money_unit} of identifiable intangible assets",
 ]
 
 acquisition_purposes = [
@@ -1491,7 +1491,7 @@ company_description_templates = [
     "{company} was founded in {year} and is headquartered in {city}, {state}",
     "{company} is a leading provider of {industry} serving the {segment_names} market",
     "{company}'s principal business activities are in {industry}",
-    "{company} employs approximately {integer} people across {locations} locations worldwide as of {month} {end_day}, {year}",
+    "{company} employs approximately {integer} people across {short_int} locations worldwide as of {month} {end_day}, {year}",
     "{company} operates through these reportable segments: {segment_names}",
     "{company}'s mission is to {mission_statement}",
 ]
@@ -1941,12 +1941,12 @@ share_repurchase_templates = [
 # ========== COMPETITIVE LANDSCAPE ==========
 competition_templates = [
     "{company} operates in a highly competitive industry characterized by {competitive_characteristics}",
-    "Principal competitors include {competitor1}, {competitor2}, and {competitor3}",
+    "Principal competitors include {company2}, and {company3}",
     "{company} competes based on {competitive_factors}",
     "Market share in {company}\'s primary markets remained relatively stable at approximately {pct}% during {year}",
     "Competitive pressures have intensified due to {competitive_pressure_reasons}",
     "{company} believes it maintains competitive advantages through {competitive_advantages}",
-    "Industry consolidation during {year} included the merger of {competitor1} and {competitor2}",
+    "Industry consolidation during {year} included the merger of {company2} and {company3}",
 ]
 
 competitive_characteristics = [
