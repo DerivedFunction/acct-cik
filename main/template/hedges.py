@@ -119,11 +119,22 @@ derivative_template = {
         "over-the-counter contract",
         "total return swap",
     ],
-    "EQ_STANDALONE": [
-        "receive-equity return, pay-fixed equity swap",
-        "receive-equity return, pay-floating equity swap",
-        "equity collar",
-        "equity swap",
+    "EQ_PLACEHOLDER": [
+        "equity",
+        "equity-related",
+    ],
+    "EQ_TYPES": [
+        "swap",
+        "future",
+        "forward",
+        "call option",
+        "call contract",
+        "put option",
+        "put contract",
+        "option contract",
+        "forward contract",
+        "futures contract",
+        "swaption",
     ],
 }
 
@@ -1321,14 +1332,18 @@ derivative_keywords = {
         derivative_template["FX_STANDALONE"],
     ),
     "cp": expand_derivative_terms(
-        derivative_template["CP_PLACEHOLDER"], derivative_template["CP_TYPES"], []
+        derivative_template["CP_PLACEHOLDER"], 
+        derivative_template["CP_TYPES"], []
     ),
     "gen": expand_derivative_terms(
         derivative_template["GEN_PLACEHOLDER"],
         derivative_template["GEN_TYPES"],
         derivative_template["GEN_STANDALONE"],
     ),
-    "eq": expand_derivative_terms([], [], derivative_template["EQ_STANDALONE"]),
+    "eq": expand_derivative_terms(
+        derivative_template["EQ_PLACEHOLDER"], 
+        derivative_template["EQ_TYPES"], []
+    ),
 }
 
 tasks = {
