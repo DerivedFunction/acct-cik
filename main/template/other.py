@@ -581,7 +581,7 @@ debt_covenant_templates = [
 
 tax_templates = [
     "The provision for income taxes was {currency_code}{amount} {money_unit} for {year}, resulting in an effective tax rate of {pct}%",
-    "The effective tax rate for {year} was {pct}%, compared to {prev_rate}% in the prior year",
+    "The effective tax rate for {year} was {pct}%, compared to {pct2}% in the prior year",
     "Deferred tax assets as of {month} {end_day}, {year} totaled {currency_code}{amount} {money_unit}, primarily related to {tax_sources_examples}",
     "{company} has net operating loss carryforwards of {currency_code}{amount} {money_unit} that expire between {past_year} and {next2_year}",
 ]
@@ -620,7 +620,7 @@ stock_comp_valuation_templates = [
 # ============ PENSION AND POSTRETIREMENT BENEFITS ============
 
 pension_templates = [
-    "{company} sponsors defined benefit pension plans covering certain employees, with plan assets of {currency_code}{assets} {money_unit} and projected benefit obligations of {currency_code}{obligations} {money_unit} as of {month} {end_day}, {year}",
+    "{company} sponsors defined benefit pension plans covering certain employees, with plan assets of {currency_code}{amount} {money_unit} and projected benefit obligations of {currency_code}{obligations} {money_unit} as of {month} {end_day}, {year}",
     "Pension expense for {year} was {currency_code}{amount} {money_unit}, including service cost, interest cost, and expected return on plan assets",
     "The funded status of {company}\'s pension plans resulted in a net liability of {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "During {year}, {company} contributed {currency_code}{amount} {money_unit} to its defined benefit pension plans",
@@ -1486,7 +1486,7 @@ volatility_levels = ["elevated", "moderate", "reduced", "increased", "stable"]
 
 # ========== ABOUT {company} / BUSINESS DESCRIPTION ==========
 company_description_templates = [
-    "{company} is a {industry} company that {mission_statements}",
+    "{company} is a {industry} company that {mission_statement}",
     "{company} operates in the {industry} sector, providing {industry} to customers in {segment_names}",
     "{company} was founded in {year} and is headquartered in {city}, {state}",
     "{company} is a leading provider of {industry} serving the {segment_names} market",
@@ -1898,7 +1898,7 @@ analyst_coverage_templates = [
     "{company} is currently covered by {integer} equity research analysts",
     "Analyst consensus estimates for {year} project earnings per share of {currency_code}{price} and revenue of {currency_code}{amount} {money_unit}",
     "The average analyst price target is {currency_code}{target}, representing {amount2} of {pct}% from current levels",
-    "{integer} analysts have buy ratings, {number2} have hold ratings, and {number3} have sell ratings on the stock",
+    "{integer} analysts have buy ratings, {short_int} have hold ratings, and {short_int2} have sell ratings on the stock",
     "Analyst estimates for {year} range from {currency_code}{value1} to {currency_code}{value2} per share",
     "{company} does not provide guidance but is followed by several sell-side analysts who publish earnings estimates",
 ]
