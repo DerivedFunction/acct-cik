@@ -681,8 +681,8 @@ warrant_debt_issuance_templates = [
     "In consideration of this extension, {company} issued {shares} shares of common stock at a price of {amount} per share and warrants to purchase {shares1} shares of common stock at a price to be determined in the future, between {currency_code}{value1} and {currency_code}{value2} per share, on or before {month} {year}",
     "Also in {month} {year}, {company} exchanged a {currency_code}{amount} note payable for units of common stock and warrants to purchase common stock at a price of {currency_code}{value1} per unit",
     "In addition, the financial advisor on the debt offering received an additional {shares} warrants with the {month} offering for a total of approximately {amount}",
-    "If all of the warrants are exercised and the debt is fully converted to {company} stock, current stockholders will experience a significant dilution in their ownership of {company} ",
-    "Based on the terms of the debt offering both the notes and warrants are subject to anti-dilution provisions and can potentially become more dilutive to {company} stock. Further dilution may occur in the event of a default {currency_code}{amount} payable",
+    "If all of the warrants are exercised and the debt is fully converted to {company}'s stock, current stockholders will experience a significant dilution in their ownership of the company",
+    "Based on the terms of the debt offering both the notes and warrants are subject to anti-dilution provisions and can potentially become more dilutive to {company}'s stock. Further dilution may occur in the event of a default {currency_code}{amount} payable",
 ]
 
 warrant_amortization_templates = [
