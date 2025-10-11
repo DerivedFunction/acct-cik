@@ -82,10 +82,10 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
 
     if random.random() < 0.5:
         paragraph = pattern_notional.sub("", paragraph)
-
+        
+    paragraph = pattern_dots.sub(". ", paragraph)  # Remove double periods
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
-    paragraph = pattern_dots.sub(".", paragraph)  # Remove double periods
-
+    
     if (
         paragraph.find("{") != -1
         or paragraph.find(".." ) != -1
