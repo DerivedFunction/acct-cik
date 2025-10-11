@@ -1285,7 +1285,6 @@ def generate_noise_paragraph(
         "{currency2}": random.choice(all_currencies),
         "{currency3}": random.choice(all_currencies),
         "{location}": random.choice(balance_sheet_locations),
-        "{reported_pct}": str(generate_value(False, 100)),
         "{low_price}": str(generate_value(False, 50)),
         "{high_price}": str(generate_value(False, 200)),
         "{unit}": random.choice(volume_units),
@@ -1362,8 +1361,10 @@ def generate_noise_paragraph(
         "{risk_factors}": random.choice(risk_factors_examples),
         "{rating_action}": random.choice(rating_actions),
         "{p_metric}": random.choice(performance_metrics),
-        
-        
+        "{model}": random.choice(valuation_models),
+        "{ticker}": "".join(
+            random.choices(string.ascii_uppercase, k=random.randint(3, 4))
+        ),
     }
 
     if template_pool:

@@ -620,7 +620,7 @@ stock_comp_valuation_templates = [
 # ============ PENSION AND POSTRETIREMENT BENEFITS ============
 
 pension_templates = [
-    "{company} sponsors defined benefit pension plans covering certain employees, with plan assets of {currency_code}{amount} {money_unit} and projected benefit obligations of {currency_code}{obligations} {money_unit} as of {month} {end_day}, {year}",
+    "{company} sponsors defined benefit pension plans covering certain employees, with plan assets of {currency_code}{amount} {money_unit} and projected benefit obligations of {currency_code}{amount2} {money_unit} as of {month} {end_day}, {year}",
     "Pension expense for {year} was {currency_code}{amount} {money_unit}, including service cost, interest cost, and expected return on plan assets",
     "The funded status of {company}\'s pension plans resulted in a net liability of {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "During {year}, {company} contributed {currency_code}{amount} {money_unit} to its defined benefit pension plans",
@@ -791,11 +791,11 @@ share_reservation_templates = [
 
 # Outstanding options disclosure
 outstanding_options_templates = [
-    "As of {month} {end_day}, {year}, there are {shares} issued and outstanding options to purchase common stock. To the extent that outstanding warrants and options are exercised, the percentage ownership of common stock of {company}\'s stockholders will be diluted",
+    "As of {month} {end_day}, {year}, there are {shares} issued and outstanding options to purchase common stock. To the extent that outstanding warrants and options are exercised, the percentage ownership of common stock of {company}'s stockholders will be diluted",
     "Outstanding stock options totaled {shares} as of {month} {end_day}, {year}, with a weighted-average exercise price of {currency_code}{price}",
     "As of {year} year-end, {shares} stock options were outstanding and exercisable, representing potential dilution to existing shareholders",
     "{company} had {shares} options outstanding at {month} {end_day}, {year}, of which {shares1} were vested and exercisable",
-    "Stock options to purchase {shares} shares were outstanding as of {month} {end_day}, {year}, with expiration dates ranging from {year} to {end_year}",
+    "Stock options to purchase {shares} shares were outstanding as of {month} {end_day}, {year}, with expiration dates ranging from {year} to {maturity_year}",
 ]
 
 # Dilution concern templates
@@ -2446,7 +2446,7 @@ fx_impact_on_results_templates = [
     "Foreign currency movements had a favorable effect on revenues of {pct}% in {year}, primarily due to strengthening of the {major_currency}",
     "Excluding the impact of foreign currency translation, revenues would have increased {pct}% in {year} compared to {prev_year}",
     "The translation impact of changes in foreign exchange rates decreased reported revenues by {currency_code}{amount} {money_unit} year-over-year",
-    "On a constant currency basis, revenues increased {pct}% compared to the prior year, versus {reported_pct}% on a reported basis",
+    "On a constant currency basis, revenues increased {pct}% compared to the prior year, versus {pct2}% on a reported basis",
 ]
 
 intercompany_fx_templates = [
