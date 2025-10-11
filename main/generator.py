@@ -1078,7 +1078,7 @@ def generate_noise_paragraph(
     
     def generate_other_policy_update():
         sentences = []
-
+        labels["spec"] = 1 # It is a speculative, but not related to derivatives
         # ==============================
         # 1. ISSUANCE STATEMENT
         # ==============================
