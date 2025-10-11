@@ -1251,7 +1251,7 @@ def generate_noise_paragraph(
         "{adoption_impact}": random.choice(adoption_impacts),
     }
 
-    for _ in range(2, 4):
+    for _ in range(3, 4):
         template = random.choice(template_pool)
         sentence = template
         all_placeholders = re.findall(r'{\w+}', sentence)
