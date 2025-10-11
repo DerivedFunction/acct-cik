@@ -1403,8 +1403,8 @@ def generate(size_per_label=100):
                 futures.append(executor.submit(generate_noise_paragraph, noise_type=noise_type))
         for _ in range(size_per_label): # Any random noise
             futures.append(executor.submit(generate_noise_paragraph, noise_type=None))
-        
-        for _ in range(10):
+            
+        for _ in range(count // 2):
             futures.append(executor.submit(generate_sec_noise))
         return futures
 
