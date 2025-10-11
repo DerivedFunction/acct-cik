@@ -223,73 +223,70 @@ model.to(device)
 print(f"Model loaded to {device}")
 
 
-def get_primary_label(labels: dict) -> int:
+def get_primary_labels(labels: dict, id2label: dict) -> list:
     """
-    Convert multi-hot label dict into a single categorical label.
-
-    Priority order:
-      1. Warrant / Embedded Derivative
-      2. Actual use (_use): IR > FX > CP > EQ > GEN
-      3. Speculative mentions (spec)
-      4. Context-only (no _use, not spec)
-      5. Irrelevant
+    Multi-label derivative classification logic.
+    - 'gen' enables _use and speculative labels.
+    - Context (ir/fx/cp/eq) does NOT need 'gen'.
+    - Multiple labels can be returned.
     """
 
-    # --- Warrant ---
-    if labels.get("warr"):
-        return 21 if labels.get("hist") else 20
+    results = []
 
-    # --- Embedded Derivative ---
-    if labels.get("emb"):
-        return 23 if labels.get("hist") else 22
-
-    # --- Hedge type label map (current, historic, spec) ---
     hedge_map = {
+        "gen": (0, 1, 2),
         "ir": (3, 4, 5),
         "fx": (6, 7, 8),
         "cp": (9, 10, 11),
         "eq": (12, 13, 14),
-        "gen": (0, 1, 2),
     }
 
-    # --- Context-only label map (no _use, not spec) ---
     context_map = {
-        "gen": 15,
-        "ir": 16,
-        "fx": 17,
-        "cp": 18,
-        "eq": 19,
+        "gen": 20,
+        "ir": 21,
+        "fx": 22,
+        "cp": 23,
+        "eq": 24,
     }
 
-    # --- 1. Check for actual use (_use) ---
-    for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:  # prioritized order
-        if labels.get(f"{hedge_type}_use"):
-            curr_id, hist_id, spec_id = hedge_map[hedge_type]
-            if labels.get("curr"):
-                return curr_id
-            if labels.get("hist"):
-                return hist_id
-            if labels.get("spec"):
-                return spec_id
-            # Default to current if _use flagged but no time context
-            return curr_id
+    # --- Special types ---
+    if labels.get("warr"):
+        results.append(16 if labels.get("hist") else 15)
+    if labels.get("emb"):
+        results.append(18 if labels.get("hist") else 17)
 
-    # --- 2. Speculative mention (no actual use) ---
-    for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
-        if labels.get(hedge_type) and labels.get("spec"):
-            return hedge_map[hedge_type][2]
+    # --- Use / Speculative (need gen) ---
+    if labels.get("gen"):
+        for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
+            if labels.get(f"{hedge_type}_use"):
+                curr_id, hist_id, spec_id = hedge_map[hedge_type]
+                if labels.get("curr"):
+                    results.append(curr_id)
+                elif labels.get("hist"):
+                    results.append(hist_id)
+                elif labels.get("spec"):
+                    results.append(spec_id)
+                else:
+                    results.append(curr_id)
 
-    # --- 3. Context-only (non-use, non-speculative) ---
-    for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
-        if labels.get(hedge_type):
-            return context_map[hedge_type]
+        if not results and labels.get("spec"):
+            for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
+                if labels.get(hedge_type):
+                    results.append(hedge_map[hedge_type][2])
 
-    # --- 4. Irrelevant (only if nothing else matched) ---
+    # --- Context-only (no _use/spec, or gen=0) ---
+    if not results:
+        for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
+            if labels.get(hedge_type):
+                results.append(context_map[hedge_type])
+
+    # --- Irrelevant (non-blocking) ---
     if labels.get("irr"):
-        return 24
+        results.append(25)
 
-    # --- 5. Default fallback ---
-    return 24
+    # --- Deduplicate + sort ---
+    results = sorted(set(results))
+    return [id2label[r] for r in results]
 
 def predict_batch(sentences: list[str]):
     model.eval()

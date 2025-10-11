@@ -194,7 +194,7 @@ def new_label():
         "fx_use": 0,  # Actively used FX derivative
         "cp_use": 0,  # Actively used commodity derivative
         "eq_use": 0,  # Actively used equity derivative
-        "gen_use": 0,  # Actively used generic derivative (any hedge)
+        "gen_use": 0,  # Turned into any mention of amounts or year
         # -----------------
         # Time / Status flags
         # -----------------
