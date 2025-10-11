@@ -966,7 +966,6 @@ def generate_noise_paragraph(
     price = generate_value(False, 100)
     expiry_year = current_year + random.randint(1, 10)
     event = random.choice(warrant_events)
-    value = generate_value(False)
     net_shares = generate_value(False, int(shares/2)) if shares > 0 else 0
     pct = generate_value(False, 100)
     pct2 = generate_value(False, 100)
@@ -1001,9 +1000,9 @@ def generate_noise_paragraph(
             issuer=issuer,
             standard=standard,
             topic=topic,
-            purpose=purpose,
-            description=description,
-            additional_feature=extra,
+            standard_purpose=purpose,
+            policy_description=description,
+            policy_feature=extra,
             eff_month=eff_month,
             eff_day=eff_day,
             eff_year=effective_year,
@@ -1025,8 +1024,8 @@ def generate_noise_paragraph(
         if random.random() < 0.2:
             trans_line = random.choice(shared_transition_templates).format(
                 company=pick_company_name(company_name),
-                method=random.choice(shared_adoption_methods),
-                feature=random.choice(shared_transition_features),
+                adoption_method=random.choice(shared_adoption_methods),
+                transition_feature=random.choice(shared_transition_features),
             )
             sentences.append(trans_line)
 
@@ -1067,7 +1066,7 @@ def generate_noise_paragraph(
         adoption_sentence = adopt_template.format(
             company=pick_company_name(company_name),
             standard=adopt_standard,
-            method=adopt_method,
+            adoption_method=adopt_method,
             month=adopt_month,
             day=adopt_day,
             year=adopt_year,
@@ -1078,7 +1077,7 @@ def generate_noise_paragraph(
         if random.random() < 0.3:
             impact_line = random.choice(shared_adoption_impact_templates).format(
                 company=pick_company_name(company_name),
-                impact=random.choice(
+                adoption_impact=random.choice(
                     [
                         "recognition of additional lease liabilities",
                         "a change in timing of revenue recognition",
@@ -1125,18 +1124,18 @@ def generate_noise_paragraph(
     all_sentences = []
     if noise_type == "eq" or noise_type == "warr":  # ex. equity, warrant, stock
         labels["eq"] = 1
-        template_pool.extend(noise_templates["EQ"])
+        template_pool.extend(sum(noise_templates["EQ"], []))
     elif noise_type == "cp":  # ex. inventory
         labels["cp"] = 1
-        template_pool.extend(noise_templates["CP"])
+        template_pool.extend(sum(noise_templates["CP"], []))
     elif noise_type == "ir":  # ex. debt
         labels["ir"] = 1
-        template_pool.extend(noise_templates["IR"])
+        template_pool.extend(sum(noise_templates["IR"], []))
     elif noise_type == "fx":  # ex. currency
         labels["fx"] = 1
-        template_pool.extend(noise_templates["FX"])
+        template_pool.extend(sum(noise_templates["FX"], []))
     elif noise_type == "deriv":  # ex. derivative lawsuits (irr)
-        template_pool.extend(noise_templates["LAW"])
+        template_pool.extend(sum(noise_templates["LAW"], []))
     elif noise_type == "spec":  # ex. acct standards (irr)
         all_sentences = generate_other_policy_update()
     else:
@@ -1159,6 +1158,8 @@ def generate_noise_paragraph(
     )
     selected_cps = selected_cps if random.random() < 0.85 else "commodity"
 
+    all_reasons = balance_sheet_reasons + accrued_reasons + other_asset_reasons + liability_reasons + equity_reasons
+
     replacements = {
         "{company}": pick_company_name(company_name),
         "{shares}": str(shares),
@@ -1177,7 +1178,6 @@ def generate_noise_paragraph(
         "{prev_amount}": str(prev_amount),
         "{money_unit}": money_units,
         "{event}": event,
-        "{value}": str(value),
         "{value1}": str(generate_value(False)),
         "{value2}": str(generate_value(False)),
         "{net_shares}": str(net_shares),
@@ -1189,8 +1189,8 @@ def generate_noise_paragraph(
         "{asset_type}": random.choice(asset_types),
         "{debt_types_list}": random.choice(debt_types_list),
         "{service_type}": random.choice(service_types),
-        "{items}": selected_cps,
-        "{method}": random.choice(inventory_methods),
+        "{commodities}": selected_cps,
+        "{inventory_method}": random.choice(inventory_methods),
         "{reserve}": str(generate_value(False)),
         "{outstanding}": str(outstanding),
         "{debt_types}": debt_types,
@@ -1204,9 +1204,6 @@ def generate_noise_paragraph(
         "{currency3}": random.choice(all_currencies),
         "{location}": random.choice(balance_sheet_locations),
         "{reported_pct}": str(generate_value(False, 100)),
-        "{commodity}": selected_cps,
-        "{commodity2}": random.choice(commodities),
-        "{commodity3}": random.choice(commodities),
         "{low_price}": str(generate_value(False, 50)),
         "{high_price}": str(generate_value(False, 200)),
         "{unit}": random.choice(volume_units),
@@ -1214,6 +1211,46 @@ def generate_noise_paragraph(
         "{cost}": str(generate_value(False, 100)),
         "{prev_cost}": str(generate_value(False, 100)),
         "{change}": str(generate_value(False)),
+        # New specific placeholders
+        "{bs_reason}": random.choice(balance_sheet_reasons),
+        "{wc_reason}": random.choice(balance_sheet_reasons),
+        "{ap_reason}": random.choice(balance_sheet_reasons),
+        "{accrued_reason}": random.choice(accrued_reasons),
+        "{asset_reason}": random.choice(other_asset_reasons),
+        "{liability_reason}": random.choice(liability_reasons),
+        "{equity_reason}": random.choice(equity_reasons),
+        "{cfs_reason}": "capital expenditures",
+        "{capex_purpose}": random.choice(capex_purposes),
+        "{restructuring_purpose}": random.choice(restructuring_purposes),
+        "{restructuring_expense_type}": random.choice(restructuring_expense_types),
+        "{acquisition_purpose}": random.choice(acquisition_purposes),
+        "{acquisition_funding}": random.choice(acquisition_funding),
+        "{guarantee_type}": random.choice(guarantee_types),
+        "{intangible_type_examples}": random.choice(intangible_types),
+        "{tax_sources_examples}": random.choice(tax_sources),
+        "{litigation_examples}": random.choice(case_types),
+        "{lawsuit_allegation}": random.choice(allegations),
+        "{court_name}": random.choice(courts),
+        "{standard_purpose}": random.choice(shared_purposes),
+        "{standard_description}": random.choice(general_descriptions),
+        "{policy_description}": random.choice(general_descriptions),
+        "{policy_feature}": random.choice(general_additional_features),
+        "{hedge_description}": random.choice(hedging_descriptions),
+        "{hedge_feature}": random.choice(hedging_additional_features),
+        "{competitive_characteristics}": random.choice(competitive_characteristics),
+        "{competitive_factors}": random.choice(competitive_factors),
+        "{competitive_pressure_reasons}": random.choice(competitive_pressure_reasons),
+        "{competitive_advantages}": random.choice(competitive_advantages),
+        "{regulatory_agencies}": random.choice(regulators),
+        "{regulatory_areas}": random.choice(regulatory_areas),
+        "{regulatory_approvals}": "key product approvals",
+        "{regulatory_matters}": "ongoing inquiries",
+        "{self_insured_risks}": random.choice(self_insured_risks),
+        "{insurance_incident}": random.choice(insurance_incidents),
+        "{insurance_coverage_types}": random.choice(coverage_types),
+        "{adoption_method}": random.choice(shared_adoption_methods),
+        "{transition_feature}": random.choice(shared_transition_features),
+        "{adoption_impact}": "a material impact",
     }
 
     for _ in range(2, 4):

@@ -43,7 +43,7 @@ sec_toc_patterns = [
     "Item 15. Exhibits, Financial Statement Schedules {page}",
     "SIGNATURES {page}",
 ]
-# ============ LITIGATION AND LEGAL MATTERS ============ 
+# ============ LITIGATION AND LEGAL MATTERS ============
 
 litigation_templates = [
     "{company} is involved in various legal proceedings and claims arising in the ordinary course of business, including {litigation_examples}",
@@ -122,7 +122,7 @@ allegations = [
     "violation of antidiscrimination provisions under Title VII",
     "failure to comply with OSHA workplace safety regulations",
 ]
-# ============ EQUITY WARRANTS (NON-DERIVATIVE) ============ 
+# ============ EQUITY WARRANTS (NON-DERIVATIVE) ============
 
 equity_warrant_templates = [
     "{company} has {shares} equity-classified warrants outstanding with an exercise price of {currency_code}{price} per share, exercisable until {expiry_year}",
@@ -136,8 +136,8 @@ equity_warrant_templates = [
     "{company} issued {shares} common stock warrants at an exercise price of {currency_code}{price} per share as consideration for {event}",
     "In {month} {year}, warrants to acquire {shares} shares at {currency_code}{price} per share were issued in connection with {event}",
     "In connection with the {event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{price} per share, provision states the warrants meet the criteria for equity treatment",
-    "{company} issued {shares} shares of common stock valued at {currency_code}{value} in connection with {event} during {year}",
-    "During {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{value}) as part of {event}",
+    "{company} issued {shares} shares of common stock valued at {currency_code}{amount} in connection with {event} during {year}",
+    "During {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{amount}) as part of {event}",
 ]
 
 
@@ -186,7 +186,7 @@ warrant_events = [
     "mezzanine financing agreements",
 ]
 
-# ============ REVENUE RECOGNITION ============ 
+# ============ REVENUE RECOGNITION ============
 
 revenue_recognition_templates = [
     "{company} recognizes revenue when control of promised goods or services is transferred to customers in an amount that reflects the consideration expected to be received",
@@ -222,7 +222,7 @@ deferred_revenue_templates = [
     "Deferred revenue balances are expected to be recognized as revenue consistent with the satisfaction of contractual obligations over time",
 ]
 
-# ============ INVENTORY ============ 
+# ============ INVENTORY ============
 
 inventory_templates = [
     "{commodities} inventories are stated at the lower of cost or net realizable value, with cost determined using the {inventory_method} method",
@@ -264,7 +264,7 @@ inventory_writedown_templates = [
     "{company} established new reserves of {currency_code}{amount} {money_unit} in {year} for excess quantities, reflecting updated demand forecasts",
 ]
 
-# ============ PROPERTY, PLANT & EQUIPMENT ============ 
+# ============ PROPERTY, PLANT & EQUIPMENT ============
 
 ppe_templates = [
     "Property, plant and equipment are stated at cost less accumulated depreciation, which is computed using the straight-line method over estimated useful lives",
@@ -341,7 +341,7 @@ asset_types = [
     "renewable energy facilities",
 ]
 
-# ============ LEASES ============ 
+# ============ LEASES ============
 
 lease_templates = [
     "{company} leases office space, manufacturing facilities, and equipment under operating and finance leases with terms ranging from {min_term} to {max_term} years",
@@ -367,7 +367,7 @@ lease_commitment_templates = [
     "Lease commitments include renewal options reasonably certain to be exercised, totaling {currency_code}{amount} {money_unit}",
 ]
 
-# ============ GOODWILL AND INTANGIBLES ============ 
+# ============ GOODWILL AND INTANGIBLES ============
 
 goodwill_templates = [
     "Goodwill totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}, and is not amortized but tested for impairment annually",
@@ -390,7 +390,7 @@ intangible_types = [
     "brand names, proprietary technology, and customer relationships",
 ]
 
-# ============ DEBT AND CREDIT FACILITIES ============ 
+# ============ DEBT AND CREDIT FACILITIES ============
 
 debt_templates = [
     # General facilities and balances
@@ -463,7 +463,7 @@ debt_covenant_templates = [
     "{company}\'s credit agreements require maintenance of specified leverage and coverage ratios, which {company} met as of {month} {end_day}, {year}",
 ]
 
-# ============ INCOME TAXES ============ 
+# ============ INCOME TAXES ============
 
 tax_templates = [
     "The provision for income taxes was {currency_code}{amount} {money_unit} for {year}, resulting in an effective tax rate of {rate}%",
@@ -486,7 +486,7 @@ uncertain_tax_templates = [
     "It is reasonably possible that {currency_code}{amount} {money_unit} of unrecognized tax benefits could be recognized within the next twelve months",
 ]
 
-# ============ STOCK-BASED COMPENSATION ============ 
+# ============ STOCK-BASED COMPENSATION ============
 
 stock_comp_templates = [
     "Stock-based compensation expense was {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
@@ -502,7 +502,7 @@ stock_comp_valuation_templates = [
     "The weighted-average grant-date fair value of options granted during {year} was {currency_code}{amount} per share",
 ]
 
-# ============ PENSION AND POSTRETIREMENT BENEFITS ============ 
+# ============ PENSION AND POSTRETIREMENT BENEFITS ============
 
 pension_templates = [
     "{company} sponsors defined benefit pension plans covering certain employees, with plan assets of {currency_code}{assets} {money_unit} and projected benefit obligations of {currency_code}{obligations} {money_unit} as of {month} {end_day}, {year}",
@@ -518,7 +518,7 @@ opeb_templates = [
     "{company}\'s postretirement benefit plans are unfunded, with liabilities recorded in other long-term liabilities",
 ]
 
-# ============ COMMITMENTS AND CONTINGENCIES ============ 
+# ============ COMMITMENTS AND CONTINGENCIES ============
 
 purchase_commitment_templates = [
     "{company} has purchase commitments with suppliers totaling approximately {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
@@ -541,7 +541,7 @@ guarantee_types = [
     "intellectual property indemnifications and debt guarantees",
 ]
 
-# ============ RESTRUCTURING ============ 
+# ============ RESTRUCTURING ============
 
 restructuring_templates = [
     "During {year}, {company} initiated a restructuring plan to {restructuring_purpose}, resulting in charges of {currency_code}{amount} {money_unit}",
@@ -564,7 +564,7 @@ restructuring_expense_types = [
     "workforce reductions and lease terminations",
 ]
 
-# ============ ACQUISITIONS (NON-DERIVATIVE ASPECTS) ============ 
+# ============ ACQUISITIONS (NON-DERIVATIVE ASPECTS) ============
 
 acquisition_templates = [
     "In {month} {year}, {company} acquired {target} for total consideration of {currency_code}{amount} {money_unit} in cash",
@@ -590,11 +590,11 @@ acquisition_funding = [
 # Stock issuance for debt costs
 stock_debt_issuance_templates = [
     "In conjunction with its {month} {year} {financing_type}, {company} issued at closing {shares1} shares of common stock (valued at {currency_code}{value1}) and upon extension of the maturity date {shares2} shares of common stock (valued at {currency_code}{value2}), which were recorded as debt issuance costs",
-    "{company} issued {shares} shares of common stock valued at {currency_code}{value} in connection with {financing_type} during {year}, recorded as debt issuance costs",
-    "During {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{value}) as part of {financing_type}, with the value recorded as a debt issue cost",
-    "In {month} {year}, {company} completed {financing_type} and issued {shares} shares of common stock valued at {currency_code}{value} as consideration, which was capitalized as debt issuance costs",
+    "{company} issued {shares} shares of common stock valued at {currency_code}{amount} in connection with {financing_type} during {year}, recorded as debt issuance costs",
+    "During {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{amount}) as part of {financing_type}, with the value recorded as a debt issue cost",
+    "In {month} {year}, {company} completed {financing_type} and issued {shares} shares of common stock valued at {currency_code}{amount} as consideration, which was capitalized as debt issuance costs",
     "Upon closing of the {financing_type} in {month} {year}, {shares} shares were issued as transaction costs and recorded in additional paid-in capital",
-    "{company} capitalized {shares} shares of common stock valued at {currency_code}{value} as debt issuance costs related to the {financing_type}",
+    "{company} capitalized {shares} shares of common stock valued at {currency_code}{amount} as debt issuance costs related to the {financing_type}",
 ]
 
 # Registration statement and resale concerns
@@ -628,10 +628,10 @@ warrant_adjustment_templates = [
 # Fair value measurement templates
 fair_value_snapshot_templates = [
     "The fair value of the shares are {currency_code}{value1} and {currency_code}{value2}, in {month} {year}",
-    "As of {month} {end_day}, {year}, the fair value of shares underlying convertible instruments was {currency_code}{value}",
-    "Fair value of shares reserved for issuance totaled {currency_code}{value} at {month} {end_day}, {year}",
-    "The {shares} shares reserved for conversion and exercise had an aggregate fair value of {currency_code}{value} as of {month} {year}",
-    "{company} valued the {shares} shares underlying convertible securities at {currency_code}{value} based on the closing stock price on {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, the fair value of shares underlying convertible instruments was {currency_code}{amount}",
+    "Fair value of shares reserved for issuance totaled {currency_code}{amount} at {month} {end_day}, {year}",
+    "The {shares} shares reserved for conversion and exercise had an aggregate fair value of {currency_code}{amount} as of {month} {year}",
+    "{company} valued the {shares} shares underlying convertible securities at {currency_code}{amount} based on the closing stock price on {month} {end_day}, {year}",
 ]
 
 # Share reservation templates
@@ -672,36 +672,36 @@ capital_raising_impact_templates = [
 
 warrant_debt_issuance_templates = [
     "In the same financing, {company} issued warrants to purchase {shares1} shares of its common stock (valued at {currency_code}{value1}) and warrants to purchase {shares2} shares of its common stock (valued at {currency_code}{value2}) related to extensions of the maturity dates",
-    "{company} issued warrants to purchase {shares} shares of common stock (valued at {currency_code}{value}) in conjunction with {financing_type} in {month} {year}",
-    "Warrants to purchase {shares} shares of common stock were issued as part of the financing arrangement, valued at {currency_code}{value} and recorded as debt issuance costs",
-    "In connection with {financing_type}, {company} granted warrants for {shares} shares valued at {currency_code}{value}, with the value recorded as debt issue costs",
+    "{company} issued warrants to purchase {shares} shares of common stock (valued at {currency_code}{amount}) in conjunction with {financing_type} in {month} {year}",
+    "Warrants to purchase {shares} shares of common stock were issued as part of the financing arrangement, valued at {currency_code}{amount} and recorded as debt issuance costs",
+    "In connection with {financing_type}, {company} granted warrants for {shares} shares valued at {currency_code}{amount}, with the value recorded as debt issue costs",
     "Additional warrants to purchase {shares} shares of {company} common stock were issued on {month} {year} in consideration for the extension to that date",
     "In connection with the extension to {month} {year}, {company} offered two alternatives of consideration. Holders of {shares1} common stock of the notes elected to reduce the exercise price of their warrants, or to to receive additional warrants to purchase {shares2} shares of common stock",
     "{company} reduced the exercise price by {currency_code}{value1} per share for all warrants issued in connection with the issuance or extensions of the notes",
-    "In consideration of this extension, {company} issued {shares} shares of common stock at a price of {value} per share and warrants to purchase {shares1} shares of common stock at a price to be determined in the future, between {currency_code}{value1} and {currency_code}{value2} per share, on or before {month} {year}",
-    "Also in {month} {year}, {company} exchanged a {currency_code}{value} note payable for units of common stock and warrants to purchase common stock at a price of {currency_code}{value1} per unit",
-    "In addition, the financial advisor on the debt offering received an additional {shares} warrants with the {month} offering for a total of approximately {value}",
+    "In consideration of this extension, {company} issued {shares} shares of common stock at a price of {amount} per share and warrants to purchase {shares1} shares of common stock at a price to be determined in the future, between {currency_code}{value1} and {currency_code}{value2} per share, on or before {month} {year}",
+    "Also in {month} {year}, {company} exchanged a {currency_code}{amount} note payable for units of common stock and warrants to purchase common stock at a price of {currency_code}{value1} per unit",
+    "In addition, the financial advisor on the debt offering received an additional {shares} warrants with the {month} offering for a total of approximately {amount}",
     "If all of the warrants are exercised and the debt is fully converted to {company} stock, current stockholders will experience a significant dilution in their ownership of {company} ",
-    "Based on the terms of the debt offering both the notes and warrants are subject to anti-dilution provisions and can potentially become more dilutive to {company} stock. Further dilution may occur in the event of a default {currency_code}{value} payable",
+    "Based on the terms of the debt offering both the notes and warrants are subject to anti-dilution provisions and can potentially become more dilutive to {company} stock. Further dilution may occur in the event of a default {currency_code}{amount} payable",
 ]
 
 warrant_amortization_templates = [
     "The value of the warrants related to these financings was recorded as debt issue costs and the amortization of such warrant costs was included in interest expense, which was capitalized as a cost of {asset_type}",
-    "Warrant costs totaling {currency_code}{value} were recorded as debt issuance costs and amortized to interest expense over the term of the debt",
+    "Warrant costs totaling {currency_code}{amount} were recorded as debt issuance costs and amortized to interest expense over the term of the debt",
     "{company} amortizes debt issuance costs, including the value of warrants issued, to interest expense using the effective interest method",
-    "Amortization of warrant-related debt issuance costs totaled {currency_code}{value} for the year ended {month} {end_day}, {year}",
+    "Amortization of warrant-related debt issuance costs totaled {currency_code}{amount} for the year ended {month} {end_day}, {year}",
     "The relative fair value of the warrants was recorded as a debt discount and is being amortized to non-cash interest expense over the life of the {debt_types_list} using the effective interest method",
     "The initial value of the warrants was recorded in Additional Paid-In Capital and, as they are classified as equity, they are not subsequently remeasured",
-    "Amortization of the debt discount related to the warrants issued with the {debt_types_list} totaled {currency_code}{value} and {currency_code}{value2} for the years ended {year} and {prev_year}, respectively",
+    "Amortization of the debt discount related to the warrants issued with the {debt_types_list} totaled {currency_code}{amount} and {currency_code}{value2} for the years ended {year} and {prev_year}, respectively",
     "The warrants are exercisable for a term of five years at an exercise price of {currency_code}{price} per share, subject to anti-dilution provisions similar to the provisions set forth in the Notes and expire on {month} {year}",
 ]
 
 
 non_cash_settlement_templates = [
-    "In {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{value}) in settlement of invoices for previously rendered {service_type}",
-    "{company} settled outstanding {service_type} payables totaling {currency_code}{value} through the issuance of {shares} shares of common stock during {year}",
-    "During {year}, {company} issued {shares} shares valued at {currency_code}{value} to settle {service_type} obligations",
-    "{shares} shares of common stock were issued in {month} {year} to satisfy {currency_code}{value} in outstanding {service_type} fees",
+    "In {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{amount}) in settlement of invoices for previously rendered {service_type}",
+    "{company} settled outstanding {service_type} payables totaling {currency_code}{amount} through the issuance of {shares} shares of common stock during {year}",
+    "During {year}, {company} issued {shares} shares valued at {currency_code}{amount} to settle {service_type} obligations",
+    "{shares} shares of common stock were issued in {month} {year} to satisfy {currency_code}{amount} in outstanding {service_type} fees",
 ]
 
 
@@ -939,7 +939,7 @@ clawback_templates = [
     "The Board may require reimbursement of performance-based compensation under the clawback policy if performance goals are not actually achieved",
     "Incentive compensation paid to executives is subject to clawback provisions as required by the Dodd-Frank Act and SEC regulations",
 ]
-# ========== MARKET PRICES AND TRADING ========== 
+# ========== MARKET PRICES AND TRADING ==========
 stock_price_templates = [
     '{company} \'s common stock trades on the {exchange} under the ticker symbol "{ticker}"',
     "Shares of common stock closed at {currency_code}{price} on {month} {end_day}, {year}, compared to {currency_code}{prev_price} at {month} {end_day}, {prev_year}",
@@ -968,7 +968,7 @@ trading_volume_templates = [
 
 volatility_levels = ["elevated", "moderate", "reduced", "increased", "stable"]
 
-# ========== ABOUT {company} / BUSINESS DESCRIPTION ========== 
+# ========== ABOUT {company} / BUSINESS DESCRIPTION ==========
 company_description_templates = [
     "{company} is a {industry} company that {business_activity}",
     "{company} operates in the {industry} sector, providing {products_services} to customers in {geography}",
@@ -1007,7 +1007,7 @@ segment_examples = [
     "Technology, Healthcare, and Industrial",
 ]
 
-# ========== HEDGE FUNDS AND INSTITUTIONAL OWNERSHIP ========== 
+# ========== HEDGE FUNDS AND INSTITUTIONAL OWNERSHIP ==========
 institutional_ownership_templates = [
     "As of {month} {end_day}, {year}, institutional investors held approximately {pct}% of {company}\'s outstanding shares",
     "{fund_name} reported a {pct}% ownership stake in {company} as of {month} {end_day}, {year}",
@@ -1038,7 +1038,7 @@ insider_actions = [
     "net sales",
 ]
 
-# ========== FORWARD-LOOKING STATEMENTS ========== 
+# ========== FORWARD-LOOKING STATEMENTS ==========
 forward_looking_templates = [
     "This report contains forward-looking statements within the meaning of the Private Securities Litigation Reform Act of 1995",
     "Forward-looking statements include, but are not limited to, statements regarding {topics}",
@@ -1079,7 +1079,7 @@ safe_harbor_templates = [
     "This document contains forward-looking statements that are protected by the safe harbor provisions for such statements",
 ]
 
-# ========== ANALYST COVERAGE AND ESTIMATES ========== 
+# ========== ANALYST COVERAGE AND ESTIMATES ==========
 analyst_coverage_templates = [
     "{company} is currently covered by {number} equity research analysts",
     "Analyst consensus estimates for {year} project earnings per share of {currency_code}{eps} and revenue of {currency_code}{revenue} {money_unit}",
@@ -1089,7 +1089,7 @@ analyst_coverage_templates = [
     "{company} does not provide guidance but is followed by several sell-side analysts who publish earnings estimates",
 ]
 
-# ========== CREDIT RATINGS ========== 
+# ========== CREDIT RATINGS ==========
 credit_rating_templates = [
     "{company}\'s senior unsecured debt is rated {rating} by {agency} and {rating2} by {agency2}",
     "{agency} maintains a {rating} credit rating on {company} with a {outlook} outlook",
@@ -1104,7 +1104,7 @@ credit_ratings = ["BBB+", "BBB", "BBB-", "A-", "A", "Baa1", "Baa2", "Baa3"]
 rating_outlooks = ["stable", "positive", "negative", "under review"]
 rating_actions = ["upgraded", "downgraded", "affirmed", "revised"]
 
-# ========== DIVIDEND AND CAPITAL ALLOCATION ========== 
+# ========== DIVIDEND AND CAPITAL ALLOCATION ==========
 dividend_policy_templates = [
     "{company} has paid consecutive quarterly dividends since {year}",
     "In {month} {year}, the Board of Directors declared a quarterly dividend of {currency_code}{amount} per share, payable on {month} {end_day}, {year}",
@@ -1124,7 +1124,7 @@ share_repurchase_templates = [
     "No shares were repurchased during {year} as {company} prioritized debt reduction and organic growth investments",
 ]
 
-# ========== COMPETITIVE LANDSCAPE ========== 
+# ========== COMPETITIVE LANDSCAPE ==========
 competition_templates = [
     "{company} operates in a highly competitive industry characterized by {competitive_characteristics}",
     "Principal competitors include {competitor1}, {competitor2}, and {competitor3}",
@@ -1148,6 +1148,7 @@ competitive_factors = [
     "breadth of product portfolio, technical expertise, and customer relationships",
     "operational efficiency, time to market, and total cost of ownership",
 ]
+competitive_pressure_reasons = ["intensified competition","new market entrants, pricing pressures, and technological disruption"]
 
 competitive_advantages = [
     "proprietary technology, strong brand recognition, and established customer relationships",
@@ -1156,7 +1157,7 @@ competitive_advantages = [
     "vertically integrated operations, cost structure, and distribution network",
 ]
 
-# ========== REGULATORY AND COMPLIANCE ========== 
+# ========== REGULATORY AND COMPLIANCE ==========
 regulatory_templates = [
     "{company} is subject to extensive regulation by {regulatory_agencies} governing {regulatory_areas}",
     "Compliance with environmental, health, and safety regulations resulted in costs of approximately {currency_code}{amount} {money_unit} during {year}",
@@ -1181,7 +1182,7 @@ regulatory_areas = [
     "marketing practices, product labeling, and quality standards",
 ]
 
-# ========== INSURANCE AND RISK MANAGEMENT ========== 
+# ========== INSURANCE AND RISK MANAGEMENT ==========
 insurance_templates = [
     "{company} maintains insurance coverage for property, casualty, general liability, and other risks in amounts considered adequate",
     "Self-insurance reserves totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
@@ -1202,68 +1203,128 @@ coverage_types = [
     "cyber liability, errors and omissions, fiduciary liability, and environmental liability",
     "general liability, auto liability, workers' compensation, and excess umbrella coverage",
 ]
+insurance_incidents = ["property damage", "business interruption", "product liability claims", "workers' compensation", "employee health benefits"]
 
 
-# ========== FOREIGN CURRENCY RISK/TRANSLATION (NON-DERIVATIVE) ========== 
+# ========== FOREIGN CURRENCY RISK/TRANSLATION (NON-DERIVATIVE) ==========
 
 foreign_currency_exposure_templates = [
-    "{company}\'s operating results are affected by changes in commodity prices, particularly {commodity} and {commodity2}",
-    "{company} is exposed to price volatility for key raw materials including {commodity}, {commodity2}, and {commodity3}",
-    "Commodity price fluctuations, particularly for {commodity}, can significantly impact {company}\'s cost structure and margins",
-    "Raw material costs are subject to market volatility, with {commodity} prices ranging from {currency_code}{low_price} to {currency_code}{high_price} per {unit} during {year}",
-    "{company}\'s operations are sensitive to changes in {commodity} prices, which can affect both revenue and cost of sales",
+    "{company}\'s operating results are affected by changes in commodity prices, particularly {commodities}",
+    "{company} is exposed to price volatility for key raw materials including {commodities}",
+    "Commodity price fluctuations, particularly for {commodities}, can significantly impact {company}\'s cost structure and margins",
+    "Raw material costs are subject to market volatility, with {commodities} prices ranging from {currency_code}{low_price} to {currency_code}{high_price} per {unit} during {year}",
+    "{company}\'s operations are sensitive to changes in {commodities} prices, which can affect both revenue and cost of sales",
+]
+foreign_currency_exposure_templates = [
+    "{company} operates in multiple countries and is exposed to foreign currency exchange rate fluctuations {major_currency} in that affect reported revenues and expenses",
+    "{company}'s international operations subject it to foreign currency risks, primarily related to the {major_currency}, {currency2}, and {currency3}",
+    "Foreign currency transaction in {major_currency} gains and losses are recorded in {location} as incurred",
+    "Substantially all of {company}'s foreign subsidiaries use {major_currency} as their local currency",
+    "{company}'s results of operations are affected by changes in foreign currency exchange rates, particularly movements in the {major_currency} and {currency2}",
+]
+
+foreign_currency_translation_templates = [
+    "Assets and liabilities of foreign subsidiaries are translated to {major_currency} at period-end exchange rates, while income and expenses are translated at average exchange rates for the period",
+    "Translation adjustments resulting from the process of translating foreign currency financial statements into {major_currency} are recorded in accumulated other comprehensive income",
+    "The cumulative translation adjustment recorded in accumulated other comprehensive income was {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
+    "Foreign currency translation adjustments decreased stockholders' equity by {currency_code}{amount} {money_unit} during {year}",
+    "{company} recorded a foreign currency translation loss of {currency_code}{amount} {money_unit} in other comprehensive income for the year ended {month} {end_day}, {year}",
+    "The weakening of the {major_currency} against the {currency2} resulted in an unfavorable translation impact of {currency_code}{amount} {money_unit} in {year}",
+    "Changes in foreign exchange rates resulted in translation gains of {currency_code}{amount} {money_unit} recorded in other comprehensive income during {year}",
+]
+
+foreign_currency_transaction_templates = [
+    "Foreign currency transaction gains (losses) included in {location} totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
+    "{company} recognized foreign exchange losses of {currency_code}{amount} {money_unit} during {year}, primarily related to intercompany balances denominated in {major_currency}",
+    "{company} recorded foreign currency transaction losses of {currency_code}{amount} {money_unit} in {year} compared to gains of {currency_code}{prev_amount} {money_unit} in {prev_year}",
+    "Foreign exchange gains and losses on remeasurement of monetary assets and liabilities totaled {currency_code}{amount} {money_unit} in {year}",
+    "Transaction gains and losses on foreign currency ({major_currency}) denominated receivables and payables are recognized in earnings as exchange rates fluctuate",
+]
+
+functional_currency_templates = [
+    "The functional currency for most of {company}'s foreign subsidiaries is the local currency of the country in which the subsidiary operates",
+    "For subsidiaries operating in highly inflationary economies, the {major_currency} is used as the functional currency",
+    "{company} determines the functional currency of each subsidiary based on the primary economic environment in which the entity operates",
+    "The functional currencies of {company}'s significant foreign operations include the {major_currency}, {currency2}, and {currency3}",
+    "Remeasurement of foreign subsidiary financial statements from local currency to functional currency resulted in gains of {currency_code}{amount} {money_unit} in {year}",
+]
+
+fx_impact_on_results_templates = [
+    "Foreign currency exchange rate fluctuations had an unfavorable impact on revenues of approximately {currency_code}{amount} {money_unit}, or {pct}%, during {year}",
+    "Changes in foreign exchange rates negatively impacted operating income by {currency_code}{amount} {money_unit} in {year}",
+    "Foreign currency movements had a favorable effect on revenues of {pct}% in {year}, primarily due to strengthening of the {major_currency}",
+    "Excluding the impact of foreign currency translation, revenues would have increased {pct}% in {year} compared to {prev_year}",
+    "The translation impact of changes in foreign exchange rates decreased reported revenues by {currency_code}{amount} {money_unit} year-over-year",
+    "On a constant currency basis, revenues increased {pct}% compared to the prior year, versus {reported_pct}% on a reported basis",
+]
+
+intercompany_fx_templates = [
+    "{company} has intercompany loans denominated in various currencies that are remeasured each reporting period with gains and losses recorded in earnings",
+    "Intercompany foreign currency transactions resulted in remeasurement losses of {currency_code}{amount} {money_unit} during {year}",
+    "{company} has {currency_code}{amount} {money_unit} in intercompany receivables denominated in {major_currency} as of {month} {end_day}, {year}",
+    "Remeasurement of intercompany balances denominated in currencies other than the functional currency resulted in losses of {currency_code}{amount} {money_unit} in {year}",
+]
+
+# ========== COMMODITY PRICES/RISK/INVENTORY (NON-DERIVATIVE) ==========
+
+commodity_price_exposure_templates = [
+    "{company}'s operating results are affected by changes in commodity prices, particularly {commodities}",
+    "{company} is exposed to price volatility for key raw materials including {commodities}",
+    "Commodity price fluctuations, particularly for {commodities}, can significantly impact {company}'s cost structure and margins",
+    "Raw material costs are subject to market volatility, with {commodities} prices ranging from {currency_code}{low_price} to {currency_code}{high_price} per {unit} during {year}",
+    "{company}'s operations are sensitive to changes in {commodities} prices, which can affect both revenue and cost of sales",
 ]
 
 commodity_cost_impact_templates = [
     "Commodity price increases added approximately {currency_code}{amount} {money_unit} to cost of goods sold during {year}",
-    "Changes in {commodity} prices unfavorably impacted gross margin by {pct} percentage points in {year}",
-    "{company} experienced cost inflation of {currency_code}{amount} {money_unit} in {year}, primarily driven by higher {commodity} and {commodity2} prices",
-    "Commodity costs increased {pct}% year-over-year, driven primarily by {commodity} price appreciation",
-    "Raw material price increases, particularly for {commodity}, reduced gross profit margin from {prev_pct}% to {pct}% in {year}",
+    "Changes in {commodities} prices unfavorably impacted gross margin by {pct} percentage points in {year}",
+    "{company} experienced cost inflation of {currency_code}{amount} {money_unit} in {year}, primarily driven by higher {commodities} prices",
+    "Commodity costs increased {pct}% year-over-year, driven primarily by {commodities} price appreciation",
+    "Raw material price increases, particularly for {commodities}, reduced gross profit margin from {prev_pct}% to {pct}% in {year}",
     "{company} absorbed {currency_code}{amount} {money_unit} in commodity cost inflation during {year} through operational efficiencies and pricing actions",
 ]
 
 commodity_inventory_valuation_templates = [
-    "{company} maintains inventory of {commodity} and {commodity2} to support production requirements, exposing {company} to price risk",
-    "As of {month} {end_day}, {year}, {company} held {volume} {unit} of {commodity} inventory valued at {currency_code}{amount} million",
-    "{company} recorded an inventory writedown of {currency_code}{amount} {money_unit} in {year} due to declines in {commodity} market prices",
+    "{company} maintains inventory of {commodities} to support production requirements, exposing {company} to price risk",
+    "As of {month} {end_day}, {year}, {company} held {volume} {unit} of {commodities} inventory valued at {currency_code}{amount} million",
+    "{company} recorded an inventory writedown of {currency_code}{amount} {money_unit} in {year} due to declines in {commodities} market prices",
     "Commodity inventory is stated at the lower of cost or net realizable value, with cost determined using the {inventory_method} method",
     "{company}\'s inventory includes {currency_code}{amount} {money_unit} of raw materials subject to commodity price volatility",
-    "{company} recognized a {currency_code}{amount} {money_unit} charge related to excess and obsolete {commodity} inventory in {year}",
+    "{company} recognized a {currency_code}{amount} {money_unit} charge related to excess and obsolete {commodities} inventory in {year}",
 ]
 
 commodity_pricing_strategies_templates = [
     "{company} generally seeks to pass through commodity cost changes to customers through pricing mechanisms, though timing differences can affect margins",
-    "{company} has implemented price increases totaling {pct}% to offset {commodity} cost inflation during {year}",
-    "Pricing adjustments are typically implemented with a {months}-month lag following changes in {commodity} costs",
-    "{company} utilizes index-based pricing formulas for certain products to mitigate the impact of {commodity} price volatility",
-    "Customer contracts include provisions that allow {company} to adjust prices in response to significant {commodity} cost movements",
+    "{company} has implemented price increases totaling {pct}% to offset {commodities} cost inflation during {year}",
+    "Pricing adjustments are typically implemented with a {months}-month lag following changes in {commodities} costs",
+    "{company} utilizes index-based pricing formulas for certain products to mitigate the impact of {commodities} price volatility",
+    "Customer contracts include provisions that allow {company} to adjust prices in response to significant {commodities} cost movements",
 ]
 
 commodity_supply_risk_templates = [
-    "{company} sources {commodity} from multiple suppliers to mitigate supply chain disruption risk",
-    "{company} maintains strategic inventory of {commodity} to buffer against potential supply disruptions",
-    "Supply constraints for {commodity} during {year} resulted in increased costs and temporary production delays",
-    "{company} has long-term supply agreements for {commodity} covering approximately {pct}% of anticipated requirements",
-    "{company} is exposed to concentration risk as {pct}% of {commodity} is sourced from a single region",
+    "{company} sources {commodities} from multiple suppliers to mitigate supply chain disruption risk",
+    "{company} maintains strategic inventory of {commodities} to buffer against potential supply disruptions",
+    "Supply constraints for {commodities} during {year} resulted in increased costs and temporary production delays",
+    "{company} has long-term supply agreements for {commodities} covering approximately {pct}% of anticipated requirements",
+    "{company} is exposed to concentration risk as {pct}% of {commodities} is sourced from a single region",
 ]
 
 commodity_exposure_quantification_templates = [
-    "A {pct}% change in {commodity} prices would impact annual cost of sales by approximately {currency_code}{amount} {money_unit}",
+    "A {pct}% change in {commodities} prices would impact annual cost of sales by approximately {currency_code}{amount} {money_unit}",
     "{company} estimates that commodity price volatility could affect operating income by {currency_code}{amount} {money_unit} annually",
-    "Each {currency_code}{change} per {unit} change in {commodity} prices impacts annual costs by approximately {currency_code}{amount} {money_unit}",
-    "Commodity exposure is concentrated in {commodity} ({pct}% of raw material spend) and {commodity2} ({pct2}% of raw material spend)",
+    "Each {currency_code}{change} per {unit} change in {commodities} prices impacts annual costs by approximately {currency_code}{amount} {money_unit}",
+    "Commodity exposure is concentrated in {commodities} ({pct}% of raw material spend)",
 ]
 
 physical_commodity_operations_templates = [
-    "{company} owns and operates {commodity} production facilities with annual capacity of {volume} {unit}",
-    "{company} produced {volume} {unit} of {commodity} during {year}, a {pct}% increase from the prior year",
-    "{company}\'s {commodity} operations generated revenues of {currency_code}{amount} {money_unit} in {year}",
-    "Production costs for {commodity} averaged {currency_code}{cost} per {unit} in {year}, compared to {currency_code}{prev_cost} in {prev_year}",
-    "{company} maintains proved reserves of {volume} {unit} of {commodity} as of {month} {end_day}, {year}",
+    "{company} owns and operates {commodities} production facilities with annual capacity of {volume} {unit}",
+    "{company} produced {volume} {unit} of {commodities} during {year}, a {pct}% increase from the prior year",
+    "{company}\'s {commodities} operations generated revenues of {currency_code}{amount} {money_unit} in {year}",
+    "Production costs for {commodities} averaged {currency_code}{cost} per {unit} in {year}, compared to {currency_code}{prev_cost} in {prev_year}",
+    "{company} maintains proved reserves of {volume} {unit} of {commodities} as of {month} {end_day}, {year}",
 ]
 
-# ========== SHARED / GENERIC ========== 
+# ========== SHARED / GENERIC ==========
 shared_issuers = [
     "FASB",
     "Financial Accounting Standards Board",
@@ -1420,7 +1481,7 @@ shared_standards_templates = [
     "During {year}, the {issuer} released updated guidance on {topic}",
 ]
 
-# ========== HEDGING / DERIVATIVE POLICY ========== 
+# ========== HEDGING / DERIVATIVE POLICY ==========
 hedging_descriptions = [
     "expand presentation and disclosure requirements, change how companies assess hedge effectiveness, and eliminate separate measurement of hedge ineffectiveness",
     "improves alignment of hedge accounting with risk management strategies",
@@ -1442,7 +1503,7 @@ hedge_change_policy_templates = [
     "The amendment to Topic 815 {hedge_description} and {hedge_feature}. Effective for fiscal years beginning after {month} {eff_day}, {year}",
 ]
 
-# ========== GENERAL ACCOUNTING POLICY ========== 
+# ========== GENERAL ACCOUNTING POLICY ==========
 general_descriptions = [
     "requires recognition of lease assets and liabilities for operating leases",
     "changes the impairment model for financial instruments to an expected credit loss model",
@@ -1469,9 +1530,9 @@ general_policy_templates = [
     "During {year}, the {issuer} issued guidance under {standard} to {standard_purpose}. {policy_description}. Additionally, it {policy_feature}",
 ]
 
-# ============================== 
+# ==============================
 # Counterparty / Credit Risk Templates
-# ============================== 
+# ==============================
 risk_templates = [
     "Based upon certain factors, including a review of the {risk_item} for {company}\'s counterparties, {company} determined its counterparty credit risk to be {materiality}",
     "After assessing {risk_item} and other indicators for {company}\'s derivative counterparties, management concluded that counterparty exposure is {materiality}",
@@ -1483,9 +1544,9 @@ risk_templates = [
     "Taking into account {risk_item} and the financial strength of counterparties, {company} considers the overall counterparty credit risk to be {materiality}",
 ]
 
-# ============================== 
+# ==============================
 # Risk Items
-# ============================== 
+# ==============================
 
 # Derivative / Hedging-Related Risk Items
 risk_items_derivative = [
