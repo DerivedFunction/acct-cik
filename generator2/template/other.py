@@ -46,13 +46,13 @@ sec_toc_patterns = [
 # ============ LITIGATION AND LEGAL MATTERS ============ 
 
 litigation_templates = [
-    "{company} is involved in various legal proceedings and claims arising in the ordinary course of business, including {case_types}",
-    "As of {month} {end_day}, {year}, {company} is a defendant in several lawsuits related to {case_types}",
-    "{company} is subject to litigation and regulatory inquiries concerning {case_types} in the normal course of operations",
-    "Various legal actions, proceedings, and claims are pending or may be instituted against {company}, including {case_types}",
-    "As of {month} {end_day}, {year}, {company} is a defending against several derivative lawsuits related to {case_types}",
-    'All securities holders of {company} are hereby notified that a settlement (the "Settlement") has been reached as to claims asserted in the above-captioned consolidated shareholder derivative action pending in a {court} (the "Derivative Action") on behalf of {company} against certain of its current or former directors and officers',
-    "On {month} {end_day}, {year}, a shareholder derivative suit was filed in the {court} for the against {company}",
+    "{company} is involved in various legal proceedings and claims arising in the ordinary course of business, including {litigation_examples}",
+    "As of {month} {end_day}, {year}, {company} is a defendant in several lawsuits related to {litigation_examples}",
+    "{company} is subject to litigation and regulatory inquiries concerning {litigation_examples} in the normal course of operations",
+    "Various legal actions, proceedings, and claims are pending or may be instituted against {company}, including {litigation_examples}",
+    "As of {month} {end_day}, {year}, {company} is a defending against several derivative lawsuits related to {litigation_examples}",
+    'All securities holders of {company} are hereby notified that a settlement (the "Settlement") has been reached as to claims asserted in the above-captioned consolidated shareholder derivative action pending in a {court_name} (the "Derivative Action") on behalf of {company} against certain of its current or former directors and officers',
+    "On {month} {end_day}, {year}, a shareholder derivative suit was filed in the {court_name} for the against {company}",
 ]
 
 case_types = [
@@ -73,10 +73,10 @@ litigation_assessment_templates = [
 ]
 
 specific_lawsuit_templates = [
-    "In {month} {year}, a lawsuit was filed against {company} in the {court} alleging {allegation}. {company} filed a motion to dismiss in {month} {dismiss_year}",
-    "{company} is defending a class action lawsuit filed in {year} claiming {allegation}, with damages sought of approximately {currency_code}{amount} {money_unit}",
-    "During {year}, {company} reached a settlement in a lawsuit related to {allegation} for {currency_code}{amount} {money_unit}, which was accrued in prior periods",
-    "A complaint was filed against {company} in the {court} during {quarter} quarter {year} alleging {allegation}",
+    "In {month} {year}, a lawsuit was filed against {company} in the {court_name} alleging {lawsuit_allegation}. {company} filed a motion to dismiss in {month} {dismiss_year}",
+    "{company} is defending a class action lawsuit filed in {year} claiming {lawsuit_allegation}, with damages sought of approximately {currency_code}{amount} {money_unit}",
+    "During {year}, {company} reached a settlement in a lawsuit related to {lawsuit_allegation} for {currency_code}{amount} {money_unit}, which was accrued in prior periods",
+    "A complaint was filed against {company} in the {court_name} during {quarter} quarter {year} alleging {lawsuit_allegation}",
 ]
 
 courts = [
@@ -99,7 +99,6 @@ courts = [
     "United States District Court for the Eastern District of Virginia",
     "Court of Appeals of the State of California, Second Appellate District",
 ]
-
 
 allegations = [
     "breach of contract and misappropriation of trade secrets",
@@ -226,16 +225,16 @@ deferred_revenue_templates = [
 # ============ INVENTORY ============ 
 
 inventory_templates = [
-    "{commodities} inventories are stated at the lower of cost or net realizable value, with cost determined using the {method} method",
-    "{company} values inventory using the {method} cost method and regularly reviews for obsolescence",
-    "Inventory consists of {commodities} valued at the lower of cost (determined by {method}) or net realizable value",
+    "{commodities} inventories are stated at the lower of cost or net realizable value, with cost determined using the {inventory_method} method",
+    "{company} values inventory using the {inventory_method} cost method and regularly reviews for obsolescence",
+    "Inventory consists of {commodities} valued at the lower of cost (determined by {inventory_method}) or net realizable value",
     "As of {month} {end_day}, {year}, {commodities} inventories totaled {currency_code}{amount} {money_unit}, net of obsolescence reserves of {currency_code}{reserve} {money_unit}",
     "{commodities} inventories are reviewed periodically for slow-moving or obsolete items, with reserves recorded when necessary to reduce carrying values",
-    "{commodities} inventories are stated at standard cost (approximating actual cost) under the {method} method, adjusted to net realizable value if necessary",
-    "{commodities} are valued at purchase cost while manufactured inventories include labor and overhead allocated using the {method} method",
+    "{commodities} inventories are stated at standard cost (approximating actual cost) under the {inventory_method} method, adjusted to net realizable value if necessary",
+    "{commodities} are valued at purchase cost while manufactured inventories include labor and overhead allocated using the {inventory_method} method",
     "{commodities} inventory is written down to market value when estimated selling prices are less than cost",
     "As of {month} {end_day}, {year}, {company} maintained obsolescence reserves of {currency_code}{reserve} {money_unit} against total inventories of {currency_code}{amount} {money_unit}",
-    "{commodities} inventory include {commodities} valued at the lower of cost (determined by {method}) or net realizable value",
+    "{commodities} inventory include {commodities} valued at the lower of cost (determined by {inventory_method}) or net realizable value",
     "{company} records provisions for excess and obsolete {commodities} inventories based on expected future demand, market conditions, and {commodities} life cycles",
 ]
 
@@ -276,20 +275,20 @@ ppe_templates = [
     "Leasehold improvements are amortized over the shorter of the lease term or the estimated useful life of the asset",
     "Depreciation methods and useful lives are reviewed periodically to ensure they reflect current estimates of asset utility",
     "Gains or losses on the disposal of property, plant and equipment are recognized in earnings when assets are retired or sold",
-    "Construction in progress primarily relates to {purpose} and is not depreciated until placed into service",
+    "Construction in progress primarily relates to {capex_purpose} and is not depreciated until placed into service",
     "As of {month} {end_day}, {year}, accumulated depreciation was {currency_code}{amount} {money_unit}",
 ]
 
 
 capex_templates = [
-    "Capital expenditures during {year} were {currency_code}{amount} {money_unit}, primarily related to {purpose}",
-    "{company} invested {currency_code}{amount} {money_unit} in {purpose} during {year}",
-    "Cash outlays for property, plant and equipment totaled {currency_code}{amount} {money_unit} in {year}, focused on {purpose}",
-    "Capital investments of {currency_code}{amount} {money_unit} were made during {year} to support {purpose}",
-    "During {year}, {company} incurred capital expenditures of {currency_code}{amount} {money_unit}, reflecting continued investment in {purpose}",
-    "Capex in {year} amounted to {currency_code}{amount} {money_unit}, directed primarily toward {purpose}",
-    "{company} allocated {currency_code}{amount} {money_unit} to property and equipment purchases during {year}, with a focus on {purpose}",
-    "Capital spending was {currency_code}{amount} {money_unit} in {year}, driven by {purpose}",
+    "Capital expenditures during {year} were {currency_code}{amount} {money_unit}, primarily related to {capex_purpose}",
+    "{company} invested {currency_code}{amount} {money_unit} in {capex_purpose} during {year}",
+    "Cash outlays for property, plant and equipment totaled {currency_code}{amount} {money_unit} in {year}, focused on {capex_purpose}",
+    "Capital investments of {currency_code}{amount} {money_unit} were made during {year} to support {capex_purpose}",
+    "During {year}, {company} incurred capital expenditures of {currency_code}{amount} {money_unit}, reflecting continued investment in {capex_purpose}",
+    "Capex in {year} amounted to {currency_code}{amount} {money_unit}, directed primarily toward {capex_purpose}",
+    "{company} allocated {currency_code}{amount} {money_unit} to property and equipment purchases during {year}, with a focus on {capex_purpose}",
+    "Capital spending was {currency_code}{amount} {money_unit} in {year}, driven by {capex_purpose}",
 ]
 
 capex_purposes = [
@@ -378,7 +377,7 @@ goodwill_templates = [
 ]
 
 intangible_templates = [
-    "Intangible assets consist primarily of {intangible_types} and are amortized over their estimated useful lives",
+    "Intangible assets consist primarily of {intangible_type_examples} and are amortized over their estimated useful lives",
     "Amortization expense for intangible assets was {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
     "As of {month} {end_day}, {year}, intangible assets, net of accumulated amortization, totaled {currency_code}{amount} {money_unit}",
     "The weighted-average remaining useful life of intangible assets is {years} years as of {month} {end_day}, {year}",
@@ -469,7 +468,7 @@ debt_covenant_templates = [
 tax_templates = [
     "The provision for income taxes was {currency_code}{amount} {money_unit} for {year}, resulting in an effective tax rate of {rate}%",
     "The effective tax rate for {year} was {rate}%, compared to {prev_rate}% in the prior year",
-    "Deferred tax assets as of {month} {end_day}, {year} totaled {currency_code}{amount} {money_unit}, primarily related to {sources}",
+    "Deferred tax assets as of {month} {end_day}, {year} totaled {currency_code}{amount} {money_unit}, primarily related to {tax_sources_examples}",
     "{company} has net operating loss carryforwards of {currency_code}{amount} {money_unit} that expire between {start_year} and {end_year}",
 ]
 
@@ -545,8 +544,8 @@ guarantee_types = [
 # ============ RESTRUCTURING ============ 
 
 restructuring_templates = [
-    "During {year}, {company} initiated a restructuring plan to {purpose}, resulting in charges of {currency_code}{amount} {money_unit}",
-    "Restructuring charges of {currency_code}{amount} {money_unit} were recorded in {year}, primarily related to {expense_type}",
+    "During {year}, {company} initiated a restructuring plan to {restructuring_purpose}, resulting in charges of {currency_code}{amount} {money_unit}",
+    "Restructuring charges of {currency_code}{amount} {money_unit} were recorded in {year}, primarily related to {restructuring_expense_type}",
     "{company} announced a cost reduction initiative in {month} {year} expected to generate annual savings of {currency_code}{amount} {money_unit}",
     "As of {month} {end_day}, {year}, the remaining restructuring liability was {currency_code}{amount} {money_unit}",
 ]
@@ -569,8 +568,8 @@ restructuring_expense_types = [
 
 acquisition_templates = [
     "In {month} {year}, {company} acquired {target} for total consideration of {currency_code}{amount} {money_unit} in cash",
-    "{company} completed the acquisition of {target} during {year} for {currency_code}{amount} {money_unit}, which was funded through {funding}",
-    "During {year}, {company} acquired {target} to expand its {purpose}",
+    "{company} completed the acquisition of {target} during {year} for {currency_code}{amount} {money_unit}, which was funded through {acquisition_funding}",
+    "During {year}, {company} acquired {target} to expand its {acquisition_purpose}",
     "The acquisition of {target} in {year} resulted in {currency_code}{goodwill} {money_unit} of goodwill and {currency_code}{intangibles} {money_unit} of identifiable intangible assets",
 ]
 
@@ -725,17 +724,17 @@ service_types = [
 
 # Balance sheet changes templates
 balance_sheet_change_templates = [
-    "Accounts payable increased by {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} as of {month} {end_day}, {year}, primarily due to {reason}",
-    "Accounts receivable decreased {currency_code}{amount} {money_unit} during {year}, reflecting {reason}",
-    "Inventories increased {currency_code}{amount} {money_unit} from {month} {end_day}, {prev_year} to {month} {end_day}, {year} due to {reason}",
-    "Accrued liabilities increased by {currency_code}{amount} {money_unit} year-over-year, primarily attributable to {reason}",
+    "Accounts payable increased by {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} as of {month} {end_day}, {year}, primarily due to {bs_reason}",
+    "Accounts receivable decreased {currency_code}{amount} {money_unit} during {year}, reflecting {bs_reason}",
+    "Inventories increased {currency_code}{amount} {money_unit} from {month} {end_day}, {prev_year} to {month} {end_day}, {year} due to {bs_reason}",
+    "Accrued liabilities increased by {currency_code}{amount} {money_unit} year-over-year, primarily attributable to {accrued_reason}",
     "Prepaid expenses and other current assets decreased {currency_code}{amount} {money_unit} as of {month} {end_day}, {year} compared to the prior year",
 ]
 
 working_capital_templates = [
     "Working capital was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{prev_amount} {money_unit} at {month} {end_day}, {prev_year}",
     "Changes in operating assets and liabilities resulted in a {currency_code}{direction} of {currency_code}{amount} {money_unit} in cash from operations during {year}",
-    "{company}\'s working capital increased by {currency_code}{amount} {money_unit} during {year}, driven primarily by {reason}",
+    "{company}\'s working capital increased by {currency_code}{amount} {money_unit} during {year}, driven primarily by {wc_reason}",
     "Net changes in operating assets and liabilities used {currency_code}{amount} {money_unit} of cash during {year}",
 ]
 
@@ -749,7 +748,7 @@ ar_templates = [
 
 
 ap_templates = [
-    "Accounts payable increased {currency_code}{amount} {money_unit} from the prior year, reflecting {reason}",
+    "Accounts payable increased {currency_code}{amount} {money_unit} from the prior year, reflecting {ap_reason}",
     "{company} extended payment terms with certain vendors during {year}, resulting in an increase in accounts payable of {currency_code}{amount} {money_unit}",
     "Accounts payable was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, down from {currency_code}{prev_amount} {money_unit} at {month} {end_day}, {prev_year}",
     "Days payable outstanding increased to {days} days at year-end {year} from {prev_days} days in the prior year",
@@ -757,21 +756,21 @@ ap_templates = [
 ]
 
 accrued_liabilities_templates = [
-    "Accrued compensation increased by {currency_code}{amount} {money_unit} at {month} {end_day}, {year} due to {reason}",
+    "Accrued compensation increased by {currency_code}{amount} {money_unit} at {month} {end_day}, {year} due to {accrued_reason}",
     "Accrued expenses totaled {currency_code}{amount} {money_unit} at year-end {year}, an increase of {currency_code}{change} {money_unit} from the prior year",
-    "The increase in accrued liabilities of {currency_code}{amount} {money_unit} was primarily related to {reason}",
-    "Other accrued liabilities decreased {currency_code}{amount} {money_unit} during {year}, mainly due to {reason}",
+    "The increase in accrued liabilities of {currency_code}{amount} {money_unit} was primarily related to {accrued_reason}",
+    "Other accrued liabilities decreased {currency_code}{amount} {money_unit} during {year}, mainly due to {accrued_reason}",
 ]
 
 other_current_assets_templates = [
-    "Other current assets increased {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} at {month} {end_day}, {year}, primarily due to {reason}",
+    "Other current assets increased {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} at {month} {end_day}, {year}, primarily due to {asset_reason}",
     "Prepaid expenses decreased by {currency_code}{amount} {money_unit} during {year}",
     "Other receivables totaled {currency_code}{amount} {money_unit} at year-end {year}",
     "Current assets, excluding cash, increased {currency_code}{amount} {money_unit} year-over-year",
 ]
 
 other_liabilities_templates = [
-    "Other long-term liabilities increased by {currency_code}{amount} {money_unit} during {year}, primarily related to {reason}",
+    "Other long-term liabilities increased by {currency_code}{amount} {money_unit} during {year}, primarily related to {liability_reason}",
     "{company}\'s current liabilities totaled {currency_code}{amount} {money_unit} at {month} {end_day}, {year}",
     "Total liabilities increased from {currency_code}{prev_amount} {money_unit} to {currency_code}{amount} {money_unit} during {year}",
     "Non-current liabilities decreased {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} at year-end {year}",
@@ -787,14 +786,14 @@ retained_earnings_templates = [
 stockholders_equity_templates = [
     "Total stockholders' equity increased {currency_code}{amount} {money_unit} to {currency_code}{ending} {money_unit} at {month} {end_day}, {year}",
     "Stockholders' equity was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{prev_amount} {money_unit} at {month} {end_day}, {prev_year}",
-    "The increase in stockholders' equity of {currency_code}{amount} {money_unit} was primarily due to {reason}",
+    "The increase in stockholders' equity of {currency_code}{amount} {money_unit} was primarily due to {equity_reason}",
     "Total equity increased by {currency_code}{amount} {money_unit} during {year}",
 ]
 
 cash_flow_statement_templates = [
     "Cash used in operating activities was {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
     "Net cash provided by operating activities totaled {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in {prev_year}",
-    "Cash flows from investing activities used {currency_code}{amount} {money_unit} during {year}, primarily for {reason}",
+    "Cash flows from investing activities used {currency_code}{amount} {money_unit} during {year}, primarily for {cfs_reason}",
     "{company} generated {currency_code}{amount} {money_unit} in cash from operations during {year}",
     "Free cash flow was {currency_code}{amount} {money_unit} for {year}, defined as cash from operations less capital expenditures",
 ]
@@ -1127,12 +1126,12 @@ share_repurchase_templates = [
 
 # ========== COMPETITIVE LANDSCAPE ========== 
 competition_templates = [
-    "{company} operates in a highly competitive industry characterized by {characteristics}",
+    "{company} operates in a highly competitive industry characterized by {competitive_characteristics}",
     "Principal competitors include {competitor1}, {competitor2}, and {competitor3}",
-    "{company} competes based on {factors}",
+    "{company} competes based on {competitive_factors}",
     "Market share in {company}\'s primary markets remained relatively stable at approximately {pct}% during {year}",
-    "Competitive pressures have intensified due to {reasons}",
-    "{company} believes it maintains competitive advantages through {advantages}",
+    "Competitive pressures have intensified due to {competitive_pressure_reasons}",
+    "{company} believes it maintains competitive advantages through {competitive_advantages}",
     "Industry consolidation during {year} included the merger of {competitor1} and {competitor2}",
 ]
 
@@ -1159,12 +1158,12 @@ competitive_advantages = [
 
 # ========== REGULATORY AND COMPLIANCE ========== 
 regulatory_templates = [
-    "{company} is subject to extensive regulation by {regulators} governing {areas}",
+    "{company} is subject to extensive regulation by {regulatory_agencies} governing {regulatory_areas}",
     "Compliance with environmental, health, and safety regulations resulted in costs of approximately {currency_code}{amount} {money_unit} during {year}",
     "Changes in regulatory requirements could materially impact {company}\'s business operations and financial results",
     "{company} maintains compliance programs and internal controls to ensure adherence to applicable laws and regulations",
-    "Regulatory approvals obtained during {year} include {approvals}",
-    "Pending regulatory matters include {matters}",
+    "Regulatory approvals obtained during {year} include {regulatory_approvals}",
+    "Pending regulatory matters include {regulatory_matters}",
     "{company} incurred {currency_code}{amount} {money_unit} in regulatory compliance costs during {year}",
 ]
 
@@ -1186,9 +1185,9 @@ regulatory_areas = [
 insurance_templates = [
     "{company} maintains insurance coverage for property, casualty, general liability, and other risks in amounts considered adequate",
     "Self-insurance reserves totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
-    "{company} self-insures certain risks including {risks} and purchases insurance for catastrophic losses",
-    "Insurance recoveries during {year} totaled {currency_code}{amount} {money_unit} related to {incident}",
-    "{company}\'s insurance program includes coverage for {coverage_types} with policy limits and deductibles based on industry practices",
+    "{company} self-insures certain risks including {self_insured_risks} and purchases insurance for catastrophic losses",
+    "Insurance recoveries during {year} totaled {currency_code}{amount} {money_unit} related to {insurance_incident}",
+    "{company}\'s insurance program includes coverage for {insurance_coverage_types} with policy limits and deductibles based on industry practices",
     "Risk retention levels are evaluated annually based on claims experience and insurance market conditions",
 ]
 
@@ -1228,7 +1227,7 @@ commodity_inventory_valuation_templates = [
     "{company} maintains inventory of {commodity} and {commodity2} to support production requirements, exposing {company} to price risk",
     "As of {month} {end_day}, {year}, {company} held {volume} {unit} of {commodity} inventory valued at {currency_code}{amount} million",
     "{company} recorded an inventory writedown of {currency_code}{amount} {money_unit} in {year} due to declines in {commodity} market prices",
-    "Commodity inventory is stated at the lower of cost or net realizable value, with cost determined using the {method} method",
+    "Commodity inventory is stated at the lower of cost or net realizable value, with cost determined using the {inventory_method} method",
     "{company}\'s inventory includes {currency_code}{amount} {money_unit} of raw materials subject to commodity price volatility",
     "{company} recognized a {currency_code}{amount} {money_unit} charge related to excess and obsolete {commodity} inventory in {year}",
 ]
@@ -1323,10 +1322,10 @@ shared_purposes = [
 ]
 
 shared_additional_features_templates = [
-    "The guidance also {additional_feature}",
-    "Additionally, the standard {additional_feature}",
-    "The new guidance {additional_feature}",
-    "The update also {additional_feature}",
+    "The guidance also {policy_feature}",
+    "Additionally, the standard {policy_feature}",
+    "The new guidance {policy_feature}",
+    "The update also {policy_feature}",
 ]
 
 shared_effective_date_templates = [
@@ -1339,7 +1338,7 @@ shared_effective_date_templates = [
 ]
 
 shared_adoption_status_templates = [
-    "{company} adopted this guidance on {month} {day}, {year} using the {acct_method}",
+    "{company} adopted this guidance on {month} {day}, {year} using the {adoption_method}",
     "{company} adopted {standard} effective {month} {day}, {year}",
     "{company} early adopted the standard in {year}",
     "{company} will adopt the guidance in fiscal year {year}",
@@ -1359,11 +1358,11 @@ shared_adoption_methods = [
 ]
 
 shared_adoption_impact_templates = [
-    "The adoption resulted in {impact}",
-    "Upon adoption, {company} recognized {impact}",
-    "The cumulative effect of adoption was {impact}",
-    "Implementation of the standard resulted in {impact}",
-    "As a result of adoption, {impact}",
+    "The adoption resulted in {adoption_impact}",
+    "Upon adoption, {company} recognized {adoption_impact}",
+    "The cumulative effect of adoption was {adoption_impact}",
+    "Implementation of the standard resulted in {adoption_impact}",
+    "As a result of adoption, {adoption_impact}",
 ]
 
 shared_evaluation_templates = [
@@ -1376,10 +1375,10 @@ shared_evaluation_templates = [
 ]
 
 shared_transition_templates = [
-    "{company} will apply the {acct_method} upon adoption",
+    "{company} will apply the {adoption_method} upon adoption",
     "{company} elected to apply the practical expedients available under the transition guidance",
-    "{company} intends to adopt the standard using the {acct_method} with {feature}",
-    "{company} selected the {acct_method} for transition purposes",
+    "{company} intends to adopt the standard using the {adoption_method} with {transition_feature}",
+    "{company} selected the {adoption_method} for transition purposes",
 ]
 
 shared_transition_features = [
@@ -1414,10 +1413,10 @@ shared_recent_pronouncement_templates = [
 ]
 
 shared_standards_templates = [
-    "In {month} {year}, the {issuer} issued guidance on {topic} to {purpose}",
-    "The {issuer} issued {standard} in {year}, which {description}",
+    "In {month} {year}, the {issuer} issued guidance on {topic} to {standard_purpose}",
+    "The {issuer} issued {standard} in {year}, which {standard_description}",
     "New accounting guidance issued by the {issuer} in {month} {year} addresses {topic}",
-    "{standard} was issued in {year} to {purpose}",
+    "{standard} was issued in {year} to {standard_purpose}",
     "During {year}, the {issuer} released updated guidance on {topic}",
 ]
 
@@ -1437,10 +1436,10 @@ hedging_additional_features = [
 ]
 
 hedge_change_policy_templates = [
-    "In {month} {year}, the {issuer} issued {standard} related to hedging activities. The guidance {description}. Additionally, it {additional_feature}",
-    "The {issuer} issued {standard} to address {topic}. This update {description}. The new guidance {additional_feature}",
-    "Hedging Activities: In {month} {year}, {issuer} released guidance on {topic}. It {description} and {additional_feature}",
-    "The amendment to Topic 815 {description} and {additional_feature}. Effective for fiscal years beginning after {month} {eff_day}, {year}",
+    "In {month} {year}, the {issuer} issued {standard} related to hedging activities. The guidance {hedge_description}. Additionally, it {hedge_feature}",
+    "The {issuer} issued {standard} to address {topic}. This update {hedge_description}. The new guidance {hedge_feature}",
+    "Hedging Activities: In {month} {year}, {issuer} released guidance on {topic}. It {hedge_description} and {hedge_feature}",
+    "The amendment to Topic 815 {hedge_description} and {hedge_feature}. Effective for fiscal years beginning after {month} {eff_day}, {year}",
 ]
 
 # ========== GENERAL ACCOUNTING POLICY ========== 
@@ -1464,10 +1463,10 @@ general_additional_features = [
 ]
 
 general_policy_templates = [
-    "In {month} {year}, the {issuer} issued {standard} addressing {topic}. The standard {description}. Additionally, it {additional_feature}",
-    "The {issuer} issued {standard} to {purpose}. The guidance {description} and {additional_feature}",
-    "Accounting Update: In {month} {year}, {issuer} released {standard} covering {topic}. It {description}. The update {additional_feature}",
-    "During {year}, the {issuer} issued guidance under {standard} to {purpose}. {description}. Additionally, it {additional_feature}",
+    "In {month} {year}, the {issuer} issued {standard} addressing {topic}. The standard {policy_description}. Additionally, it {policy_feature}",
+    "The {issuer} issued {standard} to {standard_purpose}. The guidance {policy_description} and {policy_feature}",
+    "Accounting Update: In {month} {year}, {issuer} released {standard} covering {topic}. It {policy_description}. The update {policy_feature}",
+    "During {year}, the {issuer} issued guidance under {standard} to {standard_purpose}. {policy_description}. Additionally, it {policy_feature}",
 ]
 
 # ============================== 
@@ -1674,8 +1673,9 @@ noise_templates: dict[str, list[list[str]]] = {
 # Pre-compiled list for "other" noise templates
 _excluded_keys_for_other = {"IR", "FX", "CP", "EQ", "LAW", "DER", "STD"}
 other_templates = [
-    template
-    for key, template_list in noise_templates.items()
+    item
+    for key, template_list_of_lists in noise_templates.items()
     if key not in _excluded_keys_for_other
-    for template in template_list
+    for template_list in template_list_of_lists
+    for item in template_list
 ]
