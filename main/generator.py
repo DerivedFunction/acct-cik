@@ -1316,14 +1316,15 @@ def generate_noise_paragraph(
         "{adoption_impact}": random.choice(adoption_impacts),
     }
 
-    for _ in range(3, 4):
-        template = random.choice(template_pool)
-        sentence = template
-        all_placeholders = re.findall(r'{\w+}', sentence)
-        for key in all_placeholders:
-            value = replacements.get(key, "a relevant value")
-            sentence = sentence.replace(key, str(value))
-        all_sentences.append(sentence)
+    if template_pool:
+        for _ in range(random.randint(3, 4)):
+            template = random.choice(template_pool)
+            sentence = template
+            all_placeholders = re.findall(r'{\w+}', sentence)
+            for key in all_placeholders:
+                value = replacements.get(key, "a relevant value")
+                sentence = sentence.replace(key, str(value))
+            all_sentences.append(sentence)
     # Fix any remaining placeholders
     for idx, _ in enumerate(all_sentences):
         for key, value in replacements.items():
@@ -1398,6 +1399,10 @@ def generate(size_per_label=100):
         noise_count = count * 2
         noise_types = ['eq', 'cp', 'ir', 'fx']
         for _ in range(noise_count):
+            for noise_type in noise_types:
+                futures.append(executor.submit(generate_noise_paragraph, noise_type=noise_type))
+        noise_types = ['law', 'spec']
+        for _ in range(10):
             for noise_type in noise_types:
                 futures.append(executor.submit(generate_noise_paragraph, noise_type=noise_type))
         for _ in range(size_per_label): # Any random noise
