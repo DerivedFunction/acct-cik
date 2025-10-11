@@ -1199,7 +1199,7 @@ def generate_noise_paragraph(
     elif noise_type == "fx":  # ex. currency
         labels["fx"] = 1
         template_pool.extend(sum(noise_templates["FX"], []))
-    elif noise_type == "deriv":  # ex. derivative lawsuits (irr)
+    elif noise_type == "law":  # ex. derivative lawsuits (irr)
         template_pool.extend(sum(noise_templates["LAW"], []))
     elif noise_type == "spec":  # ex. acct standards (irr)
         all_sentences = generate_other_policy_update()
