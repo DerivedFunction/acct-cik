@@ -520,6 +520,8 @@ debt_templates = [
     "During {year}, {company} repaid {currency_code}{amount} {money_unit} of its outstanding {debt_type} prior to maturity",
     "{company} repaid {currency_code}{amount} {money_unit} of outstanding {debt_type} during {year} using cash from operations",
     "In {year}, {company} refinanced {currency_code}{amount} {money_unit} of existing {debt_type} at interest rate of {pct}%, extending the maturity to {maturity_year}",
+    "The notional amount on the {debt_type} reduces monthly from approximately {currency_code}{amount} {money_unit} at {month} {end_day}, {year} to {currency_code}{amount2} {money_unit} prior to expiration of the agreement",    
+    "The {debt_type} has a principal amount of {currency_code}{amount} {money_unit} and matures in {maturity_year}",
     # Interest rate and maturity details
     "As of year-end {year}, {company} had total {debt_type} of {currency_code}{amount} {money_unit}, {currency_code}{amount2} {money_unit} of which was fixed rate debt with a weighted average interest rate of {pct}% to {pct2}%",
     "The weighted average interest rate on {company}'s {debt_type} was approximately {pct}% as of {month} {end_day}, {year}",
@@ -527,6 +529,7 @@ debt_templates = [
     "As of {month} {end_day}, {year}, {company}'s variable-rate borrowings bore interest at an average rate of {pct}%",
     "Interest expense related to {debt_type} for {year} was approximately {currency_code}{amount} {money_unit}",
     "At {month} {year}, {company} repaid {currency_code}{amount} {money_unit} of the {currency_code}{amount2} {money_unit} borrowed",
+    "The agreement effectively sets a cap and floor interest rate of {pct}% and {pct2}%, respectively, on most of the {debt_type}",
     # Other specialized cases
     "During {year}, {company} entered into a new {currency_code}{amount} {money_unit} {debt_type} with a maturity in {maturity_year} and annual interest rate of {pct}%",
     "Proceeds from the {debt_type} issuance were used to repay existing borrowings and for general corporate purposes",
