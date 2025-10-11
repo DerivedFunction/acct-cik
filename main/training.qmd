@@ -33,6 +33,7 @@ MODEL_PATH = "derivative-classifier"
 MODEL_USER = "DerivedFunction"
 FINE_TUNE_MODEL = "ProsusAI/finbert"
 MODEL_NAME = f"{MODEL_USER}/{MODEL_PATH}" if not FINE_TUNE_MODEL else FINE_TUNE_MODEL
+KEYWORDS_FILE = "./keywords_find.json"
 ```
 
 ## Define Labels
@@ -102,7 +103,7 @@ def tokenize_function(examples):
     # Tokenize the sentence
     tokenized_input = tokenizer(examples["sentence"], truncation=True, max_length=512)
     # Add the labels
-    tokenized_input["labels"] = examples["labels"]
+    tokenized_input["labels"] = [np.array(x, dtype=np.float32) for x in examples["labels"]]
     return tokenized_input
 
 tokenized_train_dataset = train_dataset.map(tokenize_function, batched=True)
@@ -127,9 +128,9 @@ def multi_label_metrics(predictions, labels, threshold=0.5):
     roc_auc = roc_auc_score(y_true, y_pred, average = 'micro')
     accuracy = accuracy_score(y_true, y_pred)
     # return as dictionary
-    metrics = {'f1': f1_micro_average,
-               'roc_auc': roc_auc,
-               'accuracy': accuracy}
+    metrics = {"f1": f1_micro_average,
+               "roc_auc": roc_auc,
+               "accuracy": accuracy}
     return metrics
 
 def compute_metrics(p: EvalPrediction):
@@ -200,33 +201,123 @@ trainer.train() # resume_from_checkpoint=True
 # trainer.push_to_hub(MODEL_CHECKPOINT)
 ```
 
+# Prediction Setup
+
+This cell loads the model and all necessary components for prediction. Run this once before running the prediction cells below.
+
 ```{python}
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 import json
+import numpy as np
+import pandas as pd
 
-EXCEL_PATH = "./training_data.xlsx"
-MODEL_PATH = "derivative-type-classifier"
-MODEL_USER = "DerivedFunction"
-MODEL_NAME = f"{MODEL_USER}/{MODEL_PATH}"
+MODEL_PATH = "derivative-classifier"
+
+# Load keyword mappings for primary label
+with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
+    keyword_data = json.load(f)
+primary_id2label = {int(k): v for k, v in keyword_data.items()}
 
 # Load tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForSequenceClassification.from_pretrained(
-    MODEL_NAME,
-    problem_type="multi_label_classification",
-    num_labels=len(labels),
-    id2label=id2label,
-    label2id=label2id,
-)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
+
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 model.to(device)
 print(f"Model loaded to {device}")
+
+def get_primary_label(labels: dict) -> int:
+    """
+    Convert multi-hot label dict into a single categorical label.
+
+    Prioritization:
+      1. Actual use (_use) → Current or Historic
+      2. Speculative mentions (spec)
+      3. Context only (no _use) → Current
+      4. Irrelevant
+    """
+
+    # --- Irrelevant override ---
+    if labels.get("irr"):
+        return 19
+
+    # --- Derivative Warrants ---
+    if labels.get("warr"):
+        return 16 if labels.get("hist") else 15
+
+    # --- Embedded Derivatives ---
+    if labels.get("emb"):
+        return 18 if labels.get("hist") else 17
+
+    # --- Hedge type label map ---
+    hedge_map = {
+        "gen": (0, 1, 2),
+        "ir": (3, 4, 5),
+        "fx": (6, 7, 8),
+        "cp": (9, 10, 11),
+        "eq": (12, 13, 14),
+    }
+
+    # --- 1. Check for actual use ---
+    for hedge_type in hedge_map.keys():
+        if labels.get(f"{hedge_type}_use"):
+            curr_id, hist_id, spec_id = hedge_map[hedge_type]
+            if labels.get("curr"):
+                return curr_id
+            if labels.get("hist"):
+                return hist_id
+            if labels.get("spec"):
+                return spec_id
+            # Default to current if _use flagged but no time context
+            return curr_id
+
+    # --- 2. Speculative mention (no actual use) ---
+    for hedge_type in hedge_map.keys():
+        if labels.get(hedge_type) and labels.get("spec"):
+            return hedge_map[hedge_type][2]
+
+    # --- 3. Context only (no _use, not speculative) ---
+    for hedge_type in hedge_map.keys():
+        if labels.get(hedge_type):
+            return hedge_map[hedge_type][0]
+
+    # --- 4. Default fallback ---
+    return 19
+
+def predict_batch(sentences: list[str]):
+    model.eval()
+    inputs = tokenizer(
+        sentences,
+        return_tensors="pt",
+        truncation=True,
+        padding=True,
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+
+    with torch.no_grad():
+        outputs = model(**inputs)
+        logits = outputs.logits
+        sigmoid = torch.nn.Sigmoid()
+        probs = sigmoid(logits.cpu())
+        predictions = np.zeros(probs.shape)
+        predictions[np.where(probs >= 0.5)] = 1
+
+    results = []
+    for prediction in predictions:
+        predicted_labels_dict = {label: int(p) for label, p in zip(labels, prediction)}
+        primary_label_id = get_primary_label(predicted_labels_dict)
+        primary_label = primary_id2label.get(primary_label_id, "Unknown")
+        results.append((predicted_labels_dict, primary_label))
+    
+    return results
 ```
 
+# Single String Prediction
 
 ```{python}
 string = """
+We may use interest rate swaps to manage our exposure to interest rate fluctuations.
 """
 
 model.eval()
@@ -245,7 +336,72 @@ with torch.no_grad():
     probs = sigmoid(logits.squeeze().cpu())
     predictions = np.zeros(probs.shape)
     predictions[np.where(probs >= 0.5)] = 1
-    predicted_labels = [id2label[idx] for idx, label in enumerate(predictions) if label == 1.0]
-    print(predicted_labels)
+    
+    # Multi-label results
+    predicted_labels_dict = {label: int(p) for label, p in zip(labels, predictions)}
+    predicted_labels = [label for label, p in predicted_labels_dict.items() if p == 1]
 
+    # Primary label result
+    primary_label_id = get_primary_label(predicted_labels_dict)
+    primary_label = primary_id2label.get(primary_label_id, "Unknown")
+
+    print("Input Text:", string.strip())
+    print("\n--- Multi-Label Prediction ---")
+    print("Predicted Labels:", predicted_labels)
+    print("Prediction Vector:", predicted_labels_dict)
+    print("\n--- Primary Label Prediction ---")
+    print("Primary Label:", primary_label)
+
+```
+
+# Batch Prediction from Excel
+
+### 1. Configuration
+
+```{python}
+EVAL_FILE = "eval.xlsx"
+OUTPUT_FILE = "output.xlsx"
+```
+
+### 2. Load Data
+
+Run this cell once to load the evaluation data.
+
+```{python}
+try:
+    eval_df = pd.read_excel(EVAL_FILE)
+    print(f"Successfully loaded {EVAL_FILE} with {len(eval_df)} rows.")
+except FileNotFoundError:
+    print(f"Error: The evaluation file '{EVAL_FILE}' was not found. Please make sure it exists.")
+    eval_df = None
+```
+
+### 3. Set Batch and Execute
+
+Set the `START_INDEX` and `BATCH_SIZE` and run this cell to process a batch.
+
+```{python}
+if eval_df is not None:
+    START_INDEX = 0
+    BATCH_SIZE = 100
+
+    # Select batch
+    batch_df = eval_df.iloc[START_INDEX : START_INDEX + BATCH_SIZE]
+
+    # Get predictions
+    if not batch_df.empty:
+        predictions = predict_batch(batch_df['sentence'].tolist())
+
+        # Add predictions to dataframe
+        batch_df[['predicted_labels', 'primary_label']] = predictions
+        batch_df['predicted_labels'] = batch_df['predicted_labels'].apply(json.dumps)
+
+        # Save to output file
+        batch_df.to_excel(OUTPUT_FILE, index=False)
+
+        print(f"Batch prediction complete. {len(batch_df)} rows processed. Results saved to {OUTPUT_FILE}")
+    else:
+        print("The specified batch is empty. Nothing to process.")
+else:
+    print("Cannot run batch prediction because the evaluation data failed to load.")
 ```
