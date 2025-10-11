@@ -207,7 +207,7 @@ import json
 import numpy as np
 import pandas as pd
 
-MODEL_PATH = "derivative-classifier"
+MODEL_PATH = "DerivedFunction/derivative-classifier"
 
 # Load keyword mappings for primary label
 with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
@@ -233,6 +233,7 @@ def get_primary_labels(labels: dict, id2label: dict) -> list:
 
     results = []
 
+    # --- Hedge type labels (current, historic, speculative) ---
     hedge_map = {
         "gen": (0, 1, 2),
         "ir": (3, 4, 5),
@@ -241,19 +242,20 @@ def get_primary_labels(labels: dict, id2label: dict) -> list:
         "eq": (12, 13, 14),
     }
 
+    # --- Context-only labels (no _use/spec) ---
     context_map = {
-        "gen": 20,
-        "ir": 21,
-        "fx": 22,
-        "cp": 23,
-        "eq": 24,
+        "gen": 15,
+        "ir": 16,
+        "fx": 17,
+        "cp": 18,
+        "eq": 19,
     }
 
     # --- Special types ---
     if labels.get("warr"):
-        results.append(16 if labels.get("hist") else 15)
+        results.append(20 if labels.get("hist") else 19)  # Current=19, Historic=20
     if labels.get("emb"):
-        results.append(18 if labels.get("hist") else 17)
+        results.append(22 if labels.get("hist") else 21)  # Current=21, Historic=22
 
     # --- Use / Speculative (need gen) ---
     if labels.get("gen"):
@@ -280,9 +282,9 @@ def get_primary_labels(labels: dict, id2label: dict) -> list:
             if labels.get(hedge_type):
                 results.append(context_map[hedge_type])
 
-    # --- Irrelevant (non-blocking) ---
+    # --- Irrelevant ---
     if labels.get("irr"):
-        results.append(25)
+        results.append(24)  # corrected to match your label map
 
     # --- Deduplicate + sort ---
     results = sorted(set(results))
