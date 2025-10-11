@@ -889,7 +889,7 @@ def generate_emb_paragraph(
     # Embedded deriv specific variables
     amount = generate_value(False)
     prev_amount = generate_value(False)
-    principal = generate_value(False, 1000000, 5000000)
+    principal = generate_value(False, 100000, 5000000)
     embedded_fv = generate_value(False, int(principal/20), int(principal/10)) if principal > 0 else 0
 
     # Select template pool
@@ -923,7 +923,7 @@ def generate_emb_paragraph(
         "{embedded_fv}": str(embedded_fv),
         "{target}": random.choice(company_names),
         "{price}": str(generate_value(False, 1, 100)),
-        "{shares}": str(generate_value(False, 1000000, 500000)),
+        "{shares}": str(generate_value(False, 100000, 500000)),
         "{expiry_year}": str(current_year + random.randint(1, 10)),
         "{quarter}": random.choice(quarters)
     }
@@ -1044,8 +1044,8 @@ def generate_noise_paragraph(
     amount = generate_value(False, 10, 150)
     amount2 = generate_value(False, 50, 250)
     amount3 = generate_value(False, 200, 700)
-    shares = generate_value(False, 1000000, 5000000)
-    shares2 = generate_value(False, 1000000, 5000000)
+    shares = generate_value(False, 100000, 5000000)
+    shares2 = generate_value(False, 100000, 5000000)
     event = random.choice(warrant_events)
     net_shares = generate_value(False, int(shares/4), int(shares/2)) if shares > 0 else 0
     pct = generate_value(False, 5, 80)
