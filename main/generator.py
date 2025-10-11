@@ -771,7 +771,7 @@ def generate_hedge_paragraph(
     # If it has the words interest rate, mark it ir, currency, fx, and commodity, cp
     if paragraph.find("interest rate") != -1:
         labels["ir"] = 1
-    if paragraph.find("currenc") != -1:
+    if paragraph.find("currenc") != -1 or paragraph.find("foreign") != -1:
         labels["fx"] = 1
     if paragraph.find("commodit") != -1:
         labels["cp"] = 1
