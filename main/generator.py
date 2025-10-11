@@ -203,6 +203,31 @@ def new_label():
         "irr": 0,  # Irrelevant / not a hedge
     }
 
+def label_paragraph(paragraph: str, labels: dict) -> dict:
+    """
+    Labels a paragraph based on predefined keyword categories.
+    
+    Args:
+        paragraph (str): The text to analyze.
+        labels (dict, optional): Dictionary to store labels. If None, a new one is created.
+    
+    Returns:
+        dict: Dictionary with category labels set to 1 if keywords are found.
+    """
+    if labels is None:
+        labels = {}
+    
+    # Define category to keyword mappings
+    category_keywords = {
+        "ir": ["interest rate", "debt", "loan"],
+        "fx": ["currenc", "foreign", "international", "border"],
+        "cp": ["commodit"],
+    }
+    
+    # Check each category and its keywords
+    for category, keywords in category_keywords.items():
+        labels[category] = 1 if any(keyword in paragraph for keyword in keywords) else labels[category]
+    return labels
 
 def generate_hedge_paragraph(
     has_active_derivative: bool,
@@ -571,6 +596,7 @@ def generate_hedge_paragraph(
 
     def hedge_type_policy() -> list[str]:
         labels[swapType] = 1
+        labels[f"{swapType}_use"] = 1 # We may use it, but it is neither current nor historic
         labels["spec"] = 1
         sentences = []
         # begin context template (company, verb)
@@ -768,15 +794,7 @@ def generate_hedge_paragraph(
 
    
     paragraph = cleanup(all_sentences, current_year)
-    # If it has the words interest rate, mark it ir, currency, fx, and commodity, cp
-    if paragraph.find("interest rate") != -1:
-        labels["ir"] = 1
-    if paragraph.find("currenc") != -1 or paragraph.find("foreign") != -1:
-        labels["fx"] = 1
-    if paragraph.find("commodit") != -1:
-        labels["cp"] = 1
-    if paragraph.find("equit") != -1:
-        labels["eq"] = 1
+    labels = label_paragraph(paragraph, labels)
     label = get_primary_label(labels)
     return paragraph, labels, label
 

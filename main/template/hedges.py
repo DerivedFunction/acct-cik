@@ -944,7 +944,7 @@ hedge_no_trading_templates = [
 
 # --- Generic context
 begin_gen_context_templates = [
-    "{company} is exposed to various market risks, including changes in interest rates, foreign exchange rates, commodity prices, and equity market values",
+    "{company} is exposed to various market risks, including changes in interest rates, foreign exchange rates, and commodity prices",
     "As part of its overall risk management strategy, {company} monitors and manages exposure to fluctuations in market conditions",
     "{company}'s operations and financial results are affected by changes in market factors such as interest rates, exchange rates, and commodity prices",
     "Our global activities expose us to market risks that arise from changes in economic and financial conditions worldwide",
