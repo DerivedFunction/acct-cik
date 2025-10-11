@@ -1017,6 +1017,12 @@ def generate_noise_paragraph(
     if company_name is None:
         company_name = random.choice(company_names) if random.random() < 0.95 else "The Company"
 
+    # Ensure distinct company names
+    company_names_unique = random.sample(company_names, min(3, len(company_names)))
+    company1 = company_name
+    company2 = company_names_unique[0] if len(company_names_unique) > 0 else "Another Company"
+    company3 = company_names_unique[1] if len(company_names_unique) > 1 else "Third Company"
+
     money_units = random.choice(money_unit_list)
     currency_code = random.choice(currency_codes)
     major_currency = random.choice(all_currencies)
@@ -1032,19 +1038,34 @@ def generate_noise_paragraph(
 
     # Specific variables for noise templates
     amount = generate_value(False)
-    prev_amount = generate_value(False)
+    amount2 = generate_value(False)
+    amount3 = generate_value(False)
     shares = generate_value(False, 1000000)
-    price = generate_value(False, 100)
-    expiry_year = current_year + random.randint(1, 10)
+    shares2 = generate_value(False, 1000000)
+    price = generate_value(False, 25)
+    price2 = generate_value(False, 50)
     event = random.choice(warrant_events)
     net_shares = generate_value(False, int(shares/2)) if shares > 0 else 0
-    pct = generate_value(False, 100)
-    pct2 = generate_value(False, 100)
+    pct = generate_value(False, 80)
+    pct2 = generate_value(False, 80)
     outstanding = generate_value(False)
-    debt_types = random.choice(debt_types_list)
+    debt_type = random.choice(debt_types_list)
     maturity_year = current_year + random.randint(3, 10)
     years = random.randint(3, 10)
+    short_int = random.randint(10, 50)
+    short_int2 = random.randint(10, 50)
+    num_months = random.randint(1, 6)
+    nun_months2 = random.randint(6, 12)
 
+    # Ensure distinct credit agencies and ratings
+    agencies = random.sample(credit_agencies, min(3, len(credit_agencies)))
+    ratings = random.sample(credit_ratings, min(3, len(credit_ratings)))
+    agency1 = agencies[0] if len(agencies) > 0 else random.choice(credit_agencies)
+    agency2 = agencies[1] if len(agencies) > 1 else random.choice(credit_agencies)
+    agency3 = agencies[2] if len(agencies) > 2 else random.choice(credit_agencies)
+    rating1 = ratings[0] if len(ratings) > 0 else random.choice(credit_ratings)
+    rating2 = ratings[1] if len(ratings) > 1 else random.choice(credit_ratings)
+    rating3 = ratings[2] if len(ratings) > 2 else random.choice(credit_ratings)
     def generate_other_policy_update():
         sentences = []
 
@@ -1217,7 +1238,7 @@ def generate_noise_paragraph(
 
     # Commodity setup
     commodity = random.choice(commodities)
-    cp_list = [commodity if not commodity == "commodity" else commodity]
+    cp_list = [commodity if commodity != "commodity" else random.choice(commodities)]
     for _ in range(2):
         cp_list.append(random.choice(commodities))
         if random.random() < 0.5:
@@ -1229,70 +1250,71 @@ def generate_noise_paragraph(
     )
     selected_cps = selected_cps if random.random() < 0.85 else "commodity"
 
+    # Reordered replacements with value1 and value2 removed
     replacements = {
-        "{company}": pick_company_name(company_name),
-        "{company2}": pick_company_name(company_name),
-        "{company3}": pick_company_name(company_name),
+        # Company-related
+        "{company}": pick_company_name(company1),
+        "{company2}": pick_company_name(company2),
+        "{company3}": pick_company_name(company3),
+
+        # Numeric and financial values
         "{integer}": str(random.randint(1, 10000)),
-        "{short_int}": random.randint(10, 50),
-        "{short_int2}": random.randint(10, 50),
-        "{shares}": str(shares),
-        "{shares1}": str(generate_value(False, 1000000)),
-        "{shares2}": str(generate_value(False, 1000000)),
-        "{currency_code}": currency_code,
-        "{price}": str(price),
-        "{price2}": str(generate_value(False, 100)),
-        "{expiry_year}": str(expiry_year),
-        "{month}": month,
-        "{months}": random.randint(1, 6),
-        "{months2}": random.randint(6, 12),
-        "{end_day}": str(end_day),
-        "{year}": str(current_year),
-        "{past_year}": random.randint(1985, current_year - 1),
-        "{prev_year}": str(prev_year),
-        "{prev_month}": random.choice(months),
-        "{next_year}": str(current_year + 1),
-        "{next2_year}": str(current_year + 2),
+        "{short_int}": str(short_int),
+        "{short_int2}": str(short_int2),
         "{amount}": str(amount),
-        "{amount2}": str(generate_value(False)),
-        "{amount3}": str(generate_value(False)),
-        "{prev_amount}": str(prev_amount),
-        "{money_unit}": money_units,
-        "{event}": event,
-        "{value1}": str(generate_value(False)),
-        "{value2}": str(generate_value(False)),
+        "{amount2}": str(amount2),
+        "{amount3}": str(amount3),
+        "{shares}": str(shares),
+        "{shares2}": str(shares2),
         "{net_shares}": str(net_shares),
-        "{quarter}": quarter,
-        "{financing_type}": random.choice(financing_types),
-        "{days}": str(random.randint(30, 90)),
-        "{prev_days}": str(random.randint(90, 180)),
+        "{price}": str(price),
+        "{price2}": str(price2),
         "{pct}": str(pct),
         "{pct2}": str(pct2),
-        "{asset_type}": random.choice(asset_types),
-        "{debt_types_list}": random.choice(debt_types_list),
-        "{service_type}": random.choice(service_types),
-        "{commodities}": selected_cps,
-        "{inventory_method}": random.choice(inventory_methods),
-        "{reserve}": str(generate_value(False)),
         "{outstanding}": str(outstanding),
-        "{debt_types}": debt_types,
-        "{debt_type}": random.choice(debt_types_list),
-        "{maturity_year}": str(maturity_year),
-        "{years}": str(years),
-        "{ratio}": str(random.randint(2, 5)),
-        "{coverage}": str(random.randint(2, 5)),
-        "{major_currency}": major_currency,
-        "{currency2}": random.choice(all_currencies),
-        "{currency3}": random.choice(all_currencies),
-        "{location}": random.choice(balance_sheet_locations),
-        "{low_price}": str(generate_value(False, 50)),
-        "{high_price}": str(generate_value(False, 200)),
-        "{unit}": random.choice(volume_units),
         "{volume}": str(generate_value(False, 100000)),
         "{cost}": str(generate_value(False, 100)),
         "{prev_cost}": str(generate_value(False, 100)),
         "{change}": str(generate_value(False)),
-        # New specific placeholders
+        "{reserve}": str(generate_value(False)),
+        "{ratio}": str(random.randint(2, 5)),
+        "{coverage}": str(random.randint(2, 5)),
+
+        # Currency-related
+        "{currency_code}": currency_code,
+        "{money_unit}": money_units,
+        "{major_currency}": major_currency,
+        "{currency2}": random.choice(all_currencies),
+        "{currency3}": random.choice(all_currencies),
+
+        # Time-related
+        "{year}": str(current_year),
+        "{prev_year}": str(prev_year),
+        "{next_year}": str(current_year + 1),
+        "{past_year}": str(random.randint(1985, current_year - 1)),
+        "{maturity_year}": str(maturity_year),
+        "{years}": str(years),
+        "{month}": month,
+        "{prev_month}": random.choice(months),
+        "{end_day}": str(end_day),
+        "{quarter}": quarter,
+        "{days}": str(random.randint(30, 90)),
+        "{prev_days}": str(random.randint(90, 180)),
+        "{months}": str(num_months),
+        "{months2}": str(nun_months2),
+
+        # Financial instruments and events
+        "{debt_type}": debt_type,
+        "{event}": event,
+        "{financing_type}": random.choice(financing_types),
+        "{asset_type}": random.choice(asset_types),
+        "{service_type}": random.choice(service_types),
+        "{inventory_method}": random.choice(inventory_methods),
+        "{commodities}": selected_cps,
+        "{vesting_period}": random.choice(vesting_periods),
+        "{perq_type}": random.choice(perq_types),
+
+        # Balance sheet and financial reasons
         "{bs_reason}": random.choice(balance_sheet_reasons),
         "{wc_reason}": random.choice(balance_sheet_reasons),
         "{ap_reason}": random.choice(balance_sheet_reasons),
@@ -1309,64 +1331,69 @@ def generate_noise_paragraph(
         "{guarantee_type}": random.choice(guarantee_types),
         "{intangible_type_examples}": random.choice(intangible_types),
         "{tax_sources_examples}": random.choice(tax_sources),
+
+        # Legal and regulatory
         "{litigation_examples}": random.choice(case_types),
         "{lawsuit_allegation}": random.choice(allegations),
         "{court_name}": random.choice(courts),
-        "{standard_purpose}": random.choice(shared_purposes),
-        "{standard_description}": random.choice(general_descriptions),
-        "{policy_description}": random.choice(general_descriptions),
-        "{policy_feature}": random.choice(general_additional_features),
-        "{hedge_description}": random.choice(hedging_descriptions),
-        "{hedge_feature}": random.choice(hedging_additional_features),
-        "{competitive_characteristics}": random.choice(competitive_characteristics),
-        "{competitive_factors}": random.choice(competitive_factors),
-        "{competitive_pressure_reasons}": random.choice(competitive_pressure_reasons),
-        "{competitive_advantages}": random.choice(competitive_advantages),
         "{regulatory_agencies}": random.choice(regulators),
         "{regulatory_areas}": random.choice(regulatory_areas),
         "{regulatory_approvals}": random.choice(regulatory_approvals),
         "{regulatory_matters}": random.choice(regulatory_matters),
-        "{self_insured_risks}": random.choice(self_insured_risks),
-        "{insurance_incident}": random.choice(insurance_incidents),
-        "{insurance_coverage_types}": random.choice(coverage_types),
+
+        # Credit ratings
+        "{rating}": rating1,
+        "{rating2}": rating2,
+        "{rating3}": rating3,
+        "{agency}": agency1,
+        "{agency2}": agency2,
+        "{agency3}": agency3,
+        "{outlook}": random.choice(rating_outlooks),
+        "{rating_action}": random.choice(rating_actions),
+
+        # Accounting and policy
+        "{standard_purpose}": random.choice(shared_purposes),
+        "{standard_description}": random.choice(general_descriptions),
+        "{policy_description}": random.choice(general_descriptions),
+        "{policy_feature}": random.choice(general_additional_features),
         "{adoption_method}": random.choice(shared_adoption_methods),
         "{transition_feature}": random.choice(shared_transition_features),
         "{adoption_impact}": random.choice(adoption_impacts),
-        "{words}": random.choice(forward_looking_words),
-        "{topics}": random.choice(forward_looking_topics),
-        "{increase_decrease}": random.choice(
-            ["increase", "decrease", "improved", "decreased"]
-        ),
-        "{target}": random.choice(company_names),
+
+        # Hedging and risk
+        "{hedge_description}": random.choice(hedging_descriptions),
+        "{hedge_feature}": random.choice(hedging_additional_features),
+        "{self_insured_risks}": random.choice(self_insured_risks),
+        "{insurance_incident}": random.choice(insurance_incidents),
+        "{insurance_coverage_types}": random.choice(coverage_types),
+        "{risk_factors}": random.choice(risk_factors_examples),
+        "{risk_item}": random.choice(risk_items_other),
+
+        # Competitive and market
+        "{competitive_characteristics}": random.choice(competitive_characteristics),
+        "{competitive_factors}": random.choice(competitive_factors),
+        "{competitive_pressure_reasons}": random.choice(competitive_pressure_reasons),
+        "{competitive_advantages}": random.choice(competitive_advantages),
         "{volatility}": random.choice(volatility_levels),
-        "{assess_verb}": random.choice(assessment_verbs),
+
+        # Miscellaneous
+        "{location}": random.choice(balance_sheet_locations),
+        "{unit}": random.choice(volume_units),
         "{exchange}": random.choice(exchanges),
-        "{vesting_period}": random.choice(vesting_periods),
-        "{perq_type}": random.choice(perq_types),
         "{mission_statement}": random.choice(mission_statements),
         "{industry}": random.choice(industries),
         "{segment_names}": random.choice(segment_examples),
-        "{eff_day}": str(random.randint(1, 28)),
-        "{risk_item}": random.choice(risk_items_other),
         "{form}": random.choice(sec_forms),
         "{state}": random.choice(states),
         "{city}": random.choice(cities),
-        "{rating}": random.choice(credit_ratings),
-        "{agency}": random.choice(credit_agencies),
-        "{agency2}": random.choice(credit_agencies),
-        "{rating2}": random.choice(credit_ratings),
-        "{rating3}": random.choice(credit_ratings),
-        "{agency3}": random.choice(credit_agencies),
-        "{outlook}": random.choice(rating_outlooks),
-        "{risk_factors}": random.choice(risk_factors_examples),
-        "{rating_action}": random.choice(rating_actions),
         "{p_metric}": random.choice(performance_metrics),
         "{model}": random.choice(valuation_models),
-        "{ticker}": "".join(
-            random.choices(string.ascii_uppercase, k=random.randint(3, 4))
-        ),
+        "{ticker}": "".join(random.choices(string.ascii_uppercase, k=random.randint(3, 4))),
+        "{words}": random.choice(forward_looking_words),
+        "{topics}": random.choice(forward_looking_topics),
+        "{increase_decrease}": random.choice(["increase", "decrease", "improved", "decreased"]),
+        "{assess_verb}": random.choice(assessment_verbs),
     }
-
     if template_pool:
         for _ in range(random.randint(3, 4)):
             template = random.choice(template_pool)
@@ -1385,7 +1412,7 @@ def generate_noise_paragraph(
     if paragraph.find("warrants") != -1: # Sometimes warrants will appear
         labels["warr"] = 1
     return paragraph, labels, label
-
+    
 def generate(size_per_label=100):
     """
     Generate the dataset. Fixed:

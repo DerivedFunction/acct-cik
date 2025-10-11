@@ -199,17 +199,17 @@ allegations = [
 # ============ EQUITY WARRANTS (NON-DERIVATIVE) ============
 
 equity_warrant_templates = [
-    "{company} has {shares} equity-classified warrants outstanding with an exercise price of {currency_code}{price} per share, exercisable until {expiry_year}",
-    "Outstanding equity warrants for {shares} shares at {currency_code}{price} per share are classified in stockholders' equity and are not remeasured",
+    "{company} has {shares} equity-classified warrants outstanding with an exercise price of {currency_code}{amount} per share, exercisable until {maturity_year}",
+    "Outstanding equity warrants for {shares} shares at {currency_code}{amount} per share are classified in stockholders' equity and are not remeasured",
     "As of {month} {end_day}, {year}, there were {shares} warrants outstanding classified as equity instruments",
-    "{company} issued {shares} warrants to purchase common stock at {currency_code}{price} per share, which are indexed to {company}'s own stock and classified in equity",
-    "In {month} {year}, {shares} warrants issued to investors in connection with a {event} in {prev_month} {prev_year} were reset to {currency_code}{price}",
-    "In connection with the {event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{price} per share",
-    "During {month} {year}, {company} issued {shares} warrants exercisable at {currency_code}{price} per share in conjunction with {event}",
-    "As part of {event}, {company} granted warrants for {shares} shares with a strike price of {currency_code}{price}, expiring in {expiry_year}",
-    "{company} issued {shares} common stock warrants at an exercise price of {currency_code}{price} per share as consideration for {event}",
-    "In {month} {year}, warrants to acquire {shares} shares at {currency_code}{price} per share were issued in connection with {event}",
-    "In connection with the {event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{price} per share, provision states the warrants meet the criteria for equity treatment",
+    "{company} issued {shares} warrants to purchase common stock at {currency_code}{amount} per share, which are indexed to {company}'s own stock and classified in equity",
+    "In {month} {year}, {shares} warrants issued to investors in connection with a {event} in {prev_month} {prev_year} were reset to {currency_code}{amount}",
+    "In connection with the {event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{amount} per share",
+    "During {month} {year}, {company} issued {shares} warrants exercisable at {currency_code}{amount} per share in conjunction with {event}",
+    "As part of {event}, {company} granted warrants for {shares} shares with a strike price of {currency_code}{amount}, expiring in {maturity_year}",
+    "{company} issued {shares} common stock warrants at an exercise price of {currency_code}{amount} per share as consideration for {event}",
+    "In {month} {year}, warrants to acquire {shares} shares at {currency_code}{amount} per share were issued in connection with {event}",
+    "In connection with the {event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{amount} per share, provision states the warrants meet the criteria for equity treatment",
     "{company} issued {shares} shares of common stock valued at {currency_code}{amount} in connection with {event} during {year}",
     "During {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{amount}) as part of {event}",
 ]
@@ -221,7 +221,7 @@ equity_warrant_activity_templates = [
     "{company} received {currency_code}{amount} {money_unit} from the exercise of {shares} warrants during {year}",
     "{shares} warrants were exercised on a cashless basis during {year}, resulting in the issuance of {net_shares} net shares",
     "During {year}, warrants to purchase {shares} shares were exercised on a cashless basis, resulting in the issuance of {net_shares} net shares",
-    "In the {quarter} quarter of {year}, {company} modified the terms of outstanding warrants, extending the expiration date to {expiry_year} and adjusting the exercise price to {currency_code}{price}",
+    "In the {quarter} quarter of {year}, {company} modified the terms of outstanding warrants, extending the expiration date to {maturity_year} and adjusting the exercise price to {currency_code}{amount}",
     "Warrants representing {shares} shares expired unexercised during {year}",
     "{company} repurchased and cancelled warrants for {shares} shares during {month} {year} for cash consideration of {currency_code}{amount} {money_unit}",
     "In {month} {year}, warrant holders exercised their rights to acquire {shares} shares, resulting in gross proceeds of {currency_code}{amount} {money_unit}",
@@ -282,17 +282,17 @@ revenue_recognition_templates = [
 
 
 deferred_revenue_templates = [
-    "Deferred revenue as of {month} {end_day}, {year} was {currency_code}{amount} {money_unit}, compared to {currency_code}{prev_amount} {money_unit} in the prior year",
+    "Deferred revenue as of {month} {end_day}, {year} was {currency_code}{amount} {money_unit}, compared to {currency_code}{amount2} {money_unit} in the prior year",
     "{company} recorded deferred revenue of {currency_code}{amount} {money_unit} related to advance payments from customers for future deliverables",
     "Contract liabilities increased to {currency_code}{amount} {money_unit} at year-end {year} due to timing of customer payments and performance obligations",
     "As of {month} {end_day}, {year}, {company} had {currency_code}{amount} {money_unit} in deferred revenue related to service and maintenance contracts",
     "Deferred revenue primarily consists of advance billings for subscription and support services to be recognized over future periods",
     "{company} expects to recognize approximately {currency_code}{amount} {money_unit} of deferred revenue over the next twelve months and the remainder thereafter",
-    "The increase in deferred revenue from {currency_code}{prev_amount} {money_unit} to {currency_code}{amount} {money_unit} reflects growth in multi-year customer contracts",
+    "The increase in deferred revenue from {currency_code}{amount2} {money_unit} to {currency_code}{amount} {money_unit} reflects growth in multi-year customer contracts",
     "Deferred revenue includes amounts invoiced in advance for software licenses, cloud services, and professional support not yet recognized as revenue",
     "Changes in deferred revenue during {year} were driven by new billings offset by revenue recognized as performance obligations were satisfied",
-    "Deferred revenue classified as current liabilities was {currency_code}{amount} {money_unit}, with the non-current portion recorded as {currency_code}{prev_amount} {money_unit}",
-    "{company} recognized revenue of {currency_code}{prev_amount} {money_unit} during {year} that was included in deferred revenue at the beginning of the period",
+    "Deferred revenue classified as current liabilities was {currency_code}{amount} {money_unit}, with the non-current portion recorded as {currency_code}{amount2} {money_unit}",
+    "{company} recognized revenue of {currency_code}{amount2} {money_unit} during {year} that was included in deferred revenue at the beginning of the period",
     "Deferred revenue balances are expected to be recognized as revenue consistent with the satisfaction of contractual obligations over time",
 ]
 
@@ -330,11 +330,11 @@ inventory_writedown_templates = [
     "As of {month} {end_day}, {year}, {company} maintained {commodities} reserves of {currency_code}{amount} {money_unit} for excess and obsolete inventories",
     "Write-downs of {currency_code}{amount} {money_unit} were recorded in {year} primarily related to discontinued product lines",
     "{company} recorded {currency_code}{amount} {money_unit} in inventory write-downs due to declining market demand during {year}",
-    "Charges for inventory valuation adjustments were {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in the prior year",
+    "Charges for inventory valuation adjustments were {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{amount2} {money_unit} in the prior year",
     "{company} recorded inventory write-downs associated with aging components and spare parts totaling {currency_code}{amount} {money_unit} during {year}",
     " {commodities} inventory reserves increased to {currency_code}{amount} {money_unit} at year-end {year}, reflecting adjustments for lower selling prices and product obsolescence",
     "Total charges of {currency_code}{amount} {money_unit} were recognized in cost of goods sold for inventory write-downs in {year}",
-    "Inventory write-downs of {currency_code}{amount} {money_unit} were partially offset by recoveries of {currency_code}{prev_amount} {money_unit} related to previously reserved items",
+    "Inventory write-downs of {currency_code}{amount} {money_unit} were partially offset by recoveries of {currency_code}{amount2} {money_unit} related to previously reserved items",
     "{company} established new reserves of {currency_code}{amount} {money_unit} in {year} for excess quantities, reflecting updated demand forecasts",
 ]
 
@@ -606,7 +606,7 @@ uncertain_tax_templates = [
 stock_comp_templates = [
     "Stock-based compensation expense was {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
     "{company} grants stock options, restricted stock units, and performance share units to employees and directors",
-    "During {year}, {company} granted {shares} stock options with a weighted-average exercise price of {currency_code}{price} per share",
+    "During {year}, {company} granted {shares} stock options with a weighted-average exercise price of {currency_code}{amount} per share",
     "Total unrecognized compensation cost related to unvested awards was {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
 ]
 
@@ -735,7 +735,7 @@ acquisition_funding = [
 # ============ STOCK ==========================
 # Stock issuance for debt costs
 stock_debt_issuance_templates = [
-    "In conjunction with its {month} {year} {financing_type}, {company} issued at closing {shares1} shares of common stock (valued at {currency_code}{value1}) and upon extension of the maturity date {shares2} shares of common stock (valued at {currency_code}{value2}), which were recorded as debt issuance costs",
+    "In conjunction with its {month} {year} {financing_type}, {company} issued at closing {shares} shares of common stock (valued at {currency_code}{amount}) and upon extension of the maturity date {shares2} shares of common stock (valued at {currency_code}{amount2}), which were recorded as debt issuance costs",
     "{company} issued {shares} shares of common stock valued at {currency_code}{amount} in connection with {financing_type} during {year}, recorded as debt issuance costs",
     "During {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{amount}) as part of {financing_type}, with the value recorded as a debt issue cost",
     "In {month} {year}, {company} completed {financing_type} and issued {shares} shares of common stock valued at {currency_code}{amount} as consideration, which was capitalized as debt issuance costs",
@@ -764,16 +764,16 @@ market_impact_templates = [
 
 # Warrant and option adjustment templates
 warrant_adjustment_templates = [
-    "The original exercisable shares of {shares} and exercise price of {currency_code}{price} was adjusted to {shares1} and {currency_code}{price2}, respectively, to account for the {month} {year} Private Placement and the Amendment Agreement",
-    "Anti-dilution provisions resulted in adjustment of warrant exercise price from {currency_code}{price} to {currency_code}{price2} and shares from {shares} to {shares1} following the {year} financing",
-    "Pursuant to anti-dilution protection, {shares} warrants at {currency_code}{price} per share were adjusted to {shares1} warrants at {currency_code}{price2} per share effective {month} {year}",
-    "The {month} {year} down-round financing triggered adjustments to outstanding warrants, changing the exercise price from {currency_code}{price} to {currency_code}{price2}",
-    "Weighted-average anti-dilution adjustments modified warrant terms to {shares1} shares at {currency_code}{price2} from {shares} shares at {currency_code}{price}",
+    "The original exercisable shares of {shares} and exercise price of {currency_code}{amount} was adjusted to {shares} and {currency_code}{price2}, respectively, to account for the {month} {year} Private Placement and the Amendment Agreement",
+    "Anti-dilution provisions resulted in adjustment of warrant exercise price from {currency_code}{amount} to {currency_code}{price2} and shares from {shares} to {shares} following the {year} financing",
+    "Pursuant to anti-dilution protection, {shares} warrants at {currency_code}{amount} per share were adjusted to {shares} warrants at {currency_code}{price2} per share effective {month} {year}",
+    "The {month} {year} down-round financing triggered adjustments to outstanding warrants, changing the exercise price from {currency_code}{amount} to {currency_code}{price2}",
+    "Weighted-average anti-dilution adjustments modified warrant terms to {shares} shares at {currency_code}{price2} from {shares} shares at {currency_code}{amount}",
 ]
 
 # Fair value measurement templates
 fair_value_snapshot_templates = [
-    "The fair value of the shares are {currency_code}{value1} and {currency_code}{value2}, in {month} {year}",
+    "The fair value of the shares are {currency_code}{amount} and {currency_code}{amount2}, in {month} {year}",
     "As of {month} {end_day}, {year}, the fair value of shares underlying convertible instruments was {currency_code}{amount}",
     "Fair value of shares reserved for issuance totaled {currency_code}{amount} at {month} {end_day}, {year}",
     "The {shares} shares reserved for conversion and exercise had an aggregate fair value of {currency_code}{amount} as of {month} {year}",
@@ -782,9 +782,9 @@ fair_value_snapshot_templates = [
 
 # Share reservation templates
 share_reservation_templates = [
-    "In addition, {company} has reserved {shares1} shares of the common stock for issuance upon the exercise of outstanding warrants and {shares2} shares of the common stock for issuance upon the exercise of stock options",
+    "In addition, {company} has reserved {shares} shares of the common stock for issuance upon the exercise of outstanding warrants and {shares2} shares of the common stock for issuance upon the exercise of stock options",
     "{company} has reserved a total of {shares} shares for issuance under equity incentive plans and upon exercise of warrants and convertible securities",
-    "As of {month} {end_day}, {year}, {shares1} shares were reserved for warrant exercises and {shares2} shares for option exercises under equity plans",
+    "As of {month} {end_day}, {year}, {shares} shares were reserved for warrant exercises and {shares2} shares for option exercises under equity plans",
     "{company} maintains a reserve of {shares} shares for potential issuance upon conversion, exercise, or settlement of outstanding equity instruments",
     "{shares} shares of authorized common stock are reserved for issuance pursuant to outstanding equity awards, warrants, and convertible instruments as of {year}",
 ]
@@ -792,9 +792,9 @@ share_reservation_templates = [
 # Outstanding options disclosure
 outstanding_options_templates = [
     "As of {month} {end_day}, {year}, there are {shares} issued and outstanding options to purchase common stock. To the extent that outstanding warrants and options are exercised, the percentage ownership of common stock of {company}'s stockholders will be diluted",
-    "Outstanding stock options totaled {shares} as of {month} {end_day}, {year}, with a weighted-average exercise price of {currency_code}{price}",
+    "Outstanding stock options totaled {shares} as of {month} {end_day}, {year}, with a weighted-average exercise price of {currency_code}{amount}",
     "As of {year} year-end, {shares} stock options were outstanding and exercisable, representing potential dilution to existing shareholders",
-    "{company} had {shares} options outstanding at {month} {end_day}, {year}, of which {shares1} were vested and exercisable",
+    "{company} had {shares} options outstanding at {month} {end_day}, {year}, of which {shares} were vested and exercisable",
     "Stock options to purchase {shares} shares were outstanding as of {month} {end_day}, {year}, with expiration dates ranging from {year} to {maturity_year}",
 ]
 
@@ -803,7 +803,7 @@ dilution_concern_templates = [
     "In the event of the exercise of a substantial number of warrants and options, within a reasonably short period of time after the right to exercise commences, the resulting increase in the amount of the common stock in the trading market could substantially adversely affect the market price of the common stock or {company}\'s ability to raise money through the sale of equity securities",
     "Exercise of outstanding warrants and options representing {shares} shares could result in significant dilution to existing stockholders and negatively impact the stock price",
     "The potential issuance of {shares} shares upon exercise of warrants and conversion of notes could dilute current shareholders by approximately {pct}%",
-    "Substantial dilution may occur if holders exercise warrants for {shares} shares and convert notes into {shares1} shares of common stock",
+    "Substantial dilution may occur if holders exercise warrants for {shares} shares and convert notes into {shares} shares of common stock",
     "Current stockholders face potential dilution from {shares} shares underlying warrants, options, and convertible securities as of {month} {end_day}, {year}",
     "If all outstanding warrants and options were exercised, {shares} additional shares would be issued, representing {pct}% dilution to current shareholders",
 ]
@@ -817,15 +817,15 @@ capital_raising_impact_templates = [
 ]
 
 warrant_debt_issuance_templates = [
-    "In the same financing, {company} issued warrants to purchase {shares1} shares of its common stock (valued at {currency_code}{value1}) and warrants to purchase {shares2} shares of its common stock (valued at {currency_code}{value2}) related to extensions of the maturity dates",
+    "In the same financing, {company} issued warrants to purchase {shares} shares of its common stock (valued at {currency_code}{amount}) and warrants to purchase {shares2} shares of its common stock (valued at {currency_code}{amount2}) related to extensions of the maturity dates",
     "{company} issued warrants to purchase {shares} shares of common stock (valued at {currency_code}{amount}) in conjunction with {financing_type} in {month} {year}",
     "Warrants to purchase {shares} shares of common stock were issued as part of the financing arrangement, valued at {currency_code}{amount} and recorded as debt issuance costs",
     "In connection with {financing_type}, {company} granted warrants for {shares} shares valued at {currency_code}{amount}, with the value recorded as debt issue costs",
     "Additional warrants to purchase {shares} shares of {company} common stock were issued on {month} {year} in consideration for the extension to that date",
-    "In connection with the extension to {month} {year}, {company} offered two alternatives of consideration. Holders of {shares1} common stock of the notes elected to reduce the exercise price of their warrants, or to to receive additional warrants to purchase {shares2} shares of common stock",
-    "{company} reduced the exercise price by {currency_code}{value1} per share for all warrants issued in connection with the issuance or extensions of the notes",
-    "In consideration of this extension, {company} issued {shares} shares of common stock at a price of {amount} per share and warrants to purchase {shares1} shares of common stock at a price to be determined in the future, between {currency_code}{value1} and {currency_code}{value2} per share, on or before {month} {year}",
-    "Also in {month} {year}, {company} exchanged a {currency_code}{amount} note payable for units of common stock and warrants to purchase common stock at a price of {currency_code}{value1} per unit",
+    "In connection with the extension to {month} {year}, {company} offered two alternatives of consideration. Holders of {shares} common stock of the notes elected to reduce the exercise price of their warrants, or to to receive additional warrants to purchase {shares2} shares of common stock",
+    "{company} reduced the exercise price by {currency_code}{amount} per share for all warrants issued in connection with the issuance or extensions of the notes",
+    "In consideration of this extension, {company} issued {shares} shares of common stock at a price of {amount} per share and warrants to purchase {shares} shares of common stock at a price to be determined in the future, between {currency_code}{amount} and {currency_code}{amount2} per share, on or before {month} {year}",
+    "Also in {month} {year}, {company} exchanged a {currency_code}{amount} note payable for units of common stock and warrants to purchase common stock at a price of {currency_code}{amount} per unit",
     "In addition, the financial advisor on the debt offering received an additional {shares} warrants with the {month} offering for a total of approximately {amount}",
     "If all of the warrants are exercised and the debt is fully converted to {company}\'s stock, current stockholders will experience a significant dilution in their ownership of the company",
     "Based on the terms of the debt offering both the notes and warrants are subject to anti-dilution provisions and can potentially become more dilutive to {company}\'s stock. Further dilution may occur in the event of a default {currency_code}{amount} payable",
@@ -838,8 +838,8 @@ warrant_amortization_templates = [
     "Amortization of warrant-related debt issuance costs totaled {currency_code}{amount} for the year ended {month} {end_day}, {year}",
     "The relative fair value of the warrants was recorded as a debt discount and is being amortized to non-cash interest expense over the life of the {debt_types_list} using the effective interest method",
     "The initial value of the warrants was recorded in Additional Paid-In Capital and, as they are classified as equity, they are not subsequently remeasured",
-    "Amortization of the debt discount related to the warrants issued with the {debt_types_list} totaled {currency_code}{amount} and {currency_code}{value2} for the years ended {year} and {prev_year}, respectively",
-    "The warrants are exercisable for a term of five years at an exercise price of {currency_code}{price} per share, subject to anti-dilution provisions similar to the provisions set forth in the Notes and expire on {month} {year}",
+    "Amortization of the debt discount related to the warrants issued with the {debt_types_list} totaled {currency_code}{amount} and {currency_code}{amount2} for the years ended {year} and {prev_year}, respectively",
+    "The warrants are exercisable for a term of five years at an exercise price of {currency_code}{amount} per share, subject to anti-dilution provisions similar to the provisions set forth in the Notes and expire on {month} {year}",
 ]
 
 
@@ -889,7 +889,7 @@ service_types = [
 
 # Balance sheet changes templates
 balance_sheet_change_templates = [
-    "Accounts payable increased by {currency_code}{amount} {money_unit} to {currency_code}{value1} {money_unit} as of {month} {end_day}, {year}, primarily due to {bs_reason}",
+    "Accounts payable increased by {currency_code}{amount} {money_unit} to {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}, primarily due to {bs_reason}",
     "Accounts receivable decreased {currency_code}{amount} {money_unit} during {year}, reflecting {bs_reason}",
     "Inventories increased {currency_code}{amount} {money_unit} from {month} {end_day}, {prev_year} to {month} {end_day}, {year} due to {bs_reason}",
     "Accrued liabilities increased by {currency_code}{amount} {money_unit} year-over-year, primarily attributable to {accrued_reason}",
@@ -897,7 +897,7 @@ balance_sheet_change_templates = [
 ]
 
 working_capital_templates = [
-    "Working capital was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{prev_amount} {money_unit} at {month} {end_day}, {prev_year}",
+    "Working capital was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{amount2} {money_unit} at {month} {end_day}, {prev_year}",
     "Changes in operating assets and liabilities resulted in a {currency_code}{amount2} of {currency_code}{amount} {money_unit} in cash from operations during {year}",
     "{company}\'s working capital increased by {currency_code}{amount} {money_unit} during {year}, driven primarily by {wc_reason}",
     "Net changes in operating assets and liabilities used {currency_code}{amount} {money_unit} of cash during {year}",
@@ -905,17 +905,17 @@ working_capital_templates = [
 
 ar_templates = [
     "Trade accounts receivable totaled {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, representing {days} days sales outstanding",
-    "The allowance for doubtful accounts was {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}, compared to {currency_code}{prev_amount} {money_unit} in the prior year",
+    "The allowance for doubtful accounts was {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}, compared to {currency_code}{amount2} {money_unit} in the prior year",
     "Days sales outstanding decreased from {prev_days} days to {days} days during {year}",
     "{company} recorded bad debt expense of {currency_code}{amount} {money_unit} during {year}",
-    "Accounts receivable, net of allowances, increased {currency_code}{amount} {money_unit} to {currency_code}{value1} {money_unit} at year-end {year}",
+    "Accounts receivable, net of allowances, increased {currency_code}{amount} {money_unit} to {currency_code}{amount} {money_unit} at year-end {year}",
 ]
 
 
 ap_templates = [
     "Accounts payable increased {currency_code}{amount} {money_unit} from the prior year, reflecting {ap_reason}",
     "{company} extended payment terms with certain vendors during {year}, resulting in an increase in accounts payable of {currency_code}{amount} {money_unit}",
-    "Accounts payable was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, down from {currency_code}{prev_amount} {money_unit} at {month} {end_day}, {prev_year}",
+    "Accounts payable was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, down from {currency_code}{amount2} {money_unit} at {month} {end_day}, {prev_year}",
     "Days payable outstanding increased to {days} days at year-end {year} from {prev_days} days in the prior year",
     "Changes in accounts payable provided {currency_code}{amount} {money_unit} of cash during {year}",
 ]
@@ -928,7 +928,7 @@ accrued_liabilities_templates = [
 ]
 
 other_current_assets_templates = [
-    "Other current assets increased {currency_code}{amount} {money_unit} to {currency_code}{value1} {money_unit} at {month} {end_day}, {year}, primarily due to {asset_reason}",
+    "Other current assets increased {currency_code}{amount} {money_unit} to {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, primarily due to {asset_reason}",
     "Prepaid expenses decreased by {currency_code}{amount} {money_unit} during {year}",
     "Other receivables totaled {currency_code}{amount} {money_unit} at year-end {year}",
     "Current assets, excluding cash, increased {currency_code}{amount} {money_unit} year-over-year",
@@ -937,27 +937,27 @@ other_current_assets_templates = [
 other_liabilities_templates = [
     "Other long-term liabilities increased by {currency_code}{amount} {money_unit} during {year}, primarily related to {liability_reason}",
     "{company}\'s current liabilities totaled {currency_code}{amount} {money_unit} at {month} {end_day}, {year}",
-    "Total liabilities increased from {currency_code}{prev_amount} {money_unit} to {currency_code}{amount} {money_unit} during {year}",
-    "Non-current liabilities decreased {currency_code}{amount} {money_unit} to {currency_code}{value1} {money_unit} at year-end {year}",
+    "Total liabilities increased from {currency_code}{amount2} {money_unit} to {currency_code}{amount} {money_unit} during {year}",
+    "Non-current liabilities decreased {currency_code}{amount} {money_unit} to {currency_code}{amount} {money_unit} at year-end {year}",
 ]
 
 retained_earnings_templates = [
-    "Retained earnings increased by {currency_code}{amount} {money_unit} during {year}, reflecting net income of {currency_code}{value1} {money_unit} less dividends of {currency_code}{price} {money_unit}",
+    "Retained earnings increased by {currency_code}{amount} {money_unit} during {year}, reflecting net income of {currency_code}{amount} {money_unit} less dividends of {currency_code}{amount} {money_unit}",
     "Accumulated deficit was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}",
-    "{company} reported a net loss of {currency_code}{amount} {money_unit} for {year}, increasing accumulated deficit to {currency_code}{value1} {money_unit}",
+    "{company} reported a net loss of {currency_code}{amount} {money_unit} for {year}, increasing accumulated deficit to {currency_code}{amount} {money_unit}",
     "Retained earnings totaled {currency_code}{amount} {money_unit} at year-end {year}",
 ]
 
 stockholders_equity_templates = [
-    "Total stockholders' equity increased {currency_code}{amount} {money_unit} to {currency_code}{value1} {money_unit} at {month} {end_day}, {year}",
-    "Stockholders' equity was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{prev_amount} {money_unit} at {month} {end_day}, {prev_year}",
+    "Total stockholders' equity increased {currency_code}{amount} {money_unit} to {currency_code}{amount} {money_unit} at {month} {end_day}, {year}",
+    "Stockholders' equity was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{amount2} {money_unit} at {month} {end_day}, {prev_year}",
     "The increase in stockholders' equity of {currency_code}{amount} {money_unit} was primarily due to {equity_reason}",
     "Total equity increased by {currency_code}{amount} {money_unit} during {year}",
 ]
 
 cash_flow_statement_templates = [
     "Cash used in operating activities was {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
-    "Net cash provided by operating activities totaled {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in {prev_year}",
+    "Net cash provided by operating activities totaled {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{amount2} {money_unit} in {prev_year}",
     "Cash flows from investing activities used {currency_code}{amount} {money_unit} during {year}, primarily for {cfs_reason}",
     "{company} generated {currency_code}{amount} {money_unit} in cash from operations during {year}",
     "Free cash flow was {currency_code}{amount} {money_unit} for {year}, defined as cash from operations less capital expenditures",
@@ -1238,22 +1238,22 @@ equity_reasons = [
 
 # CEO and executive compensation templates
 ceo_compensation_templates = [
-    "{company}'s Chief Executive Officer received total compensation of {currency_code}{amount} {money_unit} for {year}, consisting of {currency_code}{value1} {money_unit} in base salary, {currency_code}{value2} {money_unit} in cash bonuses, and {currency_code}{prev_amount} {money_unit} in equity awards",
-    "For the year ended {month} {end_day}, {year}, the CEO's compensation package totaled {currency_code}{amount} {money_unit}, including base salary of {currency_code}{value1} {money_unit} and performance-based incentives of {currency_code}{prev_amount} {money_unit}",
-    "Total compensation for the Chief Executive Officer was {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in {prev_year}",
+    "{company}'s Chief Executive Officer received total compensation of {currency_code}{amount} {money_unit} for {year}, consisting of {currency_code}{amount} {money_unit} in base salary, {currency_code}{amount2} {money_unit} in cash bonuses, and {currency_code}{amount2} {money_unit} in equity awards",
+    "For the year ended {month} {end_day}, {year}, the CEO's compensation package totaled {currency_code}{amount} {money_unit}, including base salary of {currency_code}{amount} {money_unit} and performance-based incentives of {currency_code}{amount2} {money_unit}",
+    "Total compensation for the Chief Executive Officer was {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{amount2} {money_unit} in {prev_year}",
     "The CEO received {currency_code}{amount} {money_unit} in total compensation during {year}, comprised of salary, annual incentive compensation, and long-term equity grants",
 ]
 
 executive_compensation_templates = [
     "Total compensation for {company}'s five highest-paid executives was {currency_code}{amount} {money_unit} for {year}",
-    "The named executive officers received aggregate compensation of {currency_code}{amount} {money_unit} in {year}, including {currency_code}{prev_amount} {money_unit} in stock-based awards",
+    "The named executive officers received aggregate compensation of {currency_code}{amount} {money_unit} in {year}, including {currency_code}{amount2} {money_unit} in stock-based awards",
     "Compensation for senior management totaled {currency_code}{amount} {money_unit} during {year}, representing {increase_decrease} of {change}% from the prior year",
     "Executive compensation expense, including salaries, bonuses, and equity awards, totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
 ]
 
 equity_grant_templates = [
     "In {month} {year}, the CEO was granted {shares} restricted stock units with a grant-date fair value of {currency_code}{amount} {money_unit}, vesting over {years} years",
-    "{company} granted the Chief Executive Officer {shares} stock options in {year} with an exercise price of {currency_code}{price} per share and a ten-year term",
+    "{company} granted the Chief Executive Officer {shares} stock options in {year} with an exercise price of {currency_code}{amount} per share and a ten-year term",
     "Performance share units representing {shares} shares at target were awarded to the CEO in {year}, with vesting contingent upon achievement of {p_metric}",
     "The CEO received a grant of {shares} restricted shares valued at {currency_code}{amount} {money_unit} during {year}, subject to {vesting_period} vesting",
 ]
@@ -1349,10 +1349,10 @@ severance_templates = [
 ]
 
 employment_agreement_templates = [
-    "{company} entered into an employment agreement with its Chief Executive Officer in {month} {year} providing for an annual base salary of {currency_code}{value1} {money_unit} and target annual bonus of {pct}% of salary",
-    "The CEO\'s employment agreement, effective {month} {year}, includes a base salary of {currency_code}{value1} {money_unit} with annual merit increase eligibility and participation in long-term incentive programs",
-    "Under the terms of the CEO employment agreement, the executive receives an annual base salary of {currency_code}{value1} {money_unit}, subject to annual review by the Board of Trustees",
-    "The employment agreement with the Chief Executive Officer provides for base compensation of {currency_code}{value1} {money_unit} and eligibility for annual performance bonuses up to {pct}% of base salary",
+    "{company} entered into an employment agreement with its Chief Executive Officer in {month} {year} providing for an annual base salary of {currency_code}{amount} {money_unit} and target annual bonus of {pct}% of salary",
+    "The CEO\'s employment agreement, effective {month} {year}, includes a base salary of {currency_code}{amount} {money_unit} with annual merit increase eligibility and participation in long-term incentive programs",
+    "Under the terms of the CEO employment agreement, the executive receives an annual base salary of {currency_code}{amount} {money_unit}, subject to annual review by the Board of Trustees",
+    "The employment agreement with the Chief Executive Officer provides for base compensation of {currency_code}{amount} {money_unit} and eligibility for annual performance bonuses up to {pct}% of base salary",
 ]
 
 compensation_committee_templates = [
@@ -1458,8 +1458,8 @@ clawback_templates = [
 # ========== MARKET PRICES AND TRADING ==========
 stock_price_templates = [
     '{company} \'s common stock trades on the {exchange} under the ticker symbol "{ticker}"',
-    "Shares of common stock closed at {currency_code}{price} on {month} {end_day}, {year}, compared to {currency_code}{price2} at {month} {end_day}, {prev_year}",
-    "{company}\'s stock price ranged from a low of {currency_code}{value1} to a high of {currency_code}{value2} during {year}",
+    "Shares of common stock closed at {currency_code}{amount} on {month} {end_day}, {year}, compared to {currency_code}{price2} at {month} {end_day}, {prev_year}",
+    "{company}\'s stock price ranged from a low of {currency_code}{amount} to a high of {currency_code}{amount2} during {year}",
     "Average daily trading volume was approximately {volume} shares during {year}",
     "{company}\'s market capitalization was approximately {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "Shares outstanding totaled {shares} as of {month} {end_day}, {year}",
@@ -1896,10 +1896,10 @@ safe_harbor_templates = [
 # ========== ANALYST COVERAGE AND ESTIMATES ==========
 analyst_coverage_templates = [
     "{company} is currently covered by {integer} equity research analysts",
-    "Analyst consensus estimates for {year} project earnings per share of {currency_code}{price} and revenue of {currency_code}{amount} {money_unit}",
+    "Analyst consensus estimates for {year} project earnings per share of {currency_code}{amount} and revenue of {currency_code}{amount} {money_unit}",
     "The average analyst price target is {currency_code}{target}, representing {amount2} of {pct}% from current levels",
     "{integer} analysts have buy ratings, {short_int} have hold ratings, and {short_int2} have sell ratings on the stock",
-    "Analyst estimates for {year} range from {currency_code}{value1} to {currency_code}{value2} per share",
+    "Analyst estimates for {year} range from {currency_code}{amount} to {currency_code}{amount2} per share",
     "{company} does not provide guidance but is followed by several sell-side analysts who publish earnings estimates",
 ]
 
@@ -1933,7 +1933,7 @@ share_repurchase_templates = [
     "During {year}, {company} repurchased {shares} shares of common stock for {currency_code}{amount} {money_unit}",
     "The Board of Directors authorized a {currency_code}{amount} {money_unit} share repurchase program in {month} {year}",
     "As of {month} {end_day}, {year}, {currency_code}{amount} {money_unit} remained available under the current repurchase authorization",
-    "Share repurchases totaled {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{prev_amount} {money_unit} in {prev_year}",
+    "Share repurchases totaled {currency_code}{amount} {money_unit} in {year}, compared to {currency_code}{amount2} {money_unit} in {prev_year}",
     "{company} opportunistically repurchases shares based on market conditions, capital requirements, and alternative investment opportunities",
     "No shares were repurchased during {year} as {company} prioritized debt reduction and organic growth investments",
 ]
@@ -2427,7 +2427,7 @@ foreign_currency_translation_templates = [
 foreign_currency_transaction_templates = [
     "Foreign currency transaction gains (losses) included in {location} totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
     "{company} recognized foreign exchange losses of {currency_code}{amount} {money_unit} during {year}, primarily related to intercompany balances denominated in {major_currency}",
-    "{company} recorded foreign currency transaction losses of {currency_code}{amount} {money_unit} in {year} compared to gains of {currency_code}{prev_amount} {money_unit} in {prev_year}",
+    "{company} recorded foreign currency transaction losses of {currency_code}{amount} {money_unit} in {year} compared to gains of {currency_code}{amount2} {money_unit} in {prev_year}",
     "Foreign exchange gains and losses on remeasurement of monetary assets and liabilities totaled {currency_code}{amount} {money_unit} in {year}",
     "Transaction gains and losses on foreign currency ({major_currency}) denominated receivables and payables are recognized in earnings as exchange rates fluctuate",
 ]
