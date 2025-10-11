@@ -222,10 +222,14 @@ amount_connectors = [
     "with a notional amount of",
     "totaling",
     "with notional values of",
+    "with a value of",
+    "with amounts totaling",
+    "with a total of",
 ]
 
 # Amount patterns (order of amount vs swap)
 amount_patterns = [
+    
     "{swap_type} {connector} {currency_code}{notional} {money_unit}",
     "{connector} {currency_code}{notional} {money_unit} in {swap_type}",
 ]
