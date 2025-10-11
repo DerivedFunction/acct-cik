@@ -1219,7 +1219,7 @@ def generate_noise_paragraph(
         "{asset_reason}": random.choice(other_asset_reasons),
         "{liability_reason}": random.choice(liability_reasons),
         "{equity_reason}": random.choice(equity_reasons),
-        "{cfs_reason}": "capital expenditures",
+        "{cfs_reason}": random.choice(cfs_reasons),
         "{capex_purpose}": random.choice(capex_purposes),
         "{restructuring_purpose}": random.choice(restructuring_purposes),
         "{restructuring_expense_type}": random.choice(restructuring_expense_types),
@@ -1243,14 +1243,14 @@ def generate_noise_paragraph(
         "{competitive_advantages}": random.choice(competitive_advantages),
         "{regulatory_agencies}": random.choice(regulators),
         "{regulatory_areas}": random.choice(regulatory_areas),
-        "{regulatory_approvals}": "key product approvals",
-        "{regulatory_matters}": "ongoing inquiries",
+        "{regulatory_approvals}": random.choice(regulatory_approvals),
+        "{regulatory_matters}": random.choice(regulatory_matters),
         "{self_insured_risks}": random.choice(self_insured_risks),
         "{insurance_incident}": random.choice(insurance_incidents),
         "{insurance_coverage_types}": random.choice(coverage_types),
         "{adoption_method}": random.choice(shared_adoption_methods),
         "{transition_feature}": random.choice(shared_transition_features),
-        "{adoption_impact}": "a material impact",
+        "{adoption_impact}": random.choice(adoption_impacts),
     }
 
     for _ in range(2, 4):
@@ -1261,7 +1261,10 @@ def generate_noise_paragraph(
             value = replacements.get(key, "a relevant value")
             sentence = sentence.replace(key, str(value))
         all_sentences.append(sentence)
-
+    # Fix any remaining placeholders
+    for idx, _ in enumerate(all_sentences):
+        for key, value in replacements.items():
+            all_sentences[idx] = all_sentences[idx].replace(key, str(value))
     label = get_primary_label(labels)
     paragraph = cleanup(all_sentences, reporting_year, checkBracket=False)
     if paragraph.find("warrants") != -1: # Sometimes warrants will appear

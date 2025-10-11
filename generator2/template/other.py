@@ -1589,6 +1589,38 @@ materiality = [
     "not material",
 ]
 
+cfs_reasons = [
+    "acquisitions of businesses",
+    "purchases of property, plant, and equipment",
+    "strategic investments in other companies",
+    "purchases of marketable securities",
+    "capital expenditures for facility expansion",
+]
+
+regulatory_approvals = [
+    "FDA approval for a new drug",
+    "marketing authorization from the European Medicines Agency",
+    "clearance for a new medical device",
+    "approval from the Environmental Protection Agency for a new facility",
+    "authorization from the Federal Communications Commission for a new service",
+]
+
+regulatory_matters = [
+    "an ongoing inquiry from the Department of Justice",
+    "a review by the Securities and Exchange Commission",
+    "discussions with the FDA regarding a pending drug application",
+    "an investigation by a state attorney general",
+    "a pending review of our environmental permits",
+]
+
+adoption_impacts = [
+    "a material increase in lease liabilities on the balance sheet",
+    "a change in the timing of revenue recognition for certain contracts",
+    "the recognition of an allowance for expected credit losses",
+    "no material impact on the consolidated financial statements",
+    "a cumulative-effect adjustment to retained earnings",
+]
+
 noise_templates: dict[str, list[list[str]]] = {
     "SEC_BEG": [
         sec_toc_patterns,
