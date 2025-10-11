@@ -2242,7 +2242,6 @@ self_insured_risks = [
     "reputational harm from social media",
     "product tampering",
     "counterfeiting and piracy",
-    "loss of
 ]
 
 coverage_types = [
