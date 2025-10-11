@@ -1331,6 +1331,7 @@ def generate_noise_paragraph(
         "{transition_feature}": random.choice(shared_transition_features),
         "{adoption_impact}": random.choice(adoption_impacts),
         "{words}": random.choice(forward_looking_words),
+        "{topics}": random.choice(forward_looking_topics),
         "{increase_decrease}": random.choice(
             ["increase", "decrease", "improved", "decreased"]
         ),
@@ -1352,6 +1353,18 @@ def generate_noise_paragraph(
         "{risk_item}": random.choice(risk_items_other),
         "{form}": random.choice(sec_forms),
         "{state}": random.choice(states),
+        "{city}": random.choice(cities),
+        "{rating}": random.choice(credit_ratings),
+        "{agency}": random.choice(credit_agencies),
+        "{agency2}": random.choice(credit_agencies),
+        "{rating2}": random.choice(credit_ratings),
+        "{rating3}": random.choice(credit_ratings),
+        "{agency3}": random.choice(credit_agencies),
+        "{risk_factors}": random.choice(risk_factors_examples),
+        "{rating_action}": random.choice(rating_actions),
+        "{p_metrics}": random.choice(performance_metrics),
+        
+        
     }
 
     if template_pool:
@@ -1487,3 +1500,5 @@ def generate(size_per_label=100):
     print(f"\n{len(all_samples)} samples written/appended to {output_file} (sorted)")
 
 generate(1000)
+
+# %%

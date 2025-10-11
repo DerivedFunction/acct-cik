@@ -439,7 +439,7 @@ asset_types = [
 
 lease_templates = [
     "{company} leases office space, manufacturing facilities, and equipment under operating and finance leases with terms ranging from {months} to {months2} years",
-    "As of {month} {end_day}, {year}, {company} had operating lease right-of-use assets of {currency_code}{amount} {money_unit} and lease liabilities of {currency_code}{liability} {money_unit}",
+    "As of {month} {end_day}, {year}, {company} had operating lease right-of-use assets of {currency_code}{amount} {money_unit} and lease liabilities of {currency_code}{amount2} {money_unit}",
     "{company} adopted ASC 842 effective {month} {year}, recognizing right-of-use assets and lease liabilities for operating leases",
     "Total lease expense for {year} was {currency_code}{amount} {money_unit}, including both operating and finance lease costs",
     "Lease liabilities are measured at the present value of future lease payments, discounted using {company}\'s incremental borrowing rate",
@@ -456,7 +456,7 @@ lease_commitment_templates = [
     "The weighted-average discount rate used to measure lease liabilities was {pct}% as of {month} {end_day}, {year}",
     "Operating lease payments are expected to total {currency_code}{amount} {money_unit} over the next five years",
     "Maturities of lease liabilities are {currency_code}{amount} {money_unit} in {next_year}, {currency_code}{amount2} {money_unit} in {next2_year}, and {currency_code}{amount3} {money_unit} thereafter",
-    "As of {month} {end_day}, {year}, undiscounted future lease payments totaled {currency_code}{amount} {money_unit}, with a present value of {currency_code}{pv_amount} {money_unit}",
+    "As of {month} {end_day}, {year}, undiscounted future lease payments totaled {currency_code}{amount} {money_unit}, with a present value of {currency_code}{amount2} {money_unit}",
     "Future finance lease obligations amounted to {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "Lease commitments include renewal options reasonably certain to be exercised, totaling {currency_code}{amount} {money_unit}",
 ]
@@ -646,7 +646,7 @@ guarantee_templates = [
     "{company} has provided guarantees and indemnifications related to {guarantee_type} with a maximum potential exposure of {currency_code}{amount} {money_unit}",
     "Product warranty obligations totaled {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "{company} accrues warranty costs based on historical claims experience and specific identified warranty issues",
-    "Warranty expense for {year} was {currency_code}{amount} {money_unit}, with payments of {currency_code}{payments} {money_unit}",
+    "Warranty expense for {year} was {currency_code}{amount} {money_unit}, with payments of {currency_code}{amount2} {money_unit}",
 ]
 
 guarantee_types = [
@@ -942,7 +942,7 @@ other_liabilities_templates = [
 ]
 
 retained_earnings_templates = [
-    "Retained earnings increased by {currency_code}{amount} {money_unit} during {year}, reflecting net income of {currency_code}{value1} {money_unit} less dividends of {currency_code}{div} {money_unit}",
+    "Retained earnings increased by {currency_code}{amount} {money_unit} during {year}, reflecting net income of {currency_code}{value1} {money_unit} less dividends of {currency_code}{price} {money_unit}",
     "Accumulated deficit was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}",
     "{company} reported a net loss of {currency_code}{amount} {money_unit} for {year}, increasing accumulated deficit to {currency_code}{value1} {money_unit}",
     "Retained earnings totaled {currency_code}{amount} {money_unit} at year-end {year}",
@@ -1254,7 +1254,7 @@ executive_compensation_templates = [
 equity_grant_templates = [
     "In {month} {year}, the CEO was granted {shares} restricted stock units with a grant-date fair value of {currency_code}{amount} {money_unit}, vesting over {years} years",
     "{company} granted the Chief Executive Officer {shares} stock options in {year} with an exercise price of {currency_code}{price} per share and a ten-year term",
-    "Performance share units representing {shares} shares at target were awarded to the CEO in {year}, with vesting contingent upon achievement of {metric}",
+    "Performance share units representing {shares} shares at target were awarded to the CEO in {year}, with vesting contingent upon achievement of {p_metric}",
     "The CEO received a grant of {shares} restricted shares valued at {currency_code}{amount} {money_unit} during {year}, subject to {vesting_period} vesting",
 ]
 
@@ -1342,7 +1342,7 @@ vesting_periods = [
 ]
 
 severance_templates = [
-    "{company} maintains change-in-control agreements with executive officers providing for severance payments equal to {multiple} times base salary and target bonus upon qualifying termination",
+    "{company} maintains change-in-control agreements with executive officers providing for severance payments equal to {integer} times base salary and target bonus upon qualifying termination",
     "Under the CEO\'s employment agreement, the executive is entitled to severance of {currency_code}{amount} {money_unit} upon termination without cause",
     "Change-in-control provisions in executive employment agreements provide for accelerated vesting of equity awards and cash severance payments",
     "{company}\'s severance arrangements with named executive officers could result in payments totaling {currency_code}{amount} {money_unit} upon a change in control",
@@ -1486,14 +1486,14 @@ volatility_levels = ["elevated", "moderate", "reduced", "increased", "stable"]
 
 # ========== ABOUT {company} / BUSINESS DESCRIPTION ==========
 company_description_templates = [
-    "{company} is a {industry} company that {business_activity}",
-    "{company} operates in the {industry} sector, providing {industry} to customers in {geography}",
+    "{company} is a {industry} company that {mission_statements}",
+    "{company} operates in the {industry} sector, providing {industry} to customers in {segment_names}",
     "{company} was founded in {year} and is headquartered in {city}, {state}",
-    "{company} is a leading provider of {industry} serving the {market_segment} market",
-    "{company}\'s principal business activities include {activities}",
+    "{company} is a leading provider of {industry} serving the {segment_names} market",
+    "{company}'s principal business activities are in {industry}",
     "{company} employs approximately {integer} people across {locations} locations worldwide as of {month} {end_day}, {year}",
-    "{company} operates through {segments} reportable segments: {segment_names}",
-    "{company}\'s mission is to {mission_statement}",
+    "{company} operates through these reportable segments: {segment_names}",
+    "{company}'s mission is to {mission_statement}",
 ]
 
 industries = [
@@ -1712,7 +1712,7 @@ sec_forms = ["Schedule 13G", "Schedule 13D", "Form 13F"]
 insider_ownership_templates = [
     "Directors and executive officers collectively beneficially own approximately {pct}% of outstanding common stock as of {month} {end_day}, {year}",
     "{company}\'s Chief Executive Officer owns {shares} shares, representing {pct}% of shares outstanding",
-    "Insider transactions during {year} included {action} of {shares} shares by executive officers and directors",
+    "Insider transactions during {year} included {shares} shares by executive officers and directors",
     "As of {month} {end_day}, {year}, executive officers and directors held options to purchase {shares} shares of common stock",
 ]
 
@@ -1895,10 +1895,10 @@ safe_harbor_templates = [
 
 # ========== ANALYST COVERAGE AND ESTIMATES ==========
 analyst_coverage_templates = [
-    "{company} is currently covered by {number} equity research analysts",
+    "{company} is currently covered by {integer} equity research analysts",
     "Analyst consensus estimates for {year} project earnings per share of {currency_code}{price} and revenue of {currency_code}{amount} {money_unit}",
     "The average analyst price target is {currency_code}{target}, representing {amount2} of {pct}% from current levels",
-    "{number} analysts have buy ratings, {number2} have hold ratings, and {number3} have sell ratings on the stock",
+    "{integer} analysts have buy ratings, {number2} have hold ratings, and {number3} have sell ratings on the stock",
     "Analyst estimates for {year} range from {currency_code}{value1} to {currency_code}{value2} per share",
     "{company} does not provide guidance but is followed by several sell-side analysts who publish earnings estimates",
 ]
@@ -1909,7 +1909,7 @@ credit_rating_templates = [
     "{agency} maintains a {rating} credit rating on {company} with a {outlook} outlook",
     "As of {month} {end_day}, {year}, {company} holds investment-grade credit ratings from major rating agencies",
     "{company}\'s credit ratings are {rating} ({agency}), {rating2} ({agency2}), and {rating3} ({agency3})",
-    "In {month} {year}, {agency} {action} {company}\'s credit rating to {rating}",
+    "In {month} {year}, {agency} {rating_action} {company}\'s credit rating to {rating}",
     "{company} targets maintaining investment-grade credit metrics and ratings",
 ]
 
