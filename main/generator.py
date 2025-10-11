@@ -32,7 +32,7 @@ def pick_company_name(company_name: str) -> str:
     return random.choices([company_name, "The Company"], weights=[0.75, 0.25], k=1)[0]
 
 
-def generate_value(haveZero=True, upperlimit=1000):
+def generate_value(haveZero=True, lowerlimit=1, upperlimit=1000):
     """Generate a random previous notional value with chance of being zero,
     and optional rounding for variability. Returns int if whole, else float."""
     if haveZero:
@@ -44,7 +44,7 @@ def generate_value(haveZero=True, upperlimit=1000):
     value = (
         0.0
         if random.random() < chance
-        else (1 if upperlimit <= 1 else random.randint(1, upperlimit))
+        else (1 if upperlimit <= 1 else random.randint(lowerlimit, upperlimit))
     )
 
     if random.random() < 0.5:
@@ -330,8 +330,8 @@ def generate_hedge_paragraph(
             template = random.choice(debt_templates)
             amount = generate_value(False)
             amount2 = generate_value(False)
-            pct = generate_value(False, 8)
-            pct2 = generate_value(False, 20)
+            pct = generate_value(False, 1, 8)
+            pct2 = generate_value(False, 1, 20)
             outstanding = random.randint(0, int(amount) // 2)
             debt_type = random.choice(debt_types_list)
             maturity_year = current_year + random.randint(3, 10)
@@ -805,8 +805,8 @@ def generate_warrant_paragraph(
     end_day = random.randint(28, 31)
 
     # Warrant specific variables
-    shares = generate_value(False, 1000000)
-    price = generate_value(False, 100)
+    shares = generate_value(False, 50000, 5000000)
+    price = generate_value(False, 1, 25)
     expiry_year = current_year + random.randint(1, 10)
     amount = generate_value(False)
     settlement_year = random.choice(past_years) if past_years else current_year - 1
@@ -889,8 +889,8 @@ def generate_emb_paragraph(
     # Embedded deriv specific variables
     amount = generate_value(False)
     prev_amount = generate_value(False)
-    principal = generate_value(False, 1000000)
-    embedded_fv = generate_value(False, int(principal/10)) if principal > 0 else 0
+    principal = generate_value(False, 1000000, 5000000)
+    embedded_fv = generate_value(False, int(principal/20), int(principal/10)) if principal > 0 else 0
 
     # Select template pool
     if use_case == 'current':
@@ -922,8 +922,8 @@ def generate_emb_paragraph(
         "{principal}": str(principal),
         "{embedded_fv}": str(embedded_fv),
         "{target}": random.choice(company_names),
-        "{price}": str(generate_value(False, 100)),
-        "{shares}": str(generate_value(False, 1000000)),
+        "{price}": str(generate_value(False, 1, 100)),
+        "{shares}": str(generate_value(False, 1000000, 500000)),
         "{expiry_year}": str(current_year + random.randint(1, 10)),
         "{quarter}": random.choice(quarters)
     }
@@ -1025,7 +1025,10 @@ def generate_noise_paragraph(
 
     money_units = random.choice(money_unit_list)
     currency_code = random.choice(currency_codes)
-    major_currency = random.choice(all_currencies)
+    currencies = random.sample(all_currencies, min(3, len(all_currencies)))
+    major_currency = currencies[0] if len(currencies) > 0 else random.choice(all_currencies)
+    currency2 = currencies[1] if len(currencies) > 1 else random.choice(all_currencies)
+    currency3 = currencies[2] if len(currencies) > 2 else random.choice(all_currencies)
 
     current_year = random.randint(year_range[0], year_range[1])
     reporting_year = current_year
@@ -1035,27 +1038,24 @@ def generate_noise_paragraph(
     end_day = random.randint(28, 31)
     quarter = random.choice(quarters)
     prev_year = current_year - 1
+    next_year = current_year + 1
 
     # Specific variables for noise templates
-    amount = generate_value(False)
-    amount2 = generate_value(False)
-    amount3 = generate_value(False)
-    shares = generate_value(False, 1000000)
-    shares2 = generate_value(False, 1000000)
-    price = generate_value(False, 25)
-    price2 = generate_value(False, 50)
+    amount = generate_value(False, 10, 150)
+    amount2 = generate_value(False, 50, 250)
+    amount3 = generate_value(False, 200, 700)
+    shares = generate_value(False, 1000000, 5000000)
+    shares2 = generate_value(False, 1000000, 5000000)
     event = random.choice(warrant_events)
-    net_shares = generate_value(False, int(shares/2)) if shares > 0 else 0
-    pct = generate_value(False, 80)
-    pct2 = generate_value(False, 80)
-    outstanding = generate_value(False)
+    net_shares = generate_value(False, int(shares/4), int(shares/2)) if shares > 0 else 0
+    pct = generate_value(False, 5, 80)
+    pct2 = generate_value(False, 5, 80)
     debt_type = random.choice(debt_types_list)
     maturity_year = current_year + random.randint(3, 10)
-    years = random.randint(3, 10)
-    short_int = random.randint(10, 50)
-    short_int2 = random.randint(10, 50)
-    num_months = random.randint(1, 6)
-    nun_months2 = random.randint(6, 12)
+    small_int = random.randint(3, 9)
+    small_int2 = random.randint(3, 9)
+    short_int = random.randint(10, 90)
+    short_int2 = random.randint(60, 270)
 
     # Ensure distinct credit agencies and ratings
     agencies = random.sample(credit_agencies, min(3, len(credit_agencies)))
@@ -1066,6 +1066,20 @@ def generate_noise_paragraph(
     rating1 = ratings[0] if len(ratings) > 0 else random.choice(credit_ratings)
     rating2 = ratings[1] if len(ratings) > 1 else random.choice(credit_ratings)
     rating3 = ratings[2] if len(ratings) > 2 else random.choice(credit_ratings)
+    
+    # Debt combo 
+    debt_type_list = []
+    # Build the debt type combination
+    for _ in range(3):
+        debt_type_list.append(random.choice(debt_types_list))
+        if random.random() < 0.95:
+            break
+    selected_debt = (
+        ", ".join(debt_type_list[:-1]) + " and " + debt_type_list[-1]
+        if len(debt_type_list) > 1
+        else debt_type_list[0]
+    ) 
+    
     def generate_other_policy_update():
         sentences = []
 
@@ -1258,7 +1272,9 @@ def generate_noise_paragraph(
         "{company3}": pick_company_name(company3),
 
         # Numeric and financial values
-        "{integer}": str(random.randint(1, 10000)),
+        "{integer}": str(random.randint(10000, 100000)),
+        "{small_int}": str(small_int),
+        "{small_int2}": str(small_int2),
         "{short_int}": str(short_int),
         "{short_int2}": str(short_int2),
         "{amount}": str(amount),
@@ -1267,45 +1283,30 @@ def generate_noise_paragraph(
         "{shares}": str(shares),
         "{shares2}": str(shares2),
         "{net_shares}": str(net_shares),
-        "{price}": str(price),
-        "{price2}": str(price2),
         "{pct}": str(pct),
         "{pct2}": str(pct2),
-        "{outstanding}": str(outstanding),
-        "{volume}": str(generate_value(False, 100000)),
-        "{cost}": str(generate_value(False, 100)),
-        "{prev_cost}": str(generate_value(False, 100)),
-        "{change}": str(generate_value(False)),
-        "{reserve}": str(generate_value(False)),
-        "{ratio}": str(random.randint(2, 5)),
-        "{coverage}": str(random.randint(2, 5)),
-
+        
         # Currency-related
         "{currency_code}": currency_code,
         "{money_unit}": money_units,
         "{major_currency}": major_currency,
-        "{currency2}": random.choice(all_currencies),
-        "{currency3}": random.choice(all_currencies),
+        "{currency2}": currency2,
+        "{currency3}": currency3,
 
         # Time-related
         "{year}": str(current_year),
         "{prev_year}": str(prev_year),
-        "{next_year}": str(current_year + 1),
-        "{past_year}": str(random.randint(1985, current_year - 1)),
+        "{next_year}": str(next_year),
+        "{past_year}": str(random.choice(past_years)),
         "{maturity_year}": str(maturity_year),
-        "{years}": str(years),
         "{month}": month,
-        "{prev_month}": random.choice(months),
         "{end_day}": str(end_day),
         "{quarter}": quarter,
-        "{days}": str(random.randint(30, 90)),
-        "{prev_days}": str(random.randint(90, 180)),
-        "{months}": str(num_months),
-        "{months2}": str(nun_months2),
 
         # Financial instruments and events
         "{debt_type}": debt_type,
-        "{event}": event,
+        "{debt_types}": selected_debt,
+        "{stock_event}": event,
         "{financing_type}": random.choice(financing_types),
         "{asset_type}": random.choice(asset_types),
         "{service_type}": random.choice(service_types),

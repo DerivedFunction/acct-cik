@@ -203,15 +203,15 @@ equity_warrant_templates = [
     "Outstanding equity warrants for {shares} shares at {currency_code}{amount} per share are classified in stockholders' equity and are not remeasured",
     "As of {month} {end_day}, {year}, there were {shares} warrants outstanding classified as equity instruments",
     "{company} issued {shares} warrants to purchase common stock at {currency_code}{amount} per share, which are indexed to {company}'s own stock and classified in equity",
-    "In {month} {year}, {shares} warrants issued to investors in connection with a {event} in {prev_month} {prev_year} were reset to {currency_code}{amount}",
-    "In connection with the {event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{amount} per share",
-    "During {month} {year}, {company} issued {shares} warrants exercisable at {currency_code}{amount} per share in conjunction with {event}",
-    "As part of {event}, {company} granted warrants for {shares} shares with a strike price of {currency_code}{amount}, expiring in {maturity_year}",
-    "{company} issued {shares} common stock warrants at an exercise price of {currency_code}{amount} per share as consideration for {event}",
-    "In {month} {year}, warrants to acquire {shares} shares at {currency_code}{amount} per share were issued in connection with {event}",
-    "In connection with the {event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{amount} per share, provision states the warrants meet the criteria for equity treatment",
-    "{company} issued {shares} shares of common stock valued at {currency_code}{amount} in connection with {event} during {year}",
-    "During {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{amount}) as part of {event}",
+    "In {month} {year}, {shares} warrants issued to investors in connection with a {stock_event} in {month} {prev_year} were reset to {currency_code}{amount}",
+    "In connection with the {stock_event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{amount} per share",
+    "During {month} {year}, {company} issued {shares} warrants exercisable at {currency_code}{amount} per share in conjunction with {stock_event}",
+    "As part of {stock_event}, {company} granted warrants for {shares} shares with a strike price of {currency_code}{amount}, expiring in {maturity_year}",
+    "{company} issued {shares} common stock warrants at an exercise price of {currency_code}{amount} per share as consideration for {stock_event}",
+    "In {month} {year}, warrants to acquire {shares} shares at {currency_code}{amount} per share were issued in connection with {stock_event}",
+    "In connection with the {stock_event}, {company} issued warrants to purchase up to {shares} shares of common stock at an exercise price of {currency_code}{amount} per share, provision states the warrants meet the criteria for equity treatment",
+    "{company} issued {shares} shares of common stock valued at {currency_code}{amount} in connection with {stock_event} during {year}",
+    "During {year}, {company} issued {shares} shares of common stock (valued at {currency_code}{amount}) as part of {stock_event}",
 ]
 
 
@@ -302,12 +302,12 @@ inventory_templates = [
     "{commodities} inventories are stated at the lower of cost or net realizable value, with cost determined using the {inventory_method} method",
     "{company} values inventory using the {inventory_method} cost method and regularly reviews for obsolescence",
     "Inventory consists of {commodities} valued at the lower of cost (determined by {inventory_method}) or net realizable value",
-    "As of {month} {end_day}, {year}, {commodities} inventories totaled {currency_code}{amount} {money_unit}, net of obsolescence reserves of {currency_code}{reserve} {money_unit}",
+    "As of {month} {end_day}, {year}, {commodities} inventories totaled {currency_code}{amount} {money_unit}, net of obsolescence reserves of {currency_code}{amount2} {money_unit}",
     "{commodities} inventories are reviewed periodically for slow-moving or obsolete items, with reserves recorded when necessary to reduce carrying values",
     "{commodities} inventories are stated at standard cost (approximating actual cost) under the {inventory_method} method, adjusted to net realizable value if necessary",
     "{commodities} are valued at purchase cost while manufactured inventories include labor and overhead allocated using the {inventory_method} method",
     "{commodities} inventory is written down to market value when estimated selling prices are less than cost",
-    "As of {month} {end_day}, {year}, {company} maintained obsolescence reserves of {currency_code}{reserve} {money_unit} against total inventories of {currency_code}{amount} {money_unit}",
+    "As of {month} {end_day}, {year}, {company} maintained obsolescence reserves of {currency_code}{amount2} {money_unit} against total inventories of {currency_code}{amount} {money_unit}",
     "{commodities} inventory include {commodities} valued at the lower of cost (determined by {inventory_method}) or net realizable value",
     "{company} records provisions for excess and obsolete {commodities} inventories based on expected future demand, market conditions, and {commodities} life cycles",
 ]
@@ -438,7 +438,7 @@ asset_types = [
 # ============ LEASES ============
 
 lease_templates = [
-    "{company} leases office space, manufacturing facilities, and equipment under operating and finance leases with terms ranging from {months} to {months2} years",
+    "{company} leases office space, manufacturing facilities, and equipment under operating and finance leases with terms ranging from {small_int} to {short_int} years",
     "As of {month} {end_day}, {year}, {company} had operating lease right-of-use assets of {currency_code}{amount} {money_unit} and lease liabilities of {currency_code}{amount2} {money_unit}",
     "{company} adopted ASC 842 effective {month} {year}, recognizing right-of-use assets and lease liabilities for operating leases",
     "Total lease expense for {year} was {currency_code}{amount} {money_unit}, including both operating and finance lease costs",
@@ -452,10 +452,10 @@ lease_templates = [
 
 lease_commitment_templates = [
     "Future minimum lease payments under non-cancellable operating leases total {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
-    "The weighted-average remaining lease term for operating leases is {years} years as of {month} {end_day}, {year}",
+    "The weighted-average remaining lease term for operating leases is {smal_int} years as of {month} {end_day}, {year}",
     "The weighted-average discount rate used to measure lease liabilities was {pct}% as of {month} {end_day}, {year}",
     "Operating lease payments are expected to total {currency_code}{amount} {money_unit} over the next five years",
-    "Maturities of lease liabilities are {currency_code}{amount} {money_unit} in {next_year}, {currency_code}{amount2} {money_unit} in {next2_year}, and {currency_code}{amount3} {money_unit} thereafter",
+    "Maturities of lease liabilities are {currency_code}{amount} {money_unit} in {year}, {currency_code}{amount2} {money_unit} in {next_year}, and {currency_code}{amount3} {money_unit} thereafter",
     "As of {month} {end_day}, {year}, undiscounted future lease payments totaled {currency_code}{amount} {money_unit}, with a present value of {currency_code}{amount2} {money_unit}",
     "Future finance lease obligations amounted to {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "Lease commitments include renewal options reasonably certain to be exercised, totaling {currency_code}{amount} {money_unit}",
@@ -474,7 +474,7 @@ intangible_templates = [
     "Intangible assets consist primarily of {intangible_type_examples} and are amortized over their estimated useful lives",
     "Amortization expense for intangible assets was {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
     "As of {month} {end_day}, {year}, intangible assets, net of accumulated amortization, totaled {currency_code}{amount} {money_unit}",
-    "The weighted-average remaining useful life of intangible assets is {years} years as of {month} {end_day}, {year}",
+    "The weighted-average remaining useful life of intangible assets is {smal_int} years as of {month} {end_day}, {year}",
 ]
 
 intangible_types = [
@@ -508,12 +508,12 @@ intangible_types = [
 
 debt_templates = [
     # General facilities and balances
-    "{company} maintains a {currency_code}{amount} {money_unit} revolving credit facility that expires in {maturity_year}, with {currency_code}{outstanding} {money_unit} outstanding as of {month} {end_day}, {year}, with annual interest rate of {pct}%",
+    "{company} maintains a {currency_code}{amount} {money_unit} revolving credit facility that expires in {maturity_year}, with {currency_code}{amount} {money_unit} outstanding as of {month} {end_day}, {year}, with annual interest rate of {pct}%",
     "As of {month} {end_day}, {year}, {company} had total long-term debt of {currency_code}{amount} {money_unit}, consisting primarily of {debt_types}, with an average interest rate of {pct}% and {pct2}%, respectively",
     "Long-term debt, with an annual interest rate of {pct}% as of {month} {end_day}, {year} totaled {currency_code}{amount} {money_unit}, consisting of {debt_types}",
     "At year-end {year}, {company} reported total debt of {currency_code}{amount} {money_unit} with interest rates ranging from {pct}% to {pct2}%, including {debt_types}",
-    "{company}'s outstanding borrowings under its revolving credit facility totaled {currency_code}{outstanding} {money_unit} with average interest rate of {pct}% to {pct2}% as of {month} {end_day}, {year}",
-    "As of {month} {end_day}, {year}, there was {currency_code}{outstanding} {money_unit} outstanding on the {debt_type} and {currency_code}{outstanding} {money_unit} outstanding on {debt_types}",
+    "{company}'s outstanding borrowings under its revolving credit facility totaled {currency_code}{amount} {money_unit} with average interest rate of {pct}% to {pct2}% as of {month} {end_day}, {year}",
+    "As of {month} {end_day}, {year}, there was {currency_code}{amount} {money_unit} outstanding on the {debt_type} and {currency_code}{amount2} {money_unit} outstanding on {debt_types}",
     # Issuances and repayments
     "During {year}, {company} issued {currency_code}{amount} {money_unit} in {debt_types} with a maturity date of {maturity_year} and a weighted average interest rate of {pct}%",
     "In {year}, {company} completed a private placement of {currency_code}{amount} {money_unit} of {debt_types}, bearing interest at {pct}% per annum",
@@ -523,7 +523,7 @@ debt_templates = [
     # Interest rate and maturity details
     "As of year-end {year}, {company} had total {debt_type} of {currency_code}{amount} {money_unit}, {currency_code}{amount2} {money_unit} of which was fixed rate debt with a weighted average interest rate of {pct}% to {pct2}%",
     "The weighted average interest rate on {company}'s {debt_type} was approximately {pct}% as of {month} {end_day}, {year}",
-    "As of {month} {end_day}, {year}, {company}'s {debt_type} had a weighted average maturity of {years} years",
+    "As of {month} {end_day}, {year}, {company}'s {debt_type} had a weighted average maturity of {smal_int} years",
     "As of {month} {end_day}, {year}, {company}'s variable-rate borrowings bore interest at an average rate of {pct}%",
     "Interest expense related to {debt_type} for {year} was approximately {currency_code}{amount} {money_unit}",
     "At {month} {year}, {company} repaid {currency_code}{amount} {money_unit} of the {currency_code}{amount2} {money_unit} borrowed",
@@ -569,7 +569,7 @@ debt_types_list = [
 debt_covenant_templates = [
     "The credit agreement contains customary affirmative and negative covenants, including financial covenants related to leverage ratios and interest coverage",
     "As of {month} {end_day}, {year}, {company} was in compliance with all debt covenants",
-    "The revolving credit facility requires maintenance of a maximum leverage ratio of {ratio}:1 and minimum interest coverage ratio of {coverage}:1",
+    "The revolving credit facility requires maintenance of a maximum leverage ratio of {small_int}:1 and minimum interest coverage ratio of {small_int2}:1",
     "Debt agreements contain restrictions on dividends, additional indebtedness, and asset sales, subject to certain exceptions",
     # Covenant and credit facility context
     "The revolving credit facility contains customary financial covenants, including maintaining a maximum leverage ratio and minimum interest coverage ratio",
@@ -583,7 +583,7 @@ tax_templates = [
     "The provision for income taxes was {currency_code}{amount} {money_unit} for {year}, resulting in an effective tax rate of {pct}%",
     "The effective tax rate for {year} was {pct}%, compared to {pct2}% in the prior year",
     "Deferred tax assets as of {month} {end_day}, {year} totaled {currency_code}{amount} {money_unit}, primarily related to {tax_sources_examples}",
-    "{company} has net operating loss carryforwards of {currency_code}{amount} {money_unit} that expire between {past_year} and {next2_year}",
+    "{company} has net operating loss carryforwards of {currency_code}{amount} {money_unit} that expire between {past_year} and {next_year}",
 ]
 
 tax_sources = [
@@ -638,7 +638,7 @@ opeb_templates = [
 purchase_commitment_templates = [
     "{company} has purchase commitments with suppliers totaling approximately {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "Outstanding purchase orders and contractual obligations for inventory and capital expenditures totaled {currency_code}{amount} {money_unit} at year-end {year}",
-    "{company} is obligated under various supply agreements to purchase minimum quantities totaling {currency_code}{amount} {money_unit} over the next {years} years",
+    "{company} is obligated under various supply agreements to purchase minimum quantities totaling {currency_code}{amount} {money_unit} over the next {smal_int} years",
     "As of {month} {end_day}, {year}, {company} had non-cancellable purchase commitments of {currency_code}{amount} {money_unit}",
 ]
 
@@ -691,10 +691,10 @@ restructuring_expense_types = [
 # ============ ACQUISITIONS (NON-DERIVATIVE ASPECTS) ============
 
 acquisition_templates = [
-    "In {month} {year}, {company} acquired {target} for total consideration of {currency_code}{amount} {money_unit} in cash",
-    "{company} completed the acquisition of {target} during {year} for {currency_code}{amount} {money_unit}, which was funded through {acquisition_funding}",
-    "During {year}, {company} acquired {target} to expand its {acquisition_purpose}",
-    "The acquisition of {target} in {year} resulted in {currency_code}{amount} {money_unit} of goodwill and {currency_code}{amount2} {money_unit} of identifiable intangible assets",
+    "In {month} {year}, {company} acquired {company2} for total consideration of {currency_code}{amount} {money_unit} in cash",
+    "{company} completed the acquisition of {company2} during {year} for {currency_code}{amount} {money_unit}, which was funded through {acquisition_funding}",
+    "During {year}, {company} acquired {company2} to expand its {acquisition_purpose}",
+    "The acquisition of {company2} in {year} resulted in {currency_code}{amount} {money_unit} of goodwill and {currency_code}{amount2} {money_unit} of identifiable intangible assets",
 ]
 
 acquisition_purposes = [
@@ -749,7 +749,7 @@ registration_statement_templates = [
     "{company} filed a registration statement on Form S-3 in {month} {year} to register {shares} shares of common stock underlying convertible securities for resale by holders",
     "In {month} {year}, {company} registered {shares} shares of common stock issuable upon conversion of notes and exercise of warrants pursuant to registration rights agreements",
     "The registration statement filed in {year} covers {shares} shares issuable upon conversion and exercise of outstanding securities, permitting resale by security holders",
-    "{company} is obligated to file a registration statement within {days} days following {month} {year} covering shares issuable upon conversion of notes and warrants",
+    "{company} is obligated to file a registration statement within {short_int} days following {month} {year} covering shares issuable upon conversion of notes and warrants",
 ]
 
 # Market impact of registered shares
@@ -764,11 +764,11 @@ market_impact_templates = [
 
 # Warrant and option adjustment templates
 warrant_adjustment_templates = [
-    "The original exercisable shares of {shares} and exercise price of {currency_code}{amount} was adjusted to {shares} and {currency_code}{price2}, respectively, to account for the {month} {year} Private Placement and the Amendment Agreement",
-    "Anti-dilution provisions resulted in adjustment of warrant exercise price from {currency_code}{amount} to {currency_code}{price2} and shares from {shares} to {shares} following the {year} financing",
-    "Pursuant to anti-dilution protection, {shares} warrants at {currency_code}{amount} per share were adjusted to {shares} warrants at {currency_code}{price2} per share effective {month} {year}",
-    "The {month} {year} down-round financing triggered adjustments to outstanding warrants, changing the exercise price from {currency_code}{amount} to {currency_code}{price2}",
-    "Weighted-average anti-dilution adjustments modified warrant terms to {shares} shares at {currency_code}{price2} from {shares} shares at {currency_code}{amount}",
+    "The original exercisable shares of {shares} and exercise price of {currency_code}{amount} was adjusted to {shares} and {currency_code}{amount2}, respectively, to account for the {month} {year} Private Placement and the Amendment Agreement",
+    "Anti-dilution provisions resulted in adjustment of warrant exercise price from {currency_code}{amount} to {currency_code}{amount2} and shares from {shares} to {shares} following the {year} financing",
+    "Pursuant to anti-dilution protection, {shares} warrants at {currency_code}{amount} per share were adjusted to {shares} warrants at {currency_code}{amount2} per share effective {month} {year}",
+    "The {month} {year} down-round financing triggered adjustments to outstanding warrants, changing the exercise price from {currency_code}{amount} to {currency_code}{amount2}",
+    "Weighted-average anti-dilution adjustments modified warrant terms to {shares} shares at {currency_code}{amount2} from {shares} shares at {currency_code}{amount}",
 ]
 
 # Fair value measurement templates
@@ -904,9 +904,9 @@ working_capital_templates = [
 ]
 
 ar_templates = [
-    "Trade accounts receivable totaled {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, representing {days} days sales outstanding",
+    "Trade accounts receivable totaled {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, representing {short_int} days sales outstanding",
     "The allowance for doubtful accounts was {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}, compared to {currency_code}{amount2} {money_unit} in the prior year",
-    "Days sales outstanding decreased from {prev_days} days to {days} days during {year}",
+    "Days sales outstanding decreased from {short_int2} days to {short_int} days during {year}",
     "{company} recorded bad debt expense of {currency_code}{amount} {money_unit} during {year}",
     "Accounts receivable, net of allowances, increased {currency_code}{amount} {money_unit} to {currency_code}{amount} {money_unit} at year-end {year}",
 ]
@@ -916,13 +916,13 @@ ap_templates = [
     "Accounts payable increased {currency_code}{amount} {money_unit} from the prior year, reflecting {ap_reason}",
     "{company} extended payment terms with certain vendors during {year}, resulting in an increase in accounts payable of {currency_code}{amount} {money_unit}",
     "Accounts payable was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, down from {currency_code}{amount2} {money_unit} at {month} {end_day}, {prev_year}",
-    "Days payable outstanding increased to {days} days at year-end {year} from {prev_days} days in the prior year",
+    "Days payable outstanding increased to {short_int} days at year-end {year} from {short_int2} days in the prior year",
     "Changes in accounts payable provided {currency_code}{amount} {money_unit} of cash during {year}",
 ]
 
 accrued_liabilities_templates = [
     "Accrued compensation increased by {currency_code}{amount} {money_unit} at {month} {end_day}, {year} due to {accrued_reason}",
-    "Accrued expenses totaled {currency_code}{amount} {money_unit} at year-end {year}, an increase of {currency_code}{change} {money_unit} from the prior year",
+    "Accrued expenses totaled {currency_code}{amount} {money_unit} at year-end {year}, an increase of {currency_code}{amount2} {money_unit} from the prior year",
     "The increase in accrued liabilities of {currency_code}{amount} {money_unit} was primarily related to {accrued_reason}",
     "Other accrued liabilities decreased {currency_code}{amount} {money_unit} during {year}, mainly due to {accrued_reason}",
 ]
@@ -1247,12 +1247,12 @@ ceo_compensation_templates = [
 executive_compensation_templates = [
     "Total compensation for {company}'s five highest-paid executives was {currency_code}{amount} {money_unit} for {year}",
     "The named executive officers received aggregate compensation of {currency_code}{amount} {money_unit} in {year}, including {currency_code}{amount2} {money_unit} in stock-based awards",
-    "Compensation for senior management totaled {currency_code}{amount} {money_unit} during {year}, representing {increase_decrease} of {change}% from the prior year",
+    "Compensation for senior management totaled {currency_code}{amount} {money_unit} during {year}, representing {increase_decrease} of {amount2}% from the prior year",
     "Executive compensation expense, including salaries, bonuses, and equity awards, totaled {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
 ]
 
 equity_grant_templates = [
-    "In {month} {year}, the CEO was granted {shares} restricted stock units with a grant-date fair value of {currency_code}{amount} {money_unit}, vesting over {years} years",
+    "In {month} {year}, the CEO was granted {shares} restricted stock units with a grant-date fair value of {currency_code}{amount} {money_unit}, vesting over {smal_int} years",
     "{company} granted the Chief Executive Officer {shares} stock options in {year} with an exercise price of {currency_code}{amount} per share and a ten-year term",
     "Performance share units representing {shares} shares at target were awarded to the CEO in {year}, with vesting contingent upon achievement of {p_metric}",
     "The CEO received a grant of {shares} restricted shares valued at {currency_code}{amount} {money_unit} during {year}, subject to {vesting_period} vesting",
@@ -1342,7 +1342,7 @@ vesting_periods = [
 ]
 
 severance_templates = [
-    "{company} maintains change-in-control agreements with executive officers providing for severance payments equal to {integer} times base salary and target bonus upon qualifying termination",
+    "{company} maintains change-in-control agreements with executive officers providing for severance payments equal to {small_int} times base salary and target bonus upon qualifying termination",
     "Under the CEO\'s employment agreement, the executive is entitled to severance of {currency_code}{amount} {money_unit} upon termination without cause",
     "Change-in-control provisions in executive employment agreements provide for accelerated vesting of equity awards and cash severance payments",
     "{company}\'s severance arrangements with named executive officers could result in payments totaling {currency_code}{amount} {money_unit} upon a change in control",
@@ -1458,9 +1458,9 @@ clawback_templates = [
 # ========== MARKET PRICES AND TRADING ==========
 stock_price_templates = [
     '{company} \'s common stock trades on the {exchange} under the ticker symbol "{ticker}"',
-    "Shares of common stock closed at {currency_code}{amount} on {month} {end_day}, {year}, compared to {currency_code}{price2} at {month} {end_day}, {prev_year}",
+    "Shares of common stock closed at {currency_code}{amount} on {month} {end_day}, {year}, compared to {currency_code}{amount2} at {month} {end_day}, {prev_year}",
     "{company}\'s stock price ranged from a low of {currency_code}{amount} to a high of {currency_code}{amount2} during {year}",
-    "Average daily trading volume was approximately {volume} shares during {year}",
+    "Average daily trading volume was approximately {integer} shares during {year}",
     "{company}\'s market capitalization was approximately {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "Shares outstanding totaled {shares} as of {month} {end_day}, {year}",
     "The closing stock price on {month} {end_day}, {year} represented a {amount2} of {pct}% from the prior year-end closing price",
@@ -1476,10 +1476,10 @@ exchanges = [
 
 
 trading_volume_templates = [
-    "During {year}, approximately {volume} shares were traded on public exchanges",
+    "During {year}, approximately {integer} shares were traded on public exchanges",
     "{company}\'s shares experienced {volatility} trading activity during {year}",
     "Average daily trading volume increased {pct}% in {year} compared to {prev_year}",
-    "Trading liquidity {increase_decrease} during {year}, with average daily volume of {volume} shares",
+    "Trading liquidity {increase_decrease} during {year}, with average daily volume of {integer} shares",
 ]
 
 volatility_levels = ["elevated", "moderate", "reduced", "increased", "stable"]
@@ -1895,10 +1895,10 @@ safe_harbor_templates = [
 
 # ========== ANALYST COVERAGE AND ESTIMATES ==========
 analyst_coverage_templates = [
-    "{company} is currently covered by {integer} equity research analysts",
+    "{company} is currently covered by {short_int} equity research analysts",
     "Analyst consensus estimates for {year} project earnings per share of {currency_code}{amount} and revenue of {currency_code}{amount} {money_unit}",
-    "The average analyst price target is {currency_code}{target}, representing {amount2} of {pct}% from current levels",
-    "{integer} analysts have buy ratings, {short_int} have hold ratings, and {short_int2} have sell ratings on the stock",
+    "The average analyst price target is {currency_code}{company2}, representing {amount2} of {pct}% from current levels",
+    "{small_int} analysts have buy ratings, {short_int} have hold ratings, and {short_int2} have sell ratings on the stock",
     "Analyst estimates for {year} range from {currency_code}{amount} to {currency_code}{amount2} per share",
     "{company} does not provide guidance but is followed by several sell-side analysts who publish earnings estimates",
 ]
@@ -2403,7 +2403,7 @@ foreign_currency_exposure_templates = [
     "{company}\'s operating results are affected by changes in commodity prices, particularly {commodities}",
     "{company} is exposed to price volatility for key raw materials including {commodities}",
     "Commodity price fluctuations, particularly for {commodities}, can significantly impact {company}\'s cost structure and margins",
-    "Raw material costs are subject to market volatility, with {commodities} prices ranging from {currency_code}{low_price} to {currency_code}{high_price} per {unit} during {year}",
+    "Raw material costs are subject to market volatility, with {commodities} prices ranging from {currency_code}{amount} to {currency_code}{amount2} per {unit} during {year}",
     "{company}\'s operations are sensitive to changes in {commodities} prices, which can affect both revenue and cost of sales",
 ]
 foreign_currency_exposure_templates = [
@@ -2462,7 +2462,7 @@ commodity_price_exposure_templates = [
     "{company}\'s operating results are affected by changes in commodity prices, particularly {commodities}",
     "{company} is exposed to price volatility for key raw materials including {commodities}",
     "Commodity price fluctuations, particularly for {commodities}, can significantly impact {company}\'s cost structure and margins",
-    "Raw material costs are subject to market volatility, with {commodities} prices ranging from {currency_code}{low_price} to {currency_code}{high_price} per {unit} during {year}",
+    "Raw material costs are subject to market volatility, with {commodities} prices ranging from {currency_code}{amount} to {currency_code}{amount2} per {unit} during {year}",
     "{company}\'s operations are sensitive to changes in {commodities} prices, which can affect both revenue and cost of sales",
 ]
 
@@ -2477,7 +2477,7 @@ commodity_cost_impact_templates = [
 
 commodity_inventory_valuation_templates = [
     "{company} maintains inventory of {commodities} to support production requirements, exposing {company} to price risk",
-    "As of {month} {end_day}, {year}, {company} held {volume} {unit} of {commodities} inventory valued at {currency_code}{amount} million",
+    "As of {month} {end_day}, {year}, {company} held {integer} {unit} of {commodities} inventory valued at {currency_code}{amount} million",
     "{company} recorded an inventory writedown of {currency_code}{amount} {money_unit} in {year} due to declines in {commodities} market prices",
     "Commodity inventory is stated at the lower of cost or net realizable value, with cost determined using the {inventory_method} method",
     "{company}\'s inventory includes {currency_code}{amount} {money_unit} of raw materials subject to commodity price volatility",
@@ -2487,7 +2487,7 @@ commodity_inventory_valuation_templates = [
 commodity_pricing_strategies_templates = [
     "{company} generally seeks to pass through commodity cost changes to customers through pricing mechanisms, though timing differences can affect margins",
     "{company} has implemented price increases totaling {pct}% to offset {commodities} cost inflation during {year}",
-    "Pricing adjustments are typically implemented with a {months}-month lag following changes in {commodities} costs",
+    "Pricing adjustments are typically implemented with a {small_int}-month lag following changes in {commodities} costs",
     "{company} utilizes index-based pricing formulas for certain products to mitigate the impact of {commodities} price volatility",
     "Customer contracts include provisions that allow {company} to adjust prices in response to significant {commodities} cost movements",
 ]
@@ -2503,16 +2503,16 @@ commodity_supply_risk_templates = [
 commodity_exposure_quantification_templates = [
     "A {pct}% change in {commodities} prices would impact annual cost of sales by approximately {currency_code}{amount} {money_unit}",
     "{company} estimates that commodity price volatility could affect operating income by {currency_code}{amount} {money_unit} annually",
-    "Each {currency_code}{change} per {unit} change in {commodities} prices impacts annual costs by approximately {currency_code}{amount} {money_unit}",
+    "Each {currency_code}{amount2} per {unit} change in {commodities} prices impacts annual costs by approximately {currency_code}{amount} {money_unit}",
     "Commodity exposure is concentrated in {commodities} ({pct}% of raw material spend)",
 ]
 
 physical_commodity_operations_templates = [
-    "{company} owns and operates {commodities} production facilities with annual capacity of {volume} {unit}",
-    "{company} produced {volume} {unit} of {commodities} during {year}, a {pct}% increase from the prior year",
+    "{company} owns and operates {commodities} production facilities with annual capacity of {short_int2} {unit}",
+    "{company} produced {short_int2} {unit} of {commodities} during {year}, a {pct}% increase from the prior year",
     "{company}\'s {commodities} operations generated revenues of {currency_code}{amount} {money_unit} in {year}",
-    "Production costs for {commodities} averaged {currency_code}{cost} per {unit} in {year}, compared to {currency_code}{prev_cost} in {prev_year}",
-    "{company} maintains proved reserves of {volume} {unit} of {commodities} as of {month} {end_day}, {year}",
+    "Production costs for {commodities} averaged {currency_code}{amount} per {unit} in {year}, compared to {currency_code}{amount2} in {prev_year}",
+    "{company} maintains proved reserves of {short_int2} {unit} of {commodities} as of {month} {end_day}, {year}",
 ]
 
 # ========== SHARED / GENERIC ==========
