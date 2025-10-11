@@ -452,7 +452,7 @@ lease_templates = [
 
 lease_commitment_templates = [
     "Future minimum lease payments under non-cancellable operating leases total {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
-    "The weighted-average remaining lease term for operating leases is {smal_int} years as of {month} {end_day}, {year}",
+    "The weighted-average remaining lease term for operating leases is {small_int} years as of {month} {end_day}, {year}",
     "The weighted-average discount rate used to measure lease liabilities was {pct}% as of {month} {end_day}, {year}",
     "Operating lease payments are expected to total {currency_code}{amount} {money_unit} over the next five years",
     "Maturities of lease liabilities are {currency_code}{amount} {money_unit} in {year}, {currency_code}{amount2} {money_unit} in {next_year}, and {currency_code}{amount3} {money_unit} thereafter",
@@ -474,7 +474,7 @@ intangible_templates = [
     "Intangible assets consist primarily of {intangible_type_examples} and are amortized over their estimated useful lives",
     "Amortization expense for intangible assets was {currency_code}{amount} {money_unit} for the year ended {month} {end_day}, {year}",
     "As of {month} {end_day}, {year}, intangible assets, net of accumulated amortization, totaled {currency_code}{amount} {money_unit}",
-    "The weighted-average remaining useful life of intangible assets is {smal_int} years as of {month} {end_day}, {year}",
+    "The weighted-average remaining useful life of intangible assets is {small_int} years as of {month} {end_day}, {year}",
 ]
 
 intangible_types = [
@@ -523,7 +523,7 @@ debt_templates = [
     # Interest rate and maturity details
     "As of year-end {year}, {company} had total {debt_type} of {currency_code}{amount} {money_unit}, {currency_code}{amount2} {money_unit} of which was fixed rate debt with a weighted average interest rate of {pct}% to {pct2}%",
     "The weighted average interest rate on {company}'s {debt_type} was approximately {pct}% as of {month} {end_day}, {year}",
-    "As of {month} {end_day}, {year}, {company}'s {debt_type} had a weighted average maturity of {smal_int} years",
+    "As of {month} {end_day}, {year}, {company}'s {debt_type} had a weighted average maturity of {small_int} years",
     "As of {month} {end_day}, {year}, {company}'s variable-rate borrowings bore interest at an average rate of {pct}%",
     "Interest expense related to {debt_type} for {year} was approximately {currency_code}{amount} {money_unit}",
     "At {month} {year}, {company} repaid {currency_code}{amount} {money_unit} of the {currency_code}{amount2} {money_unit} borrowed",
@@ -638,7 +638,7 @@ opeb_templates = [
 purchase_commitment_templates = [
     "{company} has purchase commitments with suppliers totaling approximately {currency_code}{amount} {money_unit} as of {month} {end_day}, {year}",
     "Outstanding purchase orders and contractual obligations for inventory and capital expenditures totaled {currency_code}{amount} {money_unit} at year-end {year}",
-    "{company} is obligated under various supply agreements to purchase minimum quantities totaling {currency_code}{amount} {money_unit} over the next {smal_int} years",
+    "{company} is obligated under various supply agreements to purchase minimum quantities totaling {currency_code}{amount} {money_unit} over the next {small_int} years",
     "As of {month} {end_day}, {year}, {company} had non-cancellable purchase commitments of {currency_code}{amount} {money_unit}",
 ]
 
@@ -899,7 +899,7 @@ balance_sheet_change_templates = [
 working_capital_templates = [
     "Working capital was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, compared to {currency_code}{amount2} {money_unit} at {month} {end_day}, {prev_year}",
     "Changes in operating assets and liabilities resulted in a {currency_code}{amount2} of {currency_code}{amount} {money_unit} in cash from operations during {year}",
-    "{company}\'s working capital increased by {currency_code}{amount} {money_unit} during {year}, driven primarily by {wc_reason}",
+    "{company}\'s working capital increased by {currency_code}{amount} {money_unit} during {year}, driven primarily by {bs_reason}",
     "Net changes in operating assets and liabilities used {currency_code}{amount} {money_unit} of cash during {year}",
 ]
 
@@ -913,7 +913,7 @@ ar_templates = [
 
 
 ap_templates = [
-    "Accounts payable increased {currency_code}{amount} {money_unit} from the prior year, reflecting {ap_reason}",
+    "Accounts payable increased {currency_code}{amount} {money_unit} from the prior year, reflecting {bs_reason}",
     "{company} extended payment terms with certain vendors during {year}, resulting in an increase in accounts payable of {currency_code}{amount} {money_unit}",
     "Accounts payable was {currency_code}{amount} {money_unit} at {month} {end_day}, {year}, down from {currency_code}{amount2} {money_unit} at {month} {end_day}, {prev_year}",
     "Days payable outstanding increased to {short_int} days at year-end {year} from {short_int2} days in the prior year",
@@ -1252,7 +1252,7 @@ executive_compensation_templates = [
 ]
 
 equity_grant_templates = [
-    "In {month} {year}, the CEO was granted {shares} restricted stock units with a grant-date fair value of {currency_code}{amount} {money_unit}, vesting over {smal_int} years",
+    "In {month} {year}, the CEO was granted {shares} restricted stock units with a grant-date fair value of {currency_code}{amount} {money_unit}, vesting over {small_int} years",
     "{company} granted the Chief Executive Officer {shares} stock options in {year} with an exercise price of {currency_code}{amount} per share and a ten-year term",
     "Performance share units representing {shares} shares at target were awarded to the CEO in {year}, with vesting contingent upon achievement of {p_metric}",
     "The CEO received a grant of {shares} restricted shares valued at {currency_code}{amount} {money_unit} during {year}, subject to {vesting_period} vesting",

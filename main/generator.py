@@ -1317,8 +1317,6 @@ def generate_noise_paragraph(
 
         # Balance sheet and financial reasons
         "{bs_reason}": random.choice(balance_sheet_reasons),
-        "{wc_reason}": random.choice(balance_sheet_reasons),
-        "{ap_reason}": random.choice(balance_sheet_reasons),
         "{accrued_reason}": random.choice(accrued_reasons),
         "{asset_reason}": random.choice(other_asset_reasons),
         "{liability_reason}": random.choice(liability_reasons),
