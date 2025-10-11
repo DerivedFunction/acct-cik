@@ -197,11 +197,10 @@ def new_label():
         # -----------------
         "warr": 0,  # Warrants
         "emb": 0,  # Embedded derivatives
+        # -----------------
+        # Other
+        # -----------------
         "irr": 0,  # Irrelevant / not a hedge
-        # -----------------
-        # Optional overall derivative flag
-        # -----------------
-        "deriv": 0,  # Any derivative mention (context + use)
     }
 
 
@@ -287,8 +286,6 @@ def generate_hedge_paragraph(
     # Initialize labels
     labels = new_label()
 
-    # Always mark a derivative mention
-    labels["deriv"] = 1
     
     # -----------------------
     # Actual use
@@ -496,11 +493,12 @@ def generate_hedge_paragraph(
     def hedge_policy() -> list[str]:
         labels["spec"] = 1 #  A speculation
         labels[swapType] = 0 # Not related to any swap
+        labels["gen"] = 1 # Generic
         sentences = []
         # Accounting policy (always)
         act_template = random.choice(hedge_policy_templates)
         swap_type = (
-            random.choice(swap_types) if random.random() < 0.5 else "derivatives"
+            random.choice(derivative_keywords["gen"]) if random.random() < 0.5 else "derivatives"
         )
         sentences.append(
             act_template.format(
@@ -605,9 +603,9 @@ def generate_hedge_paragraph(
 
     def generate_hedge_policy_update():
         sentences = []
-        labels["deriv"] = 1
         labels["spec"] = 1
         labels[swapType] = 0 # Not related to any swap
+        labels["gen"] = 1
         # ==============================
         # 1. ISSUANCE STATEMENT
         # ==============================
