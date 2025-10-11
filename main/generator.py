@@ -1397,12 +1397,8 @@ def generate(size_per_label=100):
 
         # Noise Generation
         noise_count = count * 2
-        noise_types = ['eq', 'cp', 'ir', 'fx']
+        noise_types = ['eq', 'cp', 'ir', 'fx', 'law', 'spec']
         for _ in range(noise_count):
-            for noise_type in noise_types:
-                futures.append(executor.submit(generate_noise_paragraph, noise_type=noise_type))
-        noise_types = ['law', 'spec']
-        for _ in range(10):
             for noise_type in noise_types:
                 futures.append(executor.submit(generate_noise_paragraph, noise_type=noise_type))
         for _ in range(size_per_label): # Any random noise
