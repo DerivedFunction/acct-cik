@@ -59,7 +59,7 @@ def generate_value(haveZero=True, upperlimit=1000):
     return value
 
 
-def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = True):
+def cleanup(all_sentences: list[str], reporting_year: int, fullCheck: bool = True):
     """
     Join sentences into a paragraph and apply sanitizing regexes.
     Fixed: assign results of regex.sub back to paragraph so substitutions take effect.
@@ -87,9 +87,11 @@ def cleanup(all_sentences: list[str], reporting_year: int, checkBracket: bool = 
     paragraph = pattern_spaces.sub(" ", paragraph)  # Remove extra whitespace
     
     if (
+        fullCheck and (
         paragraph.find("{") != -1
         or paragraph.find(".." ) != -1
-        or (paragraph.find("[") != -1 and checkBracket)
+        or paragraph.find("[") != -1
+        )
     ):
         print("Error in format", paragraph)
 
@@ -988,7 +990,7 @@ def generate_sec_noise():
     label = get_primary_label(labels)
 
     # Cleanup and return
-    return cleanup(chunks, reporting_year, checkBracket=False), labels, label
+    return cleanup(chunks, reporting_year, fullCheck=False), labels, label
 
 
 def generate_noise_paragraph(
@@ -1322,7 +1324,7 @@ def generate_noise_paragraph(
         for key, value in replacements.items():
             all_sentences[idx] = all_sentences[idx].replace(key, str(value))
     label = get_primary_label(labels)
-    paragraph = cleanup(all_sentences, reporting_year, checkBracket=False)
+    paragraph = cleanup(all_sentences, reporting_year, fullCheck=False)
     if paragraph.find("warrants") != -1: # Sometimes warrants will appear
         labels["warr"] = 1
     return paragraph, labels, label
