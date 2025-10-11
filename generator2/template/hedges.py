@@ -282,7 +282,7 @@ historical_templates = [
     "In {month} {old_year}, {company} {verb} notional amounts of {currency_code}{old_notional} {money_unit} in {swap_type}, which are set to expire in {month} {future_year}",
     "As of {month} {year}, {company} {verb} {swap_type} {verb} in {old_year}, with total notional of {currency_code}{old_notional} {money_unit}, expiring in {future_year}",
     "As of {month} {year}, {company} {verb} notional totals of {currency_code}{old_notional} {money_unit} in {swap_type} initiated in {old_year}, expiring in {future_year}",
-    "{swap_type} expires in {future_year}",
+    "{company} {verb} {swap_type} which expires in {future_year}",
 ]
 
 gen_specific_mitigation = [

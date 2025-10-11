@@ -1158,8 +1158,6 @@ def generate_noise_paragraph(
     )
     selected_cps = selected_cps if random.random() < 0.85 else "commodity"
 
-    all_reasons = balance_sheet_reasons + accrued_reasons + other_asset_reasons + liability_reasons + equity_reasons
-
     replacements = {
         "{company}": pick_company_name(company_name),
         "{shares}": str(shares),
@@ -1279,7 +1277,7 @@ def generate(size_per_label=100):
       - Add a defensive assertion that each item is (sentence, labels_dict, label_int).
     """
     all_samples = []
-    swap_types = ["ir", "fx", "cp", "gen"]
+    swap_types = ["ir", "fx", "cp", "eq", "gen"]
     numSwaps = len(swap_types)
     count = size_per_label // numSwaps
     swap_counts = count * 3
