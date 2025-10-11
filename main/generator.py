@@ -134,11 +134,11 @@ def get_primary_label(labels: dict) -> int:
 
     # --- Hedge type label map ---
     hedge_map = {
-        "gen": (0, 1, 2),
         "ir": (3, 4, 5),
         "fx": (6, 7, 8),
         "cp": (9, 10, 11),
         "eq": (12, 13, 14),
+        "gen": (0, 1, 2),
     }
 
     # --- 1. Check for actual use ---
@@ -769,15 +769,14 @@ def generate_hedge_paragraph(
    
     paragraph = cleanup(all_sentences, current_year)
     # If it has the words interest rate, mark it ir, currency, fx, and commodity, cp
-    if swapType == "gen":
-        if paragraph.find("interest rate") != -1:
-            labels["ir"] = 1
-        if paragraph.find("currency") != -1:
-            labels["fx"] = 1
-        if paragraph.find("commodity") != -1:
-            labels["cp"] = 1
-        if paragraph.find("equity") != -1:
-            labels["eq"] = 1
+    if paragraph.find("interest rate") != -1:
+        labels["ir"] = 1
+    if paragraph.find("currenc") != -1:
+        labels["fx"] = 1
+    if paragraph.find("commodit") != -1:
+        labels["cp"] = 1
+    if paragraph.find("equit") != -1:
+        labels["eq"] = 1
     label = get_primary_label(labels)
     return paragraph, labels, label
 
@@ -1419,7 +1418,7 @@ def generate_noise_paragraph(
     if paragraph.find("warrants") != -1: # Sometimes warrants will appear
         labels["warr"] = 1
     return paragraph, labels, label
-    
+
 def generate(size_per_label=100):
     """
     Generate the dataset. Fixed:
