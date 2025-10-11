@@ -110,27 +110,27 @@ def get_primary_label(labels: dict) -> int:
 
     # --- Irrelevant override ---
     if labels.get("irr"):
-        return 3
+        return 19
 
     # --- Derivative Warrants ---
     if labels.get("warr"):
-        return 5 if labels.get("hist") else 4
+        return 16 if labels.get("hist") else 15
 
     # --- Embedded Derivatives ---
     if labels.get("emb"):
-        return 7 if labels.get("hist") else 6
+        return 18 if labels.get("hist") else 17
 
-    # --- Hedge types mapping ---
+    # --- Hedge type label map ---
     hedge_map = {
-        "ir": (8, 9, 14),
-        "fx": (10, 11, 15),
-        "cp": (12, 13, 16),
-        "eq": (0, 1, 2),
         "gen": (0, 1, 2),
+        "ir": (3, 4, 5),
+        "fx": (6, 7, 8),
+        "cp": (9, 10, 11),
+        "eq": (12, 13, 14),
     }
 
-    # Check actual use first
-    for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
+    # --- 1. Check for actual use ---
+    for hedge_type in hedge_map.keys():
         if labels.get(f"{hedge_type}_use"):
             curr_id, hist_id, spec_id = hedge_map[hedge_type]
             if labels.get("curr"):
@@ -139,21 +139,21 @@ def get_primary_label(labels: dict) -> int:
                 return hist_id
             if labels.get("spec"):
                 return spec_id
-            # Default fallback to current if only _use is flagged
+            # Default to current if _use flagged but no time context
             return curr_id
 
-    # Check speculative mention without actual use
-    for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
+    # --- 2. Speculative mention (no actual use) ---
+    for hedge_type in hedge_map.keys():
         if labels.get(hedge_type) and labels.get("spec"):
             return hedge_map[hedge_type][2]
 
-    # Check context only (no actual use)
-    for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
+    # --- 3. Context only (no _use, not speculative) ---
+    for hedge_type in hedge_map.keys():
         if labels.get(hedge_type):
-            return hedge_map[hedge_type][0]  # default to current
+            return hedge_map[hedge_type][0]
 
-    # Default fallback to irrelevant
-    return 3
+    # --- 4. Default fallback ---
+    return 19
 
 
 def new_label():
@@ -933,6 +933,64 @@ def generate_emb_paragraph(
         labels["eq"] = 1
     return paragraph, labels, label
 
+
+def generate_sec_noise():
+    # Generate random data for placeholders
+    company = random.choice(company_names)
+    month = random.choice(months)
+    year = random.randint(1990, 2025)
+    currency_unit = random.choice(money_unit_list)
+    reporting_year = year
+
+    # Inner function to generate a line for the Table of Contents
+    def generate_toc_line():
+        template = random.choice(sec_toc_patterns)
+        page_num = random.randint(1, 200)
+        return template.format(page=page_num, company=pick_company_name(company))
+
+    # Populate placeholders for the phrase templates
+    placeholders = {
+        "file_number": str(random.randint(1, 99999)).zfill(5),
+        "section": random.choice(["13", "15(d)"]),
+        "area_code": random.randint(100, 999),
+        "phone_number": f"{random.randint(100, 999)}-{random.randint(1000, 9999)}",
+        "month": month,
+        "day": random.randint(28, 31),
+        "day2": random.randint(28, 31),
+        "year": year,
+        "prev_year": year - 1,
+        "next_year": year + 1,
+        "company": company,
+        "choice1": random.choice(["[x]", "[]"]),
+        "choice2": random.choice(["[x]", "[]"]),
+        "currency_unit": currency_unit,
+        "market_value": f"{random.randint(10**6, 10**9):,}",
+        "shares_outstanding": f"{random.randint(50_000_000, 200_000_000):,}",
+        "date": f"{random.randint(1, 12)}/{random.randint(1, 28)}/{random.randint(2000, 2024)}",
+    }
+
+    # Format phrases from templates
+    phrases = [p.format(**placeholders) for p in sec_phrases]
+
+    # Generate gibberish filename
+    gibberish = "".join(
+        random.choices(string.ascii_lowercase + string.digits, k=random.randint(6, 12))
+    ) + random.choice([".htm", ".txt"])
+
+    # Combine all parts and randomly sample
+    chunks = random.sample(
+        headers + phrases + [gibberish] + [generate_toc_line()], k=random.randint(8, 15)
+    )
+
+    # Create paragraph and labels for compatibility
+    labels = new_label()
+    labels["irr"] = 1
+    label = get_primary_label(labels)
+
+    # Cleanup and return
+    return cleanup(chunks, reporting_year, checkBracket=False), labels, label
+
+
 def generate_noise_paragraph(
     noise_type,
     year_range=(1990, 2025),
@@ -1337,7 +1395,9 @@ def generate(size_per_label=100):
                 futures.append(executor.submit(generate_noise_paragraph, noise_type=noise_type))
         for _ in range(size_per_label): # Any random noise
             futures.append(executor.submit(generate_noise_paragraph, noise_type=None))
-
+        
+        for _ in range(10):
+            futures.append(executor.submit(generate_sec_noise))
         return futures
 
     # --- Parallel execution with tqdm progress bar ---
