@@ -222,6 +222,7 @@ def label_paragraph(paragraph: str, labels: dict) -> dict:
         "ir": ["interest rate", "debt", "loan"],
         "fx": ["currenc", "foreign", "international", "border"],
         "cp": ["commodit"],
+        "eq": ["stock"]
     }
     
     # Check each category and its keywords
@@ -872,11 +873,9 @@ def generate_warrant_paragraph(
 
     all_sentences = [sentence]
 
-    label = get_primary_label(labels)
     paragraph = cleanup(all_sentences, reporting_year)
-    # If it has teh words shares or stock, mark it as equity
-    if paragraph.find("stock") != -1 or paragraph.find("share") != -1 or paragraph.find("equit") != -1:
-        labels["eq"] = 1
+    labels = label_paragraph(paragraph, labels)
+    label = get_primary_label(labels)
     return paragraph, labels, label
 
 def generate_emb_paragraph(
@@ -959,15 +958,10 @@ def generate_emb_paragraph(
 
     all_sentences = [sentence]
 
-    label = get_primary_label(labels)
+    
     paragraph = cleanup(all_sentences, reporting_year)
-    # If it has teh words shares or stock, mark it as equity
-    if (
-        paragraph.find("stock") != -1
-        or paragraph.find("share") != -1
-        or paragraph.find("equit") != -1
-    ):
-        labels["eq"] = 1
+    labels = label_paragraph(paragraph, labels)
+    label = get_primary_label(labels)
     return paragraph, labels, label
 
 
@@ -1550,6 +1544,5 @@ def generate(size_per_label=100):
 
     print(f"\n{len(all_samples)} samples written/appended to {output_file} (sorted)")
 
-#%%
+# %%
 generate(1000)
-
