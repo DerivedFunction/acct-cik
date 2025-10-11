@@ -1329,17 +1329,18 @@ def generate_noise_paragraph(
         "{transition_feature}": random.choice(shared_transition_features),
         "{adoption_impact}": random.choice(adoption_impacts),
         "{words}": random.choice(forward_looking_words),
-        "{increase_decrease}": random.choice(["increase", "decrease", "improved","decreased"]),
+        "{increase_decrease}": random.choice(
+            ["increase", "decrease", "improved", "decreased"]
+        ),
         "{target}": random.choice(company_names),
-        "{volatility_levels}": random.choice(volatility_levels),
+        "{volatility}": random.choice(volatility_levels),
         "{assess_verb}": random.choice(assessment_verbs),
         "{exchange}": random.choice(exchanges),
         "{vesting_period}": random.choice(vesting_periods),
         "{perq_type}": random.choice(perq_types),
         "{mission_statement}": random.choice(mission_statements),
         "{industry}": random.choice(industries),
-        
-        }
+    }
 
     if template_pool:
         for _ in range(random.randint(3, 4)):
