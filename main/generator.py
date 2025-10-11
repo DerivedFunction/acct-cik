@@ -766,8 +766,20 @@ def generate_hedge_paragraph(
         if include_policy:
             all_sentences.extend(hedge_type_policy())
 
+   
+    paragraph = cleanup(all_sentences, current_year)
+    # If it has the words interest rate, mark it ir, currency, fx, and commodity, cp
+    if swapType == "gen":
+        if paragraph.find("interest rate") != -1:
+            labels["ir"] = 1
+        if paragraph.find("currency") != -1:
+            labels["fx"] = 1
+        if paragraph.find("commodity") != -1:
+            labels["cp"] = 1
+        if paragraph.find("equity") != -1:
+            labels["eq"] = 1
     label = get_primary_label(labels)
-    return cleanup(all_sentences, current_year), labels, label
+    return paragraph, labels, label
 
 def generate_warrant_paragraph(
     use_case,  # 'current', 'historical', or 'speculative'
