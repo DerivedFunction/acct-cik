@@ -166,9 +166,15 @@ hedge_topics = [
     "fair value hedges",
 ]
 commodities = [
-    "crude oil", "natural gas", "electricity", "aluminum", "copper", "steel",
-    "corn", "soybeans", "grain", "metals", "titanium", "fuel",
-    "diesel fuel", "gasoline", "raw materials", "commodity", "energy", "resin", "chemicals", "lumber"
+    "agricultural products", "aluminum", "asphalt", "base metals", "biodiesel", "biomass",
+    "bitumen", "cement", "chemicals", "coal", "cocoa", "coffee", "commodity", "concrete", "copper", "corn",
+    "cotton", "crude oil", "dairy", "diesel fuel", "electricity", "energy", "ethanol", "feedstock", "fertilizer", "fuel", "gas",
+    "gasoline", "grain", "gravel", "hardwood lumber", "iron ore", "limestone", "livestock", "logs", "lumber", "metals", "minerals",
+    "natural gas", "nitrogen", "paper", "petrochemicals", "petroleum", "phosphate", "plastics", "plywood", "polymers",
+    "potash", "precious metals", "pulp", "raw materials", "resin", "rubber", "salt",
+    "sand", "soda ash", "softwood lumber", "soybeans", "steel",
+    "sugar", "sulfur", "textiles", "timber", "titanium", "uranium",
+    "wood", "wood chips", "wood pellets", "wool",
 ]
 cost_types = [
     "input costs", "energy costs", "fuel costs", "raw material costs", "manufacturing costs", "mining costs",
