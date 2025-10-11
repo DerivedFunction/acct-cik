@@ -208,27 +208,46 @@ import numpy as np
 import pandas as pd
 
 MODEL_PATH = "DerivedFunction/derivative-classifier"
+KEYWORDS_FILE = "./keywords_find.json"
 
-# Load keyword mappings for primary label
+# Load keyword mappings
 with open(KEYWORDS_FILE, "r", encoding="utf-8") as f:
-    keyword_data = json.load(f)
-primary_id2label = {int(k): v for k, v in keyword_data.items()}
+    primary_id2label = json.load(f)
 
-# Load tokenizer and model
+# Define the multi-label names (must match training)
+labels = [
+    "ir",
+    "fx",
+    "cp",
+    "eq",
+    "gen",
+    "ir_use",
+    "fx_use",
+    "cp_use",
+    "eq_use",
+    "gen_use",
+    "curr",
+    "hist",
+    "spec",
+    "warr",
+    "emb",
+    "irr",
+]
+
+# Load model & tokenizer
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
-
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 model.to(device)
-print(f"Model loaded to {device}")
 
-
+# --- Primary label logic ---
 def get_primary_labels(labels: dict, id2label: dict) -> list:
     """
-    Multi-label derivative classification logic.
+    Multi-label derivative classification logic for post-training inspection.
     - 'gen' enables _use and speculative labels.
     - Context (ir/fx/cp/eq) does NOT need 'gen'.
     - Multiple labels can be returned.
+    - Returns list of label names from id2label.
     """
 
     results = []
@@ -251,13 +270,13 @@ def get_primary_labels(labels: dict, id2label: dict) -> list:
         "eq": 19,
     }
 
-    # --- Special types ---
+    # --- Special derivative types ---
     if labels.get("warr"):
-        results.append(20 if labels.get("hist") else 19)  # Current=19, Historic=20
+        results.append(20 if labels.get("curr") else 21)  # Current=20, Historic=21
     if labels.get("emb"):
-        results.append(22 if labels.get("hist") else 21)  # Current=21, Historic=22
+        results.append(22 if labels.get("curr") else 23)  # Current=22, Historic=23
 
-    # --- Use / Speculative (need gen) ---
+    # --- Use / Speculative (requires 'gen') ---
     if labels.get("gen"):
         for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
             if labels.get(f"{hedge_type}_use"):
@@ -271,91 +290,69 @@ def get_primary_labels(labels: dict, id2label: dict) -> list:
                 else:
                     results.append(curr_id)
 
-        if not results and labels.get("spec"):
+        # Speculative mention if no _use
+        if not any(r in results for r in range(0, 15)) and labels.get("spec"):
             for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
                 if labels.get(hedge_type):
                     results.append(hedge_map[hedge_type][2])
 
-    # --- Context-only (no _use/spec, or gen=0) ---
-    if not results:
+    # --- Context-only (non-use, non-speculative, or gen=0) ---
+    if not any(r in results for r in range(0, 15)):
         for hedge_type in ["ir", "fx", "cp", "eq", "gen"]:
             if labels.get(hedge_type):
                 results.append(context_map[hedge_type])
 
     # --- Irrelevant ---
     if labels.get("irr"):
-        results.append(24)  # corrected to match your label map
+        results.append(24)
 
     # --- Deduplicate + sort ---
     results = sorted(set(results))
-    return [id2label[r] for r in results]
 
+    # --- Map IDs to labels with error handling ---
+    try:
+        return [id2label[str(r)] for r in results]
+    except KeyError as e:
+        missing_key = e.args[0]
+        print(
+            f"KeyError: Label ID {missing_key} not found in id2label. Available keys: {list(id2label.keys())}"
+        )
+        raise
+
+
+# --- Batch prediction ---
 def predict_batch(sentences: list[str]):
     model.eval()
-    inputs = tokenizer(
-        sentences,
-        return_tensors="pt",
-        truncation=True,
-        padding=True,
-    )
+    inputs = tokenizer(sentences, return_tensors="pt", truncation=True, padding=True)
     inputs = {k: v.to(device) for k, v in inputs.items()}
 
     with torch.no_grad():
         outputs = model(**inputs)
         logits = outputs.logits
-        sigmoid = torch.nn.Sigmoid()
-        probs = sigmoid(logits.cpu())
-        predictions = np.zeros(probs.shape)
-        predictions[np.where(probs >= 0.5)] = 1
+        probs = torch.sigmoid(logits.cpu())
+        predictions = (probs >= 0.5).int().numpy()
 
-    results = []
-    for prediction in predictions:
-        predicted_labels_dict = {label: int(p) for label, p in zip(labels, prediction)}
-        primary_label_id = get_primary_label(predicted_labels_dict)
-        primary_label = primary_id2label.get(primary_label_id, "Unknown")
-        results.append((predicted_labels_dict, primary_label))
+    all_results = []
+    for pred in predictions:
+        pred_dict = {l: int(v) for l, v in zip(labels, pred)}
+        primary_labels = get_primary_labels(
+            pred_dict, primary_id2label
+        )  # Pass primary_id2label explicitly
+        all_results.append({"pred_vector": pred_dict, "primary_labels": primary_labels})
 
-    return results
+    return all_results
 ```
 
-# Single String Prediction
-
 ```{python}
-string = """
-We may use interest rate swaps to manage our exposure to interest rate fluctuations.
+# --- Single string example ---
+text = """"
+<reportingYear>2001</reportingYear>
 """
+result = predict_batch([text])[0]
 
-model.eval()
-inputs = tokenizer(
-    string.strip(),
-    return_tensors="pt",
-    truncation=True,
-    padding=True,
-)
-inputs = {k: v.to(device) for k, v in inputs.items()}
-
-with torch.no_grad():
-    outputs = model(**inputs)
-    logits = outputs.logits
-    sigmoid = torch.nn.Sigmoid()
-    probs = sigmoid(logits.squeeze().cpu())
-    predictions = np.zeros(probs.shape)
-    predictions[np.where(probs >= 0.5)] = 1
-    
-    # Multi-label results
-    predicted_labels_dict = {label: int(p) for label, p in zip(labels, predictions)}
-    predicted_labels = [label for label, p in predicted_labels_dict.items() if p == 1]
-
-    # Primary label result
-    primary_label_id = get_primary_label(predicted_labels_dict)
-    primary_label = primary_id2label.get(primary_label_id, "Unknown")
-
-    print("Input Text:", string.strip())
-    print("\n--- Multi-Label Prediction ---")
-    print("Predicted Labels:", predicted_labels)
-    print("Prediction Vector:", predicted_labels_dict)
-    print("\n--- Primary Label Prediction ---")
-    print("Primary Label:", primary_label)
+print("--- Multi-Label Prediction ---")
+print("Prediction Vector:", result["pred_vector"])
+print("Primary Labels:", result["primary_labels"])
 
 ```
 
