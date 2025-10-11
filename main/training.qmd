@@ -42,7 +42,7 @@ KEYWORDS_FILE = "./keywords_find.json"
 labels = [
     "ir", "fx", "cp", "eq", "gen",
     "ir_use", "fx_use", "cp_use", "eq_use", "gen_use",
-    "curr", "hist", "spec", "warr", "emb", "irr", "deriv"
+    "curr", "hist", "spec", "warr", "emb", "irr"
 ]
 id2label = {i: label for i, label in enumerate(labels)}
 label2id = {label: i for i, label in enumerate(labels)}
@@ -85,8 +85,8 @@ The `transformers` library works best with its own `Dataset` format.
 ```{python}
 train_dataset = Dataset.from_pandas(train_df)
 val_dataset = Dataset.from_pandas(val_df)
-batch_size = 4
-num_epochs = 3
+batch_size = 8
+num_epochs = batch_size
 print(f"Number of epochs: {num_epochs}")
 ```
 
