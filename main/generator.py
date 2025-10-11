@@ -359,7 +359,7 @@ def generate_hedge_paragraph(
             if len(debt_type_list) > 1
             else debt_type_list[0]
         )
-        for _ in range(random.randint(1, 3)):
+        for _ in range(random.randint(2, 4)):
             template = random.choice(debt_templates)
             amount = generate_value(False)
             amount2 = generate_value(False)
